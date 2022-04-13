@@ -58,120 +58,140 @@
           <parcel-map :property="property" wrapperClass="pa-4" hClass="pb-4" />
         </div>
       </v-row>
-
-      <v-row class="blue-grey lighten-5">
-        <v-col>
-          <h1 class="text-h4">Video Screens</h1>
-        </v-col>
-        <v-col align="right">
-          <v-btn @click="addVideoScreen()"><v-icon>mdi-plus</v-icon></v-btn>
-        </v-col>
-      </v-row>
-      <v-row
-        v-for="(videoSystem, v) in property.scene.videoSystems"
-        :key="v"
-        class="blue-grey lighten-5"
-      >
-        <v-col>
-          <v-text-field
-            v-if="editingScreenName[v]"
-            v-model="videoSystem.name"
-            @blur="saveScreenName(v)"
-            autofocus
-            append-icon="mdi-pencil"
-          ></v-text-field>
-          <v-hover
-            v-slot="{ hover }"
-            :value="!editingScreenName[v]"
-            open-delay="200"
-            close-delay="200"
-          >
-            <h1
-              class="text-h6"
-              v-if="!editingScreenName[v]"
-              @click="editScreenName(v)"
-            >
-              {{ videoSystem.name }}
-              <v-btn
-                :class="!editingScreenName[v] && hover ? 'visible' : 'hidden'"
-                icon
-                color="black"
-                fab
-                x-small
-                class="mb-1"
-                @click="editScreenName(v)"
-                ><v-icon>mdi-pencil</v-icon></v-btn
-              >
-            </h1>
-          </v-hover>
-          <v-slider
-            v-model="videoSystem.volume"
-            @change="updateProperties()"
-            label="Volume"
-            max="1"
-            min="0"
-            step=".01"
-          ></v-slider>
-
-          <v-row v-for="(item, i) in videoSystem.playlist" :key="i" dense>
-            <v-col cols="12">
-              <v-text-field
-                v-model="videoSystem.playlist[i]"
-                label="Video Link"
-                @blur="updateProperties()"
-              >
-                <template v-slot:append-outer>
-                  <v-btn icon @click="removeVideo(v, i)">
-                    <v-icon>
-                      mdi-close
-                    </v-icon>
-                  </v-btn>
-                </template>
-              </v-text-field>
-            </v-col>
-          </v-row>
+      <v-card>
+        <v-container class="py-6 mx-auto my-6">
           <v-row>
-            <v-col>
-              <v-btn @click="addVideo(v)">Add Video</v-btn>
+            <v-col no-gutters>
+              <h1 class="text-h5">Video Screens</h1>
             </v-col>
             <v-col align="right">
-              <v-dialog v-model="deleteScreenDialog" persistent max-width="290">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn v-bind="attrs" v-on="on">
-                    Remove Screen
-                  </v-btn>
-                </template>
-                <v-card>
-                  <v-card-title class="text-h5">
-                    Remove Video Screen?
-                  </v-card-title>
-                  <v-card-text
-                    >Are you sure you want to delete
-                    {{ videoSystem.name }}?</v-card-text
-                  >
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                      color="red darken-1"
-                      text
-                      @click="removeVideoScreen(v)"
-                    >
-                      Remove
-                    </v-btn>
-                    <v-btn
-                      color="grey darken-1"
-                      text
-                      @click="deleteScreenDialog = false"
-                    >
-                      Cancel
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
+              <v-btn @click="addVideoScreen()"><v-icon>mdi-plus</v-icon></v-btn>
             </v-col>
           </v-row>
-        </v-col>
-      </v-row>
+          <div
+            v-for="(videoSystem, v) in property.scene.videoSystems"
+            :key="v"
+            class="my-6"
+          >
+            <v-row class="grey darken-3 dark mx-n3">
+              <v-col>
+                <v-text-field
+                  dark
+                  v-model="videoSystem.name"
+                  label="Screen Name"
+                  @blur="updateProperties()"
+                ></v-text-field>
+              </v-col>
+              <v-col>
+                <v-slider
+                  dark
+                  v-model="videoSystem.volume"
+                  @change="updateProperties()"
+                  label="Volume"
+                  max="1"
+                  min="0"
+                  step=".01"
+                  class="mt-4"
+                  dense
+                ></v-slider>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col align="left">
+                <v-switch
+                  v-model="videoSystem.isLive"
+                  label="Enable Live Stream"
+                  color="red"
+                  class="my-0"
+                  @change="updateProperties()"
+                  dense
+                >
+                </v-switch>
+              </v-col>
+
+              <v-col align="right">
+                <v-dialog
+                  v-model="deleteScreenDialog"
+                  persistent
+                  max-width="290"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn v-bind="attrs" v-on="on">
+                      Remove Screen
+                    </v-btn>
+                  </template>
+                  <v-card>
+                    <v-card-title class="text-h5">
+                      Remove Video Screen?
+                    </v-card-title>
+                    <v-card-text
+                      >Are you sure you want to delete
+                      {{ videoSystem.name }}?</v-card-text
+                    >
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        color="red darken-1"
+                        text
+                        @click="removeVideoScreen(v)"
+                      >
+                        Remove
+                      </v-btn>
+                      <v-btn
+                        color="grey darken-1"
+                        text
+                        @click="deleteScreenDialog = false"
+                      >
+                        Cancel
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </v-col>
+            </v-row>
+            <v-row class="my-0">
+              <v-col cols="12">
+                <v-text-field
+                  dense
+                  v-model="videoSystem.liveLink"
+                  label="Live Video Link"
+                  hide-details="true"
+                  @blur="updateProperties()"
+                >
+                </v-text-field>
+              </v-col>
+            </v-row>
+            <v-divider class="my-6"></v-divider>
+            <v-row dense>
+              <v-col cols="12">
+                <h1 class="text-body-1 d-block">Video Playlist</h1>
+              </v-col>
+              <v-col
+                v-for="(item, i) in videoSystem.playlist"
+                :key="i"
+                cols="12"
+              >
+                <v-text-field
+                  v-model="videoSystem.playlist[i]"
+                  label="Video Link"
+                  @blur="updateProperties()"
+                >
+                  <template v-slot:append-outer>
+                    <v-btn icon @click="removeVideo(v, i)">
+                      <v-icon>
+                        mdi-close
+                      </v-icon>
+                    </v-btn>
+                  </template>
+                </v-text-field>
+              </v-col>
+              <v-col>
+                <v-btn @click="addVideo(v)">Add Video</v-btn>
+              </v-col>
+            </v-row>
+          </div>
+        </v-container>
+      </v-card>
       <!-- <v-row>
         <v-col>
           <v-switch
@@ -299,7 +319,8 @@ export default {
   },
   data: () => ({
     editingName: false,
-    deleteScreenDialog: false
+    deleteScreenDialog: false,
+    editingScreenName: false
   }),
   created () {
     this.$watch(
@@ -334,9 +355,6 @@ export default {
     },
     sceneData () {
       return this.property.sceneData
-    },
-    editingScreenName () {
-      return [...new Array(this.property.scene.videoSystems.length)]
     }
   },
   methods: {
@@ -370,18 +388,22 @@ export default {
     // },
     addVideoScreen () {
       const screenCount = this.property.scene.videoSystems.length + 1
-      const nextItem = { playlist: [], name: `Screen ${screenCount}` }
+      const nextItem = {
+        liveLink: '',
+        playlist: [""],
+        name: `Screen ${screenCount}`
+      }
       return this.property.scene.videoSystems.push(nextItem)
     },
     removeVideoScreen (i) {
       this.deleteScreenDialog = false
       this.property.scene.videoSystems.splice(i, 1)
     },
-    editScreenName (i) {
-      this.editingScreenName[i] = true
+    editScreenName () {
+      this.editingScreenName = true
     },
-    saveScreenName (i) {
-      this.editingScreenName[i] = false
+    saveScreenName () {
+      this.editingScreenName = false
       this.updateProperties()
     },
     addVideo (i) {
@@ -398,7 +420,7 @@ export default {
       this.updateLandProperties({
         propertyName: this.property.propertyName,
         baseParcel: this.property.baseParcel,
-        sceneData: this.property.sceneData,
+        scene: this.property.scene,
         tokenId: this.property.tokenId
       })
       console.log(e)
