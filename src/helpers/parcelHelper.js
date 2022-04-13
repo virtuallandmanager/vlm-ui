@@ -34,7 +34,7 @@
 //   return parcelGroup.group;
 // }
 
-// function findAdjacentParcels(parcels, selected) {
+function findAdjacentParcels() {
 //   console.log("~~~~~~~~~~~~~~~~~SELECTION MADE~~~~~~~~~~~~~~~");
 
 //   const selectedParcels = parcels.filter((parcel, i) => selected[i]);
@@ -80,8 +80,8 @@
 //   });
 
 //   return groupsWithCoords;
-// }
+}
 
-// export default {
-//   findAdjacentParcels
-// };
+export default {
+  findAdjacentParcels
+};
