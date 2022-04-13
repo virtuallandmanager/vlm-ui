@@ -68,7 +68,7 @@
         </v-col>
       </v-row>
       <v-row
-        v-for="(videoSystem, v) in property.sceneData.videoSystems"
+        v-for="(videoSystem, v) in property.scene.videoSystems"
         :key="v"
         class="blue-grey lighten-5"
       >
@@ -156,7 +156,7 @@
                       text
                       @click="removeVideoScreen(v)"
                     >
-                      Delete
+                      Remove
                     </v-btn>
                     <v-btn
                       color="grey darken-1"
@@ -336,7 +336,7 @@ export default {
       return this.property.sceneData
     },
     editingScreenName () {
-      return [...new Array(this.property.sceneData.videoSystems.length)]
+      return [...new Array(this.property.scene.videoSystems.length)]
     }
   },
   methods: {
@@ -369,13 +369,13 @@ export default {
     //   this.settings.wearableWhiteList.splice(i, 1);
     // },
     addVideoScreen () {
-      const screenCount = this.property.sceneData.videoSystems.length + 1
+      const screenCount = this.property.scene.videoSystems.length + 1
       const nextItem = { playlist: [], name: `Screen ${screenCount}` }
-      return this.property.sceneData.videoSystems.push(nextItem)
+      return this.property.scene.videoSystems.push(nextItem)
     },
     removeVideoScreen (i) {
       this.deleteScreenDialog = false
-      this.property.sceneData.videoSystems.splice(i, 1)
+      this.property.scene.videoSystems.splice(i, 1)
     },
     editScreenName (i) {
       this.editingScreenName[i] = true
@@ -386,10 +386,10 @@ export default {
     },
     addVideo (i) {
       const nextItem = ''
-      return this.property.sceneData.videoSystems[i].playlist.push(nextItem)
+      return this.property.scene.videoSystems[i].playlist.push(nextItem)
     },
     removeVideo (v, i) {
-      this.property.sceneData.videoSystems[v].playlist.splice(i, 1)
+      this.property.scene.videoSystems[v].playlist.splice(i, 1)
     },
     editName () {
       this.editingName = true
