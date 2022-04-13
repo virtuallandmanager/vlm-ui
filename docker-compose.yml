@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+
+  vlm-ui:
+    container_name: vlm-ui
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '80:80'
