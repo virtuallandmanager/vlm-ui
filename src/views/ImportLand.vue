@@ -141,7 +141,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import parcelHelper from '../helpers/parcelHelper'
+// import parcelHelper from '../helpers/parcelHelper'
 
 export default {
   name: 'ImportLand',
