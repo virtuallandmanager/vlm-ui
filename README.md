@@ -1,4 +1,4 @@
-# dcl-pest-control
+# vlm-ui
 
 ## Project setup
 ```
