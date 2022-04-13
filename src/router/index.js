@@ -50,35 +50,6 @@ const router = new Router({
           ]
         }
       ]
-    },
-    {
-      path: "/scenes",
-      name: "MyScenes",
-      component: () => import(/* webpackChunkName: "land" */ "../views/MyScenes.vue")
-    },
-    {
-      path: "/scene",
-      name: "Land",
-      component: () => import(/* webpackChunkName: "land" */ "../views/Land.vue"),
-      children: [
-        {
-          path: "create",
-          name: "CreateScene",
-          component: () => import(/* webpackChunkName: "importland" */ "../views/CreateScene.vue")
-        },
-        {
-          path: ":xCoord",
-          name: "Scene",
-          component: () => import(/* webpackChunkName: "parcel" */ "../views/Scene.vue"),
-          children: [
-            {
-              path: ":yCoord",
-              name: "Scene",
-              component: () => import(/* webpackChunkName: "parcel" */ "../views/Scene.vue")
-            }
-          ]
-        }
-      ]
     }
   ]
 });
