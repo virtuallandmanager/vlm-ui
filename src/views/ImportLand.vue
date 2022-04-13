@@ -49,7 +49,6 @@
                 v-model="selectedParcels[i]"
                 :label="convertCoords(parcel)"
                 class="mx-auto"
-                @change="findAdjacentParcels(unimportedParcels.parcels)"
               ></v-checkbox>
             </div>
             <v-switch
@@ -100,7 +99,6 @@
                     v-model="selectedDeeds[i]"
                     :label="convertCoords(parcel)"
                     class="d-inline mx-auto"
-                    @change="findAdjacentDeeds(unimportedParcels.aetheriaDeeds)"
                   ></v-checkbox>
                 </v-col>
               </v-row>
@@ -175,35 +173,35 @@ export default {
       fetchUnimportedParcels: 'land/fetchUnimportedParcels',
       importParcels: 'land/importParcels'
     }),
-    findAdjacentParcels (parcels) {
-      this.adjacentParcels = parcelHelper.findAdjacentParcels(
-        parcels,
-        this.selectedParcels
-      )
-      this.adjacentParcelsPresent = this.adjacentParcels.length > 0
+    // findAdjacentParcels (parcels) {
+    //   this.adjacentParcels = parcelHelper.findAdjacentParcels(
+    //     parcels,
+    //     this.selectedParcels
+    //   )
+    //   this.adjacentParcelsPresent = this.adjacentParcels.length > 0
 
-      if (this.adjacentParcelsPresent) {
-        this.groupParcels = false
-      }
-    },
-    findAdjacentDeeds (deeds) {
-      if (this.selectedDeeds.filter(x => x).length < 2) {
-        return
-      }
+    //   if (this.adjacentParcelsPresent) {
+    //     this.groupParcels = false
+    //   }
+    // },
+    // findAdjacentDeeds (deeds) {
+    //   if (this.selectedDeeds.filter(x => x).length < 2) {
+    //     return
+    //   }
 
-      this.adjacentDeeds = parcelHelper.findAdjacentParcels(
-        deeds,
-        this.selectedDeeds
-      )
-      console.log('ADJACENT DEEDS: ', this.adjacentDeeds)
-      this.adjacentDeedsPresent = this.adjacentDeeds.some(
-        group => group.parcels.length > 1
-      )
+    //   this.adjacentDeeds = parcelHelper.findAdjacentParcels(
+    //     deeds,
+    //     this.selectedDeeds
+    //   )
+    //   console.log('ADJACENT DEEDS: ', this.adjacentDeeds)
+    //   this.adjacentDeedsPresent = this.adjacentDeeds.some(
+    //     group => group.parcels.length > 1
+    //   )
 
-      if (this.adjacentDeedsPresent) {
-        this.groupDeeds = false
-      }
-    },
+    //   if (this.adjacentDeedsPresent) {
+    //     this.groupDeeds = false
+    //   }
+    // },
     convertCoords (parcel) {
       return `${parcel.x},${parcel.y}`
     },
