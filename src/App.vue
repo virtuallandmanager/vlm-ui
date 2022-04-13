@@ -1,32 +1,92 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view />
-  </div>
+  <v-app>
+    <v-app-bar app color="primary" dark>
+      <router-link to="/" class="header-link">
+        <img src="@/assets/VLM-Logo.svg" height="65" />
+      </router-link>
+      <v-spacer></v-spacer>
+      <v-btn
+        v-if="!connected"
+        rounded
+        color="grey"
+        @click.stop="login()"
+        :loading="loggingIn"
+      >
+        Connect Wallet
+        <v-icon class="ml-2">mdi-wallet</v-icon>
+      </v-btn>
+      <v-dialog
+        transition="dialog-top-transition"
+        max-width="600"
+        v-if="connected"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn rounded color="white" text v-bind="attrs" v-on="on">
+            {{ "Connected: " + walletAddress }}
+          </v-btn>
+        </template>
+        <template v-slot:default="dialog">
+          <v-card>
+            <v-toolbar color="primary" dark>Trying to disconnect?</v-toolbar>
+            <v-card-text>
+              <div class="text-body pa-4">
+                For security reasons, you can only disconnect your wallet from
+                within your Web3 provider.<br />
+                Please open your wallet extension and disconnect from this site
+                from there.<br />
+                (This is also a good habit to get into when you're done using
+                Web3 sites.)
+              </div>
+            </v-card-text>
+            <v-card-actions class="justify-end">
+              <v-btn text @click="dialog.value = false">OK!</v-btn>
+            </v-card-actions>
+          </v-card>
+        </template>
+      </v-dialog>
+    </v-app-bar>
+
+    <v-main>
+      <router-view />
+    </v-main>
+    <v-footer>Virtual Land Manager</v-footer>
+  </v-app>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import { mapActions } from "vuex";
 
-#nav {
-  padding: 30px;
-}
+export default {
+  name: "App",
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+  data: () => ({
+    //
+  }),
+  computed: {
+    connected() {
+      return this.$store.state.login.connected;
+    },
+    loggingIn() {
+      return this.$store.state.login.loggingIn;
+    },
+    walletAddress() {
+      const fullAddress = this.$store.state.login.account;
+      const truncAddress =
+        fullAddress &&
+        fullAddress.substring(0, 6) +
+          "..." +
+          fullAddress.substring(fullAddress.length - 5);
+      return truncAddress;
+    },
+  },
+  methods: {
+    ...mapActions(["login", "fetchAccount"]),
+  },
+};
+</script>
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+<style scoped>
+.header-link {
+  line-height: 0;
 }
 </style>
