@@ -118,7 +118,7 @@
             <v-tab-item :value="'tab-2'">
               <v-card raised elevation="2">
                 <dialog-system
-                  :dialogs="property.scene.dialogs"
+                  :dialogs="property.sceneData.dialogs"
                   @updateProperties="updateProperties"
                 />
               </v-card>
@@ -126,7 +126,7 @@
             <v-tab-item :value="'tab-3'">
               <v-card raised elevation="2">
                 <video-system
-                  :screens="property.scene.videoSystems"
+                  :screens="property.sceneData.videoSystems"
                   @updateProperties="updateProperties"
                 />
               </v-card>
@@ -134,7 +134,7 @@
             <v-tab-item :value="'tab-4'">
               <v-card raised elevation="2">
                 <image-system
-                  :images="property.scene.imageTextures"
+                  :images="property.sceneData.imageTextures"
                   @updateProperties="updateProperties"
                 />
               </v-card>
@@ -142,7 +142,7 @@
             <v-tab-item :value="'tab-5'">
               <v-card raised elevation="2">
                 <moderation-system
-                  :settings="property.scene.moderation"
+                  :settings="property.sceneData.moderation"
                   @updateProperties="updateProperties"
                 />
               </v-card>
@@ -247,7 +247,7 @@ export default {
       this.updateLandProperties({
         propertyName: this.property.propertyName,
         baseParcel: this.property.baseParcel,
-        scene: this.property.scene,
+        sceneData: this.property.sceneData,
         tokenId: this.property.tokenId
       })
     },

@@ -30,7 +30,7 @@
               label="Volume"
               max="1"
               min="0"
-              step=".01"
+              step=".1"
               class="mt-4"
               dense
             ></v-slider>
@@ -138,7 +138,7 @@
               color="red"
               class="my-0"
               hide-details="true"
-              @change="toggleLiveStream(s)"
+              @change="setOnType(s)"
               dense
             >
             </v-switch>
@@ -152,7 +152,7 @@
               v-model="screen.liveLink"
               label="Live Video Link"
               hide-details="true"
-              @blur="setOnType(s)"
+              @blur="updateProperties(s)"
             >
             </v-text-field>
           </v-col>
