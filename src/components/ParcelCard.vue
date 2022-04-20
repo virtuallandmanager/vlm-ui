@@ -30,7 +30,7 @@ export default {
   props: {
     property: {
       propertyName: String,
-      baseParcel: Array,
+      baseParcel: String,
       parcels: Array,
       settings: {
         allowCertainWearables: Boolean,

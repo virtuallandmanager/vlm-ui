@@ -233,14 +233,14 @@ export default {
     isSelectedBaseParcel (baseParcel) {
       return (
         this.selectedBaseParcel &&
-        this.selectedBaseParcel.join(',') ==
+        this.selectedBaseParcel ==
           [baseParcel.x, baseParcel.y].join(',')
       )
     },
     isSelectedBaseDeed (baseDeed) {
       return (
         this.selectedBaseDeed &&
-        this.selectedBaseDeed.join(',') == [baseDeed.x, baseDeed.y].join(',')
+        this.selectedBaseDeed == [baseDeed.x, baseDeed.y].join(',')
       )
     },
     goBack () {

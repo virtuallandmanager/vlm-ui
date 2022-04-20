@@ -1,6 +1,6 @@
 <template>
-  <v-sheet elevation="2" max-width="960" class="mx-auto" height="100%">
-    <v-container class="pa-6" v-if="property">
+  <v-sheet max-width="960" class="mx-auto px-0" height="100%">
+    <v-container class="py-6 px-0 mx-auto" v-if="property">
       <v-row>
         <v-col>
           <v-btn @click="goBack">Back</v-btn>
@@ -12,8 +12,8 @@
             v-if="editingName"
             v-model="property.propertyName"
             class="parcel-name-input"
-            @blur="updateProperties()"
             autofocus
+            @blur="updateName()"
             append-icon="mdi-pencil"
           ></v-text-field>
           <v-hover
@@ -36,10 +36,31 @@
               >
             </h1>
           </v-hover>
+        </v-col>
+      </v-row>
+      <v-row no-gutters v-if="lastUpdate">
+        <v-col no-gutters>
           <h5>
-            {{ property.parcels.length }} Parcel{{
-              property.parcels.length > 1 ? 's' : ''
-            }}:
+            Last updated {{ lastUpdate.howLongAgo }}
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon color="primary" dark v-bind="attrs" v-on="on" x-small>
+                  mdi-information
+                </v-icon>
+              </template>
+              <span
+                >Updated {{ lastUpdate.date }} at {{ lastUpdate.time }} by
+                {{ lastUpdate.wallet }}</span
+              >
+            </v-tooltip>
+          </h5>
+        </v-col>
+      </v-row>
+      <v-row no-gutters>
+        <v-col no-gutters>
+          <h5>
+            <!-- {{ property.parcels.length }} Parcel{{ -->
+            Base Parcel{{ property.parcels.length > 1 ? 's' : '' }}:
           </h5>
           <h6>
             <span
@@ -55,272 +76,109 @@
           </h6>
         </v-col>
         <div>
-          <parcel-map :property="property" wrapperClass="pa-4" hClass="pb-4" />
+          <!-- <parcel-map :property="property" wrapperClass="pa-4" hClass="pb-4" /> -->
         </div>
-      </v-row>
-      <v-card>
-        <v-container class="py-6 mx-auto my-6">
-          <v-row>
-            <v-col no-gutters>
-              <h1 class="text-h5">Video Screens</h1>
-            </v-col>
-            <v-col align="right">
-              <v-btn @click="addVideoScreen()"><v-icon>mdi-plus</v-icon></v-btn>
-            </v-col>
-          </v-row>
-          <div
-            v-for="(videoSystem, v) in property.scene.videoSystems"
-            :key="v"
-            class="my-6"
-          >
-            <v-row class="grey darken-3 dark mx-n3">
-              <v-col>
-                <v-text-field
-                  dark
-                  v-model="videoSystem.name"
-                  label="Screen Name"
-                  @blur="updateProperties()"
-                ></v-text-field>
-              </v-col>
-              <v-col>
-                <v-slider
-                  dark
-                  v-model="videoSystem.volume"
-                  @change="updateProperties()"
-                  label="Volume"
-                  max="1"
-                  min="0"
-                  step=".01"
-                  class="mt-4"
-                  dense
-                ></v-slider>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col align="left">
-                <v-switch
-                  v-model="videoSystem.isLive"
-                  label="Enable Live Stream"
-                  color="red"
-                  class="my-0"
-                  @change="updateProperties()"
-                  dense
-                >
-                </v-switch>
-              </v-col>
-
-              <v-col align="right">
-                <v-dialog
-                  v-model="deleteScreenDialog"
-                  persistent
-                  max-width="290"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn v-bind="attrs" v-on="on">
-                      Remove Screen
-                    </v-btn>
-                  </template>
-                  <v-card>
-                    <v-card-title class="text-h5">
-                      Remove Video Screen?
-                    </v-card-title>
-                    <v-card-text
-                      >Are you sure you want to delete
-                      {{ videoSystem.name }}?</v-card-text
-                    >
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn
-                        color="red darken-1"
-                        text
-                        @click="removeVideoScreen(v)"
-                      >
-                        Remove
-                      </v-btn>
-                      <v-btn
-                        color="grey darken-1"
-                        text
-                        @click="deleteScreenDialog = false"
-                      >
-                        Cancel
-                      </v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-              </v-col>
-            </v-row>
-            <v-row class="my-0">
-              <v-col cols="12">
-                <v-text-field
-                  dense
-                  v-model="videoSystem.liveLink"
-                  label="Live Video Link"
-                  hide-details="true"
-                  @blur="updateProperties()"
-                >
-                </v-text-field>
-              </v-col>
-            </v-row>
-            <v-divider class="my-6"></v-divider>
-            <v-row dense>
-              <v-col cols="12">
-                <h1 class="text-body-1 d-block">Video Playlist</h1>
-              </v-col>
-              <v-col
-                v-for="(item, i) in videoSystem.playlist"
-                :key="i"
-                cols="12"
-              >
-                <v-text-field
-                  v-model="videoSystem.playlist[i]"
-                  label="Video Link"
-                  @blur="updateProperties()"
-                >
-                  <template v-slot:append-outer>
-                    <v-btn icon @click="removeVideo(v, i)">
-                      <v-icon>
-                        mdi-close
-                      </v-icon>
-                    </v-btn>
-                  </template>
-                </v-text-field>
-              </v-col>
-              <v-col>
-                <v-btn @click="addVideo(v)">Add Video</v-btn>
-              </v-col>
-            </v-row>
-          </div>
-        </v-container>
-      </v-card>
-      <!-- <v-row>
-        <v-col>
-          <v-switch
-            v-model="settings.banCertainWearables"
-            @change="settings.allowCertainWearables = false"
-            label="Ban Certain Wearables"
-          ></v-switch>
-        </v-col>
-      </v-row>
-      <v-row v-if="settings.banCertainWearables" class="blue-grey lighten-5">
-        <v-col>
-          <v-switch
-            v-model="settings.banRoaches"
-            label="Ban Roaches"
-            class="ml-4"
-          ></v-switch>
-          <v-switch
-            v-model="settings.banFlies"
-            label="Ban Flies"
-            class="ml-4"
-          ></v-switch>
-          <v-switch
-            v-if="settings.banCertainWearables"
-            v-model="settings.banWeapons"
-            label="Ban Weapons"
-            class="ml-4"
-          >
-          </v-switch>
-          <v-switch
-            v-model="settings.banOtherWearables"
-            label="Ban Other Wearables"
-            class="ml-4"
-          ></v-switch>
-          <div v-if="settings.banOtherWearables">
-            <v-row
-              v-for="(item, i) in settings.otherWearablesToBan"
-              :key="i"
-              dense
-            >
-              <v-col cols="7" md="8" sm="9" xs="4">
-                <v-text-field
-                  label="Contract ID"
-                  dense
-                  v-model="item.contractId"
-                  hide-details="auto"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="4" md="3" sm="2" xs="6">
-                <v-text-field
-                  label="Token ID"
-                  dense
-                  v-model="item.tokenId"
-                  hide-details="auto"
-                ></v-text-field>
-              </v-col>
-              <v-spacer></v-spacer>
-              <v-col cols="1" sm="1" xs="2" class="text-right">
-                <v-btn icon color="gray" @click="removeBannedItem(i)">
-                  <v-icon>mdi-close</v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-btn @click="addBannedItem()">Add Item</v-btn>
-              </v-col>
-            </v-row>
-          </div>
-        </v-col>
       </v-row>
       <v-row>
         <v-col>
-          <v-switch
-            v-model="settings.allowCertainWearables"
-            @change="settings.banCertainWearables = false"
-            label="Only Allow Certain Wearables"
-          ></v-switch>
+          <v-tabs v-model="tab" centered icons-and-text>
+            <v-tabs-slider></v-tabs-slider>
+
+            <v-tab href="#tab-1">
+              Analytics
+              <v-icon>mdi-chart-timeline-variant</v-icon>
+            </v-tab>
+            <v-tab href="#tab-2">
+              Dialogs
+              <v-icon>mdi-message</v-icon>
+            </v-tab>
+            <v-tab href="#tab-3">
+              Video Screens
+              <v-icon>mdi-video</v-icon>
+            </v-tab>
+            <!-- <v-tab href="#tab-4" disabled>
+              Images
+              <v-icon>mdi-image</v-icon>
+            </v-tab>
+            <v-tab href="#tab-5" disabled>
+              Moderation
+              <v-icon>mdi-gavel</v-icon>
+            </v-tab> -->
+          </v-tabs>
+
+          <v-tabs-items v-model="tab" class="elevation-2">
+            <v-tab-item :value="'tab-1'">
+              <v-card raised elevation="2">
+                <analytics-system
+                  :baseParcel="property.baseParcel"
+                  @updateProperties="updateProperties"
+                />
+              </v-card>
+            </v-tab-item>
+            <v-tab-item :value="'tab-2'">
+              <v-card raised elevation="2">
+                <dialog-system
+                  :dialogs="property.scene.dialogs"
+                  @updateProperties="updateProperties"
+                />
+              </v-card>
+            </v-tab-item>
+            <v-tab-item :value="'tab-3'">
+              <v-card raised elevation="2">
+                <video-system
+                  :screens="property.scene.videoSystems"
+                  @updateProperties="updateProperties"
+                />
+              </v-card>
+            </v-tab-item>
+            <v-tab-item :value="'tab-4'">
+              <v-card raised elevation="2">
+                <image-system
+                  :images="property.scene.imageTextures"
+                  @updateProperties="updateProperties"
+                />
+              </v-card>
+            </v-tab-item>
+            <v-tab-item :value="'tab-5'">
+              <v-card raised elevation="2">
+                <moderation-system
+                  :settings="property.scene.moderation"
+                  @updateProperties="updateProperties"
+                />
+              </v-card>
+            </v-tab-item>
+          </v-tabs-items>
         </v-col>
       </v-row>
-      <v-row v-if="settings.allowCertainWearables" class="blue-grey lighten-5">
-        <v-col>
-          <v-row v-for="(item, i) in settings.wearableWhiteList" :key="i" dense>
-            <v-col cols="7" md="8" sm="9" xs="4">
-              <v-text-field
-                label="Contract ID"
-                dense
-                v-model="item.contractId"
-                hide-details="auto"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="4" md="3" sm="2" xs="6">
-              <v-text-field
-                label="Token ID"
-                dense
-                v-model="item.tokenId"
-                hide-details="auto"
-              ></v-text-field>
-            </v-col>
-            <v-spacer></v-spacer>
-            <v-col cols="1" sm="1" xs="2" class="text-right">
-              <v-btn icon color="gray" @click="removeWhitelistItem(i)">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-btn @click="addWhitelistItem()">Add Item</v-btn>
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row> -->
     </v-container>
   </v-sheet>
 </template>
 
 <script>
-import ParcelMap from '../components/ParcelMap'
-import { mapState, mapActions } from 'vuex'
+// import ParcelMap from '../components/ParcelMap'
+import AnalyticsSystem from '../components/AnalyticsSystem'
+import DialogSystem from '../components/DialogSystem'
+import ImageSystem from '../components/ImageSystem'
+import VideoSystem from '../components/VideoSystem'
+import ModerationSystem from '../components/ModerationSystem'
+import { mapGetters, mapActions } from 'vuex'
+import moment from 'moment'
 
 export default {
   name: 'Parcel',
   components: {
-    ParcelMap
+    AnalyticsSystem,
+    DialogSystem,
+    ImageSystem,
+    VideoSystem,
+    ModerationSystem
+    // ParcelMap
   },
   data: () => ({
     editingName: false,
     deleteScreenDialog: false,
-    editingScreenName: false
+    editingScreenName: false,
+    tab: null
   }),
   created () {
     this.$watch(
@@ -331,30 +189,42 @@ export default {
       }
     )
   },
+  watch: {
+    userLand: function (newVal, oldVal) {
+      // watch it
+      console.log('Prop changed: ', newVal, ' | was: ', oldVal)
+    }
+  },
   mounted () {
-    if (!this.userLand.length) {
+    if (!this.userLand || !this.userLand.length) {
       this.fetchUserLand()
     }
   },
   computed: {
-    ...mapState({
-      userLand: state => state.land.userLand
-    }),
+    ...mapGetters('land', ['userLand']),
     property () {
-      const xCoord = this.$route.params.xCoord,
-        yCoord = this.$route.params.yCoord
-      console.log(xCoord, yCoord)
-      console.log(this.userLand)
-      // console.log(this.userLand.find((property) => property.baseParcel.join(" ") == xCoord + " " + yCoord));
-      return (
-        this.userLand &&
-        this.userLand.find(
-          property => property.baseParcel.join(' ') == xCoord + ' ' + yCoord
-        )
+      return this.$store.getters['land/property'](
+        this.$route.params.xCoord,
+        this.$route.params.yCoord
       )
     },
     sceneData () {
       return this.property.sceneData
+    },
+    lastUpdate () {
+      const lastUpdate = this.$store.getters['land/lastUpdate'](
+        this.$route.params.xCoord,
+        this.$route.params.yCoord
+      )
+      if (!lastUpdate) {
+        return false
+      }
+      return {
+        howLongAgo: moment(lastUpdate.timestamp).fromNow(),
+        date: moment(lastUpdate.timestamp).format('LL'),
+        time: moment(lastUpdate.timestamp).format('LT'),
+        wallet: lastUpdate.wallet
+      }
     }
   },
   methods: {
@@ -362,69 +232,24 @@ export default {
       fetchUserLand: 'land/fetchUserLand',
       updateLandProperties: 'land/updateLandProperties'
     }),
-    addBannedItem () {
-      const nextItem = { contractId: '', tokenId: '' }
-      return this.settings.otherWearablesToBan.push(nextItem)
-    },
-    removeBannedItem (i) {
-      if (this.settings.otherWearablesToBan.length < 2) {
-        this.settings.banOtherWearables = false
-        this.settings.otherWearablesToBan = [{ contractId: '', tokenId: '' }]
-        return
-      }
-      this.settings.otherWearablesToBan.splice(i, 1)
-    },
-    // addWhitelistItem() {
-    //   const nextItem = { contractId: "", tokenId: "" };
-    //   return this.settings.wearableWhiteList.push(nextItem);
-    // },
-    // removeWhitelistItem(i) {
-    //   if (this.settings.wearableWhiteList.length < 2) {
-    //     this.settings.allowCertainWearables = false;
-    //     this.settings.wearableWhiteList = [{ contractId: "", tokenId: "" }];
-    //     return;
-    //   }
-    //   this.settings.wearableWhiteList.splice(i, 1);
-    // },
-    addVideoScreen () {
-      const screenCount = this.property.scene.videoSystems.length + 1
-      const nextItem = {
-        liveLink: '',
-        playlist: [""],
-        name: `Screen ${screenCount}`
-      }
-      return this.property.scene.videoSystems.push(nextItem)
-    },
-    removeVideoScreen (i) {
-      this.deleteScreenDialog = false
-      this.property.scene.videoSystems.splice(i, 1)
-    },
-    editScreenName () {
-      this.editingScreenName = true
-    },
-    saveScreenName () {
-      this.editingScreenName = false
-      this.updateProperties()
-    },
-    addVideo (i) {
-      const nextItem = ''
-      return this.property.scene.videoSystems[i].playlist.push(nextItem)
-    },
-    removeVideo (v, i) {
-      this.property.scene.videoSystems[v].playlist.splice(i, 1)
-    },
     editName () {
       this.editingName = true
+      this.previousPropertyName = this.property.propertyName
     },
-    updateProperties (e) {
+    updateName () {
+      this.editingName = false
+      if (this.property.propertyName === this.previousPropertyName) {
+        return
+      }
+      this.updateProperties()
+    },
+    updateProperties () {
       this.updateLandProperties({
         propertyName: this.property.propertyName,
         baseParcel: this.property.baseParcel,
         scene: this.property.scene,
         tokenId: this.property.tokenId
       })
-      console.log(e)
-      this.editingName = false
     },
     goBack () {
       this.$router.go(-1)

@@ -3,60 +3,38 @@ export default {
   state: () => ({
     unimportedParcels: {
       parcels: [],
-      aetheriaParcels: [],
+      aetheriaParcels: []
     },
     fetchingParcels: true,
-    userLand: [
-      //   {
-      //     name: "The Edge",
-      //     baseParcel: [100, 154],
-      //     parcels: [[100, 154]],
-      //     settings: {
-      //       banCertainWearables: false,
-      //       banBugs: false,
-      //       banRoaches: false,
-      //       banFlies: false,
-      //       banOtherWearables: false,
-      //       allowCertainWearables: false,
-      //       wearableWhiteList: [{ contractId: "", tokenId: "" }],
-      //       otherWearablesToBan: [{ contractId: "", tokenId: "" }]
-      //     }
-      //   },
-      //   {
-      //     name: "casa Roustan",
-      //     baseParcel: [37, -114],
-      //     parcels: [[37, -114]],
-      //     settings: {
-      //       banCertainWearables: false,
-      //       banBugs: false,
-      //       banRoaches: false,
-      //       banFlies: false,
-      //       banOtherWearables: false,
-      //       allowCertainWearables: false,
-      //       wearableWhiteList: [{ contractId: "", tokenId: "" }],
-      //       otherWearablesToBan: [{ contractId: "", tokenId: "" }]
-      //     }
-      //   },
-      //   {
-      //     name: "Livication Virtual",
-      //     baseParcel: [123, 77],
-      //     parcels: [
-      //       [123, 77],
-      //       [124, 77]
-      //     ],
-      //     settings: {
-      //       banCertainWearables: false,
-      //       banBugs: false,
-      //       banRoaches: false,
-      //       banFlies: false,
-      //       banOtherWearables: false,
-      //       allowCertainWearables: false,
-      //       wearableWhiteList: [{ contractId: "", tokenId: "" }],
-      //       otherWearablesToBan: [{ contractId: "", tokenId: "" }]
-      //     }
-      //   }
-    ],
+    fetchingUserLand: false,
+    userLand: [],
+    sceneDefault: {
+      dialogs: [{ dialogType: 0, enabled: false, messages: [] }],
+      audioStream: {},
+      entities: [{}],
+      videoSystems: [
+        {
+          volume: 1,
+          liveStreamEnabled: false,
+          playlistEnabled: false,
+          liveLink: "",
+          offImage: "",
+          playlist: []
+        }
+      ],
+      imageTextures: [{}],
+      moderation: {
+        allowCertainWearables: false,
+        banCertainWearables: false
+      }
+    }
   }),
+  getters: {
+    userLand: (state) => state.userLand,
+    fetchingUserLand: (state) => state.fetchingUserLand,
+    property: (state, getters) => (xCoord, yCoord) => getters.userLand && getters.userLand.find((property) => property.baseParcel == xCoord + "," + yCoord),
+    lastUpdate: (state, getters) => (xCoord, yCoord) => getters.property(xCoord, yCoord).lastUpdate
+  },
   mutations: {
     userLandFetchStart: (state) => (state.fetchingUserLand = true),
     userLandFetchStop: (state, errorMessage) => {
@@ -73,6 +51,11 @@ export default {
       state.importingParcels = false;
       state.parcelsError = errorMessage;
     },
+    updateUserLand: (state, updatedProperty) => {
+      const storedParcelIndex = state.userLand.findIndex((property) => property.baseParcel == updatedProperty.baseParcel);
+      state.userLand[storedParcelIndex] = updatedProperty;
+      console.log(storedParcelIndex, state.userLand[storedParcelIndex], updatedProperty.lastUpdate);
+    },
     parcelUpdateStart: (state) => (state.updatingParcel = true),
     parcelUpdateStop: (state, errorMessage) => {
       state.updatingParcel = false;
@@ -82,16 +65,18 @@ export default {
       state.unimportedParcels = parcels;
     },
     loadUserLand: (state, parcels) => {
-      state.userLand = parcels;
-    },
+      state.userLand = parcels.map((property) => {
+        const scene = { ...state.sceneDefault, ...property.scene };
+        return { ...property, scene };
+      });
+      console.log("userLand: ", state.userLand);
+    }
   },
   actions: {
     async fetchUserLand({ commit }) {
       commit("userLandFetchStart");
       try {
-        const userLand = await fetch(
-          `${process.env.VUE_APP_API_URL}/land/${this.state.login.account}`
-        );
+        const userLand = await fetch(`${process.env.VUE_APP_API_URL}/land/${this.state.login.account}`);
         const userLandData = await userLand.json();
         commit("loadUserLand", userLandData.sceneData);
         commit("userLandFetchStop");
@@ -102,9 +87,7 @@ export default {
     async fetchUnimportedParcels({ commit }) {
       commit("parcelFetchStart");
       try {
-        const parcels = await fetch(
-          `${process.env.VUE_APP_API_URL}/land/owned/${this.state.login.account}`
-        );
+        const parcels = await fetch(`${process.env.VUE_APP_API_URL}/land/owned/${this.state.login.account}`);
         const parcelData = await parcels.json();
         console.log("parcelData: ", parcelData);
         commit("loadFetchedParcels", parcelData);
@@ -118,12 +101,12 @@ export default {
       const options = {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           wallet: this.state.login.account,
-          parcels,
-        }),
+          parcels
+        })
       };
       if (!parcels) {
         return;
@@ -141,23 +124,25 @@ export default {
       const options = {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           wallet: this.state.login.account,
           property
-        }),
+        })
       };
       if (!property) {
         return;
       }
       commit("parcelUpdateStart");
       try {
-        await fetch(`${process.env.VUE_APP_API_URL}/land/update`, options);
+        const response = await fetch(`${process.env.VUE_APP_API_URL}/land/update`, options);
+        const updatedProperty = await response.json();
+        commit("updateUserLand", updatedProperty);
         commit("parcelUpdateStop");
       } catch (error) {
         commit("parcelUpdateStop", error);
       }
-    },
-  },
+    }
+  }
 };
