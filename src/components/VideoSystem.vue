@@ -130,29 +130,13 @@
             </h1>
           </v-col>
         </v-row>
-        <v-row>
-          <v-col align="left">
-            <v-switch
-              v-model="screen.liveStreamEnabled"
-              label="Enable Live Stream"
-              color="red"
-              class="my-0"
-              hide-details="true"
-              @change="setOnType(s)"
-              dense
-            >
-            </v-switch>
-          </v-col>
-        </v-row>
-
-        <v-row class="my-0">
+        <v-row class="my-0 py-2">
           <v-col cols="12">
             <v-text-field
-              dense
               v-model="screen.liveLink"
               label="Live Video Link"
               hide-details="true"
-              @blur="updateProperties(s)"
+              @blur="updateLiveLink(s)"
             >
             </v-text-field>
           </v-col>
@@ -161,7 +145,7 @@
           <v-col align="left">
             <v-select
               v-model="screen.offType"
-              label="Off-Air Content (Shown when live stream disabled)"
+              label="Off-Air Content"
               :items="offTypes"
               class="my-0"
               hide-details="true"
@@ -375,10 +359,12 @@ export default {
       this.screens[s].playlist.splice(v, 1)
       this.updateProperties()
     },
-    setOnType (s) {
-      this.screens[s].type = this.liveStreamEnabled
-        ? 0
-        : this.screens[s].offType
+    updateLiveLink (s) {
+      if (this.screens[s].liveLink) {
+        this.screens[s].type = 0
+      } else {
+        this.screens[s].type = 1
+      }
       this.updateProperties()
     },
     togglePlaylist (s) {
