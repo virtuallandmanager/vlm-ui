@@ -33,7 +33,7 @@ export default {
   data: () => ({}),
   props: {
     property: {
-      baseParcel: Array,
+      baseParcel: String,
       parcels: Array,
     },
     hideWrapper: { type: Boolean, default: false },
@@ -93,7 +93,7 @@ export default {
   },
   methods: {
     computeParcels() {
-      const baseParcel = this.property.baseParcel;
+      const baseParcel = this.property.baseParcel.split(',');
       //   console.log(this.property.name);
       const mappedParcels = this.sortedCoords.map((coord) => {
         // console.log(this.property.name + " coord: ", coord);

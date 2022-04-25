@@ -12,12 +12,7 @@
           <h1 class="display-2 font-weight-light mb-3">Land</h1>
         </v-col>
       </v-row>
-       <v-row class="text-center" v-if="fetchingUserLand">
-        <v-col cols="12">
-          <v-progress-circular indeterminate class="my-6"></v-progress-circular>
-          <div class="text-body1">Loading your land...</div>
-        </v-col>
-      </v-row>
+       <loader message="Loading your land..." :loading="fetchingUserLand" :grid="true"/>
       <v-row class="text-center" v-if="!userLand.length && !fetchingUserLand">
         <v-col cols="12">
           <div class="text-h5">No land parcels found.</div>
@@ -44,8 +39,9 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import ParcelCard from "../components/ParcelCard";
+import Loader from "../components/Loader"
 export default {
-  components: { ParcelCard },
+  components: { ParcelCard, Loader },
   name: "MyLand",
   data: () => ({}),
   mounted() {

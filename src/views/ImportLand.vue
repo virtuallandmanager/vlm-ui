@@ -14,152 +14,111 @@
           </h4>
         </v-col>
       </v-row>
-      <v-row class="text-left" v-if="loading">
-        <v-col class="text-center">
-          <h4 class="display-5 font-weight-bold mx-auto text-center">
-            Loading your parcels...
-          </h4>
-          <v-progress-circular
-            indeterminate
-            color="primary"
-            class="text-center ma-6"
-          ></v-progress-circular>
-        </v-col>
-      </v-row>
-      <v-row
-        class="text-center"
-        v-if="!loading && unimportedParcels.parcels.length"
-      >
-        <v-col>
-          <v-card class="pa-6 fill-height">
-            <div class="text-h6">Decentraland Land Parcels</div>
-            <div
-              class="text-body my-6"
-              v-if="!unimportedParcels.parcels.length"
+      <loader
+        message="Checking your wallet for virtual land..."
+        :loading="loading"
+        :grid="true"
+      />
+      <div v-for="parcelType in parcelTypes" :key="parcelType.id">
+        <v-row class="text-center" v-if="!loading && parcelType.parcels.length">
+          <v-col>
+            <v-card class="pa-6 fill-height">
+              <div class="text-h6">{{ parcelType.name }} Parcels</div>
+              <v-container>
+                <v-row>
+                  <v-col
+                    cols="4"
+                    v-for="(parcel, i) in parcelType.parcels"
+                    :key="i"
+                    class="d-inline"
+                  >
+                    <v-checkbox
+                      v-model="parcelType.selectedParcels[i]"
+                      :label="convertCoords(parcel)"
+                      class="d-inline mx-auto"
+                      @change="
+                        groupAdjacentParcels(
+                          parcelType.parcels,
+                          parcelType.selectedParcels,
+                          parcelType.id
+                        )
+                      "
+                    ></v-checkbox>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col v-if="parcelType.adjacentParcelsPresent">
+                    <v-switch
+                      v-model="parcelType.group"
+                      label="Group Adjacent Parcels"
+                    ></v-switch>
+                    <div v-for="(group, i) in parcelType.adjacentParcels" :key="i">
+                      <v-select
+                        :items="group"
+                        :label="`Base Parcel for Group ${i}`"
+                      ></v-select>
+                    </div>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row class="text-center" v-if="!loading && parcelType.parcels.length">
+          <v-col cols="12">
+            <v-btn
+              :loading="importingParcels"
+              :disabled="importingParcels"
+              tile
+              color="black"
+              class="ma-2 white--text"
+              @click="processAndImportParcels()"
             >
-              No parcels found for your account
-            </div>
-            <div
-              cols="4"
-              v-for="(parcel, i) in unimportedParcels.parcels"
-              :key="i"
-              class="d-inline"
-            >
-              <v-checkbox
-                v-model="selectedParcels[i]"
-                :label="convertCoords(parcel)"
-                class="mx-auto"
-              ></v-checkbox>
-            </div>
-            <v-switch
-              v-if="adjacentParcelsPresent"
-              v-model="groupParcels"
-              label="Group Adjacent Parcels"
-            ></v-switch>
-          </v-card>
-          <v-row class="text-center" v-if="!loading">
-            <v-col cols="12">
-              <v-btn
-                :loading="importingParcels"
-                :disabled="importingParcels"
-                tile
-                color="black"
-                class="ma-2 white--text"
-                @click="processAndImportParcels()"
-              >
-                Import Selected
-                <v-icon right dark> mdi-upload </v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
-      <v-row
-        class="text-center"
-        v-if="!loading && unimportedParcels.aetheriaDeeds.length"
-      >
-        <v-col>
-          <v-card class="pa-6 fill-height">
-            <div class="text-h6">Aetherian Deed Parcels</div>
-            <div
-              class="text-body my-6"
-              v-if="!unimportedParcels.aetheriaDeeds.length"
-            >
-              No deeds found for your account
-            </div>
-            <v-container>
-              <v-row>
-                <v-col
-                  cols="4"
-                  v-for="(parcel, i) in unimportedParcels.aetheriaDeeds"
-                  :key="i"
-                  class="d-inline"
-                >
-                  <v-checkbox
-                    v-model="selectedDeeds[i]"
-                    :label="convertCoords(parcel)"
-                    class="d-inline mx-auto"
-                  ></v-checkbox>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col v-if="adjacentDeedsPresent">
-                  <v-switch
-                    v-model="groupDeeds"
-                    label="Group Adjacent Parcels"
-                  ></v-switch>
-                  <div v-for="(group, i) in adjacentDeeds" :key="i">
-                    <v-select
-                      :items="group.coords"
-                      :label="`Base Parcel for Group ${group.group}`"
-                    ></v-select>
-                  </div>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card>
-        </v-col>
-      </v-row>
-      <v-row class="text-center" v-if="!loading">
-        <v-col cols="12">
-          <v-btn
-            :loading="importingParcels"
-            :disabled="importingParcels"
-            tile
-            color="black"
-            class="ma-2 white--text"
-            @click="processAndImportParcels()"
-          >
-            Import Selected
-            <v-icon right dark> mdi-upload </v-icon>
-          </v-btn>
-        </v-col>
-      </v-row>
+              Import Selected
+              <v-icon right dark> mdi-upload </v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+      </div>
     </v-container>
   </v-sheet>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
-// import parcelHelper from '../helpers/parcelHelper'
+import * as parcelHelper from '../helpers/parcelHelper'
+import Loader from '../components/Loader'
 
 export default {
   name: 'ImportLand',
   data: () => ({
-    selectedParcels: [],
-    selectedDeeds: [],
-    adjacentParcels: [],
-    adjacentDeeds: [],
-    adjacentParcelsPresent: false,
-    adjacentDeedsPresent: false,
-    groupParcels: true,
-    groupDeeds: true,
-    selectedBaseParcel: null,
-    selectedBaseDeed: null
+    parcelTypes: {
+      DCL: {
+        id: 0,
+        name: 'Decentraland Land',
+        parcels: [],
+        selectedParcels: [false],
+        group: false,
+        adjacentParcelsPresent: false
+      },
+      DEED: {
+        id: 1,
+        name: 'Aetheria Deed',
+        parcels: [],
+        selectedParcels: [false],
+        group: false,
+        adjacentParcelsPresent: false
+      }
+    }
   }),
-  mounted () {
+  components: {
+    Loader
+  },
+  async mounted () {
     console.log('mounted')
-    this.fetchUnimportedParcels()
+    await this.fetchUnimportedParcels()
+    this.parcelTypes.DCL.parcels = this.unimportedParcels.parcels
+    this.parcelTypes.DEED.parcels = this.unimportedParcels.aetheriaDeeds
   },
   computed: {
     ...mapState({
@@ -173,56 +132,42 @@ export default {
       fetchUnimportedParcels: 'land/fetchUnimportedParcels',
       importParcels: 'land/importParcels'
     }),
-    // findAdjacentParcels (parcels) {
-    //   this.adjacentParcels = parcelHelper.findAdjacentParcels(
-    //     parcels,
-    //     this.selectedParcels
-    //   )
-    //   this.adjacentParcelsPresent = this.adjacentParcels.length > 0
+    createRows (parcels) {
+      console.log(parcels)
+      const selectedParcels = parcels.filter((x, i) => this.selectedDeeds[i])
+      return parcelHelper.getRowsAndCols(selectedParcels)
+    },
+    groupAdjacentParcels (allParcels, selectedParcels, parcelType) {
+      const selections = allParcels.filter((x, i) => selectedParcels[i])
 
-    //   if (this.adjacentParcelsPresent) {
-    //     this.groupParcels = false
-    //   }
-    // },
-    // findAdjacentDeeds (deeds) {
-    //   if (this.selectedDeeds.filter(x => x).length < 2) {
-    //     return
-    //   }
-
-    //   this.adjacentDeeds = parcelHelper.findAdjacentParcels(
-    //     deeds,
-    //     this.selectedDeeds
-    //   )
-    //   console.log('ADJACENT DEEDS: ', this.adjacentDeeds)
-    //   this.adjacentDeedsPresent = this.adjacentDeeds.some(
-    //     group => group.parcels.length > 1
-    //   )
-
-    //   if (this.adjacentDeedsPresent) {
-    //     this.groupDeeds = false
-    //   }
-    // },
+      const adjacent = parcelHelper.groupAdjacentParcels(selections)
+      console.log(adjacent)
+      if (parcelType == this.parcelTypes.DCL.id) {
+        this.parcelTypes.DCL.adjacentParcels = adjacent
+        this.parcelTypes.DCL.adjacentParcelsPresent = adjacent.some(
+          group => group.length > 1
+        )
+      } else if (parcelType == this.parcelTypes.DEED.id) {
+        this.parcelTypes.DEED.adjacentDeeds = adjacent
+        this.parcelTypes.DEED.adjacentParcelsPresent = adjacent.some(
+          group => group.length > 1
+        )
+      }
+      return adjacent
+    },
     convertCoords (parcel) {
       return `${parcel.x},${parcel.y}`
     },
-    async processAndImportParcels() {
+    async processAndImportParcels () {
       const parcelsToImport = this.unimportedParcels.parcels.filter(
-        (parcel, i) => this.selectedParcels[i]
+        (parcel, i) => this.parcelTypes.DCL.selectedParcels[i]
       )
       const deedsToImport = this.unimportedParcels.aetheriaDeeds.filter(
-        (parcel, i) => this.selectedDeeds[i]
+        (parcel, i) => this.parcelTypes.DEED.selectedParcels[i]
       )
       console.log(parcelsToImport, deedsToImport)
       await this.importParcels([...parcelsToImport, ...deedsToImport])
-      return this.goBack();
-    },
-    setBaseParcel (baseParcel) {
-      this.selectedBaseParcel = [baseParcel.x, baseParcel.y]
-      console.log('baseParcel: ', this.selectedBaseParcel)
-    },
-    setBaseDeed (baseDeed) {
-      this.selectedBaseDeed = [baseDeed.x, baseDeed.y]
-      console.log('baseDeed: ', this.selectedBaseDeed)
+      return this.goBack()
     },
     unsetBaseParcel () {
       this.selectedBaseParcel = null
@@ -233,8 +178,7 @@ export default {
     isSelectedBaseParcel (baseParcel) {
       return (
         this.selectedBaseParcel &&
-        this.selectedBaseParcel ==
-          [baseParcel.x, baseParcel.y].join(',')
+        this.selectedBaseParcel == [baseParcel.x, baseParcel.y].join(',')
       )
     },
     isSelectedBaseDeed (baseDeed) {

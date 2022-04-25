@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import login from "./login";
 import land from "./land";
+import image from "./image";
 
 Vue.use(Vuex);
 
@@ -16,5 +17,5 @@ export default new Vuex.Store({
   //   ...login.actions
   // },
 
-  modules: { login, land },
+  modules: { login, land, image },
 });

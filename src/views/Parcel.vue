@@ -96,11 +96,11 @@
               Video Screens
               <v-icon>mdi-video</v-icon>
             </v-tab>
-            <!-- <v-tab href="#tab-4" disabled>
+            <v-tab href="#tab-4">
               Images
               <v-icon>mdi-image</v-icon>
             </v-tab>
-            <v-tab href="#tab-5" disabled>
+            <!-- <v-tab href="#tab-5" disabled>
               Moderation
               <v-icon>mdi-gavel</v-icon>
             </v-tab> -->
@@ -135,6 +135,7 @@
               <v-card raised elevation="2">
                 <image-system
                   :images="property.sceneData.imageTextures"
+                  :property="property"
                   @updateProperties="updateProperties"
                 />
               </v-card>
@@ -243,12 +244,15 @@ export default {
       }
       this.updateProperties()
     },
-    updateProperties () {
+    updateProperties (options) {
       this.updateLandProperties({
-        propertyName: this.property.propertyName,
-        baseParcel: this.property.baseParcel,
-        sceneData: this.property.sceneData,
-        tokenId: this.property.tokenId
+        wssMessages: options.wssMessages,
+        property: {
+          propertyName: this.property.propertyName,
+          baseParcel: this.property.baseParcel,
+          sceneData: this.property.sceneData,
+          tokenId: this.property.tokenId
+        }
       })
     },
     goBack () {

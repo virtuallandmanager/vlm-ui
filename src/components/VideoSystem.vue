@@ -149,7 +149,7 @@
               :items="offTypes"
               class="my-0"
               hide-details="true"
-              @change="updateProperties()"
+              @change="updateOffType(s)"
               dense
             >
             </v-select>
@@ -168,7 +168,7 @@
               <v-text-field
                 v-model="screen.playlist[v]"
                 label="Video Link"
-                @blur="updateProperties()"
+                @blur="updatePlaylist(s)"
               >
                 <template v-slot:append-outer>
                   <v-dialog
@@ -330,24 +330,28 @@ export default {
     removeVideoScreen (s) {
       this.deleteScreenDialog = false
       this.screens.splice(s, 1)
-      this.updateProperties()
+      this.updateProperties({
+        action: 'remove',
+        entity: 'videoScreen'
+      })
     },
     saveScreenMove (s) {
       console.log(s)
       this.moveScreenDialog = false
-      this.updateProperties()
+      this.updateProperties({
+        action: 'update',
+        entity: 'videoScreen',
+        property: 'transform'
+      })
     },
     cancelScreenMove (s) {
       console.log(s)
       this.moveScreenDialog = false
-      this.updateProperties()
-    },
-    editScreenName () {
-      this.editingScreenName = true
-    },
-    saveScreenName () {
-      this.editingScreenName = false
-      this.updateProperties()
+      this.updateProperties({
+        action: 'update',
+        entity: 'videoScreen',
+        property: 'transform'
+      })
     },
     addVideo (s) {
       console.log(this.screens)
@@ -357,7 +361,11 @@ export default {
     removeVideo (s, v) {
       console.log(this.screens)
       this.screens[s].playlist.splice(v, 1)
-      this.updateProperties()
+      this.updateProperties({
+        action: 'update',
+        entity: 'videoScreen',
+        property: 'playlist'
+      })
     },
     updateLiveLink (s) {
       if (this.screens[s].liveLink) {
@@ -365,14 +373,28 @@ export default {
       } else {
         this.screens[s].type = 1
       }
-      this.updateProperties()
+      this.updateProperties({
+        action: 'update',
+        entity: 'videoScreen',
+        property: 'liveLink'
+      })
     },
-    togglePlaylist (s) {
-      this.screens[s].enablePlaylist = !this.screens[s].enablePlaylist
-      this.updateProperties()
+    updateOffType () {
+      this.updateProperties({
+        action: 'update',
+        entity: 'videoScreen',
+        property: 'offType'
+      })
     },
-    updateProperties () {
-      this.$emit('updateProperties')
+    updatePlaylist () {
+      this.updateProperties({
+        action: 'update',
+        entity: 'videoScreen',
+        property: 'playlist'
+      })
+    },
+    updateProperties (wssMessages) {
+      this.$emit('updateProperties', wssMessages)
     }
   }
 }

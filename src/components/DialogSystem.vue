@@ -35,7 +35,7 @@
               auto-grow
               rows="1"
               :label="`Message ${m + 1}`"
-              @blur="updateProperties()"
+              @blur="editDialogText"
             >
               <template v-slot:append-outer>
                 <v-dialog
@@ -118,11 +118,27 @@ export default {
     removeMessage (d, m) {
       console.log(this.dialogs)
       this.dialogs[d].messages.splice(m, 1)
-      this.updateProperties()
+      this.updateProperties({
+        action: 'update',
+        entity: 'dialog',
+        property: 'message'
+      })
+    },
+    editMessageText (d) {
+      console.log(this.dialogs[d].enabled)
+      this.updateProperties({
+        action: 'update',
+        entity: 'dialog',
+        property: 'message'
+      })
     },
     toggleDialog (d) {
       console.log(this.dialogs[d].enabled)
-      this.updateProperties()
+      this.updateProperties({
+        action: 'update',
+        entity: 'dialog',
+        property: 'visibility'
+      })
     },
     dialogType (dialogType) {
       switch (dialogType) {
@@ -130,8 +146,8 @@ export default {
           return 'Welcome Message'
       }
     },
-    updateProperties () {
-      this.$emit('updateProperties')
+    updateProperties (wssMessages) {
+      this.$emit('updateProperties', wssMessages)
     }
   }
 }

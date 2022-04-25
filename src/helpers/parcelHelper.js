@@ -1,87 +1,142 @@
-// function checkIfAdjacent(reference, check) {
-//   const hasMatchingX = reference.x == check.x;
-//   const hasMatchingY = reference.y == check.y;
+export function xCoords(parcels) {
+  return parcels.map((coord) => coord.x);
+}
+export function yCoords(parcels) {
+  return parcels.map((coord) => coord.y);
+}
+export function lowestX(xCoords) {
+  return xCoords.sort((a, b) => a - b)[0];
+}
+export function lowestY(yCoords) {
+  return yCoords.sort((a, b) => a - b)[0];
+}
+export function highestX(xCoords) {
+  return xCoords.sort((a, b) => b - a)[0] - 0;
+}
+export function highestY(yCoords) {
+  return yCoords.sort((a, b) => b - a)[0] - 0;
+}
+export function propertyRows(yArray) {
+  return 1 + highestY(yArray) - lowestY(yArray);
+}
+export function propertyCols(xArray) {
+  return 1 + highestX(xArray) - lowestX(xArray);
+}
+export function createRows(parcels) {
+  const yArray = yCoords(parcels);
+  const highestYCoord = highestY(yArray);
+  const numberOfRows = propertyRows(yArray);
+  const rows = new Array(numberOfRows);
 
-//   const northOfGroupedParcel = hasMatchingX && reference.y - check.y == 1;
-//   const southOfGroupedParcel = hasMatchingX && reference.y - check.y == -1;
-//   const eastOfGroupedParcel = hasMatchingY && reference.x - check.x == 1;
-//   const westOfGroupedParcel = hasMatchingY && reference.x - check.x == -1;
+  for (let i = 0; i < numberOfRows; i++) {
+    const rowNumber = highestYCoord - i;
+    const filteredRows = parcels.filter((parcel) => parcel.y == rowNumber);
+    rows[i] = filteredRows.map((row) => ({ rowNumber, row }));
+  }
+  console.log("rows: ", rows);
+  return rows;
+}
+export function createCols(parcels) {
+  const xArray = xCoords(parcels);
+  const highestXCoord = highestX(xArray);
+  const numberOfCols = propertyCols(xArray);
+  const cols = new Array(numberOfCols);
 
-//   return northOfGroupedParcel || southOfGroupedParcel || eastOfGroupedParcel || westOfGroupedParcel;
-// }
-
-// function checkIfGrouped(parcel, groupedParcels) {
-//   return groupedParcels.some((group) => {
-//     return group.parcels.find((parcelInGroup) => parcel.tokenId == parcelInGroup.tokenId);
-//   });
-// }
-
-// function findAllNeighboring(selected) {
-//   const neighboring = [];
-//   selected.forEach((a) => {
-//     const neighbors = selected.filter((b) => {
-//       checkIfAdjacent(a, b);
-//     });
-//     neighboring.push(...neighbors);
-//   });
-// }
-
-// function findGroup(parcel, groupedParcels) {
-//   const parcelGroup = groupedParcels.find((group) => {
-//     return group.parcels.find((parcelInGroup) => parcel.tokenId == parcelInGroup.tokenId);
-//   });
-
-//   return parcelGroup.group;
-// }
-
-function findAdjacentParcels() {
-//   console.log("~~~~~~~~~~~~~~~~~SELECTION MADE~~~~~~~~~~~~~~~");
-
-//   const selectedParcels = parcels.filter((parcel, i) => selected[i]);
-
-//   const sortedSelections = selectedParcels.sort((a, b) => {
-//     return a.x - b.x || a.y - b.y;
-//   });
-
-//   const groupedParcels = [];
-//   let groupCount = 1;
-
-//   const neighboringParcels = findAllNeighboring(sortedSelections);
-
-//   const groupedNeighboringParcels = neighboringParcels.filter((adjacentParcel) => checkIfGrouped(adjacentParcel, groupedParcels));
-//   const ungroupedNeighboringParcels = neighboringParcels.filter((adjacentParcel) => !checkIfGrouped(adjacentParcel, groupedParcels));
-
-//   if (groupedNeighboringParcels.length) {
-//     const groupId = findGroup(groupedNeighboringParcels[0], groupedParcels);
-//     const groupIndex = groupedParcels.findIndex((group) => group.group == groupId);
-//     const parcelsToGroup = [...ungroupedNeighboringParcels];
-
-//     parcelsToGroup.forEach((parcel) => {
-//       groupedParcels[groupIndex].parcels.push(parcel);
-//       console.log(`added ${parcel.x}, ${parcel.y}`);
-//     });
-//   } else if (ungroupedNeighboringParcels.length) {
-//     const parcelsToGroup = [currentParcel, ...ungroupedNeighboringParcels];
-//     groupedParcels.push({ group: groupCount, parcels: parcelsToGroup });
-//   }
-
-//   const groupedParcelCoords = groupedParcels.map((group) => {
-//     const groupId = group.group;
-//     const coords = group.parcels.map((parcel) => `${parcel.x}, ${parcel.y}`);
-
-//     return { group: groupId, coords };
-//   });
-
-//   console.log("groups: ", groupedParcels);
-//   const groupsWithCoords = groupedParcels.map((group) => {
-//     const parcelsInGroup = groupedParcelCoords.find((groupedCoord) => group.group == groupedCoord.group);
-//     const coords = parcelsInGroup.coords;
-//     return { ...group, coords };
-//   });
-
-//   return groupsWithCoords;
+  for (let i = 0; i < numberOfCols; i++) {
+    const colNumber = highestXCoord - i;
+    const filteredCols = parcels.filter((parcel) => parcel.x == colNumber);
+    cols[i] = filteredCols.map((column) => ({ colNumber, column }));
+  }
+  console.log("cols: ", cols);
+  return cols;
 }
 
-export default {
-  findAdjacentParcels
-};
+export function getRowsAndCols(parcels) {
+  return { rows: createRows(parcels), cols: createCols(parcels) };
+}
+
+export function groupAdjacentParcels(parcels) {
+  const ungroupedParcels = [...parcels],
+    groupedParcels = [];
+  let groupId = 0,
+    parcelsAdded = 0; //tracks the number of parcels added to a group after one full iteration
+
+  for (let i = 0; ungroupedParcels.length > 0; i++) {
+    console.log(`${ungroupedParcels.length} ungrouped parcels left`);
+    const parcel = ungroupedParcels[i],
+      parcelString = `${parcel.x},${parcel.y}`;
+
+    if (!groupedParcels[groupId]) {
+      /* there isn't an array in place for this groupId,
+      insert an empty array to start the new group */
+      groupedParcels[groupId] = [];
+    }
+
+    if (groupedParcels[groupId].length < 1 && i == 0) {
+      /*
+      this is the first parcel or we're starting a new group
+      create a new group, then we'll compare the other parcels in the array against this parcel
+      */
+      console.log(`adding ${parcelString} to group ${groupId}`);
+      groupedParcels[groupId] = [parcelString];
+      ungroupedParcels.splice(i, 1);
+      parcelsAdded++;
+      i = -1;
+      continue;
+    }
+
+    if (groupedParcels[groupId].includes(parcelString)) {
+      continue;
+    }
+
+    const adjacentParcel = findGroupForParcel(groupedParcels[groupId], parcel);
+
+    if (adjacentParcel) {
+      /*
+      this parcel is adjacent to another parcel in the current group
+      add it to that group and remove it from the ungrouped array
+      */
+      console.log(`adding ${parcelString} to group ${groupId}`);
+      groupedParcels[groupId].push(parcelString);
+      ungroupedParcels.splice(i, 1);
+      parcelsAdded++;
+    }
+
+    /*
+      NOTE: sometimes 'i' can be greater than the array length here
+      if we've just removed an item!
+    */
+
+    if (i >= ungroupedParcels.length - 1 && parcelsAdded < 1) {
+      /*
+      no adjacent parcels are left in the ungrouped parcel array
+      create a new group and start iterating again
+      */
+      i = -1;
+      groupId++;
+      parcelsAdded = 0;
+      continue;
+    } else if (i >= ungroupedParcels.length - 1 && parcelsAdded > 0) {
+      /*
+      go back to the start and check if any parcels we already checked 
+      are now adjacent to a grouped parcel
+      */
+      i = -1;
+      parcelsAdded = 0;
+    }
+  }
+  return groupedParcels;
+}
+
+export function findGroupForParcel(groupedParcels, ungroupedParcel) {
+  return groupedParcels.find((g) => {
+    const groupedParcel = { x: g.split(",")[0], y: g.split(",")[1] };
+
+    const isNorth = groupedParcel.x == ungroupedParcel.x && groupedParcel.y == ungroupedParcel.y + 1,
+      isSouth = groupedParcel.x == ungroupedParcel.x && groupedParcel.y == ungroupedParcel.y - 1,
+      isEast = groupedParcel.y == ungroupedParcel.y && groupedParcel.x == ungroupedParcel.x + 1,
+      isWest = groupedParcel.y == ungroupedParcel.y && groupedParcel.x == ungroupedParcel.x - 1;
+
+    return isNorth || isSouth || isEast || isWest;
+  });
+}

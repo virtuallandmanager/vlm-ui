@@ -30,6 +30,7 @@ export default {
     }
   }),
   getters: {
+    unimportedParcels: (state) => state.unimportedParcels,
     userLand: (state) => state.userLand,
     fetchingUserLand: (state) => state.fetchingUserLand,
     property: (state, getters) => (xCoord, yCoord) => getters.userLand && getters.userLand.find((property) => property.baseParcel == xCoord + "," + yCoord),
@@ -119,14 +120,15 @@ export default {
         commit("parcelImportStop", error);
       }
     },
-    async updateLandProperties({ commit }, property) {
-      console.log(property);
-      const options = {
+    async updateLandProperties({ commit }, options) {
+      const property = options.property;
+      const payload = {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
+          wssMessages: options.wssMessages,
           wallet: this.state.login.account,
           property
         })
@@ -136,7 +138,7 @@ export default {
       }
       commit("parcelUpdateStart");
       try {
-        const response = await fetch(`${process.env.VUE_APP_API_URL}/land/update`, options);
+        const response = await fetch(`${process.env.VUE_APP_API_URL}/land/update`, payload);
         const updatedProperty = await response.json();
         commit("updateUserLand", updatedProperty);
         commit("parcelUpdateStop");
