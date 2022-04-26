@@ -122,7 +122,7 @@
         </v-row>
         <v-row
           v-for="(instance, ii) in image.instances"
-          :key="ii"
+          :key="instance.id"
           class="my-0 mx-auto pt-2"
           align="center"
         >
@@ -146,7 +146,7 @@
                 </v-tooltip>
               </v-btn>
               <v-dialog
-                v-model="transformInstanceDialogs[i][ii]"
+                v-model="transformInstanceDialogs[instance.id]"
                 max-width="350"
                 :retain-focus="false"
               >
@@ -191,7 +191,10 @@
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-              <v-dialog v-model="deleteInstanceDialogs[i][ii]" max-width="350">
+              <v-dialog
+                v-model="deleteInstanceDialogs[instance.id]"
+                max-width="350"
+              >
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn icon v-bind="attrs" v-on="on">
                     <v-tooltip bottom>
@@ -224,7 +227,7 @@
                     <v-btn
                       color="grey darken-1"
                       text
-                      @click="closeDeleteInstanceDialog(i, ii)"
+                      @click="closeDeleteInstanceDialog(instance.id)"
                     >
                       Cancel
                     </v-btn>
@@ -243,7 +246,7 @@
 import { mapActions } from 'vuex'
 import MoveScaleRotate from './MoveScaleRotate.vue'
 import _cloneDeep from 'lodash/cloneDeep'
-import nanoid from 'nanoid'
+import { nanoid } from 'nanoid'
 
 export default {
   components: { MoveScaleRotate },
@@ -251,8 +254,8 @@ export default {
 
   data: () => ({
     deleteImageDialogs: [false],
-    deleteInstanceDialogs: [[false]],
-    transformInstanceDialogs: [[false]],
+    deleteInstanceDialogs: {},
+    transformInstanceDialogs: {},
     selectedImage: '',
     defaultInstance: {
       show: true,
@@ -288,8 +291,7 @@ export default {
     },
     property: Object
   },
-  created () {
-  },
+  created () {},
   methods: {
     ...mapActions({
       uploadImage: 'image/uploadImage'
@@ -329,9 +331,9 @@ export default {
         property: 'instance'
       })
     },
-    closeDeleteInstanceDialog (i, ii) {
+    closeDeleteInstanceDialog (instanceId) {
       const clone = _cloneDeep(this.deleteInstanceDialogs)
-      clone[i][ii] = false
+      clone[instanceId] = false
       this.deleteInstanceDialogs = clone
     },
     closeDeleteImageDialog (i) {
@@ -361,8 +363,9 @@ export default {
       })
     },
     closeTransformDialog (i, ii) {
-      const clone = _cloneDeep(this.transformInstanceDialogs)
-      clone[i][ii] = false
+      const clone = _cloneDeep(this.transformInstanceDialogs),
+        instanceId = this.images[i].instances[ii].id
+      clone[instanceId] = false
       this.transformInstanceDialogs = clone
     },
     saveInstanceName () {
@@ -393,8 +396,6 @@ export default {
         baseParcel: this.property.baseParcel
       }
       e.target.value = null
-      this.deleteInstanceDialogs.push([])
-      this.transformInstanceDialogs.push([])
       const img = new Image()
       const uploadImageRes = await this.uploadImage(options)
       const imageJson = await uploadImageRes.json()
@@ -436,42 +437,9 @@ export default {
       img.src = imageLink
       img.onload = () => {
         const height = img.height,
-          width = img.width,
-          aspectRatio = width / height,
-          sameSize =
-            image.transform.x == width / 1000 &&
-            image.transform.y == height / 1000,
-          transform = image.transform
+          width = img.width
 
-        if (sameSize) {
-          //don't adjust scale
-        } else if (aspectRatio > 1) {
-          transform.scale = {
-            x: image.transform.scale.x,
-            y: image.transform.scale.x / aspectRatio,
-            z: image.transform.scale.z
-          }
-        } else if (aspectRatio < 1) {
-          transform.scale = {
-            x: image.transform.scale.y / aspectRatio,
-            y: image.transform.scale.y,
-            z: image.transform.scale.z
-          }
-        } else if (width > height) {
-          transform.scale = {
-            x: image.transform.scale.x,
-            y: image.transform.scale.x,
-            z: image.transform.scale.z
-          }
-        } else if (height < width) {
-          transform.scale = {
-            x: image.transform.scale.y,
-            y: image.transform.scale.y,
-            z: image.transform.scale.z
-          }
-        }
-
-        const clonedImages = [...this.images]
+        const clonedImages = _cloneDeep(this.images)
         clonedImages[i] = {
           ...image,
           imageLink,

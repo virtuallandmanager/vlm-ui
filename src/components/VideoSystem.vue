@@ -19,14 +19,14 @@
               dark
               v-model="screen.name"
               label="Screen Name"
-              @blur="updateProperties()"
+              @blur="updateVideoScreenName"
             ></v-text-field>
           </v-col>
           <v-col>
             <v-slider
               dark
               v-model="screen.volume"
-              @change="updateProperties()"
+              @change="updateVolume"
               label="Volume"
               max="1"
               min="0"
@@ -149,7 +149,7 @@
               :items="offTypes"
               class="my-0"
               hide-details="true"
-              @change="updateOffType(s)"
+              @change="updateOffType"
               dense
             >
             </v-select>
@@ -236,7 +236,7 @@
               <v-text-field
                 v-model="screen.offImage"
                 label="Image Link"
-                @blur="updateProperties()"
+                @blur="updateOffImage"
               >
                 <template v-slot:append-outer>
                   <v-dialog
@@ -344,6 +344,13 @@ export default {
         property: 'transform'
       })
     },
+    updateOffImage () {
+      this.updateProperties({
+        action: 'update',
+        entity: 'videoScreen',
+        property: 'offImage'
+      })
+    },
     cancelScreenMove (s) {
       console.log(s)
       this.moveScreenDialog = false
@@ -379,6 +386,20 @@ export default {
         property: 'liveLink'
       })
     },
+    updateVideoScreenName () {
+      this.updateProperties({
+        action: 'update',
+        entity: 'videoScreen',
+        property: 'name'
+      })
+    },
+    updateVolume () {
+      this.updateProperties({
+        action: 'update',
+        entity: 'videoScreen',
+        property: 'volume'
+      })
+    },
     updateOffType () {
       this.updateProperties({
         action: 'update',
@@ -394,7 +415,7 @@ export default {
       })
     },
     updateProperties (wssMessages) {
-      this.$emit('updateProperties', wssMessages)
+      this.$emit('updateProperties', { wssMessages })
     }
   }
 }
