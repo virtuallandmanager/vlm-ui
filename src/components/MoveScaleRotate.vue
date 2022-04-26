@@ -19,7 +19,7 @@
     <v-tabs-items v-model="mode" class="elevation-2 mx-auto">
       <v-tab-item :value="mode">
         <x-y-z-buttons
-          :xyz="transform[mode]"
+          :xyz="instance[mode]"
           @updateProperties="updateProperties"
           class="mx-auto"
         />
@@ -35,11 +35,11 @@ export default {
   name: 'MoveScaleRotate',
 
   data: () => ({
-    mode: 'position',
-    originalTransform: {}
+    mode: 'position'
   }),
   props: {
-    transform: {
+    instance: {
+      name: String,
       position: {
         x: Number,
         y: Number,
@@ -56,9 +56,6 @@ export default {
         z: Number
       }
     }
-  },
-  mounted () {
-    this.originalTransform = { ...this.transform }
   },
   methods: {
     updateProperties () {

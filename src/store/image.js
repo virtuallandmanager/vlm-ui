@@ -25,7 +25,7 @@ export default {
       formData.append("imageFile", payload.image);
       commit("startImageUpload");
       try {
-        const uploadedImage = await fetch(`${process.env.VUE_APP_API_URL}/image/upload/${baseCoords[0]}/${baseCoords[1]}`, options);
+        const uploadedImage = await fetch(`${process.env.VUE_APP_API_URL}/image/upload/${baseCoords[0]}/${baseCoords[1]}${payload.id ? `?id=${payload.id}` : ''}`, options);
         commit("stopImageUpload");
         return uploadedImage;
       } catch (error) {

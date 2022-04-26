@@ -13,6 +13,7 @@
       </v-col>
       <v-col class="px-0">
         <v-text-field
+          type="number"
           :value="xyz[key]"
           :label="key.toUpperCase()"
           outlined
@@ -20,7 +21,7 @@
           hide-details="true"
           width="100px"
           class="axis"
-          @input="value => directUpdate(key, value)"
+          @change="value => directUpdate(key, value)"
         ></v-text-field>
       </v-col>
       <v-col class="px-0 text-left">
@@ -42,34 +43,17 @@
       </v-col>
     </v-row>
   </v-container>
-  <!-- <div class="text-center">
-      <span class="text-h6 mr-6">Y</span>
-      <v-btn tile><v-icon>mdi-chevron-left</v-icon></v-btn>
-      <v-btn disabled tile min-width="100">{{ xyz.y || 0 }}</v-btn>
-      <v-btn tile><v-icon>mdi-chevron-right</v-icon></v-btn>
-    </div>
-    <div class="text-center">
-      <span class="text-h6 mr-6">Z</span>
-      <v-btn tile><v-icon>mdi-chevron-left</v-icon></v-btn>
-      <v-btn disabled tile min-width="100">{{ xyz.z || 0 }}</v-btn>
-      <v-btn tile><v-icon>mdi-chevron-right</v-icon></v-btn>
-    </div>
-    <div class="text-center">
-      <v-btn full-width tile @click="nextMultiplier">{{
-        multipliers[multiplierIndex]
-      }}</v-btn>
-    </div>
-  </div> -->
 </template>
 
 <script>
+// import _cloneDeep from 'lodash/cloneDeep'
+
 export default {
   name: 'XYZButtons',
 
   data: () => ({
     multiplierIndex: 0,
-    multipliers: [1, 0.1, 0.01, 0.001],
-    originalXyz: { x: 0, y: 0, z: 0 }
+    multipliers: [1, 0.1, 0.01, 0.001]
   }),
   props: {
     xyz: {
@@ -80,20 +64,25 @@ export default {
   },
 
   methods: {
+    roundToStep (value, stepParam) {
+      var step = stepParam || 1.0
+      var inv = 1.0 / step
+      return Math.round(value * inv) / inv
+    },
     increment (key) {
-      this.xyz[key] = +(
-        this.xyz[key] + this.multipliers[this.multiplierIndex]
-      ).toFixed(4)
+      const newValue =
+        parseFloat(this.xyz[key]) + this.multipliers[this.multiplierIndex]
+      this.xyz[key] = this.roundToStep(newValue, 0.001)
       this.updateProperties()
     },
     decrement (key) {
-      this.xyz[key] = +(
-        this.xyz[key] - this.multipliers[this.multiplierIndex]
-      ).toFixed(4)
+      const newValue =
+        parseFloat(this.xyz[key]) - this.multipliers[this.multiplierIndex]
+      this.xyz[key] = this.roundToStep(newValue, 0.001)
       this.updateProperties()
     },
     directUpdate (key, value) {
-      this.xyz[key] = +value
+      this.xyz[key] = parseFloat(value) || 0
       this.updateProperties()
     },
     nextMultiplier () {
@@ -110,8 +99,17 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 v-text-field.axis {
   text-align: center !important;
+}
+
+.axis input[type='number'] {
+  -moz-appearance: textfield;
+  text-align: center !important;
+}
+.axis input::-webkit-outer-spin-button,
+.axis input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
 }
 </style>
