@@ -407,7 +407,8 @@ export default {
           instances = [
             {
               ...this.defaultInstance,
-              scale: { x: width / 1000, y: height / 1000, z: 0.01 }
+              scale: { x: width / 1000, y: height / 1000, z: 0.01 },
+              id: nanoid(6)
             }
           ]
         this.images.push({
