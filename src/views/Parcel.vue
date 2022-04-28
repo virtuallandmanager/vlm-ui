@@ -242,7 +242,11 @@ export default {
       if (this.property.propertyName === this.previousPropertyName) {
         return
       }
-      this.updateProperties()
+      this.updateProperties({
+        action: 'update',
+        entity: 'scene',
+        property: 'name'
+      })
     },
     updateProperties (options) {
       this.updateLandProperties({

@@ -20,6 +20,8 @@
       <v-tab-item :value="mode">
         <x-y-z-buttons
           :xyz="instance[mode]"
+          :value="mode"
+          :isPlane="mode == 'scale'"
           @updateProperties="updateProperties"
           class="mx-auto"
         />
@@ -35,7 +37,7 @@ export default {
   name: 'MoveScaleRotate',
 
   data: () => ({
-    mode: 'position'
+    mode: 'scale'
   }),
   props: {
     instance: {
@@ -55,6 +57,10 @@ export default {
         y: Number,
         z: Number
       }
+    },
+    isPlane: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {

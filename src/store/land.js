@@ -22,7 +22,17 @@ export default {
           playlist: []
         }
       ],
-      imageTextures: [{}],
+      imageTextures: [
+        {
+          clickEvent: {
+            type: 0,
+            externalLink: "",
+            sound: "",
+            moveTo: "",
+            teleportTo: ""
+          }
+        }
+      ],
       moderation: {
         allowCertainWearables: false,
         banCertainWearables: false
@@ -54,8 +64,7 @@ export default {
     },
     updateUserLand: (state, updatedProperty) => {
       const storedParcelIndex = state.userLand.findIndex((property) => property.baseParcel == updatedProperty.baseParcel);
-      state.userLand[storedParcelIndex] = updatedProperty;
-      console.log(storedParcelIndex, state.userLand[storedParcelIndex], updatedProperty.lastUpdate);
+      state.userLand[storedParcelIndex] = { ...state.sceneDefault, ...updatedProperty };
     },
     parcelUpdateStart: (state) => (state.updatingParcel = true),
     parcelUpdateStop: (state, errorMessage) => {
@@ -67,10 +76,9 @@ export default {
     },
     loadUserLand: (state, parcels) => {
       state.userLand = parcels.map((property) => {
-        const scene = { ...state.sceneDefault, ...property.scene };
-        return { ...property, scene };
+        const sceneData = { ...state.sceneDefault, ...property.sceneData };
+        return { ...property, sceneData };
       });
-      console.log("userLand: ", state.userLand);
     }
   },
   actions: {
