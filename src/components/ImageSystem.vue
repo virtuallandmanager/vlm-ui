@@ -54,13 +54,23 @@
               accept=".png,.jpg,.jpeg"
               @change="replaceImage(image, i)"
             />
-            <v-dialog v-model="clickEventDialogs[i]" max-width="400">
+            <v-dialog
+              v-model="clickEventDialogs[i]"
+              max-width="400"
+              @click:outside="revertImageClickEvent(i)"
+            >
               <template v-slot:activator="{ on, attrs }">
-                <v-btn icon dark v-bind="attrs" v-on="on">
+                <v-btn
+                  icon
+                  dark
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="storeOriginalClickEvent(image)"
+                >
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
                       <v-icon v-bind="attrs" v-on="on">
-                        mdi-link
+                        mdi-mouse
                       </v-icon>
                     </template>
                     <span>Click Event</span>
@@ -81,34 +91,52 @@
                   ></v-select>
                   <v-text-field
                     v-if="image.clickEvent.type == 1"
-                    v-model="image.clickEvent.extLink"
+                    v-model="image.clickEvent.externalLink"
                     label="External Link"
+                    dense
                   ></v-text-field>
                   <v-text-field
                     v-if="image.clickEvent.type == 2"
                     v-model="image.clickEvent.sound"
                     label="Audio File"
+                    dense
                   ></v-text-field>
                   <v-text-field
                     v-if="image.clickEvent.type == 3"
                     v-model="image.clickEvent.moveTo"
                     label="In-Scene Coordinates"
+                    dense
                   ></v-text-field>
                   <v-text-field
                     v-if="image.clickEvent.type == 4"
                     v-model="image.clickEvent.teleportTo"
                     label="Destination Coordinates"
+                    dense
+                  ></v-text-field>
+                  <v-switch
+                    v-if="image.clickEvent.type > 0"
+                    v-model="image.clickEvent.showFeedback"
+                    label="Show Hover Text"
+                    @change="toggleShowFeedback(image)"
+                  ></v-switch>
+                  <v-text-field
+                    v-if="
+                      image.clickEvent.type > 0 && image.clickEvent.showFeedback
+                    "
+                    v-model="image.clickEvent.hoverText"
+                    label="Hover Text"
+                    dense
                   ></v-text-field>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="green darken-1" text @click="saveClickEvent(i)">
+                  <v-btn color="green darken-1" text @click="saveClickEvent()">
                     Save
                   </v-btn>
                   <v-btn
                     color="grey darken-1"
                     text
-                    @click="closeClickEventDialog(i)"
+                    @click="revertImageClickEvent(i)"
                   >
                     Cancel
                   </v-btn>
@@ -164,52 +192,6 @@
           </v-col>
         </v-row>
         <v-row>
-          <!-- <v-col cols="6" align="center" class="px-0">
-            <v-card tile color="grey lighten-4" class="pa-2">
-              <div class="text-h6">
-                Properties
-              </div>
-              <v-container>
-                <v-row>
-                  <v-col>
-                    <div class="d-flex flex-column">
-                      <v-switch
-                        v-model="image.clickable"
-                        label="Clickable"
-                        dense
-                        @change="updateImageProperties()"
-                        class="align-center"
-                      ></v-switch>
-                      <v-text-field
-                        v-if="image.clickable"
-                        dense
-                        label="Link URL"
-                        v-model="image.clickLink"
-                        @change="updateImageProperties()"
-                        hide-details="true"
-                        style="min-width:400px;"
-                      ></v-text-field>
-                      <v-switch
-                        v-model="image.hasParent"
-                        label="Parented"
-                        dense
-                        @change="updateImageParent()"
-                      ></v-switch>
-                      <v-text-field
-                        v-if="image.hasParent"
-                        dense
-                        label="Parent name"
-                        v-model="image.parent"
-                        @change="updateImageParent()"
-                        hide-details="true"
-                        style="min-width:400px;"
-                      ></v-text-field>
-                    </div>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-card>
-          </v-col> -->
           <v-col cols="12">
             <v-img
               max-height="250"
@@ -255,6 +237,7 @@
                       v-model="transformInstanceDialogs[instance.id]"
                       max-width="350"
                       :retain-focus="false"
+                      @click:outside="revertInstanceTransform(i, ii)"
                     >
                       <template v-slot:activator="{ on, attrs }">
                         <v-btn
@@ -383,13 +366,13 @@ export default {
     clickEvents: [
       { text: 'None', value: 0, default: true },
       { text: 'Website Link', value: 1 },
-      { text: 'Play Sound', value: 2, disabled: true },
-      { text: 'Move Player in Scene', value: 3, disabled: true },
-      { text: 'Teleport Player', value: 4, disabled: true }
+      { text: 'Play Sound (Coming Soon)', value: 2, disabled: true },
+      { text: 'Move Player in Scene (Coming Soon)', value: 3, disabled: true },
+      { text: 'Teleport Player (Coming Soon)', value: 4, disabled: true }
     ]
   }),
   props: {
-    images: {
+    imageTextures: {
       type: Array,
       default: function () {
         return [new ImageTexture()]
@@ -397,12 +380,20 @@ export default {
     },
     property: Object
   },
-  created () {
-    const defaultImageTexture = new ImageTexture()
-    this.images = this.images.map(imageTexture => ({
-      ...defaultImageTexture,
-      ...imageTexture
-    }))
+  created () {},
+  computed: {
+    images: {
+      get () {
+        const defaultImageTexture = new ImageTexture()
+        return this.imageTextures.map(imageTexture => ({
+          ...defaultImageTexture,
+          ...imageTexture
+        }))
+      },
+      set (newValue) {
+        return { ...this.imageTextures, ...newValue }
+      }
+    }
   },
   methods: {
     ...mapActions({
@@ -443,24 +434,12 @@ export default {
         property: 'instance'
       })
     },
-    closeDeleteInstanceDialog (instanceId) {
-      const clone = _cloneDeep(this.deleteInstanceDialogs)
-      clone[instanceId] = false
-      this.deleteInstanceDialogs = clone
-    },
-    closeDeleteImageDialog (i) {
-      const clone = _cloneDeep(this.deleteImageDialogs)
-      clone[i] = false
-      this.deleteImageDialogs = clone
-    },
-    closeClickEventDialog (i) {
-      const clone = _cloneDeep(this.clickEventDialogs)
-      clone[i] = false
-      this.clickEventDialogs = clone
-    },
     storeOriginalTransform (instance) {
       console.log('storing original transform:', instance)
       this.originalTransform = _cloneDeep(instance)
+    },
+    storeOriginalClickEvent (i) {
+      this.originalClickEvent = _cloneDeep(i.clickEvent)
     },
     saveInstanceTransform (i, ii) {
       this.closeTransformDialog(i, ii)
@@ -478,6 +457,29 @@ export default {
         entity: 'image',
         property: 'transform'
       })
+    },
+    revertImageClickEvent (i) {
+      this.images[i].clickEvent = this.originalClickEvent
+      this.closeClickEventDialog()
+      this.updateProperties({
+        action: 'update',
+        entity: 'image',
+        property: 'clickEvent'
+      })
+    },
+    closeDeleteInstanceDialog (instanceId) {
+      const clone = _cloneDeep(this.deleteInstanceDialogs)
+      clone[instanceId] = false
+      this.deleteInstanceDialogs = clone
+    },
+    closeDeleteImageDialog (i) {
+      const clone = _cloneDeep(this.deleteImageDialogs)
+      clone[i] = false
+      this.deleteImageDialogs = clone
+    },
+    closeClickEventDialog () {
+      const clone = this.clickEventDialogs.map(() => false)
+      this.clickEventDialogs = clone
     },
     closeTransformDialog (i, ii) {
       const clone = _cloneDeep(this.transformInstanceDialogs),
@@ -499,6 +501,14 @@ export default {
         property: 'name'
       })
     },
+    saveClickEvent () {
+      this.closeClickEventDialog()
+      this.updateProperties({
+        action: 'update',
+        entity: 'image',
+        property: 'clickEvent'
+      })
+    },
     toggleVisibility (image) {
       image.show = !image.show
       this.updateProperties({
@@ -506,6 +516,14 @@ export default {
         entity: 'image',
         property: 'visibility'
       })
+    },
+    toggleShowFeedback (image) {
+      ;(this.image = { ...this.image, clickEvent: image.clickEvent }),
+        this.updateProperties({
+          action: 'update',
+          entity: 'image',
+          property: 'clickEvent'
+        })
     },
     async addImage (e) {
       const options = {

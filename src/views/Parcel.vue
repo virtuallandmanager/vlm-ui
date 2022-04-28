@@ -134,7 +134,7 @@
             <v-tab-item :value="'tab-4'">
               <v-card raised elevation="2">
                 <image-system
-                  :images="property.sceneData.imageTextures"
+                  :imageTextures="property.sceneData.imageTextures"
                   :property="property"
                   @updateProperties="updateProperties"
                 />

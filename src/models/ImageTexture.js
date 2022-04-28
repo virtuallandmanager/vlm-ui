@@ -1,4 +1,5 @@
 import { nanoid } from "nanoid";
+import { ClickEvent } from "./ClickEvent";
 import { ImageInstance } from "./ImageInstance";
 
 export class ImageTexture {
@@ -6,13 +7,7 @@ export class ImageTexture {
   show = true;
   name = "";
   imageLink = "";
-  clickEvent = {
-    type: 0,
-    externalLink: "",
-    sound: "",
-    moveTo: "",
-    teleportTo: ""
-  };
+  clickEvent = new ClickEvent();
   instances = [new ImageInstance()];
 
   constructor() {}
