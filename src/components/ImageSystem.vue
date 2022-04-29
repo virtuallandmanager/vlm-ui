@@ -33,7 +33,7 @@
               dark
               v-model="image.name"
               label="Image Name"
-              @blur="saveImageName()"
+              @blur="saveImageName(image)"
             ></v-text-field>
           </v-col>
           <v-col cols="6" align="right">
@@ -58,6 +58,7 @@
               v-model="clickEventDialogs[i]"
               max-width="400"
               @click:outside="revertImageClickEvent(i)"
+              retain-focus
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
@@ -88,36 +89,41 @@
                     label="Click Event"
                     :items="clickEvents"
                     class="mt-4"
+                    @change="updateClickEvent(image)"
                   ></v-select>
                   <v-text-field
                     v-if="image.clickEvent.type == 1"
                     v-model="image.clickEvent.externalLink"
                     label="External Link"
                     dense
+                    @blur="updateClickEvent(image)"
                   ></v-text-field>
                   <v-text-field
                     v-if="image.clickEvent.type == 2"
                     v-model="image.clickEvent.sound"
                     label="Audio File"
                     dense
+                    @blur="updateClickEvent(image)"
                   ></v-text-field>
                   <v-text-field
                     v-if="image.clickEvent.type == 3"
                     v-model="image.clickEvent.moveTo"
                     label="In-Scene Coordinates"
                     dense
+                    @blur="updateClickEvent(image)"
                   ></v-text-field>
                   <v-text-field
                     v-if="image.clickEvent.type == 4"
                     v-model="image.clickEvent.teleportTo"
                     label="Destination Coordinates"
                     dense
+                    @blur="updateClickEvent(image)"
                   ></v-text-field>
                   <v-switch
                     v-if="image.clickEvent.type > 0"
                     v-model="image.clickEvent.showFeedback"
                     label="Show Hover Text"
-                    @change="toggleShowFeedback(image)"
+                    @change="updateClickEvent(image)"
                   ></v-switch>
                   <v-text-field
                     v-if="
@@ -126,17 +132,77 @@
                     v-model="image.clickEvent.hoverText"
                     label="Hover Text"
                     dense
+                    @blur="updateClickEvent(image)"
                   ></v-text-field>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="green darken-1" text @click="saveClickEvent()">
+                  <v-btn
+                    color="green darken-1"
+                    text
+                    @click="saveClickEvent(image)"
+                  >
                     Save
                   </v-btn>
                   <v-btn
                     color="grey darken-1"
                     text
                     @click="revertImageClickEvent(i)"
+                  >
+                    Cancel
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+            <v-dialog v-model="imagePropertiesDialogs[i]" max-width="350">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  icon
+                  dark
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="storeOriginalProperties(image)"
+                >
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-icon v-bind="attrs" v-on="on">
+                        mdi-tune
+                      </v-icon>
+                    </template>
+                    <span>Image Properties</span>
+                  </v-tooltip>
+                </v-btn>
+              </template>
+              <v-card>
+                <v-card-title class="text-h5">
+                  Image Properties
+                </v-card-title>
+                <v-card-text>
+                  <v-switch
+                    v-model="image.isTransparent"
+                    label="Enable Transparency"
+                    @change="updateImageTransparency(image)"
+                  ></v-switch>
+                  <v-text-field
+                    v-model="image.parent"
+                    label="Parent Entity"
+                    dense
+                    @blur="updateImageParent(image)"
+                  ></v-text-field>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    color="green darken-1"
+                    text
+                    @click="saveImageProperties(i)"
+                  >
+                    Save
+                  </v-btn>
+                  <v-btn
+                    color="grey darken-1"
+                    text
+                    @click="revertImageProperties(i)"
                   >
                     Cancel
                   </v-btn>
@@ -220,7 +286,7 @@
                     hide-details="true"
                     v-model="instance.name"
                     :label="`Instance ${ii + 1}`"
-                    @blur="saveInstanceName"
+                    @blur="saveInstanceName(instance)"
                   ></v-text-field>
                   <div class="mt-3">
                     <v-btn icon @click="toggleVisibility(instance)">
@@ -340,16 +406,17 @@
 
 <script>
 import { mapActions } from 'vuex'
-import MoveScaleRotate from './MoveScaleRotate.vue'
+import MoveScaleRotate from './MoveScaleRotate'
+import { ImageTexture } from '../models/ImageTexture'
 import _cloneDeep from 'lodash/cloneDeep'
 import { nanoid } from 'nanoid'
-import { ImageTexture } from '../models/ImageTexture'
 
 export default {
   components: { MoveScaleRotate },
   name: 'ImageSystem',
 
   data: () => ({
+    imagePropertiesDialogs: [false],
     clickEventDialogs: [false],
     deleteImageDialogs: [false],
     deleteInstanceDialogs: {},
@@ -363,6 +430,7 @@ export default {
       rotation: { x: 0, y: 0, z: 0 }
     },
     originalTransform: {},
+    originalClickEvent: {},
     clickEvents: [
       { text: 'None', value: 0, default: true },
       { text: 'Website Link', value: 1 },
@@ -372,28 +440,13 @@ export default {
     ]
   }),
   props: {
-    imageTextures: {
+    images: {
       type: Array,
       default: function () {
         return [new ImageTexture()]
       }
     },
     property: Object
-  },
-  created () {},
-  computed: {
-    images: {
-      get () {
-        const defaultImageTexture = new ImageTexture()
-        return this.imageTextures.map(imageTexture => ({
-          ...defaultImageTexture,
-          ...imageTexture
-        }))
-      },
-      set (newValue) {
-        return { ...this.imageTextures, ...newValue }
-      }
-    }
   },
   methods: {
     ...mapActions({
@@ -438,8 +491,16 @@ export default {
       console.log('storing original transform:', instance)
       this.originalTransform = _cloneDeep(instance)
     },
-    storeOriginalClickEvent (i) {
-      this.originalClickEvent = _cloneDeep(i.clickEvent)
+    storeOriginalClickEvent (image) {
+      this.originalClickEvent = { ...image.clickEvent }
+      console.log('Stored original click event')
+    },
+    storeOriginalProperties (image) {
+      this.originalProperties = {
+        isTransparent: image.isTransparent,
+        parent: image.parent
+      }
+      console.log('Stored original properties')
     },
     saveInstanceTransform (i, ii) {
       this.closeTransformDialog(i, ii)
@@ -450,8 +511,11 @@ export default {
       })
     },
     revertInstanceTransform (i, ii) {
+      this.images[i].instances.splice(ii, 1, {
+        ...this.images[i].instances[ii],
+        clickEvent: this.originalClickEvent
+      })
       this.closeTransformDialog(i, ii)
-      this.images[i].instances[ii] = this.originalTransform
       this.updateProperties({
         action: 'update',
         entity: 'image',
@@ -459,22 +523,39 @@ export default {
       })
     },
     revertImageClickEvent (i) {
-      this.images[i].clickEvent = this.originalClickEvent
+      this.images.splice(i, 1, {
+        ...this.images[i],
+        clickEvent: this.originalClickEvent
+      })
       this.closeClickEventDialog()
       this.updateProperties({
         action: 'update',
         entity: 'image',
         property: 'clickEvent'
       })
+      this.$forceUpdate()
+    },
+    revertImageProperties (i) {
+      this.images.splice(i, 1, {
+        ...this.images[i],
+        ...this.originalProperties
+      })
+      this.closePropertiesDialog()
+      this.updateProperties({
+        action: 'update',
+        entity: 'image',
+        property: 'properties',
+        id: this.images[i].id
+      })
+      this.$forceUpdate()
     },
     closeDeleteInstanceDialog (instanceId) {
       const clone = _cloneDeep(this.deleteInstanceDialogs)
       clone[instanceId] = false
       this.deleteInstanceDialogs = clone
     },
-    closeDeleteImageDialog (i) {
-      const clone = _cloneDeep(this.deleteImageDialogs)
-      clone[i] = false
+    closeDeleteImageDialog () {
+      const clone = this.deleteImageDialogs.map(() => false)
       this.deleteImageDialogs = clone
     },
     closeClickEventDialog () {
@@ -487,43 +568,50 @@ export default {
       clone[instanceId] = false
       this.transformInstanceDialogs = clone
     },
-    saveInstanceName () {
+    closePropertiesDialog () {
+      const clone = this.imagePropertiesDialogs.map(() => false)
+      this.imagePropertiesDialogs = clone
+    },
+    saveInstanceName (instance) {
       this.updateProperties({
         action: 'update',
         entity: 'image',
-        property: 'instanceName'
+        property: 'instanceName',
+        id: instance.id
       })
     },
-    saveImageName () {
+    saveImageName (image) {
       this.updateProperties({
         action: 'update',
         entity: 'image',
-        property: 'name'
+        property: 'name',
+        id: image.id
       })
     },
-    saveClickEvent () {
+    saveClickEvent (image) {
+      console.log(image.clickEvent)
       this.closeClickEventDialog()
-      this.updateProperties({
-        action: 'update',
-        entity: 'image',
-        property: 'clickEvent'
-      })
+    },
+    saveImageProperties () {
+      this.closePropertiesDialog()
     },
     toggleVisibility (image) {
       image.show = !image.show
       this.updateProperties({
         action: 'update',
         entity: 'image',
-        property: 'visibility'
+        property: 'visibility',
+        id: image.id
       })
     },
-    toggleShowFeedback (image) {
-      ;(this.image = { ...this.image, clickEvent: image.clickEvent }),
-        this.updateProperties({
-          action: 'update',
-          entity: 'image',
-          property: 'clickEvent'
-        })
+    updateClickEvent (image) {
+      this.updateProperties({
+        action: 'update',
+        entity: 'image',
+        property: 'clickEvent',
+        id: image.id
+      })
+      this.$forceUpdate()
     },
     async addImage (e) {
       const options = {
@@ -547,15 +635,19 @@ export default {
             }
           ]
         this.images.push({
+          ...new ImageTexture(),
           id: imageJson.id,
           name: options.image.name,
           height,
           width,
           imageLink,
-          show: true,
           instances
         })
-        this.updateProperties({ action: 'create', entity: 'image' })
+        this.updateProperties({
+          action: 'create',
+          entity: 'image',
+          id: imageJson.id
+        })
       }
     },
     async replaceImage (image, i) {
@@ -588,22 +680,25 @@ export default {
         this.updateProperties({
           action: 'update',
           entity: 'image',
-          property: 'link'
+          property: 'link',
+          id: image.id
         })
       }
     },
-    updateImageProperties () {
+    updateImageTransparency (image) {
       this.updateProperties({
         action: 'update',
         entity: 'image',
-        property: 'properties'
+        property: 'transparency',
+        id: image.id
       })
     },
-    updateImageParent () {
+    updateImageParent (image) {
       this.updateProperties({
         action: 'update',
         entity: 'image',
-        property: 'parent'
+        property: 'parent',
+        id: image.id
       })
     },
     updateProperties (wssMessages) {

@@ -9,6 +9,7 @@ export class ImageTexture {
   imageLink = "";
   clickEvent = new ClickEvent();
   instances = [new ImageInstance()];
+  isTransparent = false;
 
   constructor() {}
 }
