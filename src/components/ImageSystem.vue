@@ -44,7 +44,7 @@
                     {{ image.show ? 'mdi-eye' : 'mdi-eye-off' }}
                   </v-icon>
                 </template>
-                <span>Show/Hide</span>
+                <span>Show/Hide All</span>
               </v-tooltip>
             </v-btn>
             <input
@@ -326,6 +326,7 @@
                         <move-scale-rotate
                           :instance="image.instances[ii]"
                           @updateProperties="updateProperties"
+                          :isPlane="true"
                         />
                         <v-card-actions>
                           <v-spacer></v-spacer>
@@ -511,10 +512,13 @@ export default {
       })
     },
     revertInstanceTransform (i, ii) {
-      this.images[i].instances.splice(ii, 1, {
-        ...this.images[i].instances[ii],
-        clickEvent: this.originalClickEvent
-      })
+      const imageClone = { ...this.images[i] },
+        instanceClone = {
+          ...this.images[i].instances[ii],
+          clickEvent: this.originalClickEvent
+        }
+      imageClone.instances[ii] = instanceClone
+      this.images.splice(i, 1, imageClone)
       this.closeTransformDialog(i, ii)
       this.updateProperties({
         action: 'update',

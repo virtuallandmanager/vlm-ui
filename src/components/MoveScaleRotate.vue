@@ -21,7 +21,7 @@
         <x-y-z-buttons
           :xyz="instance[mode]"
           :value="mode"
-          :isPlane="mode == 'scale'"
+          :isPlane="isPlane"
           @updateProperties="updateProperties"
           class="mx-auto"
         />
@@ -62,6 +62,9 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+  created () {
+    console.log(this.isPlane)
   },
   methods: {
     updateProperties () {

@@ -35,7 +35,7 @@
               auto-grow
               rows="1"
               :label="`Message ${m + 1}`"
-              @blur="editDialogText"
+              @blur="editMessageText"
             >
               <template v-slot:append-outer>
                 <v-dialog

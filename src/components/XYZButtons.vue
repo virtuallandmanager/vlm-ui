@@ -3,10 +3,10 @@
     <div
       v-for="(axis, key) in xyz"
       :key="key"
-      :v-bind="axis"
       class="text-center"
+      style="height:50px"
     >
-      <v-row min-height="40">
+      <v-row v-if="key !== 'z' || value !== 'scale' || !isPlane" no-gutters>
         <v-col class="text-right px-0">
           <v-btn tile class="px-0" height="38" @click="decrement(key)">
             <v-icon>mdi-chevron-left</v-icon>
@@ -27,7 +27,7 @@
           ></v-text-field>
         </v-col>
         <v-col class="px-0 text-left">
-          <v-btn tile class="px-0" @click="increment(key)">
+          <v-btn tile class="px-0" height="38" @click="increment(key)">
             <v-icon>mdi-chevron-right</v-icon>
           </v-btn>
         </v-col>
@@ -40,15 +40,15 @@
     </v-row>
     <v-row class="text-center px-10">
       <v-col
-      cols="4"
+        cols="4"
         class="text-center pt-0 px-1"
         v-for="(multiplierText, i) in multipliers"
         :key="i"
-        
       >
         <v-btn
           :outlined="multiplierIndex == i"
-          small block
+          small
+          block
           @click="setMultiplier(i)"
         >
           {{ multiplierText }}
@@ -59,8 +59,6 @@
 </template>
 
 <script>
-// import _cloneDeep from 'lodash/cloneDeep'
-
 export default {
   name: 'XYZButtons',
 
@@ -74,7 +72,7 @@ export default {
   props: {
     value: {
       type: String,
-      default: ''
+      default: 'scale'
     },
     isPlane: { type: Boolean, default: false },
     xyz: {
