@@ -12,6 +12,13 @@
           </v-btn>
         </v-col>
       </v-row>
+      <v-row v-if="screens.length < 1" class="mt-6">
+        <v-col cols="12">
+          <div class="text-body1 text-center">
+            You haven't added any videos to this scene yet.
+          </div>
+        </v-col>
+      </v-row>
       <div v-for="(screen, s) in screens" :key="s" class="my-6">
         <v-row class="grey darken-3 dark mx-n3">
           <v-col>
@@ -311,9 +318,7 @@ export default {
     screens: {
       type: Array,
       default: function () {
-        return [
-          { name: 'Not Found', playlist: [], liveLink: '', type: 3, offType: 3 }
-        ]
+        return []
       }
     }
   },

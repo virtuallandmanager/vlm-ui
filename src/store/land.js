@@ -47,6 +47,9 @@ export default {
     lastUpdate: (state, getters) => (xCoord, yCoord) => getters.property(xCoord, yCoord).lastUpdate
   },
   mutations: {
+    clearUserLand: (state) => {
+      state.userLand = [];
+    },
     userLandFetchStart: (state) => (state.fetchingUserLand = true),
     userLandFetchStop: (state, errorMessage) => {
       state.fetchingUserLand = false;
@@ -83,6 +86,7 @@ export default {
   },
   actions: {
     async fetchUserLand({ commit }) {
+      commit("clearUserLand");
       commit("userLandFetchStart");
       try {
         const userLand = await fetch(`${process.env.VUE_APP_API_URL}/land/${this.state.login.account}`);

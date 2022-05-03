@@ -26,380 +26,386 @@
           </div>
         </v-col>
       </v-row>
-      <div v-for="(image, i) in images" :key="image.id" class="mt-6">
-        <v-row class="grey darken-3 dark mx-n3">
-          <v-col cols="6">
-            <v-text-field
-              dark
-              v-model="image.name"
-              label="Image Name"
-              @blur="saveImageName(image)"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="6" align="right">
-            <v-btn icon dark @click="toggleVisibility(image)">
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-icon v-bind="attrs" v-on="on">
-                    {{ image.show ? 'mdi-eye' : 'mdi-eye-off' }}
-                  </v-icon>
-                </template>
-                <span>Show/Hide All</span>
-              </v-tooltip>
-            </v-btn>
-            <input
-              style="display: none"
-              ref="replaceFileInput"
-              type="file"
-              accept=".png,.jpg,.jpeg"
-              @change="replaceImage(image, i)"
-            />
-            <v-dialog
-              v-model="clickEventDialogs[i]"
-              max-width="400"
-              @click:outside="revertImageClickEvent(i)"
-              retain-focus
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  icon
-                  dark
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="storeOriginalClickEvent(image)"
-                >
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-icon v-bind="attrs" v-on="on">
-                        mdi-mouse
-                      </v-icon>
-                    </template>
-                    <span>Click Event</span>
-                  </v-tooltip>
-                </v-btn>
-              </template>
-              <v-card>
-                <v-card-title class="text-h5">
-                  Click Event
-                </v-card-title>
-                <v-card-text>
-                  This click event will be inherited by all image instances
-                  <v-select
-                    v-model="image.clickEvent.type"
-                    label="Click Event"
-                    :items="clickEvents"
-                    class="mt-4"
-                    @change="updateClickEvent(image)"
-                  ></v-select>
-                  <v-text-field
-                    v-if="image.clickEvent.type == 1"
-                    v-model="image.clickEvent.externalLink"
-                    label="External Link"
-                    dense
-                    @blur="updateClickEvent(image)"
-                  ></v-text-field>
-                  <v-text-field
-                    v-if="image.clickEvent.type == 2"
-                    v-model="image.clickEvent.sound"
-                    label="Audio File"
-                    dense
-                    @blur="updateClickEvent(image)"
-                  ></v-text-field>
-                  <v-text-field
-                    v-if="image.clickEvent.type == 3"
-                    v-model="image.clickEvent.moveTo"
-                    label="In-Scene Coordinates"
-                    dense
-                    @blur="updateClickEvent(image)"
-                  ></v-text-field>
-                  <v-text-field
-                    v-if="image.clickEvent.type == 4"
-                    v-model="image.clickEvent.teleportTo"
-                    label="Destination Coordinates"
-                    dense
-                    @blur="updateClickEvent(image)"
-                  ></v-text-field>
-                  <v-switch
-                    v-if="image.clickEvent.type > 0"
-                    v-model="image.clickEvent.showFeedback"
-                    label="Show Hover Text"
-                    @change="updateClickEvent(image)"
-                  ></v-switch>
-                  <v-text-field
-                    v-if="
-                      image.clickEvent.type > 0 && image.clickEvent.showFeedback
-                    "
-                    v-model="image.clickEvent.hoverText"
-                    label="Hover Text"
-                    dense
-                    @blur="updateClickEvent(image)"
-                  ></v-text-field>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    color="green darken-1"
-                    text
-                    @click="saveClickEvent(image)"
-                  >
-                    Save
-                  </v-btn>
-                  <v-btn
-                    color="grey darken-1"
-                    text
-                    @click="revertImageClickEvent(i)"
-                  >
-                    Cancel
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-            <v-dialog v-model="imagePropertiesDialogs[i]" max-width="350">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  icon
-                  dark
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="storeOriginalProperties(image)"
-                >
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-icon v-bind="attrs" v-on="on">
-                        mdi-tune
-                      </v-icon>
-                    </template>
-                    <span>Image Properties</span>
-                  </v-tooltip>
-                </v-btn>
-              </template>
-              <v-card>
-                <v-card-title class="text-h5">
-                  Image Properties
-                </v-card-title>
-                <v-card-text>
-                  <v-switch
-                    v-model="image.isTransparent"
-                    label="Enable Transparency"
-                    @change="updateImageTransparency(image)"
-                  ></v-switch>
-                  <v-text-field
-                    v-model="image.parent"
-                    label="Parent Entity"
-                    dense
-                    @blur="updateImageParent(image)"
-                  ></v-text-field>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    color="green darken-1"
-                    text
-                    @click="saveImageProperties(i)"
-                  >
-                    Save
-                  </v-btn>
-                  <v-btn
-                    color="grey darken-1"
-                    text
-                    @click="revertImageProperties(i)"
-                  >
-                    Cancel
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-            <v-btn icon dark @click="$refs.replaceFileInput[i].click()">
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-icon v-bind="attrs" v-on="on">
-                    mdi-upload
-                  </v-icon>
-                </template>
-                <span>Replace Image</span>
-              </v-tooltip>
-            </v-btn>
-            <v-dialog v-model="deleteImageDialogs[i]" max-width="350">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn icon dark v-bind="attrs" v-on="on">
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-icon v-bind="attrs" v-on="on">
-                        mdi-trash-can
-                      </v-icon>
-                    </template>
-                    <span>Remove Image</span>
-                  </v-tooltip>
-                </v-btn>
-              </template>
-              <v-card>
-                <v-card-title class="text-h5">
-                  Remove Image?
-                </v-card-title>
-                <v-card-text>
-                  Are you sure you want to delete all instances of
-                  {{ image.name }}?
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="red darken-1" text @click="removeImage(i)">
-                    Remove All
-                  </v-btn>
-                  <v-btn
-                    color="grey darken-1"
-                    text
-                    @click="closeDeleteImageDialog(i)"
-                  >
-                    Cancel
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-img
-              max-height="250"
-              max-width="250"
-              contain
-              :src="image.imageLink"
-              class="mx-auto"
-            ></v-img>
-          </v-col>
-        </v-row>
-        <v-row class="my-0 pt-2">
-          <v-col cols="12" align="center">
-            <div class="text-h6">
-              Instances
-            </div>
-            <v-container>
-              <v-row
-                v-for="(instance, ii) in image.instances"
-                :key="instance.id"
-                class="my-0 mx-auto pt-2"
-                align="center"
+      <div v-if="images.length > 0">
+        <div v-for="(image, i) in images" :key="image.id" class="mt-6">
+          <v-row class="grey darken-3 dark mx-n3">
+            <v-col cols="6">
+              <v-text-field
+                dark
+                v-model="image.name"
+                label="Image Name"
+                @blur="saveImageName(image)"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="6" align="right">
+              <v-btn icon dark @click="toggleVisibility(image)">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon v-bind="attrs" v-on="on">
+                      {{ image.show ? 'mdi-eye' : 'mdi-eye-off' }}
+                    </v-icon>
+                  </template>
+                  <span>Show/Hide All</span>
+                </v-tooltip>
+              </v-btn>
+              <input
+                style="display: none"
+                ref="replaceFileInput"
+                type="file"
+                accept=".png,.jpg,.jpeg"
+                @change="replaceImage(image, i)"
+              />
+              <v-dialog
+                v-model="clickEventDialogs[i]"
+                max-width="400"
+                @click:outside="revertImageClickEvent(i)"
+                retain-focus
+                v-if="image.clickEvent"
               >
-                <div class="mx-auto d-flex">
-                  <v-text-field
-                    class="d-inline"
-                    hide-details="true"
-                    v-model="instance.name"
-                    :label="`Instance ${ii + 1}`"
-                    @blur="saveInstanceName(instance)"
-                  ></v-text-field>
-                  <div class="mt-3">
-                    <v-btn icon @click="toggleVisibility(instance)">
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-icon v-bind="attrs" v-on="on">
-                            {{ instance.show ? 'mdi-eye' : 'mdi-eye-off' }}
-                          </v-icon>
-                        </template>
-                        <span>Show/Hide</span>
-                      </v-tooltip>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    icon
+                    dark
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="storeOriginalClickEvent(image)"
+                  >
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-icon v-bind="attrs" v-on="on">
+                          mdi-mouse
+                        </v-icon>
+                      </template>
+                      <span>Click Event</span>
+                    </v-tooltip>
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-card-title class="text-h5">
+                    Click Event
+                  </v-card-title>
+                  <v-card-text>
+                    This click event will be inherited by all image instances
+                    <v-select
+                      v-model="image.clickEvent.type"
+                      label="Click Event"
+                      :items="clickEvents"
+                      class="mt-4"
+                      @change="updateClickEvent(image)"
+                    ></v-select>
+                    <v-text-field
+                      v-if="image.clickEvent.type == 1"
+                      v-model="image.clickEvent.externalLink"
+                      label="External Link"
+                      dense
+                      @blur="updateClickEvent(image)"
+                    ></v-text-field>
+                    <v-text-field
+                      v-if="image.clickEvent.type == 2"
+                      v-model="image.clickEvent.sound"
+                      label="Audio File"
+                      dense
+                      @blur="updateClickEvent(image)"
+                    ></v-text-field>
+                    <v-text-field
+                      v-if="image.clickEvent.type == 3"
+                      v-model="image.clickEvent.moveTo"
+                      label="In-Scene Coordinates"
+                      dense
+                      @blur="updateClickEvent(image)"
+                    ></v-text-field>
+                    <v-text-field
+                      v-if="image.clickEvent.type == 4"
+                      v-model="image.clickEvent.teleportTo"
+                      label="Destination Coordinates"
+                      dense
+                      @blur="updateClickEvent(image)"
+                    ></v-text-field>
+                    <v-switch
+                      v-if="image.clickEvent.type > 0"
+                      v-model="image.clickEvent.showFeedback"
+                      label="Show Hover Text"
+                      @change="updateClickEvent(image)"
+                    ></v-switch>
+                    <v-text-field
+                      v-if="
+                        image.clickEvent.type > 0 &&
+                          image.clickEvent.showFeedback
+                      "
+                      v-model="image.clickEvent.hoverText"
+                      label="Hover Text"
+                      dense
+                      @blur="updateClickEvent(image)"
+                    ></v-text-field>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="green darken-1"
+                      text
+                      @click="saveClickEvent(image)"
+                    >
+                      Save
                     </v-btn>
-                    <v-dialog
-                      v-model="transformInstanceDialogs[instance.id]"
-                      max-width="350"
-                      :retain-focus="false"
-                      @click:outside="revertInstanceTransform(i, ii)"
+                    <v-btn
+                      color="grey darken-1"
+                      text
+                      @click="revertImageClickEvent(i)"
                     >
+                      Cancel
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+              <v-dialog v-model="imagePropertiesDialogs[i]" max-width="350">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    icon
+                    dark
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="storeOriginalProperties(image)"
+                  >
+                    <v-tooltip bottom>
                       <template v-slot:activator="{ on, attrs }">
-                        <v-btn
-                          icon
-                          v-bind="attrs"
-                          v-on="on"
-                          @click="storeOriginalTransform(image.instances[ii])"
-                        >
-                          <v-tooltip bottom>
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-icon v-bind="attrs" v-on="on">
-                                mdi-axis-arrow
-                              </v-icon>
-                            </template>
-                            <span>Transform</span>
-                          </v-tooltip>
-                        </v-btn>
+                        <v-icon v-bind="attrs" v-on="on">
+                          mdi-tune
+                        </v-icon>
                       </template>
-                      <v-card>
-                        <move-scale-rotate
-                          :instance="image.instances[ii]"
-                          @updateProperties="updateProperties"
-                          :isPlane="true"
-                        />
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            color="green"
-                            text
-                            @click="saveInstanceTransform(i, ii)"
-                          >
-                            Save
-                          </v-btn>
-                          <v-btn
-                            color="red darken-1"
-                            text
-                            @click="revertInstanceTransform(i, ii)"
-                          >
-                            Revert
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-                    <v-dialog
-                      v-model="deleteInstanceDialogs[instance.id]"
-                      max-width="350"
+                      <span>Image Properties</span>
+                    </v-tooltip>
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-card-title class="text-h5">
+                    Image Properties
+                  </v-card-title>
+                  <v-card-text>
+                    <v-switch
+                      v-model="image.isTransparent"
+                      label="Enable Transparency"
+                      @change="updateImageTransparency(image)"
+                    ></v-switch>
+                    <v-text-field
+                      v-model="image.parent"
+                      label="Parent Entity"
+                      dense
+                      @blur="updateImageParent(image)"
+                    ></v-text-field>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="green darken-1"
+                      text
+                      @click="saveImageProperties(i)"
                     >
+                      Save
+                    </v-btn>
+                    <v-btn
+                      color="grey darken-1"
+                      text
+                      @click="revertImageProperties(i)"
+                    >
+                      Cancel
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+              <v-btn icon dark @click="$refs.replaceFileInput[i].click()">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon v-bind="attrs" v-on="on">
+                      mdi-upload
+                    </v-icon>
+                  </template>
+                  <span>Replace Image</span>
+                </v-tooltip>
+              </v-btn>
+              <v-dialog v-model="deleteImageDialogs[i]" max-width="350">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn icon dark v-bind="attrs" v-on="on">
+                    <v-tooltip bottom>
                       <template v-slot:activator="{ on, attrs }">
-                        <v-btn icon v-bind="attrs" v-on="on">
-                          <v-tooltip bottom>
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-icon v-bind="attrs" v-on="on">
-                                mdi-trash-can
-                              </v-icon>
-                            </template>
-                            <span>Remove</span>
-                          </v-tooltip>
-                        </v-btn>
+                        <v-icon v-bind="attrs" v-on="on">
+                          mdi-trash-can
+                        </v-icon>
                       </template>
-                      <v-card>
-                        <v-card-title class="text-h5">
-                          Remove Image Instance?
-                        </v-card-title>
-                        <v-card-text>
-                          Are you sure you want to delete
-                          {{ instance.name ? `the ${instance.name}` : 'this' }}
-                          instance of {{ image.name }}?
-                        </v-card-text>
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
+                      <span>Remove Image</span>
+                    </v-tooltip>
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-card-title class="text-h5">
+                    Remove Image?
+                  </v-card-title>
+                  <v-card-text>
+                    Are you sure you want to delete all instances of
+                    {{ image.name }}?
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="red darken-1" text @click="removeImage(i)">
+                      Remove All
+                    </v-btn>
+                    <v-btn
+                      color="grey darken-1"
+                      text
+                      @click="closeDeleteImageDialog(i)"
+                    >
+                      Cancel
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <v-img
+                max-height="250"
+                max-width="250"
+                contain
+                :src="image.imageLink"
+                class="mx-auto"
+              ></v-img>
+            </v-col>
+          </v-row>
+          <v-row class="my-0 pt-2">
+            <v-col cols="12" align="center">
+              <div class="text-h6">
+                Instances
+              </div>
+              <v-container>
+                <v-row
+                  v-for="(instance, ii) in image.instances"
+                  :key="instance.id"
+                  class="my-0 mx-auto pt-2"
+                  align="center"
+                >
+                  <div class="mx-auto d-flex">
+                    <v-text-field
+                      class="d-inline"
+                      hide-details="true"
+                      v-model="instance.name"
+                      :label="`Instance ${ii + 1}`"
+                      @blur="saveInstanceName(instance)"
+                    ></v-text-field>
+                    <div class="mt-3">
+                      <v-btn icon @click="toggleVisibility(instance)">
+                        <v-tooltip bottom>
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-icon v-bind="attrs" v-on="on">
+                              {{ instance.show ? 'mdi-eye' : 'mdi-eye-off' }}
+                            </v-icon>
+                          </template>
+                          <span>Show/Hide</span>
+                        </v-tooltip>
+                      </v-btn>
+                      <v-dialog
+                        v-model="transformInstanceDialogs[instance.id]"
+                        max-width="350"
+                        :retain-focus="false"
+                        @click:outside="revertInstanceTransform(i, ii)"
+                      >
+                        <template v-slot:activator="{ on, attrs }">
                           <v-btn
-                            color="red darken-1"
-                            text
-                            @click="removeImageInstance(i, ii)"
+                            icon
+                            v-bind="attrs"
+                            v-on="on"
+                            @click="storeOriginalTransform(image.instances[ii])"
                           >
-                            Remove
+                            <v-tooltip bottom>
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-icon v-bind="attrs" v-on="on">
+                                  mdi-axis-arrow
+                                </v-icon>
+                              </template>
+                              <span>Transform</span>
+                            </v-tooltip>
                           </v-btn>
-                          <v-btn
-                            color="grey darken-1"
-                            text
-                            @click="closeDeleteInstanceDialog(instance.id)"
-                          >
-                            Cancel
+                        </template>
+                        <v-card>
+                          <move-scale-rotate
+                            :instance="image.instances[ii]"
+                            @updateProperties="updateProperties"
+                            :isPlane="true"
+                          />
+                          <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn
+                              color="green"
+                              text
+                              @click="saveInstanceTransform(i, ii)"
+                            >
+                              Save
+                            </v-btn>
+                            <v-btn
+                              color="red darken-1"
+                              text
+                              @click="revertInstanceTransform(i, ii)"
+                            >
+                              Revert
+                            </v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog>
+                      <v-dialog
+                        v-model="deleteInstanceDialogs[instance.id]"
+                        max-width="350"
+                      >
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn icon v-bind="attrs" v-on="on">
+                            <v-tooltip bottom>
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-icon v-bind="attrs" v-on="on">
+                                  mdi-trash-can
+                                </v-icon>
+                              </template>
+                              <span>Remove</span>
+                            </v-tooltip>
                           </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
+                        </template>
+                        <v-card>
+                          <v-card-title class="text-h5">
+                            Remove Image Instance?
+                          </v-card-title>
+                          <v-card-text>
+                            Are you sure you want to delete
+                            {{
+                              instance.name ? `the ${instance.name}` : 'this'
+                            }}
+                            instance of {{ image.name }}?
+                          </v-card-text>
+                          <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn
+                              color="red darken-1"
+                              text
+                              @click="removeImageInstance(i, ii)"
+                            >
+                              Remove
+                            </v-btn>
+                            <v-btn
+                              color="grey darken-1"
+                              text
+                              @click="closeDeleteInstanceDialog(instance.id)"
+                            >
+                              Cancel
+                            </v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog>
+                    </div>
                   </div>
-                </div>
-              </v-row>
-            </v-container>
-            <v-btn @click="addInstance(image, i)" class="mt-6"
-              ><v-icon>mdi-plus</v-icon> Add Instance</v-btn
-            >
-          </v-col>
-        </v-row>
+                </v-row>
+              </v-container>
+              <v-btn @click="addInstance(image, i)" class="mt-6"
+                ><v-icon>mdi-plus</v-icon> Add Instance</v-btn
+              >
+            </v-col>
+          </v-row>
+        </div>
       </div>
     </v-container>
   </v-card>
@@ -444,7 +450,7 @@ export default {
     images: {
       type: Array,
       default: function () {
-        return [new ImageTexture()]
+        return []
       }
     },
     property: Object

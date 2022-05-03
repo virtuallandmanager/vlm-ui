@@ -1,8 +1,8 @@
 <template>
-  <v-sheet max-width="960" class="mx-auto px-0" height="100%">
+  <v-sheet elevation="2" class="px-4 mx-auto fill-height" max-width="960">
     <v-container class="py-6 px-0 mx-auto" v-if="property">
-      <v-row>
-        <v-col>
+      <v-row no-gutters>
+        <v-col no-gutters>
           <v-btn @click="goBack">Back</v-btn>
         </v-col>
       </v-row>
@@ -36,10 +36,6 @@
               >
             </h1>
           </v-hover>
-        </v-col>
-      </v-row>
-      <v-row no-gutters v-if="lastUpdate">
-        <v-col no-gutters>
           <h5>
             Last updated {{ lastUpdate.howLongAgo }}
             <v-tooltip bottom>
@@ -54,33 +50,41 @@
               >
             </v-tooltip>
           </h5>
-        </v-col>
-      </v-row>
-      <v-row no-gutters>
-        <v-col no-gutters>
           <h5>
-            <!-- {{ property.parcels.length }} Parcel{{ -->
-            Base Parcel{{ property.parcels.length > 1 ? 's' : '' }}:
+            {{ property.parcels.length }} Parcel{{
+              property.parcels.length > 1 ? 's' : ''
+            }}
           </h5>
           <h6>
-            <span
-              v-for="coord in property.parcels"
-              v-bind:key="coord[0] + '-' + coord[1]"
-              ><nobr>{{ coord }}</nobr
-              >{{
-                coord == property.parcels[property.parcels.length - 1]
-                  ? ''
-                  : ', '
-              }}</span
-            >
+            <span>Base Parcel: {{ property.baseParcel }}</span>
           </h6>
         </v-col>
-        <div>
-          <!-- <parcel-map :property="property" wrapperClass="pa-4" hClass="pb-4" /> -->
-        </div>
+        <v-col no-gutters align="right">
+          <v-menu v-model="showParcelMap" transition="scale-transition" origin="top right" offset-y nudge-left="200">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon v-if="showParcelMap">
+                  mdi-close
+                </v-icon>
+                <v-icon v-else>
+                  mdi-map
+                </v-icon>
+              </v-btn>
+            </template>
+            <parcel-map
+              :property="property"
+              wrapperClass="pa-4 elevation-0"
+              hClass="pb-4 text-center"
+            />
+          </v-menu>
+        </v-col>
       </v-row>
       <v-row>
-        <v-col>
+        <v-col no-gutters>
           <v-tabs v-model="tab" centered icons-and-text>
             <v-tabs-slider></v-tabs-slider>
 
@@ -156,7 +160,7 @@
 </template>
 
 <script>
-// import ParcelMap from '../components/ParcelMap'
+import ParcelMap from '../components/ParcelMap'
 import AnalyticsSystem from '../components/AnalyticsSystem'
 import DialogSystem from '../components/DialogSystem'
 import ImageSystem from '../components/ImageSystem'
@@ -172,10 +176,11 @@ export default {
     DialogSystem,
     ImageSystem,
     VideoSystem,
-    ModerationSystem
-    // ParcelMap
+    ModerationSystem,
+    ParcelMap
   },
   data: () => ({
+    showParcelMap: false,
     editingName: false,
     deleteScreenDialog: false,
     editingScreenName: false,

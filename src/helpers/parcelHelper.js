@@ -125,17 +125,29 @@ export function groupAdjacentParcels(parcels) {
       parcelsAdded = 0;
     }
   }
-  return groupedParcels;
+  const sortedParcels = groupedParcels.map((group) =>
+    group.sort((a, b) => {
+      a = a.split(",");
+      b = b.split(",");
+
+      if (a[0] == b[0]) {
+        return a[1] - b[1];
+      }
+      return a[0] - b[0];
+    })
+  );
+  return sortedParcels;
 }
 
 export function findGroupForParcel(groupedParcels, ungroupedParcel) {
   return groupedParcels.find((g) => {
-    const groupedParcel = { x: g.split(",")[0], y: g.split(",")[1] };
+    const groupedParcel = { x: parseInt(g.split(",")[0]), y: parseInt(g.split(",")[1]) },
+      ungrouped = { x: parseInt(ungroupedParcel.x), y: parseInt(ungroupedParcel.y) };
 
-    const isNorth = groupedParcel.x == ungroupedParcel.x && groupedParcel.y == ungroupedParcel.y + 1,
-      isSouth = groupedParcel.x == ungroupedParcel.x && groupedParcel.y == ungroupedParcel.y - 1,
-      isEast = groupedParcel.y == ungroupedParcel.y && groupedParcel.x == ungroupedParcel.x + 1,
-      isWest = groupedParcel.y == ungroupedParcel.y && groupedParcel.x == ungroupedParcel.x - 1;
+    const isNorth = groupedParcel.x == ungrouped.x && groupedParcel.y == ungrouped.y - 1,
+      isSouth = groupedParcel.x == ungrouped.x && groupedParcel.y == ungrouped.y + 1,
+      isEast = groupedParcel.y == ungrouped.y && groupedParcel.x == ungrouped.x - 1,
+      isWest = groupedParcel.y == ungrouped.y && groupedParcel.x == ungrouped.x + 1;
 
     return isNorth || isSouth || isEast || isWest;
   });
