@@ -1,13 +1,12 @@
 import router from "../router";
 import Web3 from "web3";
-const web3 = new Web3(window.ethereum || window.web3.currentProvider);
+const web3 = new Web3(window.ethereum || (window.web3 && window.web3.currentProvider));
 
 export default {
   state: () => ({
     connected: false,
     account: "",
-    testAccount: "",
-    // testAccount: "0x30b1f4Bd5476906f38385B891f2c09973196b742",
+    // testAccount: "",
     loggingIn: false,
     loginError: null,
     noWeb3: false
@@ -49,7 +48,7 @@ export default {
         const accounts = await web3.eth.requestAccounts();
         console.log("Got connected accounts: ", accounts);
         commit("connectAccount", accounts[0]);
-        router.push('/land');
+        router.push("/land");
         commit("loginStop", null);
 
         window.ethereum.on("accountsChanged", function (accounts) {
@@ -61,9 +60,11 @@ export default {
     },
     async restoreLogin({ commit, state }) {
       console.log("Restoring session...");
+      if (!await web3.eth.getAccounts()) {
+        return;
+      }
       commit("loginStart");
-      const accounts = state.testAccount || await web3.eth.getAccounts();
-      console.log(accounts, localStorage.getItem("loggedInAccount"));
+      const accounts = state.testAccount || (await web3.eth.getAccounts());
       const loggedInAccount = state.testAccount || localStorage.getItem("loggedInAccount");
       if (accounts.includes(loggedInAccount)) {
         commit("connectAccount", loggedInAccount);
