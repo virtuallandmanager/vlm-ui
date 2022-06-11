@@ -120,23 +120,23 @@ export default {
       const newValue =
         parseFloat(this.xyz[key]) + this.multipliers[this.multiplierIndex]
       this.xyz[key] = this.roundToStep(newValue, 0.001)
-      this.updateProperties()
+      this.onChange()
     },
     decrement (key) {
       const newValue =
         parseFloat(this.xyz[key]) - this.multipliers[this.multiplierIndex]
       this.xyz[key] = this.roundToStep(newValue, 0.001)
-      this.updateProperties()
+      this.onChange()
     },
     directUpdate (key, value) {
       this.xyz[key] = parseFloat(value) || 0
-      this.updateProperties()
+      this.onChange()
     },
     setMultiplier (i) {
       this.multiplierIndex = i
     },
-    updateProperties () {
-      this.$emit('updateProperties')
+    onChange () {
+      this.$emit('onChange')
     }
   }
 }

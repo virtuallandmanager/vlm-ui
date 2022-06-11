@@ -4,14 +4,14 @@
       <v-row>
         <v-col>
           <div class="text-h6 font-weight-light text-left">
-            {{ property.propertyName || 'Unnamed Parcel' }}
+            {{ property.propertyName || "Unnamed Parcel" }}
           </div>
           <div class="text-subtitle-2 font-weight-medium text-left">
             {{ property.baseParcel }}
           </div>
           <div class="text-subtitle-2 font-weight-light text-left">
             {{ property.parcels.length }} Parcel{{
-              property.parcels.length > 1 ? 's' : ''
+              property.parcels.length > 1 ? "s" : ""
             }}
           </div>
         </v-col>
@@ -31,11 +31,11 @@
 </template>
 
 <script>
-import ParcelMap from './ParcelMap'
+import ParcelMap from "./ParcelMap";
 export default {
   components: { ParcelMap },
 
-  name: 'ParcelCard',
+  name: "ParcelCard",
 
   data: () => ({}),
   props: {
@@ -51,9 +51,9 @@ export default {
         banFlies: Boolean,
         banOtherWearables: Boolean,
         wearableWhiteList: Array,
-        otherWearablesToBan: Array
-      }
-    }
-  }
-}
+        otherWearablesToBan: Array,
+      },
+    },
+  },
+};
 </script>

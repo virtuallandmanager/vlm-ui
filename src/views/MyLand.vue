@@ -12,7 +12,11 @@
           <h1 class="display-2 font-weight-light mb-3">Land</h1>
         </v-col>
       </v-row>
-       <loader message="Loading your land..." :loading="fetchingUserLand" :grid="true"/>
+      <loader
+        message="Loading your land..."
+        :loading="fetchingUserLand"
+        :grid="true"
+      />
       <v-row class="text-center" v-if="!userLand.length && !fetchingUserLand">
         <v-col cols="12">
           <div class="text-h5">No land parcels found.</div>
@@ -39,7 +43,7 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import ParcelCard from "../components/ParcelCard";
-import Loader from "../components/Loader"
+import Loader from "../components/Loader";
 export default {
   components: { ParcelCard, Loader },
   name: "MyLand",
@@ -60,7 +64,7 @@ export default {
       fetchUserLand: "land/fetchUserLand",
     }),
     getSlug: (baseParcel) => {
-      return "land/" + baseParcel.split(',').join("/");
+      return "land/" + baseParcel.split(",").join("/");
     },
   },
 };

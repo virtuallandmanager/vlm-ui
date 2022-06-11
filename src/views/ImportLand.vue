@@ -96,152 +96,152 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-import * as parcelHelper from '../helpers/parcelHelper'
-import Loader from '../components/Loader'
+import { mapState, mapActions } from "vuex";
+import * as parcelHelper from "../helpers/parcelHelper";
+import Loader from "../components/Loader";
 
 export default {
-  name: 'ImportLand',
+  name: "ImportLand",
   data: () => ({
     parcelTypes: {
       DCL: {
         id: 0,
-        name: 'Decentraland Land',
+        name: "Decentraland Land",
         parcels: [],
         selectedParcels: [false],
         selectedBaseParcels: [],
         selectedBaseParcelErrors: [],
         group: false,
         adjacentParcelsPresent: false,
-        adjacentParcels: []
+        adjacentParcels: [],
       },
       DEED: {
         id: 1,
-        name: 'Aetheria Deed',
+        name: "Aetheria Deed",
         parcels: [],
         selectedParcels: [false],
         selectedBaseParcels: [],
         selectedBaseParcelErrors: [],
         group: false,
         adjacentParcelsPresent: false,
-        adjacentParcels: []
-      }
-    }
+        adjacentParcels: [],
+      },
+    },
   }),
   components: {
-    Loader
+    Loader,
   },
-  async mounted () {
-    console.log('mounted')
-    await this.fetchUnimportedParcels()
-    this.parcelTypes.DCL.parcels = this.unimportedParcels.parcels
-    this.parcelTypes.DEED.parcels = this.unimportedParcels.aetheriaDeeds
+  async mounted() {
+    console.log("mounted");
+    await this.fetchUnimportedParcels();
+    this.parcelTypes.DCL.parcels = this.unimportedParcels.parcels;
+    this.parcelTypes.DEED.parcels = this.unimportedParcels.aetheriaDeeds;
   },
   computed: {
     ...mapState({
-      unimportedParcels: state => state.land.unimportedParcels,
-      loading: state => state.land.fetchingParcels,
-      importingParcels: state => state.land.importingParcels
-    })
+      unimportedParcels: (state) => state.land.unimportedParcels,
+      loading: (state) => state.land.fetchingParcels,
+      importingParcels: (state) => state.land.importingParcels,
+    }),
   },
   methods: {
     ...mapActions({
-      fetchUnimportedParcels: 'land/fetchUnimportedParcels',
-      importParcels: 'land/importParcels'
+      fetchUnimportedParcels: "land/fetchUnimportedParcels",
+      importParcels: "land/importParcels",
     }),
-    createRows (parcels) {
-      console.log(parcels)
-      const selectedParcels = parcels.filter((x, i) => this.selectedDeeds[i])
-      return parcelHelper.getRowsAndCols(selectedParcels)
+    createRows(parcels) {
+      console.log(parcels);
+      const selectedParcels = parcels.filter((x, i) => this.selectedDeeds[i]);
+      return parcelHelper.getRowsAndCols(selectedParcels);
     },
-    groupAdjacentParcels (allParcels, selectedParcels, parcelType) {
-      const selections = allParcels.filter((x, i) => selectedParcels[i])
+    groupAdjacentParcels(allParcels, selectedParcels, parcelType) {
+      const selections = allParcels.filter((x, i) => selectedParcels[i]);
 
-      const adjacent = parcelHelper.groupAdjacentParcels(selections)
+      const adjacent = parcelHelper.groupAdjacentParcels(selections);
       if (adjacent[0].length <= 1) {
-        return
+        return;
       }
       if (parcelType == this.parcelTypes.DCL.id) {
-        this.parcelTypes.DCL.adjacentParcels = adjacent
+        this.parcelTypes.DCL.adjacentParcels = adjacent;
         this.parcelTypes.DCL.adjacentParcelsPresent = adjacent.some(
-          group => group.length > 1
-        )
+          (group) => group.length > 1
+        );
       } else if (parcelType == this.parcelTypes.DEED.id) {
-        this.parcelTypes.DEED.adjacentParcels = adjacent
+        this.parcelTypes.DEED.adjacentParcels = adjacent;
         this.parcelTypes.DEED.adjacentParcelsPresent = adjacent.some(
-          group => group.length > 1
-        )
+          (group) => group.length > 1
+        );
       }
-      return adjacent
+      return adjacent;
     },
-    convertCoords (parcel) {
-      return `${parcel.x},${parcel.y}`
+    convertCoords(parcel) {
+      return `${parcel.x},${parcel.y}`;
     },
-    async processAndImportParcels () {
+    async processAndImportParcels() {
       let parcelsToImport = this.parcelTypes.DCL.parcels.filter(
         (parcel, i) => this.parcelTypes.DCL.selectedParcels[i]
-      )
+      );
       let deedsToImport = this.parcelTypes.DEED.parcels.filter(
         (parcel, i) => this.parcelTypes.DEED.selectedParcels[i]
-      )
+      );
 
-      let hasError = false
+      let hasError = false;
 
       if (
         this.parcelTypes.DCL.adjacentParcelsPresent &&
         this.parcelTypes.DCL.group
       ) {
         this.parcelTypes.DCL.adjacentParcels.forEach((adjacentParcel, i) => {
-          const selectedBaseParcel = this.parcelTypes.DCL.selectedBaseParcels[i]
+          const selectedBaseParcel =
+            this.parcelTypes.DCL.selectedBaseParcels[i];
           if (selectedBaseParcel) {
-            this.parcelTypes.DCL.selectedBaseParcelErrors[i] = ''
+            this.parcelTypes.DCL.selectedBaseParcelErrors[i] = "";
           } else {
             this.parcelTypes.DCL.selectedBaseParcelErrors[i] =
-              'Select a base parcel for this group'
-            this.$forceUpdate()
-            hasError = true
+              "Select a base parcel for this group";
+            this.$forceUpdate();
+            hasError = true;
           }
-        })
+        });
       }
       if (
         this.parcelTypes.DEED.adjacentParcelsPresent &&
         this.parcelTypes.DEED.group
       ) {
         this.parcelTypes.DEED.adjacentParcels.forEach((adjacentParcel, i) => {
-          const selectedBaseParcel = this.parcelTypes.DEED.selectedBaseParcels[
-            i
-          ]
+          const selectedBaseParcel =
+            this.parcelTypes.DEED.selectedBaseParcels[i];
           if (selectedBaseParcel) {
-            this.parcelTypes.DEED.selectedBaseParcelErrors[i] = ''
+            this.parcelTypes.DEED.selectedBaseParcelErrors[i] = "";
           } else {
             this.parcelTypes.DEED.selectedBaseParcelErrors[i] =
-              'Select a base parcel for this group'
-            this.$forceUpdate()
-            hasError = true
+              "Select a base parcel for this group";
+            this.$forceUpdate();
+            hasError = true;
           }
-        })
+        });
       }
       if (hasError) {
-        return
+        return;
       }
 
       parcelsToImport = this.mapBaseParcelWithXY(
         parcelsToImport,
         this.parcelTypes.DCL
-      )
+      );
       deedsToImport = this.mapBaseParcelWithXY(
         deedsToImport,
         this.parcelTypes.DEED
-      )
+      );
 
-      console.log(parcelsToImport, deedsToImport)
-      await this.importParcels([...parcelsToImport, ...deedsToImport])
-      this.goBack()
+      console.log(parcelsToImport, deedsToImport);
+      await this.importParcels([...parcelsToImport, ...deedsToImport]);
+      this.goBack();
     },
-    mapBaseParcelWithXY (parcelsToImport, parcelType) {
-      return parcelsToImport.map(parcel => {
+    mapBaseParcelWithXY(parcelsToImport, parcelType) {
+      return parcelsToImport.map((parcel) => {
         const parcelStr = `${parcel.x},${parcel.y}`,
-          adjacentParcelGroup = parcelType.adjacentParcels.findIndex(group =>
+          adjacentParcelGroup = parcelType.adjacentParcels.findIndex((group) =>
             group.includes(parcelStr)
           ),
           baseParcel =
@@ -250,27 +250,27 @@ export default {
               : parcelStr,
           x = parcel.x,
           y = parcel.y,
-          tokenId = parcel.tokenId
-        return { tokenId, baseParcel, x, y }
-      })
+          tokenId = parcel.tokenId;
+        return { tokenId, baseParcel, x, y };
+      });
     },
-    enableGrouping () {
+    enableGrouping() {
       this.parcelTypes.DCL.adjacentParcels.forEach((group, i) => {
-        this.parcelTypes.DCL.selectedBaseParcelErrors[i] = ''
-      })
+        this.parcelTypes.DCL.selectedBaseParcelErrors[i] = "";
+      });
       this.parcelTypes.DEED.adjacentParcels.forEach((group, i) => {
-        this.parcelTypes.DEED.selectedBaseParcelErrors[i] = ''
-      })
+        this.parcelTypes.DEED.selectedBaseParcelErrors[i] = "";
+      });
     },
-    setBaseParcelErrors (i) {
-      this.parcelTypes.DCL.selectedBaseParcelErrors[i] = ''
-      this.parcelTypes.DEED.selectedBaseParcelErrors[i] = ''
+    setBaseParcelErrors(i) {
+      this.parcelTypes.DCL.selectedBaseParcelErrors[i] = "";
+      this.parcelTypes.DEED.selectedBaseParcelErrors[i] = "";
     },
-    goBack () {
-      this.$router.go(-1)
-    }
-  }
-}
+    goBack() {
+      this.$router.go(-1);
+    },
+  },
+};
 </script>
 
 <style scoped>

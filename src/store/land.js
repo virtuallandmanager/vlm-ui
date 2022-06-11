@@ -9,7 +9,13 @@ export default {
     fetchingUserLand: false,
     userLand: [],
     sceneDefault: {
-      dialogs: [{ dialogType: 0, enabled: false, messages: [] }],
+      dialogs: [
+        {
+          dialogType: 0,
+          enabled: false,
+          messages: []
+        }
+      ],
       audioStream: {},
       entities: [{}],
       videoSystems: [
@@ -36,7 +42,8 @@ export default {
       moderation: {
         allowCertainWearables: false,
         banCertainWearables: false
-      }
+      },
+      customizations: []
     }
   }),
   getters: {
@@ -67,7 +74,10 @@ export default {
     },
     updateUserLand: (state, updatedProperty) => {
       const storedParcelIndex = state.userLand.findIndex((property) => property.baseParcel == updatedProperty.baseParcel);
-      state.userLand[storedParcelIndex] = { ...state.sceneDefault, ...updatedProperty };
+      state.userLand[storedParcelIndex] = {
+        ...state.sceneDefault,
+        ...updatedProperty
+      };
     },
     parcelUpdateStart: (state) => (state.updatingParcel = true),
     parcelUpdateStop: (state, errorMessage) => {
@@ -79,8 +89,14 @@ export default {
     },
     loadUserLand: (state, parcels) => {
       state.userLand = parcels.map((property) => {
-        const sceneData = { ...state.sceneDefault, ...property.sceneData };
-        return { ...property, sceneData };
+        const sceneData = {
+          ...state.sceneDefault,
+          ...property.sceneData
+        };
+        return {
+          ...property,
+          sceneData
+        };
       });
     }
   },

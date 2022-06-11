@@ -4,7 +4,10 @@ export class ClickEvent {
   hoverText = "";
   externalLink = "";
   sound = "";
-  moveTo = { position: { x: 0, y: 0, z: 0 }, cameraTarget: { x: 0, y: 0, z: 0 } };
+  moveTo = {
+    position: { x: 0, y: 0, z: 0 },
+    cameraTarget: { x: 0, y: 0, z: 0 },
+  };
   teleportTo = "";
 
   constructor() {}

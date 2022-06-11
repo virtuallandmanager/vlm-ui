@@ -12,7 +12,7 @@ const router = new Router({
     {
       path: "",
       name: "Home",
-      component: Home
+      component: Home,
     },
     {
       path: "/about",
@@ -20,38 +20,46 @@ const router = new Router({
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ "../views/About.vue")
+      component: () =>
+        import(/* webpackChunkName: "about" */ "../views/About.vue"),
     },
     {
       path: "/land",
       name: "Land",
-      component: () => import(/* webpackChunkName: "land" */ "../views/Land.vue"),
+      component: () =>
+        import(/* webpackChunkName: "land" */ "../views/Land.vue"),
       children: [
         {
           path: "",
           name: "MyLand",
-          component: () => import(/* webpackChunkName: "myland" */ "../views/MyLand.vue")
+          component: () =>
+            import(/* webpackChunkName: "myland" */ "../views/MyLand.vue"),
         },
         {
           path: "import",
           name: "ImportLand",
-          component: () => import(/* webpackChunkName: "importland" */ "../views/ImportLand.vue")
+          component: () =>
+            import(
+              /* webpackChunkName: "importland" */ "../views/ImportLand.vue"
+            ),
         },
         {
           path: ":xCoord",
           name: "Parcel",
-          component: () => import(/* webpackChunkName: "parcel" */ "../views/Parcel.vue"),
+          component: () =>
+            import(/* webpackChunkName: "parcel" */ "../views/Parcel.vue"),
           children: [
             {
               path: ":yCoord",
               name: "Parcel",
-              component: () => import(/* webpackChunkName: "parcel" */ "../views/Parcel.vue")
-            }
-          ]
-        }
-      ]
-    }
-  ]
+              component: () =>
+                import(/* webpackChunkName: "parcel" */ "../views/Parcel.vue"),
+            },
+          ],
+        },
+      ],
+    },
+  ],
 });
 
 router.beforeEach(async (to, from, next) => {

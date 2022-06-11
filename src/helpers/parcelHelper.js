@@ -141,13 +141,23 @@ export function groupAdjacentParcels(parcels) {
 
 export function findGroupForParcel(groupedParcels, ungroupedParcel) {
   return groupedParcels.find((g) => {
-    const groupedParcel = { x: parseInt(g.split(",")[0]), y: parseInt(g.split(",")[1]) },
-      ungrouped = { x: parseInt(ungroupedParcel.x), y: parseInt(ungroupedParcel.y) };
+    const groupedParcel = {
+        x: parseInt(g.split(",")[0]),
+        y: parseInt(g.split(",")[1]),
+      },
+      ungrouped = {
+        x: parseInt(ungroupedParcel.x),
+        y: parseInt(ungroupedParcel.y),
+      };
 
-    const isNorth = groupedParcel.x == ungrouped.x && groupedParcel.y == ungrouped.y - 1,
-      isSouth = groupedParcel.x == ungrouped.x && groupedParcel.y == ungrouped.y + 1,
-      isEast = groupedParcel.y == ungrouped.y && groupedParcel.x == ungrouped.x - 1,
-      isWest = groupedParcel.y == ungrouped.y && groupedParcel.x == ungrouped.x + 1;
+    const isNorth =
+        groupedParcel.x == ungrouped.x && groupedParcel.y == ungrouped.y - 1,
+      isSouth =
+        groupedParcel.x == ungrouped.x && groupedParcel.y == ungrouped.y + 1,
+      isEast =
+        groupedParcel.y == ungrouped.y && groupedParcel.x == ungrouped.x - 1,
+      isWest =
+        groupedParcel.y == ungrouped.y && groupedParcel.x == ungrouped.x + 1;
 
     return isNorth || isSouth || isEast || isWest;
   });

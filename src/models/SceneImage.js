@@ -1,14 +1,14 @@
 import { nanoid } from "nanoid";
 import { ClickEvent } from "./ClickEvent";
-import { ImageInstance } from "./ImageInstance";
+import { SceneImageInstance } from "./SceneImageInstance";
 
-export class ImageTexture {
+export class SceneImage {
   id = nanoid(6);
   show = true;
   name = "";
   imageLink = "";
   clickEvent = new ClickEvent();
-  instances = [new ImageInstance()];
+  instances = [new SceneImageInstance()];
   isTransparent = false;
 
   constructor() {}

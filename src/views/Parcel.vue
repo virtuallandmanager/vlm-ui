@@ -1,8 +1,8 @@
 <template>
-  <v-sheet elevation="2" class="px-4 mx-auto fill-height" max-width="960">
-    <v-container class="py-6 px-0 mx-auto" v-if="property">
-      <v-row no-gutters>
-        <v-col no-gutters>
+  <v-sheet elevation="2" class="mx-auto fill-height pb-4" max-width="960" v-if="property">
+    <v-container v-if="property">
+      <v-row>
+        <v-col>
           <v-btn @click="goBack">Back</v-btn>
         </v-col>
       </v-row>
@@ -60,19 +60,17 @@
           </h6>
         </v-col>
         <v-col no-gutters align="right">
-          <v-menu v-model="showParcelMap" transition="scale-transition" origin="top right" offset-y nudge-left="200">
+          <v-menu
+            v-model="showParcelMap"
+            transition="scale-transition"
+            origin="top right"
+            offset-y
+            nudge-left="200"
+          >
             <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                icon
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon v-if="showParcelMap">
-                  mdi-close
-                </v-icon>
-                <v-icon v-else>
-                  mdi-map
-                </v-icon>
+              <v-btn icon v-bind="attrs" v-on="on">
+                <v-icon v-if="showParcelMap"> mdi-close </v-icon>
+                <v-icon v-else> mdi-map </v-icon>
               </v-btn>
             </template>
             <parcel-map
@@ -83,100 +81,99 @@
           </v-menu>
         </v-col>
       </v-row>
-      <v-row>
-        <v-col no-gutters>
-          <v-tabs v-model="tab" centered icons-and-text>
-            <v-tabs-slider></v-tabs-slider>
+    </v-container>
+    <v-tabs v-model="tab" centered icons-and-text>
+      <v-tabs-slider></v-tabs-slider>
 
-            <v-tab href="#tab-1">
-              Analytics
-              <v-icon>mdi-chart-timeline-variant</v-icon>
-            </v-tab>
-            <v-tab href="#tab-2">
-              Dialogs
-              <v-icon>mdi-message</v-icon>
-            </v-tab>
-            <v-tab href="#tab-3">
-              Video Screens
-              <v-icon>mdi-video</v-icon>
-            </v-tab>
-            <v-tab href="#tab-4">
-              Images
-              <v-icon>mdi-image</v-icon>
-            </v-tab>
-            <!-- <v-tab href="#tab-5" disabled>
+      <v-tab href="#tab-1">
+        Analytics
+        <v-icon>mdi-chart-timeline-variant</v-icon>
+      </v-tab>
+      <v-tab href="#tab-2">
+        Dialogs
+        <v-icon>mdi-message</v-icon>
+      </v-tab>
+      <v-tab href="#tab-3">
+        Video Screens
+        <v-icon>mdi-video</v-icon>
+      </v-tab>
+      <v-tab href="#tab-4">
+        Images
+        <v-icon>mdi-image</v-icon>
+      </v-tab>
+      <!-- <v-tab href="#tab-5" disabled>
               Moderation
               <v-icon>mdi-gavel</v-icon>
             </v-tab> -->
-          </v-tabs>
+      <v-tab href="#tab-6">
+        Customizations
+        <v-icon>mdi-palette</v-icon>
+      </v-tab>
+    </v-tabs>
 
-          <v-tabs-items v-model="tab" class="elevation-2">
-            <v-tab-item :value="'tab-1'">
-              <v-card raised elevation="2">
-                <analytics-system
-                  :baseParcel="property.baseParcel"
-                  @updateProperties="updateProperties"
-                />
-              </v-card>
-            </v-tab-item>
-            <v-tab-item :value="'tab-2'">
-              <v-card raised elevation="2">
-                <dialog-system
-                  :dialogs="property.sceneData.dialogs"
-                  @updateProperties="updateProperties"
-                />
-              </v-card>
-            </v-tab-item>
-            <v-tab-item :value="'tab-3'">
-              <v-card raised elevation="2">
-                <video-system
-                  :screens="property.sceneData.videoSystems"
-                  @updateProperties="updateProperties"
-                />
-              </v-card>
-            </v-tab-item>
-            <v-tab-item :value="'tab-4'">
-              <v-card raised elevation="2">
-                <image-system
-                  :images="property.sceneData.imageTextures"
-                  :property="property"
-                  @updateProperties="updateProperties"
-                />
-              </v-card>
-            </v-tab-item>
-            <v-tab-item :value="'tab-5'">
-              <v-card raised elevation="2">
-                <moderation-system
-                  :settings="property.sceneData.moderation"
-                  @updateProperties="updateProperties"
-                />
-              </v-card>
-            </v-tab-item>
-          </v-tabs-items>
-        </v-col>
-      </v-row>
-    </v-container>
+    <v-tabs-items v-model="tab" class="elevation-0" v-if="property">
+      <v-tab-item :value="'tab-1'">
+        <scene-analytics
+          :baseParcel="property.baseParcel"
+          @updateProperties="updateProperties"
+        />
+      </v-tab-item>
+      <v-tab-item :value="'tab-2'">
+        <scene-dialog-list
+          :dialogs="property.sceneData.dialogs"
+          @updateProperties="updateProperties"
+        />
+      </v-tab-item>
+      <v-tab-item :value="'tab-3'">
+        <scene-video-list
+          :videos="property.sceneData.videoSystems"
+          @updateProperties="updateProperties"
+        />
+      </v-tab-item>
+      <v-tab-item :value="'tab-4'">
+        <scene-image-list
+          :images="property.sceneData.imageTextures"
+          :property="property"
+          @updateProperties="updateProperties"
+        />
+      </v-tab-item>
+      <v-tab-item :value="'tab-5'">
+        <scene-moderation
+          :settings="property.sceneData.moderation"
+          @updateProperties="updateProperties"
+        />
+      </v-tab-item>
+      <v-tab-item :value="'tab-6'">
+        <scene-customization-list
+          :customizations="property.sceneData.customizations"
+          @updateProperties="updateProperties"
+        />
+      </v-tab-item>
+    </v-tabs-items>
   </v-sheet>
 </template>
 
 <script>
 import ParcelMap from '../components/ParcelMap'
-import AnalyticsSystem from '../components/AnalyticsSystem'
-import DialogSystem from '../components/DialogSystem'
-import ImageSystem from '../components/ImageSystem'
-import VideoSystem from '../components/VideoSystem'
-import ModerationSystem from '../components/ModerationSystem'
+import SceneAnalytics from '../components/SceneAnalytics'
+import SceneDialogList from '../components/SceneDialogList'
+import SceneImageList from '../components/SceneImageList'
+import SceneVideoList from '../components/SceneVideoList'
+import SceneModeration from '../components/SceneModeration'
+import SceneCustomizationList from '../components/SceneCustomizationList'
+// import Property from '../models/Property'
 import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
 
 export default {
   name: 'Parcel',
   components: {
-    AnalyticsSystem,
-    DialogSystem,
-    ImageSystem,
-    VideoSystem,
-    ModerationSystem,
+    SceneAnalytics,
+    SceneDialogList,
+    SceneImageList,
+    SceneVideoList,
+    SceneModeration,
+    SceneCustomizationList,
     ParcelMap
   },
   data: () => ({
@@ -184,7 +181,7 @@ export default {
     editingName: false,
     deleteScreenDialog: false,
     editingScreenName: false,
-    tab: null
+    tab: null,
   }),
   created () {
     this.$watch(
@@ -205,6 +202,7 @@ export default {
     if (!this.userLand || !this.userLand.length) {
       this.fetchUserLand()
     }
+    console.log(this.property)
   },
   computed: {
     ...mapGetters('land', ['userLand']),

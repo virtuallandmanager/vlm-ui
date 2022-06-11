@@ -15,14 +15,13 @@
         <v-icon>mdi-rotate-360</v-icon>
       </v-tab>
     </v-tabs>
-
-    <v-tabs-items v-model="mode" class="elevation-2 mx-auto">
+    <v-tabs-items v-model="mode" class="mx-auto">
       <v-tab-item :value="mode">
         <x-y-z-buttons
-          :xyz="instance[mode]"
+          :xyz="entity[mode]"
           :value="mode"
           :isPlane="isPlane"
-          @updateProperties="updateProperties"
+          @onChange="onChange"
           class="mx-auto"
         />
       </v-tab-item>
@@ -31,49 +30,42 @@
 </template>
 
 <script>
-import XYZButtons from './XYZButtons.vue'
+import XYZButtons from "./XYZButtons.vue";
 export default {
   components: { XYZButtons },
-  name: 'MoveScaleRotate',
+  name: "MoveScaleRotate",
 
   data: () => ({
-    mode: 'scale'
+    mode: "position",
   }),
   props: {
-    instance: {
+    entity: {
       name: String,
       position: {
         x: Number,
         y: Number,
-        z: Number
+        z: Number,
       },
       scale: {
         x: Number,
         y: Number,
-        z: Number
+        z: Number,
       },
       rotation: {
         x: Number,
         y: Number,
-        z: Number
-      }
+        z: Number,
+      },
     },
     isPlane: {
       type: Boolean,
-      default: false
-    }
-  },
-  created () {
-    console.log(this.isPlane)
+      default: false,
+    },
   },
   methods: {
-    updateProperties () {
-      this.$emit('updateProperties', {
-        action: 'update',
-        entity: 'image',
-        property: 'transform'
-      })
-    }
-  }
-}
+    onChange() {
+      this.$emit("onChange");
+    },
+  },
+};
 </script>

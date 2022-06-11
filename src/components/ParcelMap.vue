@@ -1,18 +1,15 @@
 <template>
-  <v-card
-    :elevation="hideWrapper ? 0 : 2"
-    :class="wrapperClass"
-  >
+  <v-card :elevation="hideWrapper ? 0 : 2" :class="wrapperClass">
     <h5 v-if="!hideWrapper" :class="hClass">Parcel Map</h5>
     <div
       class="mx-auto"
       id="parcelMap"
       :style="
         'height:' +
-          (propertyRows * 20 + 2) +
-          'px; width:' +
-          (propertyCols * 20 + 2) +
-          'px'
+        (propertyRows * 20 + 2) +
+        'px; width:' +
+        (propertyCols * 20 + 2) +
+        'px'
       "
     >
       <div v-for="(parcel, i) in mappedParcels" :key="i">
@@ -27,77 +24,80 @@
 </template>
 
 <script>
-import * as parcelHelper from '../helpers/parcelHelper.js'
+import * as parcelHelper from "../helpers/parcelHelper.js";
 export default {
-  name: 'ParcelMap',
+  name: "ParcelMap",
   data: () => ({}),
   props: {
     property: {
       baseParcel: String,
-      parcels: Array
+      parcels: Array,
     },
     hideWrapper: { type: Boolean, default: false },
-    wrapperClass: { type: String, default: '' },
-    hClass: { type: String, default: '' }
+    wrapperClass: { type: String, default: "" },
+    hClass: { type: String, default: "" },
   },
   computed: {
-    mappedParcels () {
-      return this.computeParcels()
+    mappedParcels() {
+      return this.computeParcels();
     },
-    sortedCoords () {
-      const coords = this.property.parcels.map(parcel => [parcel.x, parcel.y])
+    sortedCoords() {
+      const coords = this.property.parcels.map((parcel) => [
+        parcel.x,
+        parcel.y,
+      ]);
       return coords.sort((a, b) => {
         if (a[0] == b[0]) {
-          return a[1] - b[1]
+          return a[1] - b[1];
         }
-        return a[0] - b[0]
-      })
+        return a[0] - b[0];
+      });
     },
-    xCoords () {
-      return parcelHelper.xCoords(this.property.parcels)
+    xCoords() {
+      return parcelHelper.xCoords(this.property.parcels);
     },
-    yCoords () {
-      return parcelHelper.yCoords(this.property.parcels)
+    yCoords() {
+      return parcelHelper.yCoords(this.property.parcels);
     },
-    propertyRows () {
-      return parcelHelper.propertyRows(this.yCoords)
+    propertyRows() {
+      return parcelHelper.propertyRows(this.yCoords);
     },
-    propertyCols () {
-      return parcelHelper.propertyCols(this.xCoords)
-    }
+    propertyCols() {
+      return parcelHelper.propertyCols(this.xCoords);
+    },
   },
   methods: {
-    computeParcels () {
-      const baseParcel = this.property.baseParcel.split(',')
-      const mappedParcels = this.sortedCoords.map(coord => {
-        const xOffset = (coord[0] - parcelHelper.lowestX(this.xCoords)) * 20
-        const yOffset = (coord[1] - parcelHelper.lowestY(this.yCoords)) * 20
+    computeParcels() {
+      const baseParcel = this.property.baseParcel.split(",");
+      const mappedParcels = this.sortedCoords.map((coord) => {
+        const xOffset = (coord[0] - parcelHelper.lowestX(this.xCoords)) * 20;
+        const yOffset = (coord[1] - parcelHelper.lowestY(this.yCoords)) * 20;
 
         const parcel = {
           coords: coord,
           baseParcel: false,
           x: xOffset,
-          y: yOffset
-        }
+          y: yOffset,
+        };
 
         if (coord[0] == baseParcel[0] && coord[1] == baseParcel[1]) {
           console.log(
             this.property.name +
               "'s base parcel is " +
               baseParcel[0] +
-              ', ' +
+              ", " +
               baseParcel[1]
-          )
-          parcel.baseParcel = true
+          );
+          parcel.baseParcel = true;
         }
 
-        return parcel
-      })
+        return parcel;
+      });
 
-      return mappedParcels
-    }
-  }
-}
+      return mappedParcels;
+    },
+  },
+};
 </script>
 
 <style scoped>

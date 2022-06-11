@@ -131,7 +131,7 @@
 
 <script>
 export default {
-  name: 'ModerationSystem',
+  name: "SceneModeration",
 
   data: () => ({
     defaultModerationSettings: {
@@ -141,65 +141,65 @@ export default {
       banFlies: false,
       banOtherWearables: false,
       allowCertainWearables: false,
-      wearableWhiteList: [{ contractId: '', tokenId: '' }],
-      otherWearablesToBan: [{ contractId: '', tokenId: '' }]
-    }
+      wearableWhiteList: [{ contractId: "", tokenId: "" }],
+      otherWearablesToBan: [{ contractId: "", tokenId: "" }],
+    },
   }),
   props: {
     settings: {
-      type: Object
-    }
+      type: Object,
+    },
   },
-  mounted () {
+  mounted() {
     for (const [key, value] of Object.entries(this.defaultModerationSettings)) {
       if (typeof this.settings[key] == "undefined") {
-        this.settings[key] = value
+        this.settings[key] = value;
       }
     }
   },
   computed: {},
   methods: {
-    toggleBannedWearables () {
+    toggleBannedWearables() {
       if (this.settings.allowCertainWearables) {
-        this.settings.allowCertainWearables = false
+        this.settings.allowCertainWearables = false;
       }
-      this.updateProperties()
+      this.updateProperties();
     },
-    toggleWhitelistedWearables () {
+    toggleWhitelistedWearables() {
       if (this.settings.banCertainWearables) {
-        this.settings.banCertainWearables = false
+        this.settings.banCertainWearables = false;
       }
-      this.updateProperties()
+      this.updateProperties();
     },
-    addBannedItem () {
-      const nextItem = { contractId: '', tokenId: '' }
-      this.settings.otherWearablesToBan.push(nextItem)
-      this.updateProperties()
+    addBannedItem() {
+      const nextItem = { contractId: "", tokenId: "" };
+      this.settings.otherWearablesToBan.push(nextItem);
+      this.updateProperties();
     },
-    removeBannedItem (i) {
+    removeBannedItem(i) {
       if (this.settings.otherWearablesToBan.length < 2) {
-        this.settings.banOtherWearables = false
-        this.settings.otherWearablesToBan = [{ contractId: '', tokenId: '' }]
+        this.settings.banOtherWearables = false;
+        this.settings.otherWearablesToBan = [{ contractId: "", tokenId: "" }];
       }
-      this.settings.otherWearablesToBan.splice(i, 1)
-      this.updateProperties()
+      this.settings.otherWearablesToBan.splice(i, 1);
+      this.updateProperties();
     },
-    addWhitelistItem () {
-      const nextItem = { contractId: '', tokenId: '' }
-      this.settings.wearableWhiteList.push(nextItem)
-      this.updateProperties()
+    addWhitelistItem() {
+      const nextItem = { contractId: "", tokenId: "" };
+      this.settings.wearableWhiteList.push(nextItem);
+      this.updateProperties();
     },
-    removeWhitelistItem (i) {
+    removeWhitelistItem(i) {
       if (this.settings.wearableWhiteList.length < 2) {
-        this.settings.allowCertainWearables = false
-        this.settings.wearableWhiteList = [{ contractId: '', tokenId: '' }]
+        this.settings.allowCertainWearables = false;
+        this.settings.wearableWhiteList = [{ contractId: "", tokenId: "" }];
       }
-      this.settings.wearableWhiteList.splice(i, 1)
-      this.updateProperties()
+      this.settings.wearableWhiteList.splice(i, 1);
+      this.updateProperties();
     },
-    updateProperties () {
-      this.$emit('updateProperties')
-    }
-  }
-}
+    updateProperties() {
+      this.$emit("updateProperties");
+    },
+  },
+};
 </script>

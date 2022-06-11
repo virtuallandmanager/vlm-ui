@@ -11,7 +11,10 @@
     <div class="text-subtitle-2 font-weight-medium text-left">
       {{ property.baseParcel }}
     </div>
-    <div v-if="property.parcels.length" class="text-subtitle-2 font-weight-light text-left">
+    <div
+      v-if="property.parcels.length"
+      class="text-subtitle-2 font-weight-light text-left"
+    >
       {{ property.parcels.length }} Parcel{{
         property.parcels.length > 1 ? "s" : ""
       }}
