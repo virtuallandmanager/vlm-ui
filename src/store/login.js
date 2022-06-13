@@ -8,7 +8,7 @@ export default {
   state: () => ({
     connected: false,
     // account: "",
-    testAccount: "0xc2877b05CFe462E585fE3DE8046F7528998aF6F1",
+    // testAccount: "0xc2877b05CFe462E585fE3DE8046F7528998aF6F1",
     loggingIn: false,
     loginError: null,
     noWeb3: false,
