@@ -93,6 +93,8 @@ export default {
     multipliers () {
       if (this.value == 'rotation') {
         return [90, 45, 22.5, 10, 5, 1]
+      } else if (this.value == 'scale') {
+        return [10, 2, 1.5, 1.1, 1.01, 1.001]
       } else {
         return [10, 1, 0.1, 0.01, 0.001, 0.0001]
       }
@@ -117,14 +119,26 @@ export default {
       return Math.round(value * inv) / inv
     },
     increment (key) {
-      const newValue =
-        parseFloat(this.xyz[key]) + this.multipliers[this.multiplierIndex]
+      let newValue
+      if (this.value == 'scale') {
+        newValue =
+          parseFloat(this.xyz[key]) * this.multipliers[this.multiplierIndex]
+      } else {
+        newValue =
+          parseFloat(this.xyz[key]) + this.multipliers[this.multiplierIndex]
+      }
       this.xyz[key] = this.roundToStep(newValue, 0.001)
       this.onChange()
     },
     decrement (key) {
-      const newValue =
-        parseFloat(this.xyz[key]) - this.multipliers[this.multiplierIndex]
+      let newValue
+      if (this.value == 'scale') {
+        newValue =
+          parseFloat(this.xyz[key]) / this.multipliers[this.multiplierIndex]
+      } else {
+        newValue =
+          parseFloat(this.xyz[key]) - this.multipliers[this.multiplierIndex]
+      }
       this.xyz[key] = this.roundToStep(newValue, 0.001)
       this.onChange()
     },

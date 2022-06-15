@@ -1,6 +1,8 @@
 export default {
   namespaced: true,
   state: () => ({
+    error: false,
+    errorMessage: "",
     unimportedParcels: {
       parcels: [],
       aetheriaParcels: []
@@ -51,7 +53,9 @@ export default {
     userLand: (state) => state.userLand,
     fetchingUserLand: (state) => state.fetchingUserLand,
     property: (state, getters) => (xCoord, yCoord) => getters.userLand && getters.userLand.find((property) => property.baseParcel == xCoord + "," + yCoord),
-    lastUpdate: (state, getters) => (xCoord, yCoord) => getters.property(xCoord, yCoord).lastUpdate
+    lastUpdate: (state, getters) => (xCoord, yCoord) => getters.property(xCoord, yCoord).lastUpdate,
+    error: (state) => state.error,
+    errorMessage: (state) => state.errorMessage,
   },
   mutations: {
     clearUserLand: (state) => {
@@ -82,7 +86,10 @@ export default {
     parcelUpdateStart: (state) => (state.updatingParcel = true),
     parcelUpdateStop: (state, errorMessage) => {
       state.updatingParcel = false;
-      state.updateError = errorMessage;
+      if (errorMessage) {
+        state.error = true;
+        state.errorMessage = errorMessage;
+      }
     },
     loadFetchedParcels: (state, parcels) => {
       state.unimportedParcels = parcels;
@@ -98,9 +105,18 @@ export default {
           sceneData
         };
       });
+    },
+    setErrorState: (state, errorState) => {
+      state.error = errorState;
+      if (!errorState) {
+        state.errorMessage = "";
+      }
     }
   },
   actions: {
+    setErrorState({ commit }, errorState) {
+      commit("setErrorState", errorState);
+    },
     async fetchUserLand({ commit }) {
       commit("clearUserLand");
       commit("userLandFetchStart");
@@ -148,8 +164,11 @@ export default {
         commit("parcelImportStop", error);
       }
     },
-    async updateLandProperties({ commit }, options) {
-      const property = options.property;
+    async updateLandProperties({ commit, getters }, options) {
+      const property = options.property,
+        coords = options.property.baseParcel.split(","),
+        xCoord = coords[0],
+        yCoord = coords[1];
       const payload = {
         method: "POST",
         headers: {
@@ -158,6 +177,7 @@ export default {
         body: JSON.stringify({
           wssMessages: options.wssMessages,
           wallet: this.state.login.account,
+          lastUpdate: getters.lastUpdate(xCoord, yCoord),
           property
         })
       };
@@ -168,8 +188,12 @@ export default {
       try {
         const response = await fetch(`${process.env.VUE_APP_API_URL}/land/update`, payload);
         const updatedProperty = await response.json();
-        commit("updateUserLand", updatedProperty);
-        commit("parcelUpdateStop");
+        if (response.status !== 200) {
+          commit("parcelUpdateStop", updatedProperty.text);
+        } else {
+          commit("updateUserLand", updatedProperty);
+          commit("parcelUpdateStop");
+        }
       } catch (error) {
         commit("parcelUpdateStop", error);
       }

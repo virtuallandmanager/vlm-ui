@@ -5,24 +5,41 @@
         {{ entityType.capitalize() }} Properties
       </v-card-title>
       <v-card-text>
+        <div
+          v-if="entityType == 'image' && !instance"
+          class="text-body1 font-weight-bold"
+        >
+          Appearance
+        </div>
         <v-switch
           v-if="entityType == 'image' && !instance"
           v-model="refObj.isTransparent"
           label="Enable Transparency"
           @change="changeTransparency"
         ></v-switch>
+        <div class="text-body1 font-weight-bold">Advanced Features</div>
         <v-text-field
           v-model="refObj.customId"
           label="Custom ID"
-          dense
           @change="changeId"
+          placeholder="Custom ID"
         ></v-text-field>
         <v-text-field
           v-model="refObj.parent"
           label="Parent Entity"
           dense
           @change="changeParent"
+          hide-details="true"
+          placeholder="Parent Entity"
         ></v-text-field>
+        <v-switch
+          v-model="customRendering"
+          label="Enable Custom Rendering"
+          :disabled="instance && baseObj.customRendering"
+          :messages="customRenderingMessage()"
+          hide-details="auto"
+          @change="changeCustomRendering"
+        ></v-switch>
       </v-card-text>
       <v-divider></v-divider>
       <v-card-actions>
@@ -39,7 +56,8 @@ import Vue from 'vue'
 export default {
   name: 'PropertiesDialog',
   data: () => ({
-    refObj: {}
+    refObj: {},
+    baseObj: {}
   }),
   props: {
     title: { type: String, default: 'Properties' },
@@ -51,7 +69,13 @@ export default {
   },
   mounted () {
     this.refObj = this.instance || this.entity
-    this.originalProperties = { ...this.refObj }
+    this.baseObj = this.entity
+    this.originalProperties = {
+      isTransparent: this.refObj.isTransparent,
+      customRendering: this.refObj.customRendering,
+      customId: this.refObj.customId,
+      parent: this.refObj.parent
+    }
   },
   computed: {
     show: {
@@ -60,6 +84,19 @@ export default {
       },
       set (value) {
         this.$emit('input', value)
+      }
+    },
+    customRendering: {
+      get () {
+        return this.baseObj.customRendering || this.refObj.customRendering
+      },
+      set (value) {
+        if (
+          (this.instance && !this.baseObj.customRendering) ||
+          !this.instance
+        ) {
+          this.refObj.customRendering = value
+        }
       }
     }
   },
@@ -78,6 +115,10 @@ export default {
       Vue.set(this.getRefObj(), 'isTransparent', this.refObj.isTransparent)
       this.$emit('onChange')
     },
+    changeCustomRendering () {
+      Vue.set(this.getRefObj(), 'customRendering', this.refObj.customRendering)
+      this.$emit('onChange')
+    },
     changeParent () {
       Vue.set(this.getRefObj(), 'parent', this.refObj.parent)
       this.$emit('onChange')
@@ -85,6 +126,17 @@ export default {
     changeId () {
       Vue.set(this.getRefObj(), 'customId', this.refObj.customId)
       this.$emit('onChange')
+    },
+    customRenderingMessage () {
+      let baseEntity
+      if (this.entityType.includes('image')) {
+        baseEntity = 'image'
+      } else if (this.entityType.includes('video')) {
+        baseEntity = 'video'
+      }
+      if (this.instance && this.baseObj.customRendering) {
+        return `Enabled on base ${baseEntity || 'entity'}`
+      }
     },
     save () {
       this.show = false
@@ -98,6 +150,7 @@ export default {
       )
       Vue.set(this.getRefObj(), 'customId', this.originalProperties.customId)
       Vue.set(this.getRefObj(), 'parent', this.originalProperties.parent)
+      Vue.set(this.getRefObj(), 'customRendering', this.originalProperties.customRendering)
       this.$emit('onChange')
     }
   }

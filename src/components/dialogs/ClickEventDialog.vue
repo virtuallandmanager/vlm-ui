@@ -66,6 +66,11 @@
           :rules="[validateHoverText]"
           :disabled="synced"
         ></v-text-field>
+        <div v-if="instance && !synced">
+          <v-icon small>mdi-alert</v-icon>
+          This will override the click event of the base
+          {{ entityType }}.
+        </div>
       </v-card-text>
       <v-divider></v-divider>
       <v-card-actions>
@@ -73,11 +78,16 @@
           v-if="instance"
           v-model="synced"
           :label="synced ? 'Linked' : 'Unlinked'"
-          @change="toggleSync()"
+          @change="toggleSync"
         >
         </v-switch>
         <v-spacer></v-spacer>
-        <v-btn color="green darken-1" text @click="save" :disabled="hasErrors">
+        <v-btn
+          color="green darken-1"
+          text
+          @click="save"
+          :disabled="(!instance && hasErrors) || (!synced && hasErrors)"
+        >
           Save
         </v-btn>
         <v-btn color="grey darken-1" text @click="revert"> Cancel </v-btn>
@@ -103,7 +113,9 @@ export default {
     ],
     clickEvent: {},
     originalClickEvent: {},
-    hasErrors: false
+    baseEntityType: '',
+    hasErrors: false,
+    synced: false
   }),
   props: {
     title: { type: String, default: 'Click Event' },
@@ -139,6 +151,8 @@ export default {
     } else {
       this.originalClickEvent = { ...this.clickEvent }
     }
+
+    this.synced = this.instance && this.instance.clickEvent == null
   },
   computed: {
     show: {
@@ -147,14 +161,6 @@ export default {
       },
       set (value) {
         this.$emit('input', value)
-      }
-    },
-    synced: {
-      get () {
-        return this.instance && this.instance.clickEvent == null
-      },
-      set (value) {
-        return value
       }
     }
   },
@@ -178,14 +184,15 @@ export default {
       }
       this.$emit('onChange')
     },
-    toggleSync () {
+    toggleSync (value) {
       const i = this.entity.instances.findIndex(
         instance => instance.id == this.instance.id
       )
-      if (this.synced) {
-        Vue.set(this.entity.instances[i], 'clickEvent', this.entity.clickEvent)
-      } else {
+      if (value) {
         Vue.set(this.entity.instances[i], 'clickEvent', null)
+      } else {
+        this.clickEvent = this.entity.clickEvent
+        Vue.set(this.entity.instances[i], 'clickEvent', this.entity.clickEvent)
       }
       this.$emit('onChange')
     },

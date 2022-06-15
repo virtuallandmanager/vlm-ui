@@ -23,16 +23,15 @@
       <div v-for="(message, m) in dialog.messages" :key="m" class="px-4">
         <v-textarea
           clearable
-          :value="dialog.messages[m]"
+          v-model="dialog.messages[m]"
           auto-grow
           rows="1"
           :label="`Message ${m + 1}`"
-          @blur="editMessageText"
+          @blur="editMessageText(d)"
         >
           <template v-slot:append-outer>
             <v-dialog
               v-model="deleteMessageDialog"
-              persistent
               max-width="395"
               @click:outside="deleteMessageDialog = false"
             >
@@ -81,6 +80,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 export default {
   name: 'DialogSystem',
 
@@ -97,7 +97,6 @@ export default {
   },
   methods: {
     addMessage (d) {
-      console.log(this.dialogs)
       const nextItem = ''
       this.dialogs[d].messages.push(nextItem)
     },
@@ -111,15 +110,15 @@ export default {
       })
     },
     editMessageText (d) {
-      console.log(this.dialogs[d].enabled)
+      console.log(this.dialogs[d].messages)
+      Vue.set(this.dialogs[d], 'messages', this.dialogs[d].messages)
       this.updateProperties({
         action: 'update',
         entity: 'dialog',
         property: 'message'
       })
     },
-    toggleDialog (d) {
-      console.log(this.dialogs[d].enabled)
+    toggleDialog () {
       this.updateProperties({
         action: 'update',
         entity: 'dialog',
@@ -133,7 +132,7 @@ export default {
       }
     },
     updateProperties (wssMessages) {
-      this.$emit('updateProperties', { ...wssMessages })
+      this.$emit('updateProperties', { wssMessages })
     }
   }
 }

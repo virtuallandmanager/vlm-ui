@@ -328,6 +328,7 @@ export default {
           action: 'update',
           entity: 'imageInstance',
           property: 'visibility',
+          custom: this.instance.customRendering,
           id: instance.id
         })
       } else {
@@ -336,6 +337,7 @@ export default {
           action: 'update',
           entity: 'image',
           property: 'visibility',
+          custom: this.image.customRendering,
           id: this.image.id
         })
       }
@@ -432,6 +434,7 @@ export default {
         action: 'update',
         entity: 'imageInstance',
         property: 'transform',
+        custom: instance.customRendering,
         id: instance.id
       })
     },

@@ -384,7 +384,6 @@ export default {
       }
     },
     updateVideoProperties () {
-      this.propertiesDialog = false
       this.updateProperties({
         action: 'update',
         entity: 'video',

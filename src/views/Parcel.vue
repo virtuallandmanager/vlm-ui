@@ -1,5 +1,13 @@
 <template>
-  <v-sheet elevation="2" class="mx-auto fill-height pb-4" max-width="960" v-if="property">
+  <v-sheet
+    elevation="2"
+    class="mx-auto fill-height pb-4"
+    max-width="960"
+    v-if="property"
+  >
+    <v-snackbar v-model="error" tile color="red accent-2" width=550>
+      {{ errorMessage }}
+    </v-snackbar>
     <v-container v-if="property">
       <v-row>
         <v-col>
@@ -181,7 +189,7 @@ export default {
     editingName: false,
     deleteScreenDialog: false,
     editingScreenName: false,
-    tab: null,
+    tab: null
   }),
   created () {
     this.$watch(
@@ -206,6 +214,19 @@ export default {
   },
   computed: {
     ...mapGetters('land', ['userLand']),
+    error: {
+      get () {
+        return this.$store.getters['land/error']
+      },
+      set (value) {
+        this.setErrorState(value)
+      }
+    },
+    errorMessage: {
+      get () {
+        return this.$store.getters['land/errorMessage']
+      }
+    },
     property () {
       return this.$store.getters['land/property'](
         this.$route.params.xCoord,
@@ -234,7 +255,8 @@ export default {
   methods: {
     ...mapActions({
       fetchUserLand: 'land/fetchUserLand',
-      updateLandProperties: 'land/updateLandProperties'
+      updateLandProperties: 'land/updateLandProperties',
+      setErrorState: 'land/setErrorState'
     }),
     editName () {
       this.editingName = true
