@@ -8,7 +8,7 @@
         <move-scale-rotate
           :entity="entity"
           :isPlane="entityType == 'image' || entityType == 'video'"
-          @onChange="onChange"
+          @onChange="this.$emit('onChange')"
         />
       </v-card-text>
       <v-divider></v-divider>
@@ -53,7 +53,7 @@ export default {
   methods: {
     save () {
       this.show = false
-      this.onChange()
+      this.$emit('onChange')
     },
     revert () {
       Vue.set(this.entity, 'position', this.originalPosition)

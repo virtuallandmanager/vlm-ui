@@ -11,13 +11,13 @@
             v-model="selection.text"
             label="Selection Name"
             class="mr-2"
-            @change="onChange"
+            @change="this.$emit('onChange')"
           ></v-text-field>
           <v-text-field
             v-model="selection.value"
             label="Selection ID"
             class="ml-2"
-            @change="onChange"
+            @change="this.$emit('onChange')"
           ></v-text-field>
           <v-btn icon @click="removeSelection(i)"
             ><v-icon>mdi-trash-can</v-icon></v-btn
