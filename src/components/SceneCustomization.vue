@@ -42,7 +42,7 @@
             :items="customizationTypes"
             hide-details="auto"
             v-model="customization.type"
-            :disabled="customization.locked"
+            :disabled="locked"
             @change="changeCustomizationType()"
           >
           </v-select>
@@ -53,7 +53,7 @@
             label="Customization Id"
             v-model="customization.id"
             hide-details="auto"
-            :disabled="customization.locked"
+            :disabled="locked"
           ></v-text-field>
         </div>
         <div>
@@ -68,12 +68,12 @@
                 v-on="on"
               >
                 <v-icon>{{
-                  customization.locked ? 'mdi-lock' : 'mdi-lock-open'
+                 locked ? 'mdi-lock' : 'mdi-lock-open'
                 }}</v-icon>
               </v-btn>
             </template>
             <span
-              >{{ customization.locked ? 'Unlock' : 'Lock' }} Customization
+              >{{ locked ? 'Unlock' : 'Lock' }} Customization
               Settings</span
             >
           </v-tooltip>
@@ -132,7 +132,7 @@
         ></v-select>
         <v-btn
           class="ml-4"
-          :disabled="customization.locked"
+          :disabled="locked"
           @click.stop="openEditSelectDialog"
         >
           Edit Selections
@@ -143,9 +143,10 @@
 </template>
 
 <script>
+import Vue from "vue"
 import { mapActions } from 'vuex'
 import DeleteDialog from './dialogs/DeleteDialog'
-import SceneCustomization from '../models/SceneCustomization'
+import { SceneCustomization } from '../models/SceneCustomization'
 import EditSelectDialog from '../components/dialogs/EditSelectDialog'
 
 export default {
@@ -162,7 +163,8 @@ export default {
       { text: 'Toggle', value: 0 },
       { text: 'Text', value: 1 },
       { text: 'Selector', value: 2 }
-    ]
+    ],
+    locked: false
   }),
   props: {
     customization: {
@@ -172,13 +174,16 @@ export default {
       }
     }
   },
+  mounted (){
+    this.locked = this.customization.locked
+  },
   computed: {
     customizationSelections () {
       return this.customization.selections.map(customization => ({
         text: `${customization.text}  [ id: ${customization.value} ]`,
         value: customization.value
       }))
-    }
+    },
   },
   methods: {
     ...mapActions({
@@ -211,7 +216,7 @@ export default {
     toggleEditMode () {
       this.editingName = !this.editingName
 
-      if (!this.editingName && !this.customization.locked) {
+      if (!this.editingName && !this.locked) {
         this.customization.id = this.customization.name.createSlug()
       }
     },
@@ -224,7 +229,8 @@ export default {
       this.editCustomization()
     },
     toggleCustomizationLock () {
-      this.customization.locked = !this.customization.locked
+      this.locked = !this.locked
+      Vue.set(this.customization, 'locked', this.locked)
       this.editCustomization()
     },
     updateProperties (wssMessages) {
