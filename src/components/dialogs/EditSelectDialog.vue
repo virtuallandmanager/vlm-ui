@@ -78,13 +78,11 @@ export default {
     },
     save () {
       this.show = false
+      this.$emit('onChange')
     },
     revert () {
       this.selections = this.originalSelections
       this.show = false
-      this.onChange()
-    },
-    onChange () {
       this.$emit('onChange')
     }
   }

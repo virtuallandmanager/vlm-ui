@@ -140,6 +140,7 @@ export default {
     },
     save () {
       this.show = false
+      this.$emit('onChange')
     },
     revert () {
       this.show = false

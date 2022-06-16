@@ -53,15 +53,13 @@ export default {
   methods: {
     save () {
       this.show = false
+      this.onChange()
     },
     revert () {
       Vue.set(this.entity, 'position', this.originalPosition)
       Vue.set(this.entity, 'scale', this.originalScale)
       Vue.set(this.entity, 'rotation', this.originalRotation)
       this.show = false
-      this.onChange()
-    },
-    onChange () {
       this.$emit('onChange')
     }
   }
