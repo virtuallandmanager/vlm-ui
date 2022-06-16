@@ -25,8 +25,10 @@
         <scene-image
           :image="image"
           :i="i"
+          :property="property"
           @updateProperties="updateProperties"
           @onRemove="removeImage(i)"
+          @onReplace="replaceImage"
         />
       </div>
     </div>
@@ -39,7 +41,6 @@ import { mapActions } from 'vuex'
 import SceneImage from '../components/SceneImage'
 import { SceneImage as SceneImageModel } from '../models/SceneImage'
 import { SceneImageInstance } from '../models/SceneImageInstance'
-import _cloneDeep from 'lodash/cloneDeep'
 
 export default {
   components: {
@@ -81,57 +82,32 @@ export default {
           newInstance = {
             ...new SceneImageInstance(),
             scale: { x: width / 1000, y: height / 1000, z: 0.01 }
+          },
+          newImage = {
+            ...new SceneImageModel(),
+            name: options.image.name,
+            height,
+            width,
+            imageLink,
+            instances: [{ ...newInstance }]
           }
-        this.images.push({
-          ...new SceneImageModel(),
-          id: imageJson.id,
-          name: options.image.name,
-          height,
-          width,
-          imageLink,
-          instances: [{ ...newInstance }]
-        })
+
+        this.images.push(newImage)
         this.updateProperties({
           action: 'create',
           entity: 'image',
-          id: imageJson.id
+          id: newImage.id
         })
       }
     },
-    async replaceImage (image, i) {
-      const options = {
-        image: this.$refs.replaceFileInput[i].files[0],
-        baseParcel: this.property.baseParcel,
-        id: image.id
-      }
-      this.$refs.replaceFileInput[i].value = null
-
-      const img = new Image()
-      const uploadImageRes = await this.uploadImage(options)
-      const imageJson = await uploadImageRes.json()
-      const imageLink = `${process.env.VUE_APP_API_URL}/${imageJson.path}`
-      img.src = imageLink
-      img.onload = () => {
-        const height = img.height,
-          width = img.width
-
-        const clonedImages = _cloneDeep(this.images)
-        clonedImages[i] = {
-          ...image,
-          imageLink,
-          height,
-          width
-        }
-
-        this.property.sceneData.imageTextures = clonedImages
-
-        this.updateProperties({
-          action: 'update',
-          entity: 'image',
-          property: 'link',
-          id: image.id
-        })
-      }
+    async replaceImage (options) {
+      this.images.splice(options.i, 1, options.image)
+      this.updateProperties({
+        action: 'update',
+        entity: 'image',
+        property: 'link',
+        id: options.image.customId || options.image.id
+      })
     },
     removeImage (i) {
       const imageId = this.images[i].id

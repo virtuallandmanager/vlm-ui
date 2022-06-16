@@ -48,7 +48,12 @@
           ></v-text-field>
         </div>
         <div>
-          <v-btn icon dark @click="toggleVisibility()">
+          <v-btn
+            icon
+            dark
+            @click="toggleVisibility()"
+            :disabled="image.customRendering"
+          >
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-icon
@@ -67,7 +72,7 @@
             ref="replaceFileInput"
             type="file"
             accept=".png,.jpg,.jpeg"
-            @change="replaceImage(image)"
+            @change="replaceImage(image, i)"
           />
           <v-btn icon dark @click.stop="openImageClickEventDialog()">
             <v-tooltip bottom>
@@ -85,7 +90,7 @@
               <span>Image Properties</span>
             </v-tooltip>
           </v-btn>
-          <v-btn icon dark @click="$refs.replaceFileInput[i].click()">
+          <v-btn icon dark @click="$refs.replaceFileInput.click()">
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-icon v-bind="attrs" v-on="on"> mdi-upload </v-icon>
@@ -113,7 +118,7 @@
           max-height="250"
           max-width="250"
           contain
-          :src="image.imageLink"
+          :src="imageLink"
           class="mx-auto"
         ></v-img>
       </div>
@@ -124,7 +129,9 @@
           <h1 class="text-body-1 font-weight-bold" dark>
             Instances
           </h1>
-          <v-btn @click="addInstance(image)"><v-icon>mdi-plus</v-icon> Add Instance</v-btn>
+          <v-btn @click="addInstance(image)"
+            ><v-icon>mdi-plus</v-icon> Add Instance</v-btn
+          >
         </div>
         <div class="d-flex flex-column pa-4">
           <div v-for="(instance, i) in image.instances" :key="instance.id">
@@ -169,7 +176,11 @@
                 @blur="editInstanceName(instance)"
               ></v-text-field>
               <div class="mt-3">
-                <v-btn icon @click="toggleVisibility(instance, i)">
+                <v-btn
+                  icon
+                  @click="toggleVisibility(instance, i)"
+                  :disabled="image.customRendering || instance.customRendering"
+                >
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
                       <v-icon
@@ -262,15 +273,21 @@ export default {
       { text: 'Play Sound (Coming Soon)', value: 2, disabled: true },
       { text: 'Move Player in Scene (Coming Soon)', value: 3, disabled: true },
       { text: 'Teleport Player (Coming Soon)', value: 4, disabled: true }
-    ]
+    ],
+    imageLink: ''
   }),
   props: {
+    property: Object,
+    i: Number,
     image: {
       type: Object,
       default: function () {
         return new SceneImage()
       }
     }
+  },
+  mounted () {
+    this.imageLink = this.image.imageLink
   },
   methods: {
     ...mapActions({
@@ -295,6 +312,8 @@ export default {
     },
     addInstance (image) {
       const newInstance = new SceneImageInstance()
+      newInstance.scale.x = image.width / 1000
+      newInstance.scale.y = image.height / 1000
       image.instances.push(newInstance)
       this.updateProperties({
         action: 'add',
@@ -328,8 +347,8 @@ export default {
           action: 'update',
           entity: 'imageInstance',
           property: 'visibility',
-          custom: this.instance.customRendering,
-          id: instance.id
+          custom: instance.customRendering,
+          id: instance.customId || instance.id
         })
       } else {
         this.image.show = !this.image.show
@@ -338,39 +357,36 @@ export default {
           entity: 'image',
           property: 'visibility',
           custom: this.image.customRendering,
-          id: this.image.id
+          id: this.image.customId || this.image.id
         })
       }
     },
     async replaceImage (image, i) {
       const options = {
-        image: this.$refs.replaceFileInput[i].files[0],
+        image: this.$refs.replaceFileInput.files[0],
         baseParcel: this.property.baseParcel,
         id: image.id
       }
-      this.$refs.replaceFileInput[i].value = null
-
+      this.$refs.replaceFileInput.value = null
       const img = new Image()
       const uploadImageRes = await this.uploadImage(options)
       const imageJson = await uploadImageRes.json()
       const imageLink = `${process.env.VUE_APP_API_URL}/${imageJson.path}`
-      img.src = imageLink
+      this.imageLink = imageLink
+      img.src = this.imageLink
       img.onload = () => {
         const height = img.height,
           width = img.width
 
-        this.image = {
-          ...this.image,
-          imageLink,
-          height,
-          width
-        }
-
-        this.updateProperties({
-          action: 'update',
-          entity: 'image',
-          property: 'link',
-          id: image.id
+        this.$emit('onReplace', {
+          i,
+          image: {
+            ...image,
+            id: image.id,
+            imageLink: this.imageLink,
+            height,
+            width
+          }
         })
       }
     },
@@ -402,7 +418,7 @@ export default {
         action: 'update',
         entity: 'image',
         property: 'clickEvent',
-        id: this.image.id
+        id: this.image.customId || this.image.id
       })
     },
     updateImageProperties () {
@@ -410,7 +426,7 @@ export default {
         action: 'update',
         entity: 'image',
         property: 'properties',
-        id: this.image.id
+        id: this.image.customId || this.image.id
       })
     },
     updateInstanceClickEvent (instance) {
@@ -418,7 +434,7 @@ export default {
         action: 'update',
         entity: 'imageInstance',
         property: 'clickEvent',
-        id: instance.id
+        id: instance.customId || instance.id
       })
     },
     updateInstanceProperties (instance) {
@@ -426,7 +442,7 @@ export default {
         action: 'update',
         entity: 'imageInstance',
         property: 'properties',
-        id: instance.id
+        id: instance.customId || instance.id
       })
     },
     updateInstanceTransform (instance) {
@@ -435,7 +451,7 @@ export default {
         entity: 'imageInstance',
         property: 'transform',
         custom: instance.customRendering,
-        id: instance.id
+        id: instance.customId || instance.id
       })
     },
     updateProperties (wssMessages) {
