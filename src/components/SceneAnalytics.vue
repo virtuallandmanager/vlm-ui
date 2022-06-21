@@ -20,7 +20,7 @@
       >
         <v-dialog v-model="exportDialog" width="500" retain-focus>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn v-bind="attrs" v-on="on" :loading="exportingQuery" :disabled="process.env.VUE_APP_NODE_ENV == 'staging'">
+            <v-btn v-if="false" v-bind="attrs" v-on="on" :loading="exportingQuery">
               Export To CSV
             </v-btn>
           </template>
