@@ -1,9 +1,12 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark>
+    <v-app-bar app :color="environmentColor" dark>
       <router-link to="/" class="header-link">
         <img src="@/assets/VLM-Logo.svg" height="65" />
       </router-link>
+      <div v-if="environment !== 'production'" class="text-body1 ml-4">
+        {{ environment.toUpperCase() }}
+      </div>
       <v-spacer></v-spacer>
       <v-btn
         v-if="!connected"
@@ -22,7 +25,7 @@
       >
         <template v-slot:activator="{ on, attrs }">
           <v-btn rounded color="white" text v-bind="attrs" v-on="on">
-            {{ "Connected: " + walletAddress }}
+            {{ 'Connected: ' + walletAddress }}
           </v-btn>
         </template>
         <template v-slot:default="dialog">
@@ -49,40 +52,58 @@
     <v-main>
       <router-view />
     </v-main>
-    <v-footer>Virtual Land Manager</v-footer>
+    <v-footer
+      >Virtual Land Manager
+      <span v-if="environment !== 'production'" class="ml-1">
+        | {{ environment.toUpperCase() }}
+      </span>
+    </v-footer>
   </v-app>
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions } from 'vuex'
 
 export default {
-  name: "App",
+  name: 'App',
 
   data: () => ({
     //
   }),
   computed: {
-    connected() {
-      return this.$store.state.login.connected;
+    connected () {
+      return this.$store.state.login.connected
     },
-    loggingIn() {
-      return this.$store.state.login.loggingIn;
+    loggingIn () {
+      return this.$store.state.login.loggingIn
     },
-    walletAddress() {
-      const fullAddress = this.$store.state.login.account;
+    walletAddress () {
+      const fullAddress = this.$store.state.login.account
       const truncAddress =
         fullAddress &&
         fullAddress.substring(0, 6) +
-          "..." +
-          fullAddress.substring(fullAddress.length - 5);
-      return truncAddress;
+          '...' +
+          fullAddress.substring(fullAddress.length - 5)
+      return truncAddress
     },
+    environment () {
+      return process.env.VUE_APP_NODE_ENV
+    },
+    environmentColor () {
+      switch (process.env.VUE_APP_NODE_ENV) {
+        case 'staging':
+          return 'blue'
+        case 'development':
+          return 'green'
+        default:
+          return 'primary'
+      }
+    }
   },
   methods: {
-    ...mapActions(["login", "fetchAccount"]),
-  },
-};
+    ...mapActions(['login', 'fetchAccount'])
+  }
+}
 </script>
 
 <style scoped>
