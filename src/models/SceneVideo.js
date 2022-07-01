@@ -1,5 +1,4 @@
 import { nanoid } from "nanoid";
-import { SceneVideoInstance } from "./SceneVideoInstance";
 
 export class SceneVideo {
   id = nanoid(6);
@@ -11,7 +10,7 @@ export class SceneVideo {
   offImage = "";
   emission = 1;
   volume = 1;
-  instances = [new SceneVideoInstance()];
+  instances = [];
   show = true;
 
   constructor() {}

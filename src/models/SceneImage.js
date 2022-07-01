@@ -1,6 +1,5 @@
 import { nanoid } from "nanoid";
 import { ClickEvent } from "./ClickEvent";
-import { SceneImageInstance } from "./SceneImageInstance";
 
 export class SceneImage {
   id = nanoid(6);
@@ -8,7 +7,7 @@ export class SceneImage {
   name = "";
   imageLink = "";
   clickEvent = new ClickEvent();
-  instances = [new SceneImageInstance()];
+  instances = [];
   isTransparent = false;
 
   constructor() {}

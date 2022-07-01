@@ -129,12 +129,17 @@
           <h1 class="text-body-1 font-weight-bold" dark>
             Instances
           </h1>
-          <v-btn @click="addInstance(image)"
+          <v-btn @click="addInstance()"
             ><v-icon>mdi-plus</v-icon> Add Instance</v-btn
           >
         </div>
-        <div class="d-flex flex-column pa-4">
-          <div v-for="(instance, i) in image.instances" :key="instance.id">
+        <div class="d-flex flex-column pa-4" v-if="!image.instances.length">
+          <div class="text-body1 text-center">
+        Add an instance for this image to see it in the scene.
+      </div>
+        </div>
+        <div class="d-flex flex-column pa-4" v-if="image.instances.length">
+          <div v-for="(instance, ii) in image.instances" :key="instance.id">
             <click-event-dialog
               v-if="instance.clickEventDialog"
               v-model="instance.clickEventDialog"
@@ -166,19 +171,19 @@
               v-model="instance.deleteDialog"
               :entity="instance"
               entityType="image instance"
-              @onRemove="removeImageInstance(image, i)"
+              @onRemove="removeImageInstance(image, ii)"
             />
             <div class="d-flex mx-auto align-center">
               <v-text-field
                 hide-details="true"
                 v-model="instance.name"
-                :label="`Instance ${i + 1}`"
+                :label="`Instance ${ii + 1}`"
                 @blur="editInstanceName(instance)"
               ></v-text-field>
               <div class="mt-3">
                 <v-btn
                   icon
-                  @click="toggleVisibility(instance, i)"
+                  @click="toggleVisibility(instance, ii)"
                   :disabled="image.customRendering || instance.customRendering"
                 >
                   <v-tooltip bottom>
@@ -198,7 +203,7 @@
                     <span>Show/Hide</span>
                   </v-tooltip>
                 </v-btn>
-                <v-btn icon @click.stop="openInstanceTransformDialog(i)">
+                <v-btn icon @click.stop="openInstanceTransformDialog(ii)">
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
                       <v-icon v-bind="attrs" v-on="on">
@@ -208,7 +213,7 @@
                     <span>Transform</span>
                   </v-tooltip>
                 </v-btn>
-                <v-btn icon @click.stop="openInstanceClickEventDialog(i)">
+                <v-btn icon @click.stop="openInstanceClickEventDialog(ii)">
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
                       <v-icon v-bind="attrs" v-on="on"> mdi-mouse </v-icon>
@@ -216,7 +221,7 @@
                     <span>Click Event</span>
                   </v-tooltip>
                 </v-btn>
-                <v-btn icon @click.stop="openInstancePropertiesDialog(i)">
+                <v-btn icon @click.stop="openInstancePropertiesDialog(ii)">
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
                       <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
@@ -224,7 +229,7 @@
                     <span>Instance Properties</span>
                   </v-tooltip>
                 </v-btn>
-                <v-btn icon @click.stop="openInstanceDeleteDialog(i)">
+                <v-btn icon @click.stop="openInstanceDeleteDialog(ii)">
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
                       <v-icon v-bind="attrs" v-on="on">
@@ -301,24 +306,28 @@ export default {
       this.$emit('onRemove')
     },
     removeImageInstance (image, i) {
-      const instanceId = image.instances[i].id
+      const instanceData = image.instances[i];
       Vue.delete(image.instances, i)
 
       this.updateProperties({
         action: 'remove',
         entity: 'imageInstance',
-        id: instanceId
+        id: instanceData.id,
+        entityData: this.image,
+        instanceData
       })
     },
-    addInstance (image) {
+    addInstance () {
       const newInstance = new SceneImageInstance()
-      newInstance.scale.x = image.width / 1000
-      newInstance.scale.y = image.height / 1000
-      image.instances.push(newInstance)
+      newInstance.scale.x = this.image.width / 1000
+      newInstance.scale.y = this.image.height / 1000
+      this.image.instances.push(newInstance)
       this.updateProperties({
         action: 'add',
         entity: 'imageInstance',
-        id: newInstance.id
+        id: newInstance.id,
+        entityData: this.image,
+        instanceData: newInstance
       })
     },
     editInstanceName (instance) {
@@ -326,7 +335,9 @@ export default {
         action: 'update',
         entity: 'imageInstance',
         property: 'name',
-        id: instance.id
+        id: instance.customId || instance.id,
+        entityData: this.image,
+        instanceData: instance
       })
     },
     editImageName () {
@@ -334,7 +345,8 @@ export default {
         action: 'update',
         entity: 'image',
         property: 'name',
-        id: this.image.id
+        id: this.image.customId || this.image.id,
+        entityData: this.image
       })
     },
     saveImageProperties () {
@@ -347,17 +359,18 @@ export default {
           action: 'update',
           entity: 'imageInstance',
           property: 'visibility',
-          custom: instance.customRendering,
-          id: instance.customId || instance.id
+          id: instance.customId || instance.id,
+          entityData: this.image
         })
       } else {
-        this.image.show = !this.image.show
+        Vue.set(this.image, 'show', !this.image.show)
         this.updateProperties({
           action: 'update',
           entity: 'image',
           property: 'visibility',
-          custom: this.image.customRendering,
-          id: this.image.customId || this.image.id
+          id: this.image.customId || this.image.id,
+          entityData: this.image,
+          instanceData: instance
         })
       }
     },
@@ -394,31 +407,32 @@ export default {
       this.selectedImage = this.image
       this.clickEventDialog = true
     },
-    openInstanceClickEventDialog (i) {
-      Vue.set(this.image.instances[i], 'clickEventDialog', true)
+    openInstanceClickEventDialog (ii) {
+      Vue.set(this.image.instances[ii], 'clickEventDialog', true)
     },
     openImagePropertiesDialog () {
       this.selectedImage = this.image
       this.propertiesDialog = true
     },
-    openInstancePropertiesDialog (i) {
-      Vue.set(this.image.instances[i], 'propertiesDialog', true)
+    openInstancePropertiesDialog (ii) {
+      Vue.set(this.image.instances[ii], 'propertiesDialog', true)
     },
     openImageDeleteDialog () {
       this.deleteDialog = true
     },
-    openInstanceDeleteDialog (i) {
-      Vue.set(this.image.instances[i], 'deleteDialog', true)
+    openInstanceDeleteDialog (ii) {
+      Vue.set(this.image.instances[ii], 'deleteDialog', true)
     },
-    openInstanceTransformDialog (i) {
-      Vue.set(this.image.instances[i], 'transformDialog', true)
+    openInstanceTransformDialog (ii) {
+      Vue.set(this.image.instances[ii], 'transformDialog', true)
     },
     updateImageClickEvent () {
       this.updateProperties({
         action: 'update',
         entity: 'image',
         property: 'clickEvent',
-        id: this.image.customId || this.image.id
+        id: this.image.customId || this.image.id,
+        entityData: this.image
       })
     },
     updateImageProperties () {
@@ -426,7 +440,8 @@ export default {
         action: 'update',
         entity: 'image',
         property: 'properties',
-        id: this.image.customId || this.image.id
+        id: this.image.customId || this.image.id,
+        entityData: this.image
       })
     },
     updateInstanceClickEvent (instance) {
@@ -434,7 +449,9 @@ export default {
         action: 'update',
         entity: 'imageInstance',
         property: 'clickEvent',
-        id: instance.customId || instance.id
+        id: instance.customId || instance.id,
+        entityData: this.image,
+        instanceData: instance
       })
     },
     updateInstanceProperties (instance) {
@@ -442,7 +459,9 @@ export default {
         action: 'update',
         entity: 'imageInstance',
         property: 'properties',
-        id: instance.customId || instance.id
+        id: instance.customId || instance.id,
+        entityData: this.image,
+        instanceData: instance
       })
     },
     updateInstanceTransform (instance) {
@@ -451,7 +470,9 @@ export default {
         entity: 'imageInstance',
         property: 'transform',
         custom: instance.customRendering,
-        id: instance.customId || instance.id
+        id: instance.customId || instance.id,
+        entityData: this.image,
+        instanceData: instance
       })
     },
     updateProperties (wssMessages) {

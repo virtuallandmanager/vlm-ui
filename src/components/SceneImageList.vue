@@ -40,7 +40,6 @@ import Vue from 'vue'
 import { mapActions } from 'vuex'
 import SceneImage from '../components/SceneImage'
 import { SceneImage as SceneImageModel } from '../models/SceneImage'
-import { SceneImageInstance } from '../models/SceneImageInstance'
 
 export default {
   components: {
@@ -79,24 +78,20 @@ export default {
       img.onload = () => {
         const height = img.height,
           width = img.width,
-          newInstance = {
-            ...new SceneImageInstance(),
-            scale: { x: width / 1000, y: height / 1000, z: 0.01 }
-          },
           newImage = {
             ...new SceneImageModel(),
             name: options.image.name,
             height,
             width,
-            imageLink,
-            instances: [{ ...newInstance }]
+            imageLink
           }
 
         this.images.push(newImage)
         this.updateProperties({
           action: 'create',
           entity: 'image',
-          id: newImage.id
+          id: newImage.id,
+          data: newImage
         })
       }
     },

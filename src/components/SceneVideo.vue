@@ -315,6 +315,13 @@ export default {
     addVideo () {
       const nextItem = ''
       this.video.playlist.push(nextItem)
+      this.updateProperties({
+        action: 'add',
+        entity: 'video',
+        property: 'playlistItem',
+        id: this.video.id,
+        entityData: this.video
+      })
     },
     addInstance () {
       const newInstance = new SceneVideoInstance()
@@ -326,7 +333,9 @@ export default {
         action: 'add',
         entity: 'video',
         property: 'instance',
-        id: newInstance.id
+        id: newInstance.id,
+        entityData: this.video,
+        instanceData: newInstance
       })
     },
     removeVideo () {
@@ -344,7 +353,9 @@ export default {
         action: 'remove',
         entity: 'video',
         property: 'instance',
-        id: instance.id
+        id: instance.id,
+        entityData: this.video,
+        instanceData: instance
       })
     },
     removePlaylistItem () {
@@ -358,7 +369,8 @@ export default {
         action: 'remove',
         entity: 'video',
         property: 'playlistItem',
-        id: this.video.id
+        id: this.video.id,
+        entityData: this.video
       })
     },
     toggleEditMode () {
@@ -371,7 +383,9 @@ export default {
           action: 'update',
           entity: 'videoInstance',
           property: 'visibility',
-          id: instance.id
+          id: instance.id,
+          entityData: this.video,
+          instanceData: instance
         })
       } else {
         this.video.show = !this.video.show
@@ -379,7 +393,8 @@ export default {
           action: 'update',
           entity: 'video',
           property: 'visibility',
-          id: this.video.id
+          id: this.video.id,
+          entityData: this.video
         })
       }
     },
@@ -388,7 +403,8 @@ export default {
         action: 'update',
         entity: 'video',
         property: 'properties',
-        id: this.video.id
+        id: this.video.id,
+        entityData: this.video
       })
     },
     async replaceImage (video, i) {
@@ -419,7 +435,8 @@ export default {
           action: 'update',
           entity: 'video',
           property: 'link',
-          id: video.id
+          id: this.video.id,
+          entityData: this.video
         })
       }
     },
@@ -450,7 +467,8 @@ export default {
         action: 'update',
         entity: 'video',
         property: 'name',
-        id: this.video.id
+        id: this.video.id,
+        entityData: this.video
       })
     },
     updateInstanceName (instance) {
@@ -458,7 +476,9 @@ export default {
         action: 'update',
         entity: 'videoInstance',
         property: 'name',
-        id: instance.id
+        id: instance.id,
+        entityData: this.video,
+        instanceData: instance
       })
     },
     updateInstanceTransform (instance) {
@@ -466,7 +486,9 @@ export default {
         action: 'update',
         entity: 'videoInstance',
         property: 'transform',
-        id: instance.id
+        id: instance.id,
+        entityData: this.video,
+        instanceData: instance
       })
     },
     updateLiveLink () {
@@ -474,7 +496,8 @@ export default {
         action: 'update',
         entity: 'video',
         property: 'liveLink',
-        id: this.video.id
+        id: this.video.id,
+        entityData: this.video
       })
     },
     updateVolume () {
@@ -482,7 +505,8 @@ export default {
         action: 'update',
         entity: 'video',
         property: 'volume',
-        id: this.video.id
+        id: this.video.id,
+        entityData: this.video
       })
     },
     updateEmission () {
@@ -490,7 +514,8 @@ export default {
         action: 'update',
         entity: 'video',
         property: 'emission',
-        id: this.video.id
+        id: this.video.id,
+        entityData: this.video
       })
     },
     updatePlaylist () {
@@ -498,7 +523,8 @@ export default {
         action: 'update',
         entity: 'video',
         property: 'playlist',
-        id: this.video.id
+        id: this.video.id,
+        entityData: this.video
       })
     },
     updateOffType () {
@@ -506,7 +532,8 @@ export default {
         action: 'update',
         entity: 'video',
         property: 'offType',
-        id: this.video.id
+        id: this.video.id,
+        entityData: this.video
       })
     },
     updateOffImage () {
@@ -514,7 +541,8 @@ export default {
         action: 'update',
         entity: 'video',
         property: 'offImage',
-        id: this.video.id
+        id: this.video.id,
+        entityData: this.video
       })
     },
     updateProperties (wssMessages) {

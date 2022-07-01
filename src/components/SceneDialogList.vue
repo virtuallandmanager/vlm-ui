@@ -98,7 +98,13 @@ export default {
   methods: {
     addMessage (d) {
       const nextItem = ''
-      this.dialogs[d].messages.push(nextItem)
+      this.dialogs[d].messages.push(nextItem),
+      this.updateProperties({
+        action: 'add',
+        entity: 'dialog',
+        property: 'message',
+        entityData: this.dialogs[d]
+      })
     },
     removeMessage (d, m) {
       this.deleteMessageDialog = false
@@ -106,7 +112,8 @@ export default {
       this.updateProperties({
         action: 'update',
         entity: 'dialog',
-        property: 'message'
+        property: 'message',
+        entityData: this.dialogs[d]
       })
     },
     editMessageText (d) {
@@ -115,14 +122,16 @@ export default {
       this.updateProperties({
         action: 'update',
         entity: 'dialog',
-        property: 'message'
+        property: 'message',
+        entityData: this.dialogs[d]
       })
     },
-    toggleDialog () {
+    toggleDialog (d) {
       this.updateProperties({
         action: 'update',
         entity: 'dialog',
-        property: 'visibility'
+        property: 'visibility',
+        entityData: this.dialogs[d]
       })
     },
     dialogType (dialogType) {
