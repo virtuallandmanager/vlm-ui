@@ -5,7 +5,7 @@
     max-width="960"
     v-if="property"
   >
-    <v-snackbar v-model="error" tile color="red accent-2" width=550>
+    <v-snackbar v-model="error" tile color="red accent-2" width="550">
       {{ errorMessage }}
     </v-snackbar>
     <v-container v-if="property">
@@ -46,18 +46,35 @@
           </v-hover>
           <h5>
             Last updated {{ lastUpdate.howLongAgo }}
-            <v-tooltip bottom>
+            <v-dialog v-model="updateHistoryDialog" scrollable width="600px">
               <template v-slot:activator="{ on, attrs }">
-                <v-icon color="primary" dark v-bind="attrs" v-on="on" x-small>
-                  mdi-information
-                </v-icon>
+                <v-btn color="primary" dark icon v-bind="attrs" v-on="on">
+                  <v-icon color="primary" dark v-bind="attrs" v-on="on" x-small>
+                    mdi-clock
+                  </v-icon>
+                </v-btn>
               </template>
-              <span
-                >Updated {{ lastUpdate.date }} at {{ lastUpdate.time }} by
-                {{ lastUpdate.wallet }}</span
-              >
-            </v-tooltip>
+              <v-card>
+                <v-card-title>
+                  <span class="text-h5">Update History</span>
+                </v-card-title>
+                <v-card-text>
+                  <div v-for="(update, i) in property.updates" :key="i">
+                  <div v-if="update.update" class="font-weight-bold">{{update.update.action.capitalize()}} {{update.update.entity}} {{update.update.property}}{{update.update.entityData && ' - '}}{{update.update.entityData && update.update.entityData.name}}</div>
+                  <div v-if="!update.update" class="font-weight-bold">Unknown update</div>
+                  <div>{{getDateTime(update.timestamp)}} by {{update.wallet.truncateWallet()}}</div> <br/>
+                  </div>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="gray darken-1" text @click="updateHistoryDialog = false">
+                    Close
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
           </h5>
+
           <h5>
             {{ property.parcels.length }} Parcel{{
               property.parcels.length > 1 ? 's' : ''
@@ -173,6 +190,7 @@ import SceneCustomizationList from '../components/SceneCustomizationList'
 // import Property from '../models/Property'
 import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
+import {DateTime} from 'luxon';
 
 export default {
   name: 'Parcel',
@@ -189,6 +207,7 @@ export default {
     showParcelMap: false,
     editingName: false,
     deleteScreenDialog: false,
+    updateHistoryDialog: false,
     editingScreenName: false,
     tab: null
   }),
@@ -238,10 +257,7 @@ export default {
       return this.property.sceneData
     },
     lastUpdate () {
-      const lastUpdate = this.$store.getters['land/lastUpdate'](
-        this.$route.params.xCoord,
-        this.$route.params.yCoord
-      )
+      const lastUpdate = this.property.updates[0]
       if (!lastUpdate) {
         return false
       }
@@ -287,6 +303,9 @@ export default {
     },
     goBack () {
       this.$router.go(-1)
+    },
+    getDateTime(timestamp) {
+      return DateTime.fromMillis(timestamp).toLocaleString(DateTime.DATETIME_SHORT)
     }
   }
 }

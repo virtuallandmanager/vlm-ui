@@ -26,3 +26,7 @@ String.prototype.capitalize = function () {
 String.prototype.removeUnderscore = function () {
   return this.replace(/_/g, " ");
 };
+
+String.prototype.truncateWallet = function () {
+  return this.substring(0, 6) + "...." + this.substring(this.length - 4, this.length);
+};
