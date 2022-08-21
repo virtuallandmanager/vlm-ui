@@ -328,6 +328,8 @@ export default {
       if (!this.video.instances) {
         this.video.instances = []
       }
+      newInstance.position.x = newInstance.width/2;
+      newInstance.position.y = newInstance.height/2 + 0.5;
       this.video.instances.push(newInstance)
       this.updateProperties({
         action: 'add',
