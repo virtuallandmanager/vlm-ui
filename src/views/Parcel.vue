@@ -93,65 +93,66 @@
     <v-tabs v-model="tab" centered icons-and-text>
       <v-tabs-slider></v-tabs-slider>
 
-      <v-tab href="#tab-1">
+      <v-tab href="#tab-1" v-if="property.features.analytics">
         Analytics
         <v-icon>mdi-chart-timeline-variant</v-icon>
       </v-tab>
-      <v-tab href="#tab-2">
-        Dialogs
-        <v-icon>mdi-message</v-icon>
-      </v-tab>
-      <v-tab href="#tab-3">
+      <v-tab href="#tab-2" v-if="property.features.entityPlacement">
         Video Screens
         <v-icon>mdi-video</v-icon>
       </v-tab>
-      <v-tab href="#tab-4">
+      <v-tab href="#tab-3" v-if="property.features.entityPlacement">
         Images
         <v-icon>mdi-image</v-icon>
+      </v-tab>
+      <v-tab href="#tab-4" v-if="property.features.dialogs">
+        Dialogs
+        <v-icon>mdi-message</v-icon>
       </v-tab>
       <!-- <v-tab href="#tab-5" disabled>
               Moderation
               <v-icon>mdi-gavel</v-icon>
             </v-tab> -->
-      <v-tab href="#tab-6">
+      <v-tab href="#tab-6" v-if="property.features.customizations">
         Customizations
         <v-icon>mdi-palette</v-icon>
       </v-tab>
     </v-tabs>
 
     <v-tabs-items v-model="tab" class="elevation-0" v-if="property">
-      <v-tab-item :value="'tab-1'">
+      <v-tab-item :value="'tab-1'" v-if="property.features.analytics">
         <scene-analytics
           :baseParcel="property.baseParcel"
+          :features="property.features"
           @updateProperties="updateProperties"
         />
       </v-tab-item>
-      <v-tab-item :value="'tab-2'">
-        <scene-dialog-list
-          :dialogs="property.sceneData.dialogs"
-          @updateProperties="updateProperties"
-        />
-      </v-tab-item>
-      <v-tab-item :value="'tab-3'">
+      <v-tab-item :value="'tab-2'" v-if="property.features.entityPlacement">
         <scene-video-list
           :videos="property.sceneData.videoSystems"
           @updateProperties="updateProperties"
         />
       </v-tab-item>
-      <v-tab-item :value="'tab-4'">
+      <v-tab-item :value="'tab-3'" v-if="property.features.entityPlacement">
         <scene-image-list
           :images="property.sceneData.imageTextures"
           :property="property"
           @updateProperties="updateProperties"
         />
       </v-tab-item>
-      <v-tab-item :value="'tab-5'">
+      <v-tab-item :value="'tab-4'" v-if="property.features.dialogs">
+        <scene-dialog-list
+          :dialogs="property.sceneData.dialogs"
+          @updateProperties="updateProperties"
+        />
+      </v-tab-item>
+      <v-tab-item :value="'tab-5'" v-if="property.features.moderation">
         <scene-moderation
           :settings="property.sceneData.moderation"
           @updateProperties="updateProperties"
         />
       </v-tab-item>
-      <v-tab-item :value="'tab-6'">
+      <v-tab-item :value="'tab-6'" v-if="property.features.customizations">
         <scene-customization-list
           :customizations="property.sceneData.customizations"
           @updateProperties="updateProperties"
