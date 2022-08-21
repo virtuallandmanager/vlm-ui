@@ -75,7 +75,8 @@ export default {
       this.updateProperties({
         action: 'remove',
         entity: 'video',
-        id: videoId
+        id: videoId,
+        entityData: this.videos[i]
       })
     },
     toggleEditMode (i) {
