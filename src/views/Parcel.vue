@@ -44,14 +44,19 @@
               >
             </h1>
           </v-hover>
-          <h5>
+          <h5 v-if="property.updates.length">
             Last updated {{ lastUpdate.howLongAgo }}
             <v-dialog v-model="updateHistoryDialog" scrollable width="600px">
               <template v-slot:activator="{ on, attrs }">
-                <v-btn color="primary" dark icon v-bind="attrs" v-on="on">
-                  <v-icon color="primary" dark v-bind="attrs" v-on="on" x-small>
-                    mdi-clock
+                <v-btn color="primary" dark icon x-small v-bind="attrs" v-on="on">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon v-bind="attrs" x-small v-on="on">
+                      mdi-clock
                   </v-icon>
+                  </template>
+                  <span>View Update History</span>
+                </v-tooltip>                    
                 </v-btn>
               </template>
               <v-card>
@@ -60,14 +65,32 @@
                 </v-card-title>
                 <v-card-text>
                   <div v-for="(update, i) in property.updates" :key="i">
-                  <div v-if="update.update" class="font-weight-bold">{{update.update.action.capitalize()}} {{update.update.entity}} {{update.update.property}}{{update.update.entityData && ' - '}}{{update.update.entityData && update.update.entityData.name}}</div>
-                  <div v-if="!update.update" class="font-weight-bold">Unknown update</div>
-                  <div>{{getDateTime(update.timestamp)}} by {{update.wallet.truncateWallet()}}</div> <br/>
+                    <div v-if="update.update" class="font-weight-bold">
+                      {{ update.update.action.capitalize() }}
+                      {{ update.update.entity }} {{ update.update.property
+                      }}{{ update.update.entityData && ' - '
+                      }}{{
+                        update.update.entityData &&
+                          update.update.entityData.name
+                      }}
+                    </div>
+                    <div v-if="!update.update" class="font-weight-bold">
+                      Unknown update
+                    </div>
+                    <div>
+                      {{ getDateTime(update.timestamp) }} by
+                      {{ update.wallet.truncateWallet() }}
+                    </div>
+                    <br />
                   </div>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="gray darken-1" text @click="updateHistoryDialog = false">
+                  <v-btn
+                    color="gray darken-1"
+                    text
+                    @click="updateHistoryDialog = false"
+                  >
                     Close
                   </v-btn>
                 </v-card-actions>
@@ -126,10 +149,10 @@
         Dialogs
         <v-icon>mdi-message</v-icon>
       </v-tab>
-      <!-- <v-tab href="#tab-5" disabled>
-              Moderation
-              <v-icon>mdi-gavel</v-icon>
-            </v-tab> -->
+      <v-tab href="#tab-5" v-if="property.features.moderation">
+        Moderation
+        <v-icon>mdi-gavel</v-icon>
+      </v-tab>
       <v-tab href="#tab-6" v-if="property.features.customizations">
         Customizations
         <v-icon>mdi-palette</v-icon>
@@ -147,6 +170,7 @@
       <v-tab-item :value="'tab-2'" v-if="property.features.entityPlacement">
         <scene-video-list
           :videos="property.sceneData.videoSystems"
+          :features="property.features"
           @updateProperties="updateProperties"
         />
       </v-tab-item>
@@ -154,24 +178,28 @@
         <scene-image-list
           :images="property.sceneData.imageTextures"
           :property="property"
+          :features="property.features"
           @updateProperties="updateProperties"
         />
       </v-tab-item>
       <v-tab-item :value="'tab-4'" v-if="property.features.dialogs">
         <scene-dialog-list
           :dialogs="property.sceneData.dialogs"
+          :features="property.features"
           @updateProperties="updateProperties"
         />
       </v-tab-item>
       <v-tab-item :value="'tab-5'" v-if="property.features.moderation">
         <scene-moderation
           :settings="property.sceneData.moderation"
+          :features="property.features"
           @updateProperties="updateProperties"
         />
       </v-tab-item>
       <v-tab-item :value="'tab-6'" v-if="property.features.customizations">
         <scene-customization-list
           :customizations="property.sceneData.customizations"
+          :features="property.features"
           @updateProperties="updateProperties"
         />
       </v-tab-item>
@@ -190,7 +218,7 @@ import SceneCustomizationList from '../components/SceneCustomizationList'
 // import Property from '../models/Property'
 import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
-import {DateTime} from 'luxon';
+import { DateTime } from 'luxon'
 
 export default {
   name: 'Parcel',
@@ -304,8 +332,10 @@ export default {
     goBack () {
       this.$router.go(-1)
     },
-    getDateTime(timestamp) {
-      return DateTime.fromMillis(timestamp).toLocaleString(DateTime.DATETIME_SHORT)
+    getDateTime (timestamp) {
+      return DateTime.fromMillis(timestamp).toLocaleString(
+        DateTime.DATETIME_SHORT
+      )
     }
   }
 }
