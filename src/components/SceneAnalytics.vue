@@ -117,7 +117,7 @@
           <v-dialog v-model="exportDialog" width="500" retain-focus>
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                v-if="true"
+                v-if="features.dataExports"
                 v-bind="attrs"
                 v-on="on"
                 :loading="exportingQuery"
