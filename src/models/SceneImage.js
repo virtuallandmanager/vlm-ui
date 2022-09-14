@@ -9,6 +9,7 @@ export class SceneImage {
   clickEvent = new ClickEvent();
   instances = [];
   isTransparent = false;
+  hasCollider = false;
 
   constructor() {}
 }

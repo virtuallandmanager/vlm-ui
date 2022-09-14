@@ -117,7 +117,7 @@
           <v-dialog v-model="exportDialog" width="500" retain-focus>
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                v-if="features.dataExports"
+                v-if="isDev || features.dataExports"
                 v-bind="attrs"
                 v-on="on"
                 :loading="exportingQuery"
@@ -388,6 +388,9 @@ export default {
     defaultDate () {
       const today = new Date().toISOString()
       return this.formatDate(today)
+    },
+    isDev () {
+      return process.env.VUE_APP_NODE_ENV == 'development'
     }
   },
   methods: {

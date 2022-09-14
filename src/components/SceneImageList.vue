@@ -91,7 +91,7 @@ export default {
           action: 'create',
           entity: 'image',
           id: newImage.id,
-          data: newImage
+          entityData: newImage
         })
       }
     },
@@ -101,6 +101,7 @@ export default {
         action: 'update',
         entity: 'image',
         property: 'link',
+        entityData: options.image,
         id: options.image.customId || options.image.id
       })
     },
