@@ -2,14 +2,14 @@ version: '3.7'
 
 services:
 
-  vlm-ui:
-    container_name: vlm-ui
+  vlm-ui-staging:
+    container_name: vlm-ui-staging
     restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - '8080:8080'
+      - '8180:8180'
 
 networks:
  default:
