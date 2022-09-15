@@ -3,6 +3,7 @@ import { ClickEvent } from "./ClickEvent";
 
 export class SceneImageInstance {
   id = nanoid(6);
+  customId = null;
   name = "";
   show = true;
   position = { x: 0, y: 0, z: 0 };
@@ -11,4 +12,8 @@ export class SceneImageInstance {
   clickEvent = new ClickEvent();
 
   constructor() {}
+
+  getId = () => {
+    return this.customId || this.id;
+  };
 }

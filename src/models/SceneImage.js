@@ -3,6 +3,7 @@ import { ClickEvent } from "./ClickEvent";
 
 export class SceneImage {
   id = nanoid(6);
+  customId = null;
   show = true;
   name = "";
   imageLink = "";
@@ -12,4 +13,8 @@ export class SceneImage {
   hasCollider = false;
 
   constructor() {}
+
+  getId = () => {
+    return this.customId || this.id
+  }
 }
