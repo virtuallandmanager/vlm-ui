@@ -312,8 +312,8 @@ export default {
       this.updateProperties({
         action: 'remove',
         entity: 'imageInstance',
-        id: instanceData.getId(),
-        materialId: this.image.getId(),
+        id: instanceData.id,
+        materialId: this.image.id,
         entityData: this.image,
         instanceData
       })
@@ -328,7 +328,7 @@ export default {
       this.updateProperties({
         action: 'create',
         entity: 'imageInstance',
-        id: newInstance.getId(),
+        id: newInstance.id,
         entityData: this.image,
         instanceData: newInstance
       })
@@ -338,7 +338,7 @@ export default {
         action: 'update',
         entity: 'imageInstance',
         property: 'name',
-        id: instance.getId(),
+        id: instance.id,
         entityData: this.image,
         instanceData: instance
       })
@@ -348,7 +348,7 @@ export default {
         action: 'update',
         entity: 'image',
         property: 'name',
-        id: this.image.customId || this.image.id,
+        id: this.image.id,
         entityData: this.image
       })
     },
@@ -362,7 +362,7 @@ export default {
           action: 'update',
           entity: 'imageInstance',
           property: 'visibility',
-          id: instance.getId(),
+          id: instance.id,
           entityData: this.image
         })
       } else {
@@ -371,7 +371,7 @@ export default {
           action: 'update',
           entity: 'image',
           property: 'visibility',
-          id: this.image.getId(),
+          id: this.image.id,
           entityData: this.image,
           instanceData: instance
         })
@@ -434,7 +434,7 @@ export default {
         action: 'update',
         entity: 'image',
         property: 'clickEvent',
-        id: this.image.getId(),
+        id: this.image.id,
         entityData: this.image
       })
     },
@@ -443,7 +443,7 @@ export default {
         action: 'update',
         entity: 'image',
         property: 'properties',
-        id: this.image.getId(),
+        id: this.image.id,
         entityData: this.image
       })
     },
@@ -452,7 +452,7 @@ export default {
         action: 'update',
         entity: 'imageInstance',
         property: 'clickEvent',
-        id: instance.getId(),
+        id: instance.id,
         entityData: this.image,
         instanceData: instance
       })
@@ -462,7 +462,7 @@ export default {
         action: 'update',
         entity: 'imageInstance',
         property: 'properties',
-        id: instance.getId(),
+        id: instance.id,
         entityData: this.image,
         instanceData: instance
       })
@@ -473,7 +473,7 @@ export default {
         entity: 'imageInstance',
         property: 'transform',
         custom: instance.customRendering,
-        id: instance.getId(),
+        id: instance.id,
         entityData: this.image,
         instanceData: instance
       })

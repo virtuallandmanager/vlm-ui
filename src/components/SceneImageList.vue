@@ -106,8 +106,8 @@ export default {
       })
     },
     removeImage (i) {
-      const imageId = this.images[i].getId(),
-        instanceIds = this.images[i].instances.map(instance => instance.getId())
+      const imageId = this.images[i].id,
+        instanceIds = this.images[i].instances.map(instance => instance.id)
       Vue.delete(this.images, i)
 
       this.updateProperties({
