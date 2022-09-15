@@ -21,7 +21,10 @@
       </div>
     </div>
     <div v-if="images.length > 0">
-      <div v-for="(image, i) in images" :key="image.id">
+      <v-container>
+        <v-row>
+      <v-col md="4" sm="12" v-for="(image, i) in images" :key="image.id">
+        <v-card>
         <scene-image
           :image="image"
           :i="i"
@@ -30,7 +33,10 @@
           @onRemove="removeImage(i)"
           @onReplace="replaceImage"
         />
-      </div>
+      </v-card>
+      </v-col>
+    </v-row>
+    </v-container>
     </div>
   </div>
 </template>

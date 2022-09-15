@@ -26,12 +26,12 @@
       <div
         class="d-flex justify-space-between align-center grey darken-3 dark pa-4"
       >
-        <div class="text-h5 white--text" v-if="!editingName">
-          {{ image.name }}
-          <v-btn icon small dark @click="toggleEditMode()">
-            <v-icon small>mdi-pencil</v-icon>
-          </v-btn>
+        <div class="text-h6 white--text d-flex-shrink-1" v-if="!editingName">
+          {{ truncatedName }}
         </div>
+        <v-btn class="d-flex-grow-0" icon small dark @click="toggleEditMode()" v-if="!editingName">
+          <v-icon small>mdi-pencil</v-icon>
+        </v-btn>
         <div class="text-h5" v-if="editingName">
           <v-text-field
             autofocus
@@ -47,6 +47,10 @@
             @change="editImageName()"
           ></v-text-field>
         </div>
+      </div>
+      <div
+        class="d-flex flex-column justify-space-between align-center black dark py-1"
+      >
         <div>
           <v-btn
             icon
@@ -124,21 +128,21 @@
       </div>
       <div>
         <div
-          class="d-flex justify-space-between align-center grey lighten-2 pa-4"
+          class="d-flex justify-space-between align-center blue-grey lighten-4 pa-4"
         >
           <h1 class="text-body-1 font-weight-bold" dark>
             Instances
           </h1>
           <v-btn @click="addInstance()"
-            ><v-icon>mdi-plus</v-icon> Add Instance</v-btn
+            ><v-icon>mdi-plus</v-icon> Add</v-btn
           >
         </div>
         <div class="d-flex flex-column pa-4" v-if="!image.instances.length">
           <div class="text-body1 text-center">
-        Add an instance for this image to see it in the scene.
-      </div>
+            Add an instance for this image to see it in the scene.
+          </div>
         </div>
-        <div class="d-flex flex-column pa-4" v-if="image.instances.length">
+        <div class="d-flex flex-column my-0" v-if="image.instances.length">
           <div v-for="(instance, ii) in image.instances" :key="instance.id">
             <click-event-dialog
               v-if="instance.clickEventDialog"
@@ -173,7 +177,7 @@
               entityType="image instance"
               @onRemove="removeImageInstance(image, ii)"
             />
-            <div class="d-flex mx-auto align-center">
+            <div class="d-flex flex-column align-center lighten-3 my-0 py-2" :class="ii % 2 ? 'grey' : 'white'">
               <v-text-field
                 hide-details="true"
                 v-model="instance.name"
@@ -294,6 +298,31 @@ export default {
   mounted () {
     this.imageLink = this.image.imageLink
   },
+  computed: {
+    truncatedName () {
+      const imageNameArr = this.image.name.split('')
+      let noSpacesLength = 0
+      let truncated = this.image.name
+      imageNameArr.forEach(char => {
+        if (char !== ' ') {
+          noSpacesLength++
+        } else {
+          noSpacesLength = 0
+        }
+
+        if (noSpacesLength > 18) {
+          truncated = truncated.substr(truncated.length - 18);
+          noSpacesLength = 0
+        }
+      })
+
+      if (truncated !== this.image.name) {
+        return `...${truncated}`
+      } else {
+        return this.image.name
+      }
+    }
+  },
   methods: {
     ...mapActions({
       uploadImage: 'image/uploadImage'
@@ -306,7 +335,7 @@ export default {
       this.$emit('onRemove')
     },
     removeImageInstance (image, i) {
-      const instanceData = image.instances[i];
+      const instanceData = image.instances[i]
       Vue.delete(image.instances, i)
 
       this.updateProperties({
