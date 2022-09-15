@@ -128,7 +128,7 @@
       </div>
       <div>
         <div
-          class="d-flex justify-space-between align-center blue-grey lighten-4 pa-4"
+          class="d-flex justify-space-between align-center grey lighten-3 pa-4"
         >
           <h1 class="text-body-1 font-weight-bold" dark>
             Instances
@@ -177,7 +177,7 @@
               entityType="image instance"
               @onRemove="removeImageInstance(image, ii)"
             />
-            <div class="d-flex flex-column align-center lighten-3 my-0 py-2" :class="ii % 2 ? 'grey' : 'white'">
+            <div class="d-flex flex-column align-center lighten-4 my-0 py-2" :class="ii % 2 ? 'grey' : 'white'">
               <v-text-field
                 hide-details="true"
                 v-model="instance.name"
