@@ -321,8 +321,8 @@ export default {
       const newInstance = new SceneImageInstance()
       newInstance.scale.x = this.image.width / 1000
       newInstance.scale.y = this.image.height / 1000
-      newInstance.position.x = this.image.width / 2
-      newInstance.position.y = this.image.height / 2
+      newInstance.position.x = newInstance.scale.x / 2
+      newInstance.position.y = newInstance.scale.y / 2 + 0.5
       this.image.instances.push(newInstance)
       this.updateProperties({
         action: 'create',
