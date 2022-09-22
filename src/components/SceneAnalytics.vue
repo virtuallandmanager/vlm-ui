@@ -268,7 +268,13 @@
                 v-on="on"
               ></v-text-field>
             </template>
-            <v-date-picker v-model="dateRange" no-title scrollable range>
+            <v-date-picker
+              v-model="dateRange"
+              no-title
+              scrollable
+              range
+              @change="validateDateRange"
+            >
               <v-spacer></v-spacer>
               <v-btn text color="primary" @click="runQuery()"> OK </v-btn>
               <v-btn text color="primary" @click="dateRangeMenu = false">
@@ -393,7 +399,7 @@ export default {
       metadata: { selected: false, text: 'Metadata' },
       dateTimes: { selected: false, text: 'Dates & Times' },
       isoTimestamps: { selected: false, text: 'ISO Timestamps' },
-      unixTimestamps: { selected: false, text: 'Unix Timestamps' },
+      unixTimestamps: { selected: false, text: 'Unix Timestamps' }
     },
     removeDuplicateWallets: false,
     sevenDayConnectionAverage: 0,
@@ -495,6 +501,13 @@ export default {
     ...mapActions({
       setErrorMessage: 'land/setErrorMessage'
     }),
+    validateDateRange () {
+      let dateRange = [this.dateRange[0], this.dateRange[1]]
+      if (dateRange[0] > dateRange[1]) {
+        this.dateRange[0] = dateRange[1]
+        this.dateRange[1] = dateRange[0]
+      }
+    },
     handleSelectAll () {
       this.$nextTick(() => {
         if (this.includeAllActions) {
