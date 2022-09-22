@@ -1,4 +1,4 @@
-import router from "../router";
+import router from "../../router";
 import Web3 from "web3";
 const web3 = new Web3(
   window.ethereum || (window.web3 && window.web3.currentProvider)
@@ -8,7 +8,7 @@ export default {
   state: () => ({
     connected: false,
     // account: "",
-    // testAccount: "0xc2877b05CFe462E585fE3DE8046F7528998aF6F1",
+    // testAccount: "0x959e104E1a4dB6317fA58F8295F586e1A978c297",
     loggingIn: false,
     loginError: null,
     noWeb3: false,

@@ -3,6 +3,7 @@ export default {
   state: () => ({
     error: false,
     errorMessage: "",
+    activeParcel: "",
     unimportedParcels: {
       parcels: [],
       aetheriaParcels: []
@@ -55,7 +56,7 @@ export default {
     property: (state, getters) => (xCoord, yCoord) => getters.userLand && getters.userLand.find((property) => property.baseParcel == xCoord + "," + yCoord),
     lastUpdate: (state, getters) => (xCoord, yCoord) => getters.property(xCoord, yCoord).lastUpdate,
     error: (state) => state.error,
-    errorMessage: (state) => state.errorMessage,
+    errorMessage: (state) => state.errorMessage
   },
   mutations: {
     clearUserLand: (state) => {
@@ -82,6 +83,9 @@ export default {
         ...state.sceneDefault,
         ...updatedProperty
       };
+    },
+    updateActiveParcel: (state, baseParcel) => {
+      state.activeParcel = baseParcel;
     },
     parcelUpdateStart: (state) => (state.updatingParcel = true),
     parcelUpdateStop: (state, errorMessage) => {
@@ -111,11 +115,18 @@ export default {
       if (!errorState) {
         state.errorMessage = "";
       }
+    },
+    setErrorMessage: (state, error) => {
+      state.error = true;
+      state.errorMessage = error;
     }
   },
   actions: {
     setErrorState({ commit }, errorState) {
       commit("setErrorState", errorState);
+    },
+    setErrorMessage({ commit }, error) {
+      commit("setErrorMessage", error);
     },
     async fetchUserLand({ commit }) {
       commit("clearUserLand");
@@ -163,6 +174,9 @@ export default {
       } catch (error) {
         commit("parcelImportStop", error);
       }
+    },
+    updateActiveParcel({ commit }, baseParcel) {
+      commit("updateActiveParcel", baseParcel);
     },
     async updateLandProperties({ commit, getters }, options) {
       const property = options.property,

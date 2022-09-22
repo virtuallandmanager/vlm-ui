@@ -131,19 +131,92 @@
                 Export Analytics Data
               </v-card-title>
 
-              <v-card-text class="pt-4">
+              <v-card-text class="pt-4 text-subtitle-1">
                 Select the data you would like to include in the CSV file:
-              </v-card-text>
-              <v-card-text>
-                <div v-for="(value, key) in exportOptions" :key="key">
-                  <v-checkbox
-                    v-model="value.selected"
-                    :label="value.text"
-                    :hint="value.hint"
-                    @change="updateExportOptions(key, value)"
-                    class="py-0 my-0"
-                  ></v-checkbox>
-                </div>
+                <v-select
+                  label="Actions To Include"
+                  :items="eventTypes"
+                  v-model="eventTypeFilter"
+                  multiple
+                  hide-details
+                  @blur="validateActions"
+                  class="mb-4"
+                >
+                  <template v-slot:selection="{ item, index }">
+                    <v-chip v-if="includeAllActions && index === 0">
+                      <span>All Actions</span>
+                    </v-chip>
+                    <v-chip v-if="!includeAllActions && index < 3">
+                      <span>{{ item.text }}</span>
+                    </v-chip>
+                    <span
+                      v-if="!includeAllActions && index === 3"
+                      class="grey--text text-caption"
+                    >
+                      (+{{ eventTypeFilter.length - 3 }} others)
+                    </span>
+                  </template>
+                  <template v-slot:prepend-item>
+                    <v-list-item
+                      ripple
+                      @mousedown.prevent
+                      @click="handleSelectAll"
+                    >
+                      <v-list-item-action>
+                        <v-icon
+                          :color="
+                            eventTypeFilter.length > 0 ? 'red darken-4' : ''
+                          "
+                        >
+                          {{ selectAllIcon }}
+                        </v-icon>
+                      </v-list-item-action>
+                      <v-list-item-content>
+                        <v-list-item-title>
+                          Select All
+                        </v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-divider></v-divider>
+                  </template>
+                </v-select>
+                <v-container>
+                  <v-row>
+                    <v-col
+                      v-for="(value, key) in exportOptions"
+                      :key="key"
+                      class="col-6"
+                    >
+                      <v-checkbox
+                        v-model="value.selected"
+                        :label="value.text"
+                        :hint="value.hint"
+                        @change="updateExportOptions(key, value)"
+                        class="py-0 my-0"
+                      ></v-checkbox>
+                    </v-col>
+                  </v-row>
+                </v-container>
+                <v-container>
+                  <v-row>
+                    <v-col>
+                      <v-switch
+                        v-if="exportOptions.wallets.selected"
+                        v-model="removeDuplicateWallets"
+                        label="Remove Duplicate Wallet Addresses"
+                        class="py-0 my-0"
+                      >
+                      </v-switch>
+                      <v-switch
+                        v-if="exportOptions.clientIps.selected"
+                        v-model="removeDuplicateIps"
+                        label="Remove Duplicate IP Addresses"
+                        class="py-0 my-0"
+                      >
+                      </v-switch>
+                    </v-col>
+                  </v-row>
+                </v-container>
                 <div class="text-body-1 red">{{ selectDataError }}</div>
               </v-card-text>
 
@@ -240,7 +313,7 @@
           ></ccv-donut-chart>
         </v-col>
       </v-row>
-      <v-row v-if="dateRange[1] && totalInteractions.length">
+      <v-row v-if="totalInteractions.length">
         <v-col>
           <ccv-line-chart
             v-if="!loadingAnalytics"
@@ -261,6 +334,7 @@ import Loader from '../components/Loader'
 import { downloadCsv } from '../helpers/download.js'
 import chartsVue from '@carbon/charts-vue'
 import MapChart from 'vue-map-chart'
+import { mapActions } from 'vuex'
 
 import '@carbon/styles/css/styles.css'
 import '@carbon/charts/styles.css'
@@ -305,7 +379,7 @@ export default {
     eventTypes: [],
     connectedUsers: 0,
     vpnConnections: 0,
-    eventTypeFilter: 'all',
+    eventTypeFilter: [],
     exportDialog: false,
     exportOptions: {
       wallets: { selected: false, text: 'Wallet Addresses' },
@@ -315,8 +389,13 @@ export default {
         selected: false,
         text: 'Include Guest Users',
         hint: '(Wallet addresses will not be included)'
-      }
+      },
+      metadata: { selected: false, text: 'Metadata' },
+      dateTimes: { selected: false, text: 'Dates & Times' },
+      isoTimestamps: { selected: false, text: 'ISO Timestamps' },
+      unixTimestamps: { selected: false, text: 'Unix Timestamps' },
     },
+    removeDuplicateWallets: false,
     sevenDayConnectionAverage: 0,
     thirtyDayConnectionAverage: 0,
     uniqueVisitorsGraph: [],
@@ -378,6 +457,14 @@ export default {
     )
   },
   computed: {
+    errorMessage: {
+      get () {
+        return this.$store.getters['land/errorMessage']
+      },
+      set (value) {
+        this.setErrorMessage(value)
+      }
+    },
     dateRangeText () {
       if (this.dateRange.length > 1) {
         return this.dateRange.join(' to ')
@@ -391,17 +478,51 @@ export default {
     },
     isDev () {
       return process.env.VUE_APP_NODE_ENV == 'development'
+    },
+    includeAllActions () {
+      return this.eventTypeFilter.length === this.eventTypes.length
+    },
+    includeSomeActions () {
+      return this.eventTypeFilter.length > 0 && !this.includeAllActions
+    },
+    selectAllIcon () {
+      if (this.includeAllActions) return 'mdi-close-box'
+      if (this.includeSomeActions) return 'mdi-minus-box'
+      return 'mdi-checkbox-blank-outline'
     }
   },
   methods: {
+    ...mapActions({
+      setErrorMessage: 'land/setErrorMessage'
+    }),
+    handleSelectAll () {
+      this.$nextTick(() => {
+        if (this.includeAllActions) {
+          this.eventTypeFilter = []
+        } else {
+          this.eventTypeFilter = this.eventTypes.map(
+            eventType => eventType.value
+          )
+        }
+      })
+    },
+    validateActions () {
+      if (this.eventTypeFilter.length == 0) {
+        this.errorMessage = 'Select at least one type of action to export.'
+        this.eventTypeFilter = this.eventTypes.map(eventType => eventType.value)
+      }
+    },
     async runQuery () {
       this.loadingAnalytics = true
-      let startDate = DateTime.fromISO(this.dateRange[0]) || '',
-        endDate = DateTime.fromISO(this.dateRange[1]) || '',
+      let startDate = DateTime.fromISO(this.dateRange[0]),
+        endDate = this.dateRange[1]
+          ? DateTime.fromISO(this.dateRange[1])
+          : DateTime.fromISO(this.dateRange[0]),
         timescale =
           Interval.fromDateTimes(startDate, endDate).length('days') <= 2
             ? 'hour'
-            : 'day'
+            : 'day',
+        tz = this.tz
 
       if (!endDate) {
         this.dateRange[1] = this.dateRange[0]
@@ -413,37 +534,43 @@ export default {
         x = baseParcel[0],
         y = baseParcel[1]
 
-      let apiUrl = `${process.env.VUE_APP_API_URL}/analytics/visitors/${x}/${y}?startDate=${startDate}`
+      let apiUrl = `${process.env.VUE_APP_API_URL}/analytics/visitors/${x}/${y}`
 
-      if (endDate) {
-        apiUrl += `&endDate=${endDate}`
+      const requestBody = {
+        startDate,
+        endDate,
+        timescale,
+        tz
       }
 
-      if (this.tz) {
-        apiUrl += `&tz=${this.tz}`
+      const fetchOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
       }
-
-      if (timescale) {
-        apiUrl += `&timescale=${timescale}`
-      }
-
-      // if (this.eventTypeFilter) {
-      //   apiUrl += `&eventType=${this.eventTypeFilter}`
-      // }
 
       try {
-        const res = await fetch(apiUrl)
-        const { usersData, uniqueVisits, totalInteractions } = await res.json()
-
-        console.log(usersData)
+        const res = await fetch(apiUrl, fetchOptions)
+        const { uniqueVisits, totalInteractions, eventTypes } = await res.json()
 
         this.uniqueVisitorsGraph = uniqueVisits
         this.totalInteractions = totalInteractions
 
         this.loadingAnalytics = false
         this.interactionChartOptions.data.loading = false
-        this.eventTypes.unshift({ value: 'all', text: 'All Actions' })
-        this.eventTypeFilter = 'all'
+        this.eventTypes = eventTypes.map(eventType => ({
+          value: eventType,
+          text:
+            eventType == 'player_expression'
+              ? 'Emote'
+              : eventType
+                  .capitalize()
+                  .removeUnderscore()
+                  .removeDash()
+        }))
+        this.eventTypeFilter = eventTypes
       } catch (error) {
         console.log(error)
       }
@@ -492,36 +619,53 @@ export default {
       )
       const hasExportOptions = selectedExportOptions.some(selected => selected)
       if (!hasExportOptions) {
-        this.selectDataError = "Please select the data you'd like to export."
+        this.errorMessage = "Please select the data you'd like to export."
         return
       }
       this.exportDialog = false
       this.exportingQuery = true
       let startDate = this.dateRange[0] || '',
-        endDate = this.dateRange[1] || this.dateRange[0] || ''
+        endDate = this.dateRange[1] || this.dateRange[0] || '',
+        removeDuplicateWallets = this.removeDuplicateWallets,
+        removeDuplicateIps = this.removeDuplicateIps
+
+      const requestBody = {
+        startDate,
+        endDate,
+        eventTypes: this.eventTypeFilter,
+        tz: this.tz,
+        removeDuplicateWallets,
+        removeDuplicateIps
+      }
 
       this.$refs.dateRangeMenu.save(this.dateRange)
       const baseParcel = this.baseParcel.split(','),
         x = baseParcel[0],
         y = baseParcel[1]
 
-      let queryString = `?startDate=${startDate}&endDate=${endDate}`
-      if (this.eventTypeFilter) {
-        queryString += `&eventType=${this.eventTypeFilter}`
-      }
-      let hasEventFilter = this.eventTypeFilter !== 'all'
+      let hasEventFilter =
+        this.eventTypeFilter.length &&
+        this.eventTypeFilter.length !== this.eventTypes.length
       let fileName = `_${startDate ? startDate : ''}${
         startDate && endDate ? '-' + endDate : ''
-      }${hasEventFilter ? '-' + this.eventTypeFilter : ''}`
+      }${hasEventFilter ? '-' + this.eventTypeFilter.join('_') : ''}`
+
       Object.entries(this.exportOptions).forEach(([key, value]) => {
-        if (value.selected) {
-          queryString += `&${key}=${value.selected}`
-        }
+        requestBody[key] = value.selected
       })
+
+      const fetchOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      }
 
       try {
         const response = await fetch(
-          `${process.env.VUE_APP_API_URL}/analytics/export/${x}/${y}${queryString}`
+          `${process.env.VUE_APP_API_URL}/analytics/export/${x}/${y}`,
+          fetchOptions
         )
         const responseText = await response.text()
         downloadCsv(`vlm_analytics${fileName}.csv`, responseText)
