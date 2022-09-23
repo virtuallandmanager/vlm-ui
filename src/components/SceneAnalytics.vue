@@ -442,7 +442,10 @@ export default {
         alignment: 'center'
       }
     },
-    timezoneList: timezones.map(tz => tz.tzCode),
+    timezoneList: [
+      'UTC',
+      ...timezones.map(tz => tz.tzCode)
+  ],
     tz: DateTime.local().toFormat('z')
   }),
   props: {
