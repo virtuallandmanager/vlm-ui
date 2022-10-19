@@ -130,8 +130,16 @@
               <v-card-title class="text-h5 grey lighten-2">
                 Export Analytics Data
               </v-card-title>
-
-              <v-card-text class="pt-4 text-subtitle-1">
+              <v-card-text
+                class="pt-4 text-subtitle-1"
+                v-if="dateRangeCount > 60"
+              >
+                CSV exports are not currently supported for date ranges larger than 60 days.
+              </v-card-text>
+              <v-card-text
+                class="pt-4 text-subtitle-1"
+                v-if="dateRangeCount <= 60"
+              >
                 Select the data you would like to include in the CSV file:
                 <v-select
                   label="Actions To Include"
@@ -225,12 +233,22 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn
+                  v-if="dateRangeCount <= 60"
                   color="primary"
                   text
                   @click="exportQuery"
                   :loading="exportingQuery"
                 >
                   Export
+                </v-btn>
+                <v-btn
+                  v-if="dateRangeCount > 60"
+                  color="primary"
+                  text
+                  @click="exportDialog = false"
+                  :loading="exportingQuery"
+                >
+                  Cancel
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -442,10 +460,7 @@ export default {
         alignment: 'center'
       }
     },
-    timezoneList: [
-      'UTC',
-      ...timezones.map(tz => tz.tzCode)
-  ],
+    timezoneList: ['UTC', ...timezones.map(tz => tz.tzCode)],
     tz: DateTime.local().toFormat('z')
   }),
   props: {
@@ -480,6 +495,14 @@ export default {
       } else {
         return this.dateRange[0]
       }
+    },
+    dateRangeCount () {
+      const startDate = DateTime.fromISO(this.dateRange[0]),
+        endDate = DateTime.fromISO(this.dateRange[1]),
+        dateRange = Interval.fromDateTimes(startDate,endDate),
+        dateRangeDays = dateRange.length('days');
+
+      return dateRangeDays;
     },
     defaultDate () {
       const today = new Date().toISOString()
