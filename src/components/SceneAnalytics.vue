@@ -422,6 +422,7 @@ export default {
       unixTimestamps: { selected: false, text: 'Unix Timestamps' }
     },
     removeDuplicateWallets: false,
+    removeDuplicateIps: false,
     sevenDayConnectionAverage: 0,
     thirtyDayConnectionAverage: 0,
     uniqueVisitorsGraph: [],
@@ -594,6 +595,10 @@ export default {
 
       try {
         const res = await fetch(apiUrl, fetchOptions)
+        if (res.status >= 400) {
+          const error = await res.json()
+          this.setErrorMessage(error.text)
+        }
         const { uniqueVisits, totalInteractions, eventTypes } = await res.json()
 
         this.uniqueVisitorsGraph = uniqueVisits
@@ -708,6 +713,10 @@ export default {
           `${process.env.VUE_APP_API_URL}/analytics/export/${x}/${y}`,
           fetchOptions
         )
+        if (response.status >= 400) {
+          const error = await response.json()
+          this.setErrorMessage(error.text)
+        }
         const responseText = await response.text()
         downloadCsv(`vlm_analytics${fileName}.csv`, responseText)
 
