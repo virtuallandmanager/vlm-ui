@@ -134,7 +134,8 @@
                 class="pt-4 text-subtitle-1"
                 v-if="dateRangeCount > 60"
               >
-                CSV exports are not currently supported for date ranges larger than 60 days.
+                CSV exports are not currently supported for date ranges larger
+                than 60 days.
               </v-card-text>
               <v-card-text
                 class="pt-4 text-subtitle-1"
@@ -407,14 +408,15 @@ export default {
     exportDialog: false,
     exportOptions: {
       wallets: { selected: false, text: 'Wallet Addresses' },
-      clientIps: { selected: false, text: 'IP Addresses' },
       names: { selected: false, text: 'Usernames' },
+      clientIps: { selected: false, text: 'IP Addresses' },
+      authenticity: { selected: false, text: 'IP Authenticity' },
+      metadata: { selected: false, text: 'Metadata' },
+      location: { selected: false, text: 'Locations' },
       guests: {
         selected: false,
-        text: 'Include Guest Users',
-        hint: '(Wallet addresses will not be included)'
+        text: 'Guest Accounts'
       },
-      metadata: { selected: false, text: 'Metadata' },
       dateTimes: { selected: false, text: 'Dates & Times' },
       isoTimestamps: { selected: false, text: 'ISO Timestamps' },
       unixTimestamps: { selected: false, text: 'Unix Timestamps' }
@@ -499,10 +501,10 @@ export default {
     dateRangeCount () {
       const startDate = DateTime.fromISO(this.dateRange[0]),
         endDate = DateTime.fromISO(this.dateRange[1]),
-        dateRange = Interval.fromDateTimes(startDate,endDate),
-        dateRangeDays = dateRange.length('days');
+        dateRange = Interval.fromDateTimes(startDate, endDate),
+        dateRangeDays = dateRange.length('days')
 
-      return dateRangeDays;
+      return dateRangeDays
     },
     defaultDate () {
       const today = new Date().toISOString()
