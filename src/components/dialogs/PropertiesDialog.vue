@@ -17,6 +17,18 @@
           label="Enable Transparency"
           @change="changeTransparency"
         ></v-switch>
+        <div
+          v-if="entityType == 'image' && !instance"
+          class="text-body1 font-weight-bold"
+        >
+          Interactions
+        </div>
+        <v-switch
+          v-if="entityType == 'image' || entityType == 'image instance'"
+          v-model="refObj.withCollisions"
+          label="Enable Collider"
+          @change="changeCollisions"
+        ></v-switch>
         <div class="text-body1 font-weight-bold">Advanced Features</div>
         <v-text-field
           v-model="refObj.customId"
@@ -115,6 +127,10 @@ export default {
       Vue.set(this.getRefObj(), 'isTransparent', this.refObj.isTransparent)
       this.$emit('onChange')
     },
+    changeCollisions () {
+      Vue.set(this.getRefObj(), 'withCollisions', this.refObj.withCollisions)
+      this.$emit('onChange')
+    },
     changeCustomRendering () {
       Vue.set(this.getRefObj(), 'customRendering', this.refObj.customRendering)
       this.$emit('onChange')
@@ -151,7 +167,16 @@ export default {
       )
       Vue.set(this.getRefObj(), 'customId', this.originalProperties.customId)
       Vue.set(this.getRefObj(), 'parent', this.originalProperties.parent)
-      Vue.set(this.getRefObj(), 'customRendering', this.originalProperties.customRendering)
+      Vue.set(
+        this.getRefObj(),
+        'customRendering',
+        this.originalProperties.customRendering
+      )
+      Vue.set(
+        this.getRefObj(),
+        'withCollisions',
+        this.originalProperties.withCollisions
+      )
       this.$emit('onChange')
     }
   }

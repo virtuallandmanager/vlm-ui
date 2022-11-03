@@ -1,3 +1,8 @@
+import { SceneCustomization } from "../../models/SceneCustomization";
+import { SceneImage } from "../../models/SceneImage";
+import { SceneModeration } from "../../models/SceneModeration";
+import { SceneVideo } from "../../models/SceneVideo";
+
 export default {
   namespaced: true,
   state: () => ({
@@ -21,32 +26,11 @@ export default {
       ],
       audioStream: {},
       entities: [{}],
-      videoSystems: [
-        {
-          volume: 1,
-          liveStreamEnabled: false,
-          playlistEnabled: false,
-          liveLink: "",
-          offImage: "",
-          playlist: []
-        }
-      ],
-      imageTextures: [
-        {
-          clickEvent: {
-            type: 0,
-            externalLink: "",
-            sound: "",
-            moveTo: "",
-            teleportTo: ""
-          }
-        }
-      ],
-      moderation: {
-        allowCertainWearables: false,
-        banCertainWearables: false
-      },
-      customizations: []
+      features: {},
+      videoScreens: [new SceneVideo()],
+      images: [new SceneImage()],
+      moderation: new SceneModeration(),
+      customizations: [new SceneCustomization()]
     }
   }),
   getters: {
@@ -100,10 +84,23 @@ export default {
     },
     loadUserLand: (state, parcels) => {
       state.userLand = parcels.map((property) => {
-        const sceneData = {
-          ...state.sceneDefault,
-          ...property.sceneData
-        };
+        const sceneData = {};
+        if (property.sceneData.videoSystems) {
+          property.sceneData.videoScreens = property.sceneData.videoSystems;
+          delete property.sceneData.videoSystems;
+        }
+        if (property.sceneData.imageTextures) {
+          property.sceneData.images = property.sceneData.imageTextures;
+          delete property.sceneData.imageTextures;
+        }
+        Object.keys(state.sceneDefault).forEach((key) => {
+          if (Array.isArray(property.sceneData[key])) {
+            sceneData[key] = property.sceneData[key] && property.sceneData[key].length ? property.sceneData[key] : state.sceneDefault[key];
+          } else {
+            sceneData[key] = { ...state.sceneDefault[key], ...property.sceneData[key] };
+          }
+        });
+
         return {
           ...property,
           sceneData

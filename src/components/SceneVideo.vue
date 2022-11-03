@@ -95,7 +95,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
               </template>
-              <span>Image Properties</span>
+              <span>Video Properties</span>
             </v-tooltip>
           </v-btn>
           <v-btn icon dark @click.stop="openDeleteDialog()">
@@ -114,23 +114,35 @@
         Video Source
       </h1>
     </div>
-    <div class="my-0 pa-4">
+    <div class="my-0 pa-4 d-flex">
       <v-text-field
         v-model="video.liveLink"
         label="Live Video Link"
-        hide-details="true"
-        @blur="updateLiveLink()"
+        hide-details="auto"
+        :rules="[validateStreamLink]"
+        @blur="updateLiveLink"
       >
       </v-text-field>
+      <v-switch
+        v-if="features.liveStreamToggle"
+        v-model="video.enableLiveStream"
+        :disabled="!this.video.liveLink"
+        label="Enable Live Streaming"
+        color="red"
+        hide-details
+        @change="updateLiveToggle"
+        class="pl-6"
+      ></v-switch>
     </div>
 
     <div class="my-0 pa-4">
       <v-select
         v-model="video.offType"
-        label="Off-Air Content"
+        label="Off Air Content"
         :items="offTypes"
-        hide-details="true"
+        :persistent-hint="true"
         @change="updateOffType"
+        hint="Off-air content is shown when the live video is disabled or not actively streaming"
       >
       </v-select>
     </div>
@@ -180,7 +192,7 @@
       </div>
       <div class="px-4">
         <v-text-field
-          v-model="video.offImage"
+          v-model="video.offImageLink"
           label="Image Link"
           placeholder="Enter Image URL"
           @blur="updateOffImage"
@@ -206,6 +218,9 @@
     </div>
     <div>
       <div class="d-flex flex-column pa-4">
+        <div class="text-body1 text-center" v-if="!video.instances.length">
+          Add an instance for this video screen to see it in the scene.
+        </div>
         <div v-for="(instance, i) in video.instances" :key="instance.id">
           <div class="d-flex mx-auto align-center">
             <div class="flex-grow-1">
@@ -305,7 +320,7 @@ export default {
         return new SceneVideo()
       }
     },
-    property: Object
+    features: Object
   },
   mounted () {},
   methods: {
@@ -316,25 +331,23 @@ export default {
       const nextItem = ''
       this.video.playlist.push(nextItem)
       this.updateProperties({
-        action: 'add',
+        action: 'update',
         entity: 'video',
-        property: 'playlistItem',
+        property: 'playlist',
         id: this.video.id,
         entityData: this.video
       })
     },
+
     addInstance () {
       const newInstance = new SceneVideoInstance()
       if (!this.video.instances) {
         this.video.instances = []
       }
-      newInstance.position.x = newInstance.width/2;
-      newInstance.position.y = newInstance.height/2 + 0.5;
       this.video.instances.push(newInstance)
       this.updateProperties({
-        action: 'add',
-        entity: 'video',
-        property: 'instance',
+        action: 'create',
+        entity: 'videoInstance',
         id: newInstance.id,
         entityData: this.video,
         instanceData: newInstance
@@ -352,9 +365,8 @@ export default {
       Vue.delete(this.video.instances, i)
 
       this.updateProperties({
-        action: 'remove',
-        entity: 'video',
-        property: 'instance',
+        action: 'delete',
+        entity: 'videoInstance',
         id: instance.id,
         entityData: this.video,
         instanceData: instance
@@ -368,9 +380,9 @@ export default {
       Vue.delete(this.video.playlist, i)
 
       this.updateProperties({
-        action: 'remove',
+        action: 'update',
         entity: 'video',
-        property: 'playlistItem',
+        property: 'playlist',
         id: this.video.id,
         entityData: this.video
       })
@@ -400,6 +412,15 @@ export default {
         })
       }
     },
+    toggleLiveStream () {
+      this.updateProperties({
+        action: 'update',
+        entity: 'video',
+        property: 'type',
+        id: this.video.id,
+        entityData: this.video
+      })
+    },
     updateVideoProperties () {
       this.updateProperties({
         action: 'update',
@@ -408,39 +429,6 @@ export default {
         id: this.video.id,
         entityData: this.video
       })
-    },
-    async replaceImage (video, i) {
-      const options = {
-        video: this.$refs.replaceFileInput[i].files[0],
-        baseParcel: this.property.baseParcel,
-        id: video.id
-      }
-      this.$refs.replaceFileInput[i].value = null
-
-      const img = new Image()
-      const uploadImageRes = await this.uploadImage(options)
-      const videoJson = await uploadImageRes.json()
-      const videoLink = `${process.env.VUE_APP_API_URL}/${videoJson.path}`
-      img.src = videoLink
-      img.onload = () => {
-        const height = img.height,
-          width = img.width
-
-        this.video = {
-          ...this.video,
-          videoLink,
-          height,
-          width
-        }
-
-        this.updateProperties({
-          action: 'update',
-          entity: 'video',
-          property: 'link',
-          id: this.video.id,
-          entityData: this.video
-        })
-      }
     },
     openClickEventDialog () {
       this.selectedImage = this.video
@@ -494,10 +482,22 @@ export default {
       })
     },
     updateLiveLink () {
+      if (!this.video.liveLink) {
+        this.video.enableLiveStream = false
+      }
       this.updateProperties({
         action: 'update',
         entity: 'video',
         property: 'liveLink',
+        id: this.video.id,
+        entityData: this.video
+      })
+    },
+    updateLiveToggle () {
+      this.updateProperties({
+        action: 'update',
+        entity: 'video',
+        property: 'enableLiveStream',
         id: this.video.id,
         entityData: this.video
       })
@@ -542,13 +542,24 @@ export default {
       this.updateProperties({
         action: 'update',
         entity: 'video',
-        property: 'offImage',
+        property: 'offImageLink',
         id: this.video.id,
         entityData: this.video
       })
     },
     updateProperties (wssMessages) {
       this.$emit('updateProperties', wssMessages)
+    },
+    validateStreamLink (value) {
+      if (value && value.includes('http://')) {
+        return 'Insecure url detected - Must be an https:// link'
+      } else if (value && !value.includes('https://')) {
+        return 'Stream url must include https://'
+      } else if (value && !value.includes('.m3u8')) {
+        return 'Stream format must be a .m3u8'
+      } else {
+        return true
+      }
     }
   }
 }

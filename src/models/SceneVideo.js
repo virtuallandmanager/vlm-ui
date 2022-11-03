@@ -7,11 +7,12 @@ export class SceneVideo {
   offType = 1;
   liveLink = "";
   playlist = [""];
-  offImage = "";
+  offImageLink = "";
   emission = 1;
   volume = 1;
   instances = [];
   show = true;
+  withCollisions = false;
 
   constructor() {}
 }

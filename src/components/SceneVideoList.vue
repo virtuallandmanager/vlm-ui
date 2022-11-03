@@ -7,18 +7,19 @@
         Add Video Source
       </v-btn>
     </div>
-    <v-row v-if="videos.length < 1" class="mt-6">
+    <v-row v-if="videos && videos.length < 1" class="mt-6">
       <v-col cols="12">
         <div class="text-body1 text-center">
           There are no video screens in this scene
         </div>
       </v-col>
     </v-row>
-    <div v-if="videos.length > 0">
+    <div v-if="videos && videos.length > 0">
       <div v-for="(video, i) in videos" :key="video.id">
         <scene-video
           :video="video"
           :i="i"
+          :features="features"
           @updateProperties="updateProperties"
           @onRemove="removeVideoScreen(i)"
         />
@@ -48,7 +49,7 @@ export default {
         return []
       }
     },
-    property: Object
+    features: Object,
   },
   methods: {
     ...mapActions({
@@ -73,7 +74,7 @@ export default {
       Vue.delete(this.videos, i)
 
       this.updateProperties({
-        action: 'remove',
+        action: 'delete',
         entity: 'video',
         id: videoId,
         entityData: this.videos[i]

@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+
+  vlm-ui-preprod:
+    container_name: vlm-ui
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8280:8280'
+
+networks:
+ default:
+  external:
+   name: proxy

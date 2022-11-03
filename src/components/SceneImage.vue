@@ -29,7 +29,14 @@
         <div class="text-h6 white--text d-flex-shrink-1" v-if="!editingName">
           {{ truncatedName }}
         </div>
-        <v-btn class="d-flex-grow-0" icon small dark @click="toggleEditMode()" v-if="!editingName">
+        <v-btn
+          class="d-flex-grow-0"
+          icon
+          small
+          dark
+          @click="toggleEditMode()"
+          v-if="!editingName"
+        >
           <v-icon small>mdi-pencil</v-icon>
         </v-btn>
         <div class="text-h5" v-if="editingName">
@@ -133,9 +140,7 @@
           <h1 class="text-body-1 font-weight-bold" dark>
             Instances
           </h1>
-          <v-btn @click="addInstance()"
-            ><v-icon>mdi-plus</v-icon> Add</v-btn
-          >
+          <v-btn @click="addInstance()"><v-icon>mdi-plus</v-icon> Add</v-btn>
         </div>
         <div class="d-flex flex-column pa-4" v-if="!image.instances.length">
           <div class="text-body1 text-center">
@@ -177,7 +182,10 @@
               entityType="image instance"
               @onRemove="removeImageInstance(image, ii)"
             />
-            <div class="d-flex flex-column align-center lighten-4 my-0 py-2" :class="ii % 2 ? 'grey' : 'white'">
+            <div
+              class="d-flex flex-column align-center lighten-4 my-0 py-2"
+              :class="ii % 2 ? 'grey' : 'white'"
+            >
               <v-text-field
                 hide-details="true"
                 v-model="instance.name"
@@ -311,7 +319,7 @@ export default {
         }
 
         if (noSpacesLength > 18) {
-          truncated = truncated.substr(truncated.length - 18);
+          truncated = truncated.substr(truncated.length - 18)
           noSpacesLength = 0
         }
       })
@@ -392,7 +400,8 @@ export default {
           entity: 'imageInstance',
           property: 'visibility',
           id: instance.id,
-          entityData: this.image
+          entityData: this.image,
+          instanceData: instance
         })
       } else {
         Vue.set(this.image, 'show', !this.image.show)
@@ -401,8 +410,7 @@ export default {
           entity: 'image',
           property: 'visibility',
           id: this.image.id,
-          entityData: this.image,
-          instanceData: instance
+          entityData: this.image
         })
       }
     },
@@ -467,11 +475,11 @@ export default {
         entityData: this.image
       })
     },
-    updateImageProperties () {
+    updateImageProperties (property) {
       this.updateProperties({
         action: 'update',
         entity: 'image',
-        property: 'properties',
+        property: property || 'properties',
         id: this.image.id,
         entityData: this.image
       })

@@ -7,14 +7,11 @@ export class SceneImage {
   show = true;
   name = "";
   imageLink = "";
+  emission = 1;
   clickEvent = new ClickEvent();
   instances = [];
   isTransparent = false;
-  hasCollider = false;
+  withCollisions = false;
 
   constructor() {}
-
-  getId = () => {
-    return this.customId || this.id
-  }
 }

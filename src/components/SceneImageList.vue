@@ -106,7 +106,7 @@ export default {
       this.updateProperties({
         action: 'update',
         entity: 'image',
-        property: 'link',
+        property: 'imageLink',
         entityData: options.image,
         id: options.image.customId || options.image.id
       })
@@ -117,7 +117,7 @@ export default {
       Vue.delete(this.images, i)
 
       this.updateProperties({
-        action: 'remove',
+        action: 'delete',
         entity: 'image',
         id: imageId,
         instanceIds
