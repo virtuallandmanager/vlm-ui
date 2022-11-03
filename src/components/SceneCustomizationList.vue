@@ -4,6 +4,13 @@
       <div class="text-h5">Customizations</div>
       <v-btn @click="addCustomization()">Add Customization</v-btn>
     </div>
+    <v-row v-if="customizations && customizations.length < 1" class="mt-6">
+      <v-col cols="12">
+        <div class="text-body1 text-center">
+          There are no customizations for this scene
+        </div>
+      </v-col>
+    </v-row>
     <div v-for="(customization, i) of customizations" :key="i">
       <scene-customization
         :customization="customization"

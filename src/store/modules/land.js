@@ -1,7 +1,4 @@
-import { SceneCustomization } from "../../models/SceneCustomization";
-import { SceneImage } from "../../models/SceneImage";
 import { SceneModeration } from "../../models/SceneModeration";
-import { SceneVideo } from "../../models/SceneVideo";
 
 export default {
   namespaced: true,
@@ -27,10 +24,10 @@ export default {
       audioStream: {},
       entities: [{}],
       features: {},
-      videoScreens: [new SceneVideo()],
-      images: [new SceneImage()],
+      videoScreens: [],
+      images: [],
       moderation: new SceneModeration(),
-      customizations: [new SceneCustomization()]
+      customizations: []
     }
   }),
   getters: {

@@ -1,10 +1,9 @@
 export class SceneModeration {
   allowCertainWearables = false;
   banCertainWearables = false;
-  banCertainNames = false;
-  banBugs = false;
-  banRoaches = false;
-  banFlies = false;
+  allowCertainUsers = false;
+  banCertainUsers = false;
+  allowWeb3Only = false;
   allowedWearables = [{ contractId: "", itemId: "" }];
   bannedWearables = [{ contractId: "", itemId: "" }];
   allowedUsers = [{ walletAddress: "", displayName: "" }];
