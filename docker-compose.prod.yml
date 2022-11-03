@@ -2,12 +2,12 @@ version: '3.7'
 
 services:
 
-  vlm-ui-staging:
-    container_name: vlm-ui-staging
+  vlm-ui:
+    container_name: vlm-ui
     restart: unless-stopped
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     ports:
       - '8080:8080'
 
