@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+
+  vlm-ui-staging:
+    container_name: vlm-ui-staging
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile.staging
+    ports:
+      - '8180:8180'
+
+networks:
+ default:
+  external:
+   name: proxy

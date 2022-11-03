@@ -100,7 +100,7 @@ export default {
       const nextItem = ''
       this.dialogs[d].messages.push(nextItem),
       this.updateProperties({
-        action: 'add',
+        action: 'create',
         entity: 'dialog',
         property: 'message',
         entityData: this.dialogs[d]

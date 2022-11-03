@@ -7,9 +7,9 @@ services:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     ports:
-      - '8180:8180'
+      - '8080:8080'
 
 networks:
  default:

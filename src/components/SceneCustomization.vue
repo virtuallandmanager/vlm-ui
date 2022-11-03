@@ -67,15 +67,10 @@
                 v-bind="attrs"
                 v-on="on"
               >
-                <v-icon>{{
-                 locked ? 'mdi-lock' : 'mdi-lock-open'
-                }}</v-icon>
+                <v-icon>{{ locked ? 'mdi-lock' : 'mdi-lock-open' }}</v-icon>
               </v-btn>
             </template>
-            <span
-              >{{ locked ? 'Unlock' : 'Lock' }} Customization
-              Settings</span
-            >
+            <span>{{ locked ? 'Unlock' : 'Lock' }} Customization Settings</span>
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
@@ -138,12 +133,21 @@
           Edit Selections
         </v-btn>
       </div>
+      <div class="d-flex justify-center">
+        <v-btn
+          v-if="customization.type == 3"
+          color="green"
+          dark
+          @click="triggerCustomization()"
+          >Trigger {{ customization.name }}</v-btn
+        >
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import Vue from "vue"
+import Vue from 'vue'
 import { mapActions } from 'vuex'
 import DeleteDialog from './dialogs/DeleteDialog'
 import { SceneCustomization } from '../models/SceneCustomization'
@@ -162,7 +166,8 @@ export default {
     customizationTypes: [
       { text: 'Toggle', value: 0 },
       { text: 'Text', value: 1 },
-      { text: 'Selector', value: 2 }
+      { text: 'Selector', value: 2 },
+      { text: 'Trigger', value: 3 }
     ],
     locked: false
   }),
@@ -174,7 +179,7 @@ export default {
       }
     }
   },
-  mounted (){
+  mounted () {
     this.locked = this.customization.locked
   },
   computed: {
@@ -183,7 +188,7 @@ export default {
         text: `${customization.text}  [ id: ${customization.value} ]`,
         value: customization.value
       }))
-    },
+    }
   },
   methods: {
     ...mapActions({
@@ -204,7 +209,17 @@ export default {
       this.updateProperties({
         action: 'update',
         entity: 'customization',
-        id: this.customization.id
+        id: this.customization.id,
+        customizationData: this.customization
+      })
+    },
+    triggerCustomization () {
+      this.customization.value = true;
+      this.updateProperties({
+        action: 'update',
+        entity: 'customization',
+        id: this.customization.id,
+        customizationData: this.customization
       })
     },
     openEditSelectDialog () {

@@ -18,188 +18,369 @@
           label="Ban Certain Wearables"
         ></v-switch>
       </v-col>
-    </v-row>
-    <v-row v-if="settings.banCertainWearables" class="blue-grey lighten-5">
-      <v-col>
-        <v-switch
-          v-model="settings.banRoaches"
-          @change="updateProperties()"
-          label="Ban Roaches"
-          class="ml-4"
-        ></v-switch>
-        <v-switch
-          v-model="settings.banFlies"
-          @change="updateProperties()"
-          label="Ban Flies"
-          class="ml-4"
-        ></v-switch>
-        <v-switch
-          v-if="settings.banCertainWearables"
-          @change="updateProperties()"
-          v-model="settings.banWeapons"
-          label="Ban Weapons"
-          class="ml-4"
-        >
-        </v-switch>
-        <v-switch
-          v-model="settings.banOtherWearables"
-          @change="updateProperties()"
-          label="Ban Other Wearables"
-          class="ml-4"
-        ></v-switch>
-        <div v-if="settings.banOtherWearables">
-          <v-row
-            v-for="(item, i) in settings.otherWearablesToBan"
-            :key="i"
-            dense
-          >
-            <v-col cols="7" md="8" sm="9" xs="4">
-              <v-text-field
-                label="Contract ID"
-                dense
-                v-model="item.contractId"
-                hide-details="auto"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="4" md="3" sm="2" xs="6">
-              <v-text-field
-                label="Token ID"
-                dense
-                v-model="item.tokenId"
-                hide-details="auto"
-              ></v-text-field>
-            </v-col>
-            <v-spacer></v-spacer>
-            <v-col cols="1" sm="1" xs="2" class="text-right">
-              <v-btn icon color="gray" @click="removeBannedItem(i)">
-                <v-icon>mdi-trash-can</v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-btn @click="addBannedItem()">Add Item</v-btn>
-            </v-col>
-          </v-row>
-        </div>
-      </v-col>
-    </v-row>
-    <v-row>
       <v-col>
         <v-switch
           v-model="settings.allowCertainWearables"
-          @change="toggleWhitelistedWearables()"
+          @change="toggleAllowedWearables()"
           label="Only Allow Certain Wearables"
         ></v-switch>
       </v-col>
     </v-row>
-    <v-row v-if="settings.allowCertainWearables" class="blue-grey lighten-5">
+    <v-row v-if="settings.banCertainWearables" class="grey darken-5">
+      <v-col class="text-subtitle-1 white--text">
+        Wearables Banned From Scene
+      </v-col>
+    </v-row>
+    <v-row v-if="settings.banCertainWearables" class="grey lighten-4">
       <v-col>
-        <v-row v-for="(item, i) in settings.wearableWhiteList" :key="i" dense>
+        <v-row v-for="(item, i) in settings.bannedWearables" :key="i" dense>
           <v-col cols="7" md="8" sm="9" xs="4">
             <v-text-field
-              label="Contract ID"
+              label="Contract Address"
               dense
-              v-model="item.contractId"
+              v-model="item.contractAddress"
               hide-details="auto"
             ></v-text-field>
           </v-col>
           <v-col cols="4" md="3" sm="2" xs="6">
             <v-text-field
-              label="Token ID"
+              label="Item ID"
               dense
-              v-model="item.tokenId"
+              v-model="item.itemId"
               hide-details="auto"
             ></v-text-field>
           </v-col>
           <v-spacer></v-spacer>
           <v-col cols="1" sm="1" xs="2" class="text-right">
-            <v-btn icon color="gray" @click="removeWhitelistItem(i)">
+            <v-btn icon color="gray" @click="removeBannedItem(i)">
               <v-icon>mdi-trash-can</v-icon>
             </v-btn>
           </v-col>
         </v-row>
         <v-row>
           <v-col>
-            <v-btn @click="addWhitelistItem()">Add Item</v-btn>
+            <v-btn @click="addBannedItem()">Add Item</v-btn>
           </v-col>
         </v-row>
+      </v-col>
+    </v-row>
+    <v-row v-if="settings.allowCertainWearables" class="grey darken-5">
+      <v-col class="text-subtitle-1 white--text">
+        Wearables Allowed In Scene
+      </v-col>
+    </v-row>
+    <v-row v-if="settings.allowCertainWearables" class="grey lighten-4">
+      <v-col>
+        <v-row v-for="(item, i) in settings.allowedWearables" :key="i" dense>
+          <v-col cols="7" md="8" sm="9" xs="4">
+            <v-text-field
+              label="Contract Address"
+              dense
+              v-model="item.contractAddress"
+              hide-details="auto"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="4" md="3" sm="2" xs="6">
+            <v-text-field
+              label="Item ID"
+              dense
+              v-model="item.itemId"
+              hide-details="auto"
+            ></v-text-field>
+          </v-col>
+          <v-spacer></v-spacer>
+          <v-col cols="1" sm="1" xs="2" class="text-right">
+            <v-btn icon color="gray" @click="removeAllowedItem(i)">
+              <v-icon>mdi-trash-can</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-btn @click="addAllowedItem()">Add Item</v-btn>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+    <v-row class="grey darken-3 mx-n3">
+      <v-col no-gutters>
+        <h1 class="text-h6 white--text">Visitors</h1>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-switch
+          v-model="settings.banCertainUsers"
+          @change="toggleBannedUsers()"
+          label="Ban Certain People"
+        ></v-switch>
+      </v-col>
+      <v-col>
+        <v-switch
+          v-model="settings.allowCertainUsers"
+          @change="toggleAllowedUsers()"
+          label="Only Allow Certain People"
+        ></v-switch>
+      </v-col>
+      <v-col>
+        <v-switch
+          v-model="settings.allowWeb3Only"
+          @change="toggleWeb3Only()"
+          label="Only Allow Web3 Accounts"
+        ></v-switch>
+      </v-col>
+    </v-row>
+    <v-row v-if="settings.banCertainUsers" class="grey darken-5">
+      <v-col class="text-subtitle-1 white--text">
+        People Banned From Scene
+      </v-col>
+    </v-row>
+    <v-row v-if="settings.banCertainUsers" class="grey lighten-4">
+      <v-col>
+        <v-row v-for="(item, i) in settings.bannedUsers" :key="i" dense>
+          <v-col cols="7" md="8" sm="9" xs="4">
+            <v-text-field
+              label="Wallet Address"
+              dense
+              v-model="item.walletAddress"
+              hide-details="auto"
+              @change="updateProperties"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="4" md="3" sm="2" xs="6">
+            <v-text-field
+              label="Display Name"
+              dense
+              v-model="item.displayName"
+              hide-details="auto"
+              @change="updateProperties"
+            ></v-text-field>
+          </v-col>
+          <v-spacer></v-spacer>
+          <v-col cols="1" sm="1" xs="2" class="text-right">
+            <v-btn icon color="gray" @click="removeBannedUser(i)">
+              <v-icon>mdi-trash-can</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-btn @click="addBannedUser()">Add Banned Person</v-btn>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+    <v-row v-if="settings.allowCertainUsers" class="grey darken-5">
+      <v-col class="text-subtitle-1 white--text">
+        People Allowed In Scene
+      </v-col>
+    </v-row>
+    <v-row v-if="settings.allowCertainUsers" class="grey lighten-4">
+      <v-col>
+        <v-row v-for="(item, i) in settings.allowedUsers" :key="i" dense>
+          <v-col cols="7" md="8" sm="9" xs="4">
+            <v-text-field
+              label="Wallet Address"
+              dense
+              v-model="item.walletAddress"
+              hide-details="auto"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="4" md="3" sm="2" xs="6">
+            <v-text-field
+              label="Display Name"
+              dense
+              v-model="item.displayName"
+              hide-details="auto"
+            ></v-text-field>
+          </v-col>
+          <v-spacer></v-spacer>
+          <v-col cols="1" sm="1" xs="2" class="text-right">
+            <v-btn icon color="gray" @click="removeAllowedPerson(i)">
+              <v-icon>mdi-trash-can</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-btn @click="addAllowedPerson()">Add Allowed Person</v-btn>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+    <v-row class="grey darken-3 mx-n3" v-if="showActions">
+      <v-col no-gutters>
+        <h1 class="text-h6 white--text">Actions</h1>
+      </v-col>
+    </v-row>
+    <v-row v-if="showActions">
+      <v-col v-if="showBanActions">
+        <div class="text-subtitle-1">
+          Actions taken when visitor is banned or restricted:
+        </div>
+        <v-select
+          :items="banActions"
+          v-model="settings.banActions"
+          @change="changeRestrictionActions()"
+          label="Moderation Actions"
+          multiple
+        ></v-select>
+        <!-- <v-select
+          v-if="settings.banActions.includes(0)"
+          :items="banWallTypes"
+          v-model="settings.banWallType"
+          @change="changeRestrictionActions()"
+          label="Wall Type"
+        ></v-select> -->
+      </v-col>
+      <v-col v-if="showAllowActions">
+        <div class="text-subtitle-1">Actions taken when user is allowed:</div>
+        <v-select
+          :items="allowActions"
+          v-model="settings.allowedActions"
+          @change="changeRestrictionActions()"
+          label="Gated Actions"
+          multiple
+        ></v-select>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
+import Vue from 'vue'
+import {
+  EAllowActions,
+  EBanActions,
+  EBanWallTypes,
+  SceneModeration
+} from '../models/SceneModeration'
+
 export default {
-  name: "SceneModeration",
+  name: 'SceneModeration',
 
   data: () => ({
-    defaultModerationSettings: {
-      banCertainWearables: false,
-      banBugs: false,
-      banRoaches: false,
-      banFlies: false,
-      banOtherWearables: false,
-      allowCertainWearables: false,
-      wearableWhiteList: [{ contractId: "", tokenId: "" }],
-      otherWearablesToBan: [{ contractId: "", tokenId: "" }],
-    },
+    banActions: [
+      { text: "Blackout Visitor's Screen", value: EBanActions.BLACKOUT },
+      { text: 'Remove User and Block From Scene (Beta)', value: EBanActions.WALL, disabled:true },
+    ],
+    banWallTypes: [
+      { text: 'Black Wall', value: EBanWallTypes.BLACK },
+      { text: "Invisible Wall", value: EBanWallTypes.INVISIBLE },
+      { text: "Mirage", value: EBanWallTypes.MIRROR }
+    ],
+    allowActions: [{ text: 'Move User', value: EAllowActions.MOVE }]
   }),
   props: {
     settings: {
       type: Object,
-    },
-  },
-  mounted() {
-    for (const [key, value] of Object.entries(this.defaultModerationSettings)) {
-      if (typeof this.settings[key] == "undefined") {
-        this.settings[key] = value;
+      default: function () {
+        return new SceneModeration()
       }
     }
   },
-  computed: {},
-  methods: {
-    toggleBannedWearables() {
-      if (this.settings.allowCertainWearables) {
-        this.settings.allowCertainWearables = false;
-      }
-      this.updateProperties();
+  computed: {
+    showActions () {
+      return (
+        this.settings.banCertainUsers ||
+        this.settings.banCertainWearables ||
+        this.settings.allowCertainUsers ||
+        this.settings.allowCertainWearables
+      )
     },
-    toggleWhitelistedWearables() {
-      if (this.settings.banCertainWearables) {
-        this.settings.banCertainWearables = false;
-      }
-      this.updateProperties();
+    showBanActions () {
+      return this.settings.banCertainUsers || this.settings.banCertainWearables
     },
-    addBannedItem() {
-      const nextItem = { contractId: "", tokenId: "" };
-      this.settings.otherWearablesToBan.push(nextItem);
-      this.updateProperties();
-    },
-    removeBannedItem(i) {
-      if (this.settings.otherWearablesToBan.length < 2) {
-        this.settings.banOtherWearables = false;
-        this.settings.otherWearablesToBan = [{ contractId: "", tokenId: "" }];
-      }
-      this.settings.otherWearablesToBan.splice(i, 1);
-      this.updateProperties();
-    },
-    addWhitelistItem() {
-      const nextItem = { contractId: "", tokenId: "" };
-      this.settings.wearableWhiteList.push(nextItem);
-      this.updateProperties();
-    },
-    removeWhitelistItem(i) {
-      if (this.settings.wearableWhiteList.length < 2) {
-        this.settings.allowCertainWearables = false;
-        this.settings.wearableWhiteList = [{ contractId: "", tokenId: "" }];
-      }
-      this.settings.wearableWhiteList.splice(i, 1);
-      this.updateProperties();
-    },
-    updateProperties() {
-      this.$emit("updateProperties");
-    },
+    showAllowActions () {
+      return (
+        this.settings.allowCertainUsers || this.settings.allowCertainWearables
+      )
+    }
   },
-};
+  methods: {
+    toggleBannedWearables () {
+      if (this.settings.allowCertainWearables) {
+        this.settings.allowCertainWearables = false
+      }
+      this.updateProperties()
+    },
+    toggleAllowedWearables () {
+      if (this.settings.banCertainWearables) {
+        this.settings.banCertainWearables = false
+      }
+      this.updateProperties()
+    },
+    toggleBannedUsers () {
+      if (this.settings.allowCertainUsers) {
+        this.settings.allowCertainUsers = false
+      }
+      this.updateProperties()
+    },
+    toggleAllowedUsers () {
+      if (this.settings.banCertainUsers) {
+        this.settings.banCertainUsers = false
+      }
+      this.updateProperties()
+    },
+    toggleWeb3Only () {
+      this.updateProperties()
+    },
+    changeRestrictionActions () {
+      this.updateProperties()
+    },
+    addBannedItem () {
+      const nextItem = { contractId: '', tokenId: '' }
+      this.settings.bannedWearables.push(nextItem)
+      this.updateProperties()
+    },
+    addBannedUser () {
+      const nextItem = { walletAddress: '', displayName: '' }
+      this.settings.bannedUsers.push(nextItem)
+      this.updateProperties()
+    },
+    removeBannedItem (i) {
+      this.settings.bannedWearables.splice(i, 1)
+      Vue.nextTick(() => {
+        if (this.settings.bannedWearables.length < 1) {
+          this.settings.banCertainWearables = false
+          this.settings.bannedWearables = [{ contractId: '', tokenId: '' }]
+        }
+        this.updateProperties()
+      })
+    },
+    removeBannedUser (i) {
+      this.settings.bannedUsers.splice(i, 1)
+      Vue.nextTick(() => {
+        if (this.settings.bannedUsers.length < 1) {
+          this.settings.banCertainUsers = false
+          this.settings.bannedUsers = [{ walletAddress: '', displayName: '' }]
+        }
+        this.updateProperties()
+      })
+    },
+    addAllowedItem () {
+      const nextItem = { contractId: '', tokenId: '' }
+      this.settings.allowedWearables.push(nextItem)
+      this.updateProperties()
+    },
+    removeAllowedItem (i) {
+      this.settings.allowedWearables.splice(i, 1)
+      Vue.nextTick(() => {
+        if (this.settings.allowedWearables.length < 1) {
+          this.settings.allowCertainWearables = false
+          this.settings.allowedWearables = [{ contractId: '', tokenId: '' }]
+        }
+        this.updateProperties()
+      })
+    },
+    updateProperties () {
+      const wssMessages = {
+        action: 'update',
+        entity: 'moderation',
+        settings: this.settings
+      }
+      this.$emit('updateProperties', { wssMessages })
+    }
+  }
+}
 </script>

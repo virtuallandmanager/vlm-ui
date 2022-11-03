@@ -130,8 +130,17 @@
               <v-card-title class="text-h5 grey lighten-2">
                 Export Analytics Data
               </v-card-title>
-
-              <v-card-text class="pt-4 text-subtitle-1">
+              <v-card-text
+                class="pt-4 text-subtitle-1"
+                v-if="dateRangeCount > 60"
+              >
+                CSV exports are not currently supported for date ranges larger
+                than 60 days.
+              </v-card-text>
+              <v-card-text
+                class="pt-4 text-subtitle-1"
+                v-if="dateRangeCount <= 60"
+              >
                 Select the data you would like to include in the CSV file:
                 <v-select
                   label="Actions To Include"
@@ -225,12 +234,22 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn
+                  v-if="dateRangeCount <= 60"
                   color="primary"
                   text
                   @click="exportQuery"
                   :loading="exportingQuery"
                 >
                   Export
+                </v-btn>
+                <v-btn
+                  v-if="dateRangeCount > 60"
+                  color="primary"
+                  text
+                  @click="exportDialog = false"
+                  :loading="exportingQuery"
+                >
+                  Cancel
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -268,7 +287,13 @@
                 v-on="on"
               ></v-text-field>
             </template>
-            <v-date-picker v-model="dateRange" no-title scrollable range>
+            <v-date-picker
+              v-model="dateRange"
+              no-title
+              scrollable
+              range
+              @change="validateDateRange"
+            >
               <v-spacer></v-spacer>
               <v-btn text color="primary" @click="runQuery()"> OK </v-btn>
               <v-btn text color="primary" @click="dateRangeMenu = false">
@@ -383,19 +408,21 @@ export default {
     exportDialog: false,
     exportOptions: {
       wallets: { selected: false, text: 'Wallet Addresses' },
-      clientIps: { selected: false, text: 'IP Addresses' },
       names: { selected: false, text: 'Usernames' },
+      clientIps: { selected: false, text: 'IP Addresses' },
+      authenticity: { selected: false, text: 'IP Authenticity' },
+      metadata: { selected: false, text: 'Metadata' },
+      location: { selected: false, text: 'Locations' },
       guests: {
         selected: false,
-        text: 'Include Guest Users',
-        hint: '(Wallet addresses will not be included)'
+        text: 'Guest Accounts'
       },
-      metadata: { selected: false, text: 'Metadata' },
       dateTimes: { selected: false, text: 'Dates & Times' },
       isoTimestamps: { selected: false, text: 'ISO Timestamps' },
-      unixTimestamps: { selected: false, text: 'Unix Timestamps' },
+      unixTimestamps: { selected: false, text: 'Unix Timestamps' }
     },
     removeDuplicateWallets: false,
+    removeDuplicateIps: false,
     sevenDayConnectionAverage: 0,
     thirtyDayConnectionAverage: 0,
     uniqueVisitorsGraph: [],
@@ -436,7 +463,7 @@ export default {
         alignment: 'center'
       }
     },
-    timezoneList: timezones.map(tz => tz.tzCode),
+    timezoneList: ['UTC', ...timezones.map(tz => tz.tzCode)],
     tz: DateTime.local().toFormat('z')
   }),
   props: {
@@ -472,6 +499,14 @@ export default {
         return this.dateRange[0]
       }
     },
+    dateRangeCount () {
+      const startDate = DateTime.fromISO(this.dateRange[0]),
+        endDate = DateTime.fromISO(this.dateRange[1]),
+        dateRange = Interval.fromDateTimes(startDate, endDate),
+        dateRangeDays = dateRange.length('days')
+
+      return dateRangeDays
+    },
     defaultDate () {
       const today = new Date().toISOString()
       return this.formatDate(today)
@@ -495,6 +530,13 @@ export default {
     ...mapActions({
       setErrorMessage: 'land/setErrorMessage'
     }),
+    validateDateRange () {
+      let dateRange = [this.dateRange[0], this.dateRange[1]]
+      if (dateRange[0] > dateRange[1]) {
+        this.dateRange[0] = dateRange[1]
+        this.dateRange[1] = dateRange[0]
+      }
+    },
     handleSelectAll () {
       this.$nextTick(() => {
         if (this.includeAllActions) {
@@ -553,6 +595,10 @@ export default {
 
       try {
         const res = await fetch(apiUrl, fetchOptions)
+        if (res.status >= 400) {
+          const error = await res.json()
+          this.setErrorMessage(error.text)
+        }
         const { uniqueVisits, totalInteractions, eventTypes } = await res.json()
 
         this.uniqueVisitorsGraph = uniqueVisits
@@ -667,6 +713,10 @@ export default {
           `${process.env.VUE_APP_API_URL}/analytics/export/${x}/${y}`,
           fetchOptions
         )
+        if (response.status >= 400) {
+          const error = await response.json()
+          this.setErrorMessage(error.text)
+        }
         const responseText = await response.text()
         downloadCsv(`vlm_analytics${fileName}.csv`, responseText)
 

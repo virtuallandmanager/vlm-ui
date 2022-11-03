@@ -169,14 +169,14 @@
       </v-tab-item>
       <v-tab-item :value="'tab-2'" v-if="property.features.entityPlacement">
         <scene-video-list
-          :videos="property.sceneData.videoSystems"
+          :videos="property.sceneData.videoScreens"
           :features="property.features"
           @updateProperties="updateProperties"
         />
       </v-tab-item>
       <v-tab-item :value="'tab-3'" v-if="property.features.entityPlacement">
         <scene-image-list
-          :images="property.sceneData.imageTextures"
+          :images="property.sceneData.images"
           :property="property"
           :features="property.features"
           @updateProperties="updateProperties"
