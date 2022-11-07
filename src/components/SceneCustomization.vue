@@ -32,7 +32,6 @@
             @click:append-outer="toggleEditMode()"
             @blur="toggleEditMode()"
             dense
-            @change="editCustomization()"
           ></v-text-field>
         </div>
         <div>
@@ -54,6 +53,7 @@
             v-model="customization.id"
             hide-details="auto"
             :disabled="locked"
+            @blur="editCustomization()"
           ></v-text-field>
         </div>
         <div>
@@ -197,14 +197,6 @@ export default {
     removeCustomization () {
       this.$emit('onRemove')
     },
-    saveCustomizationName () {
-      this.updateProperties({
-        action: 'update',
-        entity: 'customization',
-        property: 'name',
-        id: this.customization.id
-      })
-    },
     editCustomization () {
       this.updateProperties({
         action: 'update',
@@ -234,6 +226,8 @@ export default {
       if (!this.editingName && !this.locked) {
         this.customization.id = this.customization.name.createSlug()
       }
+      
+      this.editCustomization()
     },
     changeCustomizationType () {
       if (this.customization.type == 0) {
