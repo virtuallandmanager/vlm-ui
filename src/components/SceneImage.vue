@@ -183,74 +183,92 @@
               @onRemove="removeImageInstance(image, ii)"
             />
             <div
-              class="d-flex flex-column align-center lighten-4 my-0 py-2"
+              class="lighten-4 my-0 py-2 px-2"
               :class="ii % 2 ? 'grey' : 'white'"
             >
-              <v-text-field
-                hide-details="true"
-                v-model="instance.name"
-                :label="`Instance ${ii + 1}`"
-                @blur="editInstanceName(instance)"
-              ></v-text-field>
-              <div class="mt-3">
-                <v-btn
-                  icon
-                  @click="toggleVisibility(instance, ii)"
-                  :disabled="image.customRendering || instance.customRendering"
-                >
+              <div class="lighten-4 d-flex justify-end mb-n4" :class="ii % 2 ? 'grey' : 'white'">
+                <v-btn icon small @click="addInstance(instance)">
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
-                      <v-icon
-                        v-bind="attrs"
-                        v-on="on"
-                        :class="image.show && instance.show ? '' : 'red--text'"
-                      >
-                        {{
-                          image.show && instance.show
-                            ? 'mdi-eye'
-                            : 'mdi-eye-off'
-                        }}
+                      <v-icon v-bind="attrs" v-on="on" small>
+                        mdi-content-copy
                       </v-icon>
                     </template>
-                    <span>Show/Hide</span>
+                    <span>Duplicate</span>
                   </v-tooltip>
                 </v-btn>
-                <v-btn icon @click.stop="openInstanceTransformDialog(ii)">
+                <v-btn icon small @click.stop="openInstanceDeleteDialog(ii)">
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
-                      <v-icon v-bind="attrs" v-on="on">
-                        mdi-axis-arrow
-                      </v-icon>
-                    </template>
-                    <span>Transform</span>
-                  </v-tooltip>
-                </v-btn>
-                <v-btn icon @click.stop="openInstanceClickEventDialog(ii)">
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-icon v-bind="attrs" v-on="on"> mdi-mouse </v-icon>
-                    </template>
-                    <span>Click Event</span>
-                  </v-tooltip>
-                </v-btn>
-                <v-btn icon @click.stop="openInstancePropertiesDialog(ii)">
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
-                    </template>
-                    <span>Instance Properties</span>
-                  </v-tooltip>
-                </v-btn>
-                <v-btn icon @click.stop="openInstanceDeleteDialog(ii)">
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-icon v-bind="attrs" v-on="on">
+                      <v-icon small v-bind="attrs" v-on="on">
                         mdi-trash-can
                       </v-icon>
                     </template>
                     <span>Remove</span>
                   </v-tooltip>
                 </v-btn>
+              </div>
+              <div class="d-flex flex-column">
+                <v-text-field
+                  hide-details="true"
+                  v-model="instance.name"
+                  :label="`Instance ${ii + 1}`"
+                  @blur="editInstanceName(instance)"
+                ></v-text-field>
+                <div class="mt-3 d-flex flex-row justify-center">
+                  <v-btn
+                    icon
+                    @click="toggleVisibility(instance, ii)"
+                    :disabled="
+                      image.customRendering || instance.customRendering
+                    "
+                  >
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-icon
+                          v-bind="attrs"
+                          v-on="on"
+                          :class="
+                            image.show && instance.show ? '' : 'red--text'
+                          "
+                        >
+                          {{
+                            image.show && instance.show
+                              ? 'mdi-eye'
+                              : 'mdi-eye-off'
+                          }}
+                        </v-icon>
+                      </template>
+                      <span>Show/Hide</span>
+                    </v-tooltip>
+                  </v-btn>
+                  <v-btn icon @click.stop="openInstanceTransformDialog(ii)">
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-icon v-bind="attrs" v-on="on">
+                          mdi-axis-arrow
+                        </v-icon>
+                      </template>
+                      <span>Transform</span>
+                    </v-tooltip>
+                  </v-btn>
+                  <v-btn icon @click.stop="openInstanceClickEventDialog(ii)">
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-icon v-bind="attrs" v-on="on"> mdi-mouse </v-icon>
+                      </template>
+                      <span>Click Event</span>
+                    </v-tooltip>
+                  </v-btn>
+                  <v-btn icon @click.stop="openInstancePropertiesDialog(ii)">
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
+                      </template>
+                      <span>Instance Properties</span>
+                    </v-tooltip>
+                  </v-btn>
+                </div>
               </div>
             </div>
           </div>
@@ -355,12 +373,18 @@ export default {
         instanceData
       })
     },
-    addInstance () {
+    addInstance (duplicate) {
       const newInstance = new SceneImageInstance()
       newInstance.scale.x = this.image.width / 1000
       newInstance.scale.y = this.image.height / 1000
-      newInstance.position.x = newInstance.scale.x / 2
-      newInstance.position.y = newInstance.scale.y / 2 + 0.5
+
+      if (duplicate) {
+        newInstance.position = duplicate.position
+        newInstance.scale = duplicate.scale
+        newInstance.rotation = duplicate.rotation
+        newInstance.name = `${duplicate.name} (Copy)`
+      }
+
       this.image.instances.push(newInstance)
       this.updateProperties({
         action: 'create',
