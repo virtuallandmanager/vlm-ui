@@ -262,7 +262,7 @@ export default {
   data: () => ({
     banActions: [
       { text: "Blackout Visitor's Screen", value: EBanActions.BLACKOUT },
-      { text: 'Remove User and Block From Scene (Beta)', value: EBanActions.WALL, disabled:true },
+      { text: 'Remove User and Block From Scene (Beta)', value: EBanActions.WALL },
     ],
     banWallTypes: [
       { text: 'Black Wall', value: EBanWallTypes.BLACK },
