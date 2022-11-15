@@ -24,9 +24,9 @@
     />
     <div>
       <div
-        class="d-flex justify-space-between align-center grey darken-3 dark pa-4"
+        class="d-flex justify-space-between align-center purple darken-3 pa-4"
       >
-        <div class="text-h6 white--text d-flex-shrink-1" v-if="!editingName">
+        <div class="text-h6 d-flex-shrink-1" v-if="!editingName">
           {{ truncatedName }}
         </div>
         <v-btn
@@ -119,12 +119,7 @@
           </v-btn>
         </div>
       </div>
-      <div class="grey lighten-2">
-        <h1 class="d-block text-body-1 font-weight-bold pa-4" dark>
-          Image Preview
-        </h1>
-      </div>
-      <div class="py-4">
+      <div class="py-4 grey darken-4">
         <v-img
           max-height="250"
           max-width="250"
@@ -135,7 +130,7 @@
       </div>
       <div>
         <div
-          class="d-flex justify-space-between align-center grey lighten-3 pa-4"
+          class="d-flex justify-space-between align-center purple lighten-1 pa-4"
         >
           <h1 class="text-body-1 font-weight-bold" dark>
             Instances
@@ -184,9 +179,9 @@
             />
             <div
               class="lighten-4 my-0 py-2 px-2"
-              :class="ii % 2 ? 'grey' : 'white'"
+              :class="ii % 2 ? 'grey darken-4' : 'grey darken-3'"
             >
-              <div class="lighten-4 d-flex justify-end mb-n4" :class="ii % 2 ? 'grey' : 'white'">
+              <div class="lighten-4 d-flex justify-end mb-n4" :class="ii % 2 ? 'grey darken-4' : 'grey darken-3'">
                 <v-btn icon small @click="addInstance(instance)">
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
@@ -365,7 +360,7 @@ export default {
       Vue.delete(image.instances, i)
 
       this.updateProperties({
-        action: 'remove',
+        action: 'delete',
         entity: 'imageInstance',
         id: instanceData.id,
         materialId: this.image.id,

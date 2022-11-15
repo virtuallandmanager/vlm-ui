@@ -130,7 +130,7 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-tabs v-model="tab" centered icons-and-text>
+    <v-tabs v-model="tab" centered icons-and-text color="nav">
       <v-tabs-slider></v-tabs-slider>
 
       <v-tab href="#tab-1" v-if="property.features.analytics">

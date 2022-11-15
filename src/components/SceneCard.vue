@@ -1,5 +1,5 @@
 <template>
-  <v-sheet class="pa-2 grey lighten-4" elevation="2">
+  <v-sheet class="pa-2" elevation="2">
     <parcel-map
       :property="property"
       :hideWrapper="true"

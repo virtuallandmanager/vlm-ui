@@ -12,11 +12,15 @@
           <h1 class="display-2 font-weight-light mb-3">Land</h1>
         </v-col>
       </v-row>
-      <loader
-        message="Loading your land..."
-        :loading="fetchingUserLand"
-        :grid="true"
-      />
+      <v-row class="text-center mb-12" v-if="fetchingUserLand">
+        <v-col>
+          <loader
+            message="Loading your land..."
+            :loading="fetchingUserLand"
+            :grid="true"
+          />
+        </v-col>
+      </v-row>
       <v-row class="text-center" v-if="!userLand.length && !fetchingUserLand">
         <v-col cols="12">
           <div class="text-h5">No land parcels found.</div>
@@ -41,33 +45,33 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import ParcelCard from "../components/ParcelCard";
-import Loader from "../components/Loader";
+import { mapActions, mapGetters } from 'vuex'
+import ParcelCard from '../components/ParcelCard'
+import Loader from '../components/Loader'
 export default {
   components: { ParcelCard, Loader },
-  name: "MyLand",
+  name: 'MyLand',
   data: () => ({}),
-  mounted() {
-    this.fetchUserLand();
+  mounted () {
+    this.fetchUserLand()
   },
   computed: {
-    userLand() {
-      return this.$store.state.land.userLand;
+    userLand () {
+      return this.$store.state.land.userLand
     },
     ...mapGetters({
-      fetchingUserLand: "land/fetchingUserLand",
-    }),
+      fetchingUserLand: 'land/fetchingUserLand'
+    })
   },
   methods: {
     ...mapActions({
-      fetchUserLand: "land/fetchUserLand",
+      fetchUserLand: 'land/fetchUserLand'
     }),
-    getSlug: (baseParcel) => {
-      return "land/" + baseParcel.split(",").join("/");
-    },
-  },
-};
+    getSlug: baseParcel => {
+      return 'land/' + baseParcel.split(',').join('/')
+    }
+  }
+}
 </script>
 
 <style scoped>

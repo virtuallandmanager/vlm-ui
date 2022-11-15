@@ -63,10 +63,13 @@
             <v-card-text class="text-center">
               <MapChart
                 :countryData="activeCountryCodes"
-                highColor="#000000"
-                lowColor="#ffffff"
+                highColor="purple"
+                lowColor="black"
                 countryStrokeColor="#909090"
-                defaultCountryFillColor="#ffffff"
+                defaultCountryFillColor="#000000"
+                legendHeaderBackgroundColor="#000000"
+                legendContentBackgroundColor="#000000"
+                :showLegend="false"
               />
             </v-card-text>
           </v-card>
@@ -103,7 +106,7 @@
     <div v-if="features.interactions">
       <v-row class="grey darken-3 mx-n3">
         <v-col no-gutters>
-          <h1 class="text-h6 white--text">Interactions</h1>
+          <h1 class="text-h6">Interactions</h1>
         </v-col>
         <v-col
           cols="12"
@@ -127,7 +130,7 @@
             </template>
 
             <v-card>
-              <v-card-title class="text-h5 grey lighten-2">
+              <v-card-title class="text-h5">
                 Export Analytics Data
               </v-card-title>
               <v-card-text
@@ -322,7 +325,7 @@
           />
         </v-col>
       </v-row>
-      <v-row v-if="!totalInteractions.length">
+      <v-row v-if="!totalInteractions.length || loadingAnalytics">
         <v-col cols="12">
           <div class="text-body1 text-center">
             There are no recorded interactions for this date range.
@@ -445,7 +448,8 @@ export default {
       curve: 'curveMonotoneX',
       data: {
         loading: true
-      }
+      },
+      theme: 'g100'
     },
     donutChartOptions: {
       title: 'Total Interactions',
@@ -461,7 +465,8 @@ export default {
           label: 'Interactions'
         },
         alignment: 'center'
-      }
+      },
+      theme: 'g100'
     },
     timezoneList: ['UTC', ...timezones.map(tz => tz.tzCode)],
     tz: DateTime.local().toFormat('z')

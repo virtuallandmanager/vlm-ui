@@ -1,7 +1,7 @@
 <template>
-  <v-dialog v-model="show" width="500">
+  <v-dialog v-model="show" width="500" persistent>
     <v-card>
-      <v-card-title class="text-h5 grey lighten-2">
+      <v-card-title class="text-h5">
         {{ title }}
       </v-card-title>
 
@@ -35,8 +35,8 @@
 
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" text @click.stop="save"> Save </v-btn>
-        <v-btn color="error" text @click.stop="revert"> Cancel </v-btn>
+        <v-btn color="accenttext" text @click.stop="save"> Save </v-btn>
+        <v-btn color="grey darken-1" text @click.stop="revert"> Cancel </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

@@ -30,7 +30,7 @@
       @onRemove="removePlaylistItem(selectedPlaylistItem)"
       text="Are you sure you want to remove this video from the playlist?"
     />
-    <div class="grey darken-3 dark pa-4">
+    <div class="purple darken-3 pa-4">
       <div class="d-flex align-center">
         <div class="text-h5 white--text flex-grow-1" v-if="!editingName">
           {{ video.name }}
@@ -41,7 +41,6 @@
         <div class="text-h5" v-if="editingName">
           <v-text-field
             autofocus
-            dark
             label="Video Name"
             v-model="video.name"
             hide-details="auto"
@@ -54,7 +53,7 @@
         </div>
         <div class="flex-grow-1">
           <v-slider
-            dark
+            color="white"
             v-model="video.volume"
             @change="updateVolume"
             label="Volume"
@@ -65,7 +64,7 @@
             dense
           ></v-slider>
           <v-slider
-            dark
+            color="white"
             v-model="video.emission"
             @change="updateEmission"
             label="Backlight"
@@ -109,7 +108,7 @@
         </div>
       </div>
     </div>
-    <div class="grey lighten-2">
+    <div class="grey darken-2">
       <h1 class="d-block text-body-1 font-weight-bold pa-4" dark>
         Video Source
       </h1>
@@ -147,9 +146,7 @@
       </v-select>
     </div>
     <div v-if="video.offType == 1">
-      <div
-        class="d-flex justify-space-between align-center grey lighten-2 pa-4"
-      >
+      <div class="d-flex justify-space-between align-center grey darken-2 pa-4">
         <h1 class="d-block text-body-1 font-weight-bold" dark>
           Video Playlist
         </h1>
@@ -183,9 +180,7 @@
       </div>
     </div>
     <div v-if="video.offType == 2">
-      <div
-        class="d-flex justify-space-between align-center grey lighten-2 pa-4"
-      >
+      <div class="d-flex justify-space-between align-center grey darken-2 pa-4">
         <h1 class="d-block text-body-1 font-weight-bold">
           Image
         </h1>
@@ -208,8 +203,8 @@
         ></v-img>
       </div>
     </div>
-    <div class="d-flex justify-space-between align-center grey lighten-2 pa-4">
-      <h1 class="d-block text-body-1 font-weight-bold" dark>
+    <div class="d-flex justify-space-between align-center grey darken-2 pa-4">
+      <h1 class="d-block text-body-1 font-weight-bold">
         Instances
       </h1>
       <v-btn @click="addInstance">

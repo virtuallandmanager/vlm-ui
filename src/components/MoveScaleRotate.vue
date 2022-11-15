@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-tabs v-model="mode" centered icons-and-text>
+    <v-tabs v-model="mode" centered icons-and-text color="nav">
       <v-tabs-slider></v-tabs-slider>
       <v-tab href="#position">
         Position

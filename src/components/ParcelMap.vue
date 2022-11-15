@@ -111,12 +111,12 @@ export default {
   display: inline-block;
   height: 22px;
   width: 22px;
-  background-color: gray;
+  background-color: #606060;
   border: 2px solid black;
   box-sizing: border-box;
 }
 
 .base-parcel {
-  background-color: cornflowerblue;
+  background-color: mediumpurple;
 }
 </style>

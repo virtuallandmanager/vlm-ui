@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="show" max-width="350">
     <v-card>
-      <v-card-title class="text-h5 grey lighten-2">
+      <v-card-title class="text-h5">
         Remove {{ entityType.capitalize() }}
       </v-card-title>
       <v-card-text v-if="!text" class="pt-4">

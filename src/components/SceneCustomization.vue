@@ -13,18 +13,17 @@
       :removeAll="true"
       @onRemove="removeCustomization()"
     />
-    <div class="grey darken-3 dark pa-6">
+    <div class="grey darken-3 pa-6">
       <div class="d-flex justify-space-between">
         <div class="text-h5 white--text" v-if="!editingName">
           {{ customization.name }}
-          <v-btn icon small dark @click="toggleEditMode()">
+          <v-btn icon small @click="toggleEditMode()">
             <v-icon small>mdi-pencil</v-icon>
           </v-btn>
         </div>
         <div class="text-h5" v-if="editingName">
           <v-text-field
             autofocus
-            dark
             label="Customization Name"
             v-model="customization.name"
             hide-details="auto"
@@ -36,7 +35,6 @@
         </div>
         <div>
           <v-select
-            dark
             label="Customization Type"
             :items="customizationTypes"
             hide-details="auto"
@@ -48,7 +46,6 @@
         </div>
         <div>
           <v-text-field
-            dark
             label="Customization Id"
             v-model="customization.id"
             hide-details="auto"
@@ -61,8 +58,6 @@
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 icon
-                dark
-                color="gray"
                 @click="toggleCustomizationLock()"
                 v-bind="attrs"
                 v-on="on"
@@ -76,8 +71,6 @@
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 icon
-                dark
-                color="gray"
                 @click="openDeleteDialog()"
                 v-bind="attrs"
                 v-on="on"
@@ -90,7 +83,7 @@
         </div>
       </div>
     </div>
-    <div class="blue-grey lighten-5 pa-4">
+    <div class="pa-4">
       <v-switch
         v-if="customization.type == 0"
         v-model="customization.value"
@@ -137,7 +130,6 @@
         <v-btn
           v-if="customization.type == 3"
           color="green"
-          dark
           @click="triggerCustomization()"
           >Trigger {{ customization.name }}</v-btn
         >

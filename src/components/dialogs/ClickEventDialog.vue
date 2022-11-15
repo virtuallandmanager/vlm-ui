@@ -1,7 +1,7 @@
 <template>
-  <v-dialog v-model="show" max-width="400">
+  <v-dialog v-model="show" max-width="400" persistent>
     <v-card>
-      <v-card-title class="text-h5 grey lighten-2">
+      <v-card-title class="text-h5">
         {{ title }}
       </v-card-title>
       <v-card-text>
@@ -83,7 +83,7 @@
         </v-switch>
         <v-spacer></v-spacer>
         <v-btn
-          color="green darken-1"
+          color="accenttext"
           text
           @click="save"
           :disabled="(!instance && hasErrors) || (!synced && hasErrors)"
