@@ -373,7 +373,7 @@ export default {
   name: 'AnalyticsSystem',
   components: { Loader, MapChart },
   data: () => ({
-    loadingAnalytics: false,
+    loadingAnalytics: true,
     loadingConnections: true,
     exportingQuery: false,
     dateRangeMenu: false,
