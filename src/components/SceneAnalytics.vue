@@ -325,7 +325,7 @@
           />
         </v-col>
       </v-row>
-      <v-row v-if="!totalInteractions.length || loadingAnalytics">
+      <v-row v-if="!totalInteractions.length && !loadingAnalytics">
         <v-col cols="12">
           <div class="text-body1 text-center">
             There are no recorded interactions for this date range.
