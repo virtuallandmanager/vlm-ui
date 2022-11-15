@@ -482,11 +482,13 @@ export default {
   mounted () {
     this.runQuery()
 
-    this.getActiveConnections()
-    this.connectionsInterval = setInterval(
-      () => this.getActiveConnections(),
-      60000
-    )
+    if (this.features.connectionData) {
+      this.getActiveConnections()
+      this.connectionsInterval = setInterval(
+        () => this.getActiveConnections(),
+        60000
+      )
+    }
   },
   computed: {
     errorMessage: {
