@@ -4,7 +4,7 @@
       <v-row>
         <v-col>
           <v-img
-            src="@/assets/VLM-Logo.svg"
+            src="@/assets/VLM-Logo-Color.svg"
             max-width="33%"
             class="mx-auto logo"
           />
