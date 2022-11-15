@@ -102,8 +102,7 @@ export default {
       return truncAddress
     },
     environment () {
-      return 'production'
-      // return process.env.VUE_APP_NODE_ENV
+      return process.env.VUE_APP_NODE_ENV
     }
   },
   methods: {
