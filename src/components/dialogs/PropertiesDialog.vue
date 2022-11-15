@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" max-width="350" @click:outside="revert">
+  <v-dialog v-model="show" max-width="350">
     <v-card>
       <v-card-title class="text-h5">
         {{ entityType.capitalize() }} Properties

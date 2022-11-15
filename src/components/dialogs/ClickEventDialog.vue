@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" max-width="400" @click:outside="revert">
+  <v-dialog v-model="show" max-width="400">
     <v-card>
       <v-card-title class="text-h5 grey lighten-2">
         {{ title }}
