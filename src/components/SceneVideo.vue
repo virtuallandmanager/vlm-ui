@@ -537,7 +537,7 @@ export default {
       this.updateProperties({
         action: 'update',
         entity: 'video',
-        property: 'offImageLink',
+        property: 'offImage',
         id: this.video.id,
         entityData: this.video
       })
