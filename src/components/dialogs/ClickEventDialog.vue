@@ -17,7 +17,7 @@
           :disabled="synced"
         ></v-select>
         <v-text-field
-          v-if="clickEvent && clickEvent.type == 1"
+          v-if="clickEvent && clickEvent.type == this.EClickEventType.EXTERNAL"
           v-model="clickEvent.externalLink"
           label="External Link"
           :rules="[validateExternalLink]"
@@ -27,7 +27,7 @@
           :disabled="synced"
         ></v-text-field>
         <v-text-field
-          v-if="clickEvent && clickEvent.type == 2"
+          v-if="clickEvent && clickEvent.type == this.EClickEventType.SOUND"
           v-model="clickEvent.sound"
           label="Audio File"
           dense
@@ -35,7 +35,7 @@
           :disabled="synced"
         ></v-text-field>
         <v-text-field
-          v-if="clickEvent && clickEvent.type == 3"
+          v-if="clickEvent && clickEvent.type == this.EClickEventType.MOVE"
           v-model="clickEvent.moveTo"
           label="In-Scene Coordinates"
           dense
@@ -43,7 +43,7 @@
           :disabled="synced"
         ></v-text-field>
         <v-text-field
-          v-if="clickEvent && clickEvent.type == 4"
+          v-if="clickEvent && clickEvent.type == this.EClickEventType.TELEPORT"
           v-model="clickEvent.teleportTo"
           label="Destination Coordinates"
           dense
@@ -51,14 +51,18 @@
           :disabled="synced"
         ></v-text-field>
         <v-switch
-          v-if="clickEvent && clickEvent.type > 0"
+          v-if="clickEvent && clickEvent.type > EClickEventType.NONE"
           v-model="clickEvent.showFeedback"
           label="Show Hover Text"
           @change="toggleHoverText"
           :disabled="synced"
         ></v-switch>
         <v-text-field
-          v-if="clickEvent && clickEvent.type > 0 && clickEvent.showFeedback"
+          v-if="
+            clickEvent &&
+              clickEvent.type > EClickEventType.NONE &&
+              clickEvent.showFeedback
+          "
           v-model="clickEvent.hoverText"
           label="Hover Text"
           dense
@@ -67,14 +71,18 @@
           :disabled="synced"
         ></v-text-field>
         <v-switch
-          v-if="clickEvent && clickEvent.type > 0"
+          v-if="clickEvent && clickEvent.type !== EClickEventType.NONE"
           v-model="clickEvent.hasTracking"
           label="Track Click Event"
           @change="toggleTracking"
           :disabled="synced"
         ></v-switch>
         <v-text-field
-          v-if="clickEvent && clickEvent.type > 0 && clickEvent.hasTracking"
+          v-if="
+            clickEvent &&
+              clickEvent.type !== EClickEventType.NONE &&
+              clickEvent.hasTracking
+          "
           v-model="clickEvent.trackingId"
           label="Tracking ID"
           dense
@@ -122,16 +130,27 @@ export default {
   data: () => ({
     clickEvents: [
       { text: 'None', value: 0, default: true },
+      { text: 'Tracking Only', value: 2 },
       { text: 'Website Link', value: 1 },
-      { text: 'Play Sound (Coming Soon)', value: 2, disabled: true },
-      { text: 'Move Player in Scene (Coming Soon)', value: 3, disabled: true },
-      { text: 'Teleport Player (Coming Soon)', value: 4, disabled: true }
+      { text: 'Play Sound', value: 3},
+      // { text: 'Play Audio Stream (Coming Soon)', value: 4 },
+      { text: 'Move Player in Scene', value: 5 },
+      { text: 'Teleport Player', value: 6 }
     ],
     clickEvent: { type: 0 },
     originalClickEvent: { type: 0 },
     baseEntityType: '',
     hasErrors: false,
-    synced: false
+    synced: false,
+    EClickEventType: {
+      NONE: 0,
+      EXTERNAL: 1,
+      TRACKING_ONLY: 2,
+      SOUND: 3,
+      STREAM: 4,
+      MOVE: 5,
+      TELEPORT: 6
+    }
   }),
   props: {
     title: { type: String, default: 'Click Event' },
@@ -217,6 +236,9 @@ export default {
       this.$emit('onChange')
     },
     changeType () {
+      if (this.clickEvent.type == this.EClickEventType.TRACKING_ONLY) {
+        this.clickEvent.hasTracking = true
+      }
       this.hasErrors = false
       Vue.set(this.entity, 'clickEvent', this.clickEvent)
       this.setClickTrackingId()
@@ -266,19 +288,25 @@ export default {
         defaultTrackingName = this.entity.customId || this.entity.name
       }
 
-      if (this.clickEvent.trackingId || this.clickEvent.type == 0) {
+      if (
+        this.clickEvent.trackingId ||
+        this.clickEvent.type == this.EClickEventType.NONE
+      ) {
         //do nothing
-      } else if (this.clickEvent.type == 1) {
+      } else if (this.clickEvent.type == this.EClickEventType.EXTERNAL) {
         clickTrackingId = `click-event-(external-link)-${this.clickEvent
           .externalLink || defaultTrackingName}`
-      } else if (this.clickEvent.type == 2) {
+      } else if (this.clickEvent.type == this.EClickEventType.TRACKING_ONLY) {
+        clickTrackingId = `click-event-${this.clickEvent.sound ||
+          defaultTrackingName}`
+      } else if (this.clickEvent.type == this.EClickEventType.SOUND) {
         clickTrackingId = `click-event-(play-sound)-${this.clickEvent.sound ||
           defaultTrackingName}`
-      } else if (this.clickEvent.type == 3) {
+      } else if (this.clickEvent.type == this.EClickEventType.STREAM) {
         clickTrackingId = `click-event-(play-stream)-${defaultTrackingName}`
-      } else if (this.clickEvent.type == 4) {
+      } else if (this.clickEvent.type == this.EClickEventType.MOVE) {
         clickTrackingId = `click-event-(move-player)-${defaultTrackingName}`
-      } else if (this.clickEvent.type == 5) {
+      } else if (this.clickEvent.type == this.EClickEventType.TELEPORT) {
         clickTrackingId = `click-event-(teleport-player)-${this.clickEvent
           .teleportTo || defaultTrackingName}`
       }
