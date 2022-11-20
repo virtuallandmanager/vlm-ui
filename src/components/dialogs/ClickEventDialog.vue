@@ -17,7 +17,7 @@
           :disabled="synced"
         ></v-select>
         <v-text-field
-          v-if="clickEvent.type == 1"
+          v-if="clickEvent && clickEvent.type == 1"
           v-model="clickEvent.externalLink"
           label="External Link"
           :rules="[validateExternalLink]"
@@ -27,7 +27,7 @@
           :disabled="synced"
         ></v-text-field>
         <v-text-field
-          v-if="clickEvent.type == 2"
+          v-if="clickEvent && clickEvent.type == 2"
           v-model="clickEvent.sound"
           label="Audio File"
           dense
@@ -35,7 +35,7 @@
           :disabled="synced"
         ></v-text-field>
         <v-text-field
-          v-if="clickEvent.type == 3"
+          v-if="clickEvent && clickEvent.type == 3"
           v-model="clickEvent.moveTo"
           label="In-Scene Coordinates"
           dense
@@ -43,7 +43,7 @@
           :disabled="synced"
         ></v-text-field>
         <v-text-field
-          v-if="clickEvent.type == 4"
+          v-if="clickEvent && clickEvent.type == 4"
           v-model="clickEvent.teleportTo"
           label="Destination Coordinates"
           dense
@@ -51,19 +51,35 @@
           :disabled="synced"
         ></v-text-field>
         <v-switch
-          v-if="clickEvent.type > 0"
+          v-if="clickEvent && clickEvent.type > 0"
           v-model="clickEvent.showFeedback"
           label="Show Hover Text"
           @change="toggleHoverText"
           :disabled="synced"
         ></v-switch>
         <v-text-field
-          v-if="clickEvent.type > 0 && clickEvent.showFeedback"
+          v-if="clickEvent && clickEvent.type > 0 && clickEvent.showFeedback"
           v-model="clickEvent.hoverText"
           label="Hover Text"
           dense
           @change="changeValue"
           :rules="[validateHoverText]"
+          :disabled="synced"
+        ></v-text-field>
+        <v-switch
+          v-if="clickEvent && clickEvent.type > 0"
+          v-model="clickEvent.hasTracking"
+          label="Track Click Event"
+          @change="toggleTracking"
+          :disabled="synced"
+        ></v-switch>
+        <v-text-field
+          v-if="clickEvent && clickEvent.type > 0 && clickEvent.hasTracking"
+          v-model="clickEvent.trackingId"
+          label="Tracking ID"
+          dense
+          @change="changeValue"
+          :rules="[validateTrackingId]"
           :disabled="synced"
         ></v-text-field>
         <div v-if="instance && !synced">
@@ -111,8 +127,8 @@ export default {
       { text: 'Move Player in Scene (Coming Soon)', value: 3, disabled: true },
       { text: 'Teleport Player (Coming Soon)', value: 4, disabled: true }
     ],
-    clickEvent: {},
-    originalClickEvent: {},
+    clickEvent: { type: 0 },
+    originalClickEvent: { type: 0 },
     baseEntityType: '',
     hasErrors: false,
     synced: false
@@ -147,7 +163,7 @@ export default {
       (this.instance.clickEvent === null ||
         !Object.entries(this.instance.clickEvent).length)
     ) {
-      this.originalClickEvent = null
+      this.originalClickEvent = { type: 0 }
     } else {
       this.originalClickEvent = { ...this.clickEvent }
     }
@@ -188,17 +204,22 @@ export default {
       const i = this.entity.instances.findIndex(
         instance => instance.id == this.instance.id
       )
+
       if (value) {
-        Vue.set(this.entity.instances[i], 'clickEvent', null)
-      } else {
         this.clickEvent = this.entity.clickEvent
-        Vue.set(this.entity.instances[i], 'clickEvent', this.entity.clickEvent)
+      } else if (this.originalClickEvent && this.originalClickEvent.type > -1) {
+        this.clickEvent = this.originalClickEvent
+      } else {
+        this.clickEvent = this.instance.clickEvent
       }
+
+      Vue.set(this.entity.instances[i], 'clickEvent', this.clickEvent)
       this.$emit('onChange')
     },
     changeType () {
       this.hasErrors = false
-      Vue.set(this.entity, 'clickEvent', this.entity.clickEvent)
+      Vue.set(this.entity, 'clickEvent', this.clickEvent)
+      this.setClickTrackingId()
       this.$emit('onChange')
     },
     changeValue () {
@@ -221,8 +242,50 @@ export default {
       }
       this.changeValue()
     },
+    toggleTracking (value) {
+      Vue.set(this.clickEvent, 'hasTracking', value)
+      this.setClickTrackingId()
+      if (!value) {
+        this.hasErrors = false
+      } else {
+        this.validateTrackingId(this.clickEvent.trackingId)
+      }
+      this.changeValue()
+    },
     makeLowercase (value) {
       Vue.set(this.entity.clickEvent, 'externalLink', value.toLowerCase())
+    },
+    setClickTrackingId () {
+      let clickTrackingId
+      let defaultTrackingName
+
+      if (this.instance) {
+        defaultTrackingName =
+          this.instance.customId || this.instance.name || this.entity.name
+      } else {
+        defaultTrackingName = this.entity.customId || this.entity.name
+      }
+
+      if (this.clickEvent.trackingId || this.clickEvent.type == 0) {
+        //do nothing
+      } else if (this.clickEvent.type == 1) {
+        clickTrackingId = `click-event-(external-link)-${this.clickEvent
+          .externalLink || defaultTrackingName}`
+      } else if (this.clickEvent.type == 2) {
+        clickTrackingId = `click-event-(play-sound)-${this.clickEvent.sound ||
+          defaultTrackingName}`
+      } else if (this.clickEvent.type == 3) {
+        clickTrackingId = `click-event-(play-stream)-${defaultTrackingName}`
+      } else if (this.clickEvent.type == 4) {
+        clickTrackingId = `click-event-(move-player)-${defaultTrackingName}`
+      } else if (this.clickEvent.type == 5) {
+        clickTrackingId = `click-event-(teleport-player)-${this.clickEvent
+          .teleportTo || defaultTrackingName}`
+      }
+
+      if (clickTrackingId) {
+        Vue.set(this.clickEvent, 'trackingId', clickTrackingId)
+      }
     },
     validateExternalLink (value) {
       if (!value) {
@@ -237,6 +300,15 @@ export default {
       }
     },
     validateHoverText (value) {
+      if (!value) {
+        this.hasErrors = true
+        return 'Enter text or disable toggle'
+      } else {
+        this.hasErrors = false
+        return true
+      }
+    },
+    validateTrackingId (value) {
       if (!value) {
         this.hasErrors = true
         return 'Enter text or disable toggle'
