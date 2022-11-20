@@ -128,15 +128,6 @@ import { ClickEvent } from '../../models/ClickEvent'
 export default {
   name: 'ClickEventDialog',
   data: () => ({
-    clickEvents: [
-      { text: 'None', value: 0, default: true },
-      { text: 'Tracking Only', value: 2 },
-      { text: 'Website Link', value: 1 },
-      { text: 'Play Sound', value: 3},
-      // { text: 'Play Audio Stream (Coming Soon)', value: 4 },
-      { text: 'Move Player in Scene', value: 5 },
-      { text: 'Teleport Player', value: 6 }
-    ],
     clickEvent: { type: 0 },
     originalClickEvent: { type: 0 },
     baseEntityType: '',
@@ -150,7 +141,16 @@ export default {
       STREAM: 4,
       MOVE: 5,
       TELEPORT: 6
-    }
+    },
+    clickEvents: [
+      { text: 'None', value: 0, default: true },
+      { text: 'Tracking Only', value: 2 },
+      { text: 'Website Link', value: 1 },
+      { text: 'Play Sound', value: 3 },
+      // { text: 'Play Audio Stream (Coming Soon)', value: this.EClickEventType.STREAM },
+      { text: 'Move Player in Scene', value: 5 },
+      { text: 'Teleport Player', value: 6 }
+    ]
   }),
   props: {
     title: { type: String, default: 'Click Event' },
