@@ -25,7 +25,6 @@
           label="External Link"
           :rules="[validateExternalLink]"
           dense
-          @input="makeLowercase"
           @change="changeValue"
           :disabled="displayedClickEvent.synced"
         ></v-text-field>
@@ -293,9 +292,6 @@ export default {
         this.displayedClickEvent = { ...this.entity.clickEvent, synced: true }
       }
       this.changeValue()
-    },
-    makeLowercase (value) {
-      this.displayedClickEvent.externalLink = value.toLowerCase()
     },
     setClickTrackingId () {
       let clickTrackingId
