@@ -181,7 +181,10 @@
               class="lighten-4 my-0 py-2 px-2"
               :class="ii % 2 ? 'grey darken-4' : 'grey darken-3'"
             >
-              <div class="lighten-4 d-flex justify-end mb-n4" :class="ii % 2 ? 'grey darken-4' : 'grey darken-3'">
+              <div
+                class="lighten-4 d-flex justify-end mb-n4"
+                :class="ii % 2 ? 'grey darken-4' : 'grey darken-3'"
+              >
                 <v-btn icon small @click="addInstance(instance)">
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
@@ -318,6 +321,11 @@ export default {
   },
   mounted () {
     this.imageLink = this.image.imageLink
+    this.image.instances.forEach(instance => {
+      instance.clickEventDialog = false;
+      instance.deleteDialog = false;
+      instance.propertiesDialog = false;
+    })
   },
   computed: {
     truncatedName () {

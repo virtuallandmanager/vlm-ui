@@ -9,109 +9,121 @@
           This click event will be inherited by all {{ entityType }} instances
         </div>
         <v-select
-          v-model="clickEvent.type"
+          v-model="displayedClickEvent.type"
           label="Click Event"
           :items="clickEvents"
           class="mt-4"
           @change="changeType"
-          :disabled="synced"
+          :disabled="displayedClickEvent.synced"
         ></v-select>
         <v-text-field
-          v-if="clickEvent && clickEvent.type == this.EClickEventType.EXTERNAL"
-          v-model="clickEvent.externalLink"
+          v-if="
+            displayedClickEvent &&
+              displayedClickEvent.type == this.EClickEventType.EXTERNAL
+          "
+          v-model="displayedClickEvent.externalLink"
           label="External Link"
           :rules="[validateExternalLink]"
           dense
           @input="makeLowercase"
           @change="changeValue"
-          :disabled="synced"
+          :disabled="displayedClickEvent.synced"
         ></v-text-field>
         <v-text-field
-          v-if="clickEvent && clickEvent.type == this.EClickEventType.SOUND"
-          v-model="clickEvent.sound"
+          v-if="
+            displayedClickEvent &&
+              displayedClickEvent.type == this.EClickEventType.SOUND
+          "
+          v-model="displayedClickEvent.sound"
           label="Audio File"
           dense
           @change="changeValue"
-          :disabled="synced"
+          :disabled="displayedClickEvent.synced"
         ></v-text-field>
         <v-text-field
-          v-if="clickEvent && clickEvent.type == this.EClickEventType.MOVE"
-          v-model="clickEvent.moveTo"
+          v-if="
+            displayedClickEvent &&
+              displayedClickEvent.type == this.EClickEventType.MOVE
+          "
+          v-model="displayedClickEvent.moveTo"
           label="In-Scene Coordinates"
           dense
           @change="changeValue"
-          :disabled="synced"
+          :disabled="displayedClickEvent.synced"
         ></v-text-field>
         <v-text-field
-          v-if="clickEvent && clickEvent.type == this.EClickEventType.TELEPORT"
-          v-model="clickEvent.teleportTo"
+          v-if="
+            displayedClickEvent &&
+              displayedClickEvent.type == this.EClickEventType.TELEPORT
+          "
+          v-model="displayedClickEvent.teleportTo"
           label="Destination Coordinates"
           dense
           @change="changeValue"
-          :disabled="synced"
+          :disabled="displayedClickEvent.synced"
         ></v-text-field>
         <v-switch
-          v-if="clickEvent && clickEvent.type > EClickEventType.NONE"
-          v-model="clickEvent.showFeedback"
+          v-if="
+            displayedClickEvent &&
+              displayedClickEvent.type > EClickEventType.NONE
+          "
+          v-model="displayedClickEvent.showFeedback"
           label="Show Hover Text"
           @change="toggleHoverText"
-          :disabled="synced"
+          :disabled="displayedClickEvent.synced"
         ></v-switch>
         <v-text-field
           v-if="
-            clickEvent &&
-              clickEvent.type > EClickEventType.NONE &&
-              clickEvent.showFeedback
+            displayedClickEvent &&
+              displayedClickEvent.type > EClickEventType.NONE &&
+              displayedClickEvent.showFeedback
           "
-          v-model="clickEvent.hoverText"
+          v-model="displayedClickEvent.hoverText"
           label="Hover Text"
           dense
           @change="changeValue"
           :rules="[validateHoverText]"
-          :disabled="synced"
+          :disabled="displayedClickEvent.synced"
         ></v-text-field>
         <v-switch
-          v-if="clickEvent && clickEvent.type !== EClickEventType.NONE"
-          v-model="clickEvent.hasTracking"
+          v-if="
+            displayedClickEvent &&
+              displayedClickEvent.type !== EClickEventType.NONE
+          "
+          v-model="displayedClickEvent.hasTracking"
           label="Track Click Event"
           @change="toggleTracking"
-          :disabled="synced"
+          :disabled="displayedClickEvent.synced"
         ></v-switch>
         <v-text-field
           v-if="
-            clickEvent &&
-              clickEvent.type !== EClickEventType.NONE &&
-              clickEvent.hasTracking
+            displayedClickEvent &&
+              displayedClickEvent.type !== EClickEventType.NONE &&
+              displayedClickEvent.hasTracking
           "
-          v-model="clickEvent.trackingId"
+          v-model="displayedClickEvent.trackingId"
           label="Tracking ID"
           dense
           @change="changeValue"
           :rules="[validateTrackingId]"
-          :disabled="synced"
+          :disabled="displayedClickEvent.synced"
         ></v-text-field>
-        <div v-if="instance && !synced">
+        <div v-if="this.instance && !displayedClickEvent.synced">
           <v-icon small>mdi-alert</v-icon>
-          This will override the click event of the base
-          {{ entityType }}.
+          This will override the default click event of the instance group.
         </div>
       </v-card-text>
       <v-divider></v-divider>
       <v-card-actions>
         <v-switch
           v-if="instance"
-          v-model="synced"
-          :label="synced ? 'Linked' : 'Unlinked'"
+          v-model="displayedClickEvent.synced"
+          label="Use Default Click Event"
           @change="toggleSync"
         >
         </v-switch>
         <v-spacer></v-spacer>
-        <v-btn
-          color="accenttext"
-          text
-          @click="save"
-          :disabled="(!instance && hasErrors) || (!synced && hasErrors)"
-        >
+        <v-btn color="accenttext" text @click="save" :disabled="hasErrors">
           Save
         </v-btn>
         <v-btn color="grey darken-1" text @click="revert"> Cancel </v-btn>
@@ -128,8 +140,9 @@ import { ClickEvent } from '../../models/ClickEvent'
 export default {
   name: 'ClickEventDialog',
   data: () => ({
-    clickEvent: { type: 0 },
-    originalClickEvent: { type: 0 },
+    clickEvent: null,
+    originalClickEvent: null,
+    displayedClickEvent: null,
     baseEntityType: '',
     hasErrors: false,
     synced: false,
@@ -153,7 +166,7 @@ export default {
     ]
   }),
   props: {
-    title: { type: String, default: 'Click Event' },
+    title: { type: String, default: 'Default Click Event' },
     entity: {
       type: Object,
       default: () => new SceneImage()
@@ -168,26 +181,35 @@ export default {
     value: Boolean
   },
   mounted () {
-    if (this.instance && !this.instance.clickEvent) {
-      this.clickEvent = { ...this.entity.clickEvent }
-    } else if (this.instance && this.instance.clickEvent) {
-      this.clickEvent = { ...this.instance.clickEvent }
-    } else if (this.entity.clickEvent) {
-      this.clickEvent = { ...this.entity.clickEvent }
-    } else {
+    const isInstance = !!this.instance,
+      isInstanceGroup = !isInstance,
+      isInstanceWithClickEvent = isInstance && !!this.instance.clickEvent,
+      needsClickEvent =
+        (isInstanceGroup && !this.entity.clickEvent) ||
+        (isInstance && !this.instance.clickEvent),
+      entityHasClickEvent = this.entity && !!this.entity.clickEvent
+
+    this.synced =
+      isInstance && isInstanceWithClickEvent && this.instance.clickEvent.synced
+
+    if (this.synced) {
+      this.clickEvent = this.instance.clickEvent
+      this.displayedClickEvent = { ...this.entity.clickEvent, synced: true }
+    } else if (isInstanceWithClickEvent) {
+      this.clickEvent = this.instance.clickEvent
+      this.displayedClickEvent = { ...this.instance.clickEvent }
+    } else if (isInstance && entityHasClickEvent) {
+      this.clickEvent = this.entity.clickEvent
+      this.displayedClickEvent = { ...this.entity.clickEvent, synced: true }
+    } else if (!isInstance && entityHasClickEvent) {
+      this.clickEvent = this.entity.clickEvent
+      this.displayedClickEvent = { ...this.entity.clickEvent }
+    } else if (needsClickEvent) {
       this.clickEvent = new ClickEvent()
-    }
-    if (
-      this.instance &&
-      (this.instance.clickEvent === null ||
-        !Object.entries(this.instance.clickEvent).length)
-    ) {
-      this.originalClickEvent = { type: 0 }
-    } else {
-      this.originalClickEvent = { ...this.clickEvent }
+      this.displayedClickEvent = this.clickEvent
     }
 
-    this.synced = this.instance && this.instance.clickEvent == null
+    this.originalClickEvent = { ...this.displayedClickEvent }
   },
   computed: {
     show: {
@@ -202,6 +224,12 @@ export default {
   methods: {
     save () {
       this.show = false
+      if (this.instance && this.instance.synced) {
+        const i = this.entity.instances.findIndex(
+          instance => instance.id == this.instance.id
+        )
+        Vue.set(this.entity.instances[i], 'clickEvent', this.originalClickEvent)
+      }
     },
     revert () {
       this.show = false
@@ -209,73 +237,65 @@ export default {
         const i = this.entity.instances.findIndex(
           instance => instance.id == this.instance.id
         )
-        Vue.set(
-          this.entity.instances[i],
-          'clickEvent',
-          this.synced ? this.originalClickEvent : null
-        )
+        Vue.set(this.entity.instances[i], 'clickEvent', this.originalClickEvent)
       } else {
         Vue.set(this.entity, 'clickEvent', this.originalClickEvent)
       }
-      this.$emit('onChange')
-    },
-    toggleSync (value) {
-      const i = this.entity.instances.findIndex(
-        instance => instance.id == this.instance.id
-      )
-
-      if (value) {
-        this.clickEvent = this.entity.clickEvent
-      } else if (this.originalClickEvent && this.originalClickEvent.type > -1) {
-        this.clickEvent = this.originalClickEvent
-      } else {
-        this.clickEvent = this.instance.clickEvent
-      }
-
-      Vue.set(this.entity.instances[i], 'clickEvent', this.clickEvent)
-      this.$emit('onChange')
+      Vue.nextTick(() => {
+        this.$emit('onChange')
+      })
     },
     changeType () {
-      if (this.clickEvent.type == this.EClickEventType.TRACKING_ONLY) {
-        this.clickEvent.hasTracking = true
+      if (this.displayedClickEvent.type == this.EClickEventType.TRACKING_ONLY) {
+        this.displayedClickEvent.hasTracking = true
       }
       this.hasErrors = false
-      Vue.set(this.entity, 'clickEvent', this.clickEvent)
       this.setClickTrackingId()
-      this.$emit('onChange')
+      this.changeValue()
     },
     changeValue () {
       if (this.instance) {
         const i = this.entity.instances.findIndex(
           instance => instance.id == this.instance.id
         )
-        Vue.set(this.entity.instances[i], 'clickEvent', this.clickEvent)
+        Vue.set(
+          this.entity.instances[i],
+          'clickEvent',
+          this.displayedClickEvent
+        )
       } else {
-        Vue.set(this.entity, 'clickEvent', this.clickEvent)
+        Vue.set(this.entity, 'clickEvent', this.displayedClickEvent)
       }
-      this.$emit('onChange')
+      Vue.nextTick(() => {
+        if (this.hasErrors) {
+          return
+        }
+        this.$emit('onChange')
+      })
     },
     toggleHoverText (value) {
-      Vue.set(this.clickEvent, 'showFeedback', value)
+      Vue.set(this.displayedClickEvent, 'showFeedback', value)
       if (!value) {
         this.hasErrors = false
-      } else {
-        this.validateHoverText(this.clickEvent.hoverText)
       }
       this.changeValue()
     },
     toggleTracking (value) {
-      Vue.set(this.clickEvent, 'hasTracking', value)
-      this.setClickTrackingId()
       if (!value) {
         this.hasErrors = false
       } else {
-        this.validateTrackingId(this.clickEvent.trackingId)
+        this.setClickTrackingId()
+      }
+      this.changeValue()
+    },
+    toggleSync (value) {
+      if (value) {
+        this.displayedClickEvent = { ...this.entity.clickEvent, synced: true }
       }
       this.changeValue()
     },
     makeLowercase (value) {
-      Vue.set(this.entity.clickEvent, 'externalLink', value.toLowerCase())
+      this.displayedClickEvent.externalLink = value.toLowerCase()
     },
     setClickTrackingId () {
       let clickTrackingId
@@ -289,42 +309,49 @@ export default {
       }
 
       if (
-        this.clickEvent.trackingId ||
-        this.clickEvent.type == this.EClickEventType.NONE
+        this.displayedClickEvent.trackingId ||
+        this.displayedClickEvent.type == this.EClickEventType.NONE
       ) {
         //do nothing
-      } else if (this.clickEvent.type == this.EClickEventType.EXTERNAL) {
+      } else if (
+        this.displayedClickEvent.type == this.EClickEventType.EXTERNAL
+      ) {
         clickTrackingId = `click-event-(external-link)-${this.clickEvent
           .externalLink || defaultTrackingName}`
-      } else if (this.clickEvent.type == this.EClickEventType.TRACKING_ONLY) {
+      } else if (
+        this.displayedClickEvent.type == this.EClickEventType.TRACKING_ONLY
+      ) {
         clickTrackingId = `click-event-${this.clickEvent.sound ||
           defaultTrackingName}`
-      } else if (this.clickEvent.type == this.EClickEventType.SOUND) {
+      } else if (this.displayedClickEvent.type == this.EClickEventType.SOUND) {
         clickTrackingId = `click-event-(play-sound)-${this.clickEvent.sound ||
           defaultTrackingName}`
-      } else if (this.clickEvent.type == this.EClickEventType.STREAM) {
+      } else if (this.displayedClickEvent.type == this.EClickEventType.STREAM) {
         clickTrackingId = `click-event-(play-stream)-${defaultTrackingName}`
-      } else if (this.clickEvent.type == this.EClickEventType.MOVE) {
+      } else if (this.displayedClickEvent.type == this.EClickEventType.MOVE) {
         clickTrackingId = `click-event-(move-player)-${defaultTrackingName}`
-      } else if (this.clickEvent.type == this.EClickEventType.TELEPORT) {
+      } else if (
+        this.displayedClickEvent.type == this.EClickEventType.TELEPORT
+      ) {
         clickTrackingId = `click-event-(teleport-player)-${this.clickEvent
           .teleportTo || defaultTrackingName}`
       }
 
       if (clickTrackingId) {
-        Vue.set(this.clickEvent, 'trackingId', clickTrackingId)
+        this.displayedClickEvent.trackingId = clickTrackingId
+        this.changeValue()
       }
     },
     validateExternalLink (value) {
       if (!value) {
         this.hasErrors = true
         return 'Enter a website URL'
-      } else if (value.includes('http://') || value.includes('https://')) {
+      } else if (value.includes('https://')) {
         this.hasErrors = false
         return true
       } else {
         this.hasErrors = true
-        return 'Must include http:// or https://'
+        return 'Must use https:// links'
       }
     },
     validateHoverText (value) {

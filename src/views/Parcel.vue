@@ -320,7 +320,7 @@ export default {
     },
     updateProperties (options) {
       this.updateLandProperties({
-        wssMessages: options.wssMessages,
+        wssMessages: {...options.wssMessages, features: this.property.features},
         property: {
           propertyName: this.property.propertyName,
           baseParcel: this.property.baseParcel,
