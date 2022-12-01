@@ -132,9 +132,7 @@
         <div
           class="d-flex justify-space-between align-center purple lighten-1 pa-4"
         >
-          <h1 class="text-body-1 font-weight-bold" dark>
-            Instances
-          </h1>
+          <h1 class="text-body-1 font-weight-bold" dark>Instances</h1>
           <v-btn @click="addInstance()"><v-icon>mdi-plus</v-icon> Add</v-btn>
         </div>
         <div class="d-flex flex-column pa-4" v-if="!image.instances.length">
@@ -321,11 +319,13 @@ export default {
   },
   mounted () {
     this.imageLink = this.image.imageLink
-    this.image.instances.forEach(instance => {
-      instance.clickEventDialog = false;
-      instance.deleteDialog = false;
-      instance.propertiesDialog = false;
-    })
+    if (this.image.instances) {
+      this.image.instances.forEach(instance => {
+        instance.clickEventDialog = false
+        instance.deleteDialog = false
+        instance.propertiesDialog = false
+      })
+    }
   },
   computed: {
     truncatedName () {

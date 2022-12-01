@@ -31,7 +31,7 @@
         Wearables Banned From Scene
       </v-col>
     </v-row>
-    <v-row v-if="settings.banCertainWearables" class="grey lighten-4">
+    <v-row v-if="settings.banCertainWearables">
       <v-col>
         <v-row v-for="(item, i) in settings.bannedWearables" :key="i" dense>
           <v-col cols="7" md="8" sm="9" xs="4">
@@ -69,7 +69,7 @@
         Wearables Allowed In Scene
       </v-col>
     </v-row>
-    <v-row v-if="settings.allowCertainWearables" class="grey lighten-4">
+    <v-row v-if="settings.allowCertainWearables">
       <v-col>
         <v-row v-for="(item, i) in settings.allowedWearables" :key="i" dense>
           <v-col cols="7" md="8" sm="9" xs="4">
@@ -135,7 +135,7 @@
         People Banned From Scene
       </v-col>
     </v-row>
-    <v-row v-if="settings.banCertainUsers" class="grey lighten-4">
+    <v-row v-if="settings.banCertainUsers">
       <v-col>
         <v-row v-for="(item, i) in settings.bannedUsers" :key="i" dense>
           <v-col cols="7" md="8" sm="9" xs="4">
@@ -175,7 +175,7 @@
         People Allowed In Scene
       </v-col>
     </v-row>
-    <v-row v-if="settings.allowCertainUsers" class="grey lighten-4">
+    <v-row v-if="settings.allowCertainUsers">
       <v-col>
         <v-row v-for="(item, i) in settings.allowedUsers" :key="i" dense>
           <v-col cols="7" md="8" sm="9" xs="4">
