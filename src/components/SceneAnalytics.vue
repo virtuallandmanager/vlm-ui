@@ -35,25 +35,19 @@
           <v-card>
             <v-card-title>Users In Scene</v-card-title>
             <v-card-text class="d-flex justify-space-between">
-              <div class="text-h6">
-                Active Connections:
-              </div>
+              <div class="text-h6">Active Connections:</div>
               <div class="text-body-1">
                 {{ connectedUsers }}
               </div>
             </v-card-text>
             <v-card-text class="d-flex justify-space-between">
-              <div class="text-h6">
-                Authentic Connections:
-              </div>
+              <div class="text-h6">Authentic Connections:</div>
               <div class="text-body-1">
                 {{ connectedUsers - vpnConnections }}
               </div>
             </v-card-text>
             <v-card-text class="d-flex justify-space-between">
-              <div class="text-h6">
-                VPN Connections:
-              </div>
+              <div class="text-h6">VPN Connections:</div>
               <div class="text-body-1">
                 {{ vpnConnections }}
               </div>
@@ -165,7 +159,10 @@
                       v-if="!includeAllActions && index === 3"
                       class="grey--text text-caption"
                     >
-                      (+{{ eventTypeFilter.length ? eventTypeFilter.length - 3 : 0 }} others)
+                      (+{{
+                        eventTypeFilter.length ? eventTypeFilter.length - 3 : 0
+                      }}
+                      others)
                     </span>
                   </template>
                   <template v-slot:prepend-item>
@@ -177,16 +174,16 @@
                       <v-list-item-action>
                         <v-icon
                           :color="
-                            eventTypeFilter.length && eventTypeFilter.length > 0 ? 'red darken-4' : ''
+                            eventTypeFilter.length && eventTypeFilter.length > 0
+                              ? 'red darken-4'
+                              : ''
                           "
                         >
                           {{ selectAllIcon }}
                         </v-icon>
                       </v-list-item-action>
                       <v-list-item-content>
-                        <v-list-item-title>
-                          Select All
-                        </v-list-item-title>
+                        <v-list-item-title> Select All </v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
                     <v-divider></v-divider>
@@ -380,9 +377,7 @@ export default {
     selectDataError: '',
     dateRange: [
       DateTime.now().toFormat('yyyy-MM-dd'),
-      DateTime.now()
-        .endOf('day')
-        .toFormat('yyyy-MM-dd')
+      DateTime.now().endOf('day').toFormat('yyyy-MM-dd')
     ],
     dataMetrics: [
       { value: 'uniqueVisitors', text: 'All Unique Visitors' },
@@ -479,7 +474,7 @@ export default {
       type: Object
     }
   },
-  mounted () {
+  mounted() {
     this.runQuery()
 
     if (this.features.connectionData) {
@@ -492,21 +487,21 @@ export default {
   },
   computed: {
     errorMessage: {
-      get () {
+      get() {
         return this.$store.getters['land/errorMessage']
       },
-      set (value) {
+      set(value) {
         this.setErrorMessage(value)
       }
     },
-    dateRangeText () {
+    dateRangeText() {
       if (this.dateRange && this.dateRange.length > 1) {
         return this.dateRange.join(' to ')
       } else {
         return this.dateRange[0]
       }
     },
-    dateRangeCount () {
+    dateRangeCount() {
       const startDate = DateTime.fromISO(this.dateRange[0]),
         endDate = DateTime.fromISO(this.dateRange[1]),
         dateRange = Interval.fromDateTimes(startDate, endDate),
@@ -514,20 +509,20 @@ export default {
 
       return dateRangeDays
     },
-    defaultDate () {
+    defaultDate() {
       const today = new Date().toISOString()
       return this.formatDate(today)
     },
-    isDev () {
+    isDev() {
       return process.env.VUE_APP_NODE_ENV == 'development'
     },
-    includeAllActions () {
+    includeAllActions() {
       return this.eventTypeFilter.length === this.eventTypes.length
     },
-    includeSomeActions () {
+    includeSomeActions() {
       return this.eventTypeFilter.length > 0 && !this.includeAllActions
     },
-    selectAllIcon () {
+    selectAllIcon() {
       if (this.includeAllActions) return 'mdi-close-box'
       if (this.includeSomeActions) return 'mdi-minus-box'
       return 'mdi-checkbox-blank-outline'
@@ -537,14 +532,14 @@ export default {
     ...mapActions({
       setErrorMessage: 'land/setErrorMessage'
     }),
-    validateDateRange () {
+    validateDateRange() {
       let dateRange = [this.dateRange[0], this.dateRange[1]]
       if (dateRange[0] > dateRange[1]) {
         this.dateRange[0] = dateRange[1]
         this.dateRange[1] = dateRange[0]
       }
     },
-    handleSelectAll () {
+    handleSelectAll() {
       this.$nextTick(() => {
         if (this.includeAllActions) {
           this.eventTypeFilter = []
@@ -555,13 +550,13 @@ export default {
         }
       })
     },
-    validateActions () {
+    validateActions() {
       if (this.eventTypeFilter.length == 0) {
         this.errorMessage = 'Select at least one type of action to export.'
         this.eventTypeFilter = this.eventTypes.map(eventType => eventType.value)
       }
     },
-    async runQuery () {
+    async runQuery() {
       this.loadingAnalytics = true
       let startDate = DateTime.fromISO(this.dateRange[0]),
         endDate = this.dateRange[1]
@@ -606,30 +601,32 @@ export default {
           const error = await res.json()
           this.setErrorMessage(error.text)
         }
-        const { uniqueVisits, totalInteractions, eventTypes } = await res.json()
+        const visitorOptions = await res.json()
+        let eventTypes = visitorOptions.eventTypes || [],
+          totalInteractions = visitorOptions.totalInteractions || [],
+          uniqueVisits = visitorOptions.uniqueVisits || [];
 
         this.uniqueVisitorsGraph = uniqueVisits
         this.totalInteractions = totalInteractions
 
         this.loadingAnalytics = false
         this.interactionChartOptions.data.loading = false
-        this.eventTypes = eventTypes.map(eventType => ({
-          value: eventType,
-          text:
-            eventType == 'player_expression'
-              ? 'Emote'
-              : eventType
-                  .capitalize()
-                  .removeUnderscore()
-                  .removeDash()
-        }))
-        this.eventTypeFilter = eventTypes
+        if (eventTypes) {
+          this.eventTypes = eventTypes.map(eventType => ({
+            value: eventType,
+            text:
+              eventType == 'player_expression'
+                ? 'Emote'
+                : eventType.capitalize().removeUnderscore().removeDash()
+          }))
+          this.eventTypeFilter = eventTypes
+        }
       } catch (error) {
         console.log(error)
       }
     },
 
-    async getActiveConnections () {
+    async getActiveConnections() {
       const baseParcel = this.baseParcel.split(','),
         x = baseParcel[0],
         y = baseParcel[1]
@@ -664,7 +661,7 @@ export default {
       }
     },
 
-    async exportQuery () {
+    async exportQuery() {
       const selectedExportOptions = Object.entries(this.exportOptions).map(
         ([key, value]) => {
           if (key) return value.selected
@@ -733,21 +730,21 @@ export default {
         console.log(error)
       }
     },
-    changeSelectedMetric () {
+    changeSelectedMetric() {
       this.interactionChartOptions.title = this.dataMetrics.find(
         metric => metric.value == this.selectedMetric
       ).text
       this.interactionChartOptions.axes.left.mapsTo = this.selectedMetric
       this.donutChartOptions.pie.valueMapsTo = this.selectedMetric
     },
-    formatDate (date) {
+    formatDate(date) {
       const [dateStr] = new Date(date).toISOString().split('T')
       return dateStr
     },
-    updateExportOptions () {
+    updateExportOptions() {
       this.selectDataError = ''
     },
-    updateProperties () {
+    updateProperties() {
       this.$emit('updateProperties')
     }
   }
