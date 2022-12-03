@@ -165,7 +165,7 @@
                       v-if="!includeAllActions && index === 3"
                       class="grey--text text-caption"
                     >
-                      (+{{ eventTypeFilter.length - 3 }} others)
+                      (+{{ eventTypeFilter.length ? eventTypeFilter.length - 3 : 0 }} others)
                     </span>
                   </template>
                   <template v-slot:prepend-item>
@@ -177,7 +177,7 @@
                       <v-list-item-action>
                         <v-icon
                           :color="
-                            eventTypeFilter.length > 0 ? 'red darken-4' : ''
+                            eventTypeFilter.length && eventTypeFilter.length > 0 ? 'red darken-4' : ''
                           "
                         >
                           {{ selectAllIcon }}
@@ -500,7 +500,7 @@ export default {
       }
     },
     dateRangeText () {
-      if (this.dateRange.length > 1) {
+      if (this.dateRange && this.dateRange.length > 1) {
         return this.dateRange.join(' to ')
       } else {
         return this.dateRange[0]
