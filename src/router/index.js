@@ -31,17 +31,9 @@ const router = new Router({
       children: [
         {
           path: "",
-          name: "MyLand",
+          name: "MyScenes",
           component: () =>
-            import(/* webpackChunkName: "myland" */ "../views/MyLand.vue"),
-        },
-        {
-          path: "import",
-          name: "ImportLand",
-          component: () =>
-            import(
-              /* webpackChunkName: "importland" */ "../views/ImportLand.vue"
-            ),
+            import(/* webpackChunkName: "myscenes" */ "../views/MyScenes.vue"),
         },
         {
           path: ":xCoord",

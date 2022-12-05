@@ -329,7 +329,7 @@ export default {
   },
   computed: {
     truncatedName () {
-      const imageNameArr = this.image.name.split('')
+      const imageNameArr = this.image && this.image.name.split('')
       let noSpacesLength = 0
       let truncated = this.image.name
       imageNameArr.forEach(char => {

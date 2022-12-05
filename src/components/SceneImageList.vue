@@ -26,6 +26,7 @@
       <v-col md="4" sm="12" v-for="(image, i) in images" :key="image.id">
         <v-card>
         <scene-image
+          v-if="images.length > 0"
           :image="image"
           :i="i"
           :property="property"

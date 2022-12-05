@@ -12,7 +12,7 @@
         <v-tabs align-with-title color="nav">
           <!-- <v-tab v-if="!connected">About</v-tab> -->
           <!-- <v-tab v-if="!connected">Pricing</v-tab> -->
-          <v-tab v-if="connected">My Land</v-tab>
+          <v-tab v-if="connected">My Scenes</v-tab>
           <!-- <v-tab>Wiki</v-tab> -->
         </v-tabs>
       </template>

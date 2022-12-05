@@ -3,13 +3,7 @@
     <v-container class="">
       <v-row class="text-left">
         <v-col>
-          <div class="float-right">
-            <v-btn tile to="/land/import">
-              <v-icon left>mdi-import</v-icon>
-              Import Parcels
-            </v-btn>
-          </div>
-          <h1 class="display-2 font-weight-light mb-3">Land</h1>
+          <h1 class="display-2 font-weight-light mb-3">My Scenes</h1>
         </v-col>
       </v-row>
       <v-row class="text-center mb-12" v-if="fetchingUserLand">
@@ -23,10 +17,12 @@
       </v-row>
       <v-row class="text-center" v-if="!userLand.length && !fetchingUserLand">
         <v-col cols="12">
-          <div class="text-h5">No land parcels found.</div>
-          <div class="text-body">
-            Please <router-link to="/land/import">import</router-link> parcels
-            that you would like to manage with VLM.
+          <div class="text-h5">No scenes found.</div>
+          <div class="text-body mt-4">
+            Wiki page coming soon with instructions on installing VLM.
+          </div>
+          <div class="text-body mb-4">
+            For developer preview, contact Unknower#0677 on Discord.
           </div>
         </v-col>
       </v-row>
@@ -50,7 +46,7 @@ import ParcelCard from '../components/ParcelCard'
 import Loader from '../components/Loader'
 export default {
   components: { ParcelCard, Loader },
-  name: 'MyLand',
+  name: 'MyScenes',
   data: () => ({}),
   mounted () {
     this.fetchUserLand()
