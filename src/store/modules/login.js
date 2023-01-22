@@ -12,6 +12,7 @@ export default {
     loggingIn: false,
     loginError: null,
     noWeb3: false,
+    userInfo: {}
   }),
   mutations: {
     loginStart: (state) => (state.loggingIn = true),
@@ -30,7 +31,7 @@ export default {
       state.connected = false;
       state.noWeb3 = true;
     },
-    connectAccount: (state, account) => {
+    connectAccount: async (state, account) => {
       if (account) {
         localStorage.setItem("loggedInAccount", account);
         state.account = account;
@@ -40,6 +41,13 @@ export default {
         state.account = null;
         state.connected = false;
       }
+
+      const fetchUserInfo = await fetch(`${process.env.VUE_APP_API_URL}/user/login/${account}`);
+      const userInfoReq = await fetchUserInfo.json(),
+       userInfo = userInfoReq.user;
+
+      state.userInfo = userInfo
+      state.advancedUser = userInfo.roles.includes(1)
     },
   },
   actions: {

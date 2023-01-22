@@ -2,7 +2,7 @@ import { nanoid } from "nanoid";
 import { ClickEvent } from "./ClickEvent";
 
 export class SceneImage {
-  id = nanoid(6);
+  id = nanoid(12);
   customId = null;
   show = true;
   name = "";
@@ -13,5 +13,10 @@ export class SceneImage {
   isTransparent = false;
   withCollisions = false;
 
-  constructor() {}
+  constructor(options) {
+    if (options) {
+    Object.keys(options).forEach(key => {
+      this[key] = options[key];
+    })
+  }}
 }

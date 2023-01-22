@@ -17,41 +17,40 @@
           label="Enable Transparency"
           @change="changeTransparency"
         ></v-switch>
-        <div
-          v-if="instance"
-          class="text-body1 font-weight-bold"
-        >
+        <div v-if="instance" class="text-body1 font-weight-bold">
           Interactions
         </div>
         <v-switch
-          v-if="entityType == 'image instance'"
+          v-if="instance"
           v-model="refObj.withCollisions"
           label="Enable Collider"
           @change="changeCollisions"
         ></v-switch>
-        <div class="text-body1 font-weight-bold">Advanced Features</div>
-        <v-text-field
-          v-model="refObj.customId"
-          label="Custom ID"
-          @change="changeId"
-          placeholder="Custom ID"
-        ></v-text-field>
-        <v-text-field
-          v-model="refObj.parent"
-          label="Parent Entity"
-          dense
-          @change="changeParent"
-          hide-details="true"
-          placeholder="Parent Entity"
-        ></v-text-field>
-        <v-switch
-          v-model="customRendering"
-          label="Enable Custom Rendering"
-          :disabled="instance && baseObj.customRendering"
-          :messages="customRenderingMessage()"
-          hide-details="auto"
-          @change="changeCustomRendering"
-        ></v-switch>
+        <div v-if="advancedUser">
+          <div class="text-body1 font-weight-bold">Advanced Features</div>
+          <v-text-field
+            v-model="refObj.customId"
+            label="Custom ID"
+            @change="changeId"
+            placeholder="Custom ID"
+          ></v-text-field>
+          <v-text-field
+            v-model="refObj.parent"
+            label="Parent Entity"
+            dense
+            @change="changeParent"
+            hide-details="true"
+            placeholder="Parent Entity"
+          ></v-text-field>
+          <v-switch
+            v-model="customRendering"
+            label="Custom Rendering"
+            :disabled="instance && baseObj.customRendering"
+            :messages="customRenderingMessage()"
+            hide-details="auto"
+            @change="changeCustomRendering"
+          ></v-switch>
+        </div>
       </v-card-text>
       <v-divider></v-divider>
       <v-card-actions>
@@ -75,18 +74,14 @@ export default {
     title: { type: String, default: 'Properties' },
     entity: Object,
     entityType: { type: String, default: 'Entity' },
-    isInstance: { type: Boolean, default: false },
     instance: [Object, null],
     value: Boolean
   },
   mounted () {
     this.refObj = this.instance || this.entity
-    this.baseObj = this.entity
+    this.baseObj = { customRendering: false, ...this.entity }
     this.originalProperties = {
-      isTransparent: this.refObj.isTransparent,
-      customRendering: this.refObj.customRendering,
-      customId: this.refObj.customId,
-      parent: this.refObj.parent
+      ...this.refObj
     }
   },
   computed: {
@@ -110,37 +105,33 @@ export default {
           this.refObj.customRendering = value
         }
       }
+    },
+    advancedUser () {
+      return this.$store.state.login.advancedUser
     }
   },
   methods: {
     getRefObj () {
-      if (this.instance) {
-        const i = this.entity.instances.findIndex(
-          instance => instance.id == this.instance.id
-        )
-        return this.entity.instances[i]
-      } else {
-        return this.entity
-      }
+      return this.instance || this.entity
     },
     changeTransparency () {
-      Vue.set(this.getRefObj(), 'isTransparent', this.refObj.isTransparent)
+      Vue.set(this.refObj, 'isTransparent', this.refObj.isTransparent)
       this.$emit('onChange')
     },
     changeCollisions () {
-      Vue.set(this.getRefObj(), 'withCollisions', this.refObj.withCollisions)
+      Vue.set(this.refObj, 'withCollisions', this.refObj.withCollisions)
       this.$emit('onChange')
     },
     changeCustomRendering () {
-      Vue.set(this.getRefObj(), 'customRendering', this.refObj.customRendering)
+      Vue.set(this.refObj, 'customRendering', this.refObj.customRendering)
       this.$emit('onChange')
     },
     changeParent () {
-      Vue.set(this.getRefObj(), 'parent', this.refObj.parent)
+      Vue.set(this.refObj, 'parent', this.refObj.parent)
       this.$emit('onChange')
     },
     changeId () {
-      Vue.set(this.getRefObj(), 'customId', this.refObj.customId)
+      Vue.set(this.refObj, 'customId', this.refObj.customId)
       this.$emit('onChange')
     },
     customRenderingMessage () {
@@ -161,19 +152,19 @@ export default {
     revert () {
       this.show = false
       Vue.set(
-        this.getRefObj(),
+        this.refObj,
         'isTransparent',
         this.originalProperties.isTransparent
       )
-      Vue.set(this.getRefObj(), 'customId', this.originalProperties.customId)
-      Vue.set(this.getRefObj(), 'parent', this.originalProperties.parent)
+      Vue.set(this.refObj, 'customId', this.originalProperties.customId)
+      Vue.set(this.refObj, 'parent', this.originalProperties.parent)
       Vue.set(
-        this.getRefObj(),
+        this.refObj,
         'customRendering',
         this.originalProperties.customRendering
       )
       Vue.set(
-        this.getRefObj(),
+        this.refObj,
         'withCollisions',
         this.originalProperties.withCollisions
       )

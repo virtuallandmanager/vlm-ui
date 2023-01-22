@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 
 export class SceneVideoInstance {
-  id = nanoid(6);
+  id = nanoid(12);
   name = "";
   show = true;
   position = { x: 8, y: 5, z: 0 };

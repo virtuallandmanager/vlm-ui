@@ -1,9 +1,10 @@
 <template>
   <v-dialog v-model="show" max-width="350" persistent>
     <v-card>
-      <v-card-title class="text-h5">
-        {{ title }}
-      </v-card-title>
+      <v-card-title>Move, Scale, Rotate</v-card-title>
+      <v-card-subtitle>
+        {{ subtitle }}
+      </v-card-subtitle>
       <v-card-text>
         <move-scale-rotate
           :entity="entity"
@@ -30,7 +31,6 @@ export default {
   components: { MoveScaleRotate },
   data: () => ({}),
   props: {
-    title: { type: String, default: 'Edit Transform' },
     entity: Object,
     entityType: { type: String, default: 'entity' },
     value: Boolean
@@ -41,6 +41,9 @@ export default {
     this.originalRotation = { ...this.entity.rotation }
   },
   computed: {
+    subtitle () {
+      return this.entity.name
+    },
     show: {
       get () {
         return this.value

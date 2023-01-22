@@ -4,7 +4,7 @@
       v-for="(axis, key) in xyz"
       :key="key"
       class="text-center"
-      style="height:50px"
+      style="height: 50px"
     >
       <v-row v-if="key !== 'z' || value !== 'scale' || !isPlane" no-gutters>
         <v-col class="text-right px-0">
@@ -16,7 +16,7 @@
           <v-text-field
             type="number"
             :value="xyz[key]"
-            :label="key.toUpperCase()"
+            :label="getLabel(key)"
             outlined
             dense
             hide-details="true"
@@ -113,6 +113,15 @@ export default {
     }
   },
   methods: {
+    getLabel (key) {
+      if (!this.isPlane) {
+        return key.toUpperCase()
+      } else if (key == "x") {
+        return "W"
+      } else if (key == "y") {
+        return "H"
+      }
+    },
     roundToStep (value, stepParam) {
       var step = stepParam || 1.0
       var inv = 1.0 / step

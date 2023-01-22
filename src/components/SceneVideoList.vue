@@ -16,7 +16,7 @@
     </v-row>
     <div v-if="videos && videos.length > 0">
       <div v-for="(video, i) in videos" :key="video.id">
-        <scene-video
+        <video-card
           :video="video"
           :i="i"
           :features="features"
@@ -31,12 +31,12 @@
 <script>
 import Vue from 'vue'
 import { mapActions } from 'vuex'
-import SceneVideo from './SceneVideo'
-import { SceneVideo as SceneVideoModel } from '../models/SceneVideo'
+import VideoCard from './VideoCard'
+import { SceneVideo } from '../models/SceneVideo'
 
 export default {
   components: {
-    SceneVideo
+    VideoCard
   },
   name: 'SceneVideoList',
   data: () => ({
@@ -58,7 +58,7 @@ export default {
     addVideoScreen () {
       const screenCount = this.videos.length + 1
       const nextItem = {
-        ...new SceneVideoModel(),
+        ...new SceneVideo(),
         name: `Screen ${screenCount}`
       }
 

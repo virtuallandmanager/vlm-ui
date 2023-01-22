@@ -1,9 +1,40 @@
 <template>
   <div>
-    <div class="d-flex pa-6 mx-auto align-baseline justify-space-between">
-      <div class="text-h5">Images</div>
-      <v-btn @click="$refs.fileInput.click()">
-        <v-icon class="mr-1">mdi-plus</v-icon>
+    <click-event-dialog
+      v-if="clickEventDialog"
+      v-model="clickEventDialog"
+      :entity="selectedImage"
+      :instance="selectedInstance"
+      entityType="image"
+      @onChange="dialogCallback"
+    />
+    <transform-dialog
+      v-if="transformDialog"
+      v-model="transformDialog"
+      :entity="selectedInstance"
+      entityType="image"
+      @onChange="dialogCallback"
+    />
+    <properties-dialog
+      v-if="propertiesDialog"
+      v-model="propertiesDialog"
+      :entity="selectedImage"
+      :instance="selectedInstance"
+      :entityType="selectedInstance ? 'instance' : 'image'"
+      @onChange="dialogCallback"
+    />
+    <delete-dialog
+      v-if="deleteDialog"
+      v-model="deleteDialog"
+      :entity="selectedInstance || selectedImage"
+      :entityType="selectedInstance ? 'image instance' : 'image'"
+      :removeAll="!selectedInstance"
+      @onRemove="dialogCallback"
+    />
+    <div class="d-flex pa-6 mx-auto align-baseline justify-start">
+      <div class="text-h5 flex-grow-1">Images</div>
+      <v-btn small @click="$refs.fileInput.click()">
+        <v-icon small class="mr-1">mdi-plus</v-icon>
         Add Image
       </v-btn>
     </div>
@@ -23,21 +54,21 @@
     <div v-if="images.length > 0">
       <v-container>
         <v-row>
-      <v-col md="4" sm="12" v-for="(image, i) in images" :key="image.id">
-        <v-card>
-        <scene-image
-          v-if="images.length > 0"
-          :image="image"
-          :i="i"
-          :property="property"
-          @updateProperties="updateProperties"
-          @onRemove="removeImage(i)"
-          @onReplace="replaceImage"
-        />
-      </v-card>
-      </v-col>
-    </v-row>
-    </v-container>
+          <v-col md="4" sm="12" v-for="(image, i) in images" :key="image.id">
+            <v-card>
+              <image-card
+                v-if="images.length > 0"
+                :image="image"
+                :i="i"
+                :property="property"
+                @updateProperties="updateProperties"
+                @onReplace="replaceImage"
+                @handleDialog="handleDialog"
+              />
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
     </div>
   </div>
 </template>
@@ -45,18 +76,31 @@
 <script>
 import Vue from 'vue'
 import { mapActions } from 'vuex'
-import SceneImage from '../components/SceneImage'
-import { SceneImage as SceneImageModel } from '../models/SceneImage'
+import { SceneImage } from '../models/SceneImage'
+import ImageCard from './ImageCard'
+import ClickEventDialog from './dialogs/ClickEventDialog'
+import PropertiesDialog from './dialogs/PropertiesDialog'
+import TransformDialog from './dialogs/TransformDialog'
+import DeleteDialog from './dialogs/DeleteDialog'
+import { EDialogType } from '../models/Dialog'
 
 export default {
   components: {
-    SceneImage
+    ClickEventDialog,
+    PropertiesDialog,
+    TransformDialog,
+    DeleteDialog,
+    ImageCard
   },
   name: 'SceneImageList',
   data: () => ({
     clickEventDialog: false,
+    propertiesDialog: false,
+    transformDialog: false,
     deleteDialog: false,
-    selectedImage: ''
+    detailedMode: true,
+    selectedImage: '',
+    dialogCallback: () => {}
   }),
   props: {
     images: {
@@ -86,7 +130,7 @@ export default {
         const height = img.height,
           width = img.width,
           newImage = {
-            ...new SceneImageModel(),
+            ...new SceneImage(),
             name: options.image.name,
             height,
             width,
@@ -124,8 +168,32 @@ export default {
         instanceIds
       })
     },
+    toggleDetailedMode () {
+      this.detailedMode = !this.detailedMode
+    },
     updateProperties (wssMessages) {
       this.$emit('updateProperties', { wssMessages })
+    },
+    handleDialog (dialogOptions) {
+      this.selectedImage = dialogOptions.entity
+      this.selectedInstance = dialogOptions.instance || null
+      this.dialogCallback = dialogOptions.callback
+      console.log(dialogOptions, this.dialogCallback)
+
+      switch (dialogOptions.type) {
+        case EDialogType.delete:
+          this.deleteDialog = dialogOptions.show
+          break
+        case EDialogType.clickEvent:
+          this.clickEventDialog = dialogOptions.show
+          break
+        case EDialogType.properties:
+          this.propertiesDialog = dialogOptions.show
+          break
+        case EDialogType.transform:
+          this.transformDialog = dialogOptions.show
+          break
+      }
     }
   }
 }

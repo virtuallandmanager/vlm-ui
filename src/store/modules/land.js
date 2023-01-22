@@ -23,7 +23,13 @@ export default {
       ],
       audioStream: {},
       entities: [{}],
-      features: {},
+      features: {
+        analytics: false,
+        entityPlacement: false,
+        customizations: false,
+        dialogs: false,
+        moderation: false
+      },
       videoScreens: [],
       images: [],
       moderation: new SceneModeration(),
@@ -82,14 +88,9 @@ export default {
     loadUserLand: (state, parcels) => {
       state.userLand = parcels.map((property) => {
         const sceneData = {};
-        if (property.sceneData.videoSystems) {
-          property.sceneData.videoScreens = property.sceneData.videoSystems;
-          delete property.sceneData.videoSystems;
-        }
-        if (property.sceneData.imageTextures) {
-          property.sceneData.images = property.sceneData.imageTextures;
-          delete property.sceneData.imageTextures;
-        }
+
+        property.features = { ...state.sceneDefault.features, ...property.features }
+
         Object.keys(state.sceneDefault).forEach((key) => {
           if (Array.isArray(property.sceneData[key])) {
             sceneData[key] = property.sceneData[key] && property.sceneData[key].length ? property.sceneData[key] : state.sceneDefault[key];
@@ -205,6 +206,7 @@ export default {
       } catch (error) {
         commit("parcelUpdateStop", error);
       }
-    }
+    },
+    // connectWebSocket
   }
 };
