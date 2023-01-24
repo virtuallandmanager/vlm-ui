@@ -196,7 +196,7 @@ export default {
       commit("parcelUpdateStart");
       try {
         const response = await fetch(`${process.env.VUE_APP_API_URL}/land/update`, payload);
-        const updatedProperty = await response.json();
+        var updatedProperty = await response.json();
         if (response.status !== 200) {
           commit("parcelUpdateStop", updatedProperty.text);
         } else {
