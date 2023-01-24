@@ -474,7 +474,7 @@ export default {
       type: Object
     }
   },
-  mounted() {
+  mounted () {
     this.runQuery()
 
     if (this.features.connectionData) {
@@ -487,21 +487,21 @@ export default {
   },
   computed: {
     errorMessage: {
-      get() {
+      get () {
         return this.$store.getters['land/errorMessage']
       },
-      set(value) {
+      set (value) {
         this.setErrorMessage(value)
       }
     },
-    dateRangeText() {
+    dateRangeText () {
       if (this.dateRange && this.dateRange.length > 1) {
         return this.dateRange.join(' to ')
       } else {
         return this.dateRange[0]
       }
     },
-    dateRangeCount() {
+    dateRangeCount () {
       const startDate = DateTime.fromISO(this.dateRange[0]),
         endDate = DateTime.fromISO(this.dateRange[1]),
         dateRange = Interval.fromDateTimes(startDate, endDate),
@@ -509,20 +509,20 @@ export default {
 
       return dateRangeDays
     },
-    defaultDate() {
+    defaultDate () {
       const today = new Date().toISOString()
       return this.formatDate(today)
     },
-    isDev() {
+    isDev () {
       return process.env.VUE_APP_NODE_ENV == 'development'
     },
-    includeAllActions() {
+    includeAllActions () {
       return this.eventTypeFilter.length === this.eventTypes.length
     },
-    includeSomeActions() {
+    includeSomeActions () {
       return this.eventTypeFilter.length > 0 && !this.includeAllActions
     },
-    selectAllIcon() {
+    selectAllIcon () {
       if (this.includeAllActions) return 'mdi-close-box'
       if (this.includeSomeActions) return 'mdi-minus-box'
       return 'mdi-checkbox-blank-outline'
@@ -532,14 +532,14 @@ export default {
     ...mapActions({
       setErrorMessage: 'land/setErrorMessage'
     }),
-    validateDateRange() {
+    validateDateRange () {
       let dateRange = [this.dateRange[0], this.dateRange[1]]
       if (dateRange[0] > dateRange[1]) {
         this.dateRange[0] = dateRange[1]
         this.dateRange[1] = dateRange[0]
       }
     },
-    handleSelectAll() {
+    handleSelectAll () {
       this.$nextTick(() => {
         if (this.includeAllActions) {
           this.eventTypeFilter = []
@@ -550,28 +550,27 @@ export default {
         }
       })
     },
-    validateActions() {
+    validateActions () {
       if (this.eventTypeFilter.length == 0) {
         this.errorMessage = 'Select at least one type of action to export.'
         this.eventTypeFilter = this.eventTypes.map(eventType => eventType.value)
       }
     },
-    async runQuery() {
+    async runQuery () {
       this.loadingAnalytics = true
-      let startDate = DateTime.fromISO(this.dateRange[0]),
-        endDate = this.dateRange[1]
-          ? DateTime.fromISO(this.dateRange[1])
-          : DateTime.fromISO(this.dateRange[0]),
+      let startDate = DateTime.fromFormat(this.dateRange[0], 'yyyy-MM-dd', {
+          setZone: this.tz
+        }),
+        endDate = DateTime.fromFormat(
+          this.dateRange[1] || this.dateRange[0],
+          'yyyy-MM-dd',
+          { setZone: this.tz }
+        ),
         timescale =
           Interval.fromDateTimes(startDate, endDate).length('days') <= 2
             ? 'hour'
             : 'day',
         tz = this.tz
-
-      if (!endDate) {
-        this.dateRange[1] = this.dateRange[0]
-        endDate = DateTime.fromISO(this.dateRange[1])
-      }
 
       this.$refs.dateRangeMenu.save(this.dateRange)
       const baseParcel = this.baseParcel.split(','),
@@ -581,8 +580,8 @@ export default {
       let apiUrl = `${process.env.VUE_APP_API_URL}/analytics/visitors/${x}/${y}`
 
       const requestBody = {
-        startDate,
-        endDate,
+        startDate: startDate.toISODate(),
+        endDate: endDate.toISODate(),
         timescale,
         tz
       }
@@ -604,7 +603,7 @@ export default {
         const visitorOptions = await res.json()
         let eventTypes = visitorOptions.eventTypes || [],
           totalInteractions = visitorOptions.totalInteractions || [],
-          uniqueVisits = visitorOptions.uniqueVisits || [];
+          uniqueVisits = visitorOptions.uniqueVisits || []
 
         this.uniqueVisitorsGraph = uniqueVisits
         this.totalInteractions = totalInteractions
@@ -626,7 +625,7 @@ export default {
       }
     },
 
-    async getActiveConnections() {
+    async getActiveConnections () {
       const baseParcel = this.baseParcel.split(','),
         x = baseParcel[0],
         y = baseParcel[1]
@@ -661,7 +660,7 @@ export default {
       }
     },
 
-    async exportQuery() {
+    async exportQuery () {
       const selectedExportOptions = Object.entries(this.exportOptions).map(
         ([key, value]) => {
           if (key) return value.selected
@@ -730,21 +729,21 @@ export default {
         console.log(error)
       }
     },
-    changeSelectedMetric() {
+    changeSelectedMetric () {
       this.interactionChartOptions.title = this.dataMetrics.find(
         metric => metric.value == this.selectedMetric
       ).text
       this.interactionChartOptions.axes.left.mapsTo = this.selectedMetric
       this.donutChartOptions.pie.valueMapsTo = this.selectedMetric
     },
-    formatDate(date) {
+    formatDate (date) {
       const [dateStr] = new Date(date).toISOString().split('T')
       return dateStr
     },
-    updateExportOptions() {
+    updateExportOptions () {
       this.selectDataError = ''
     },
-    updateProperties() {
+    updateProperties () {
       this.$emit('updateProperties')
     }
   }

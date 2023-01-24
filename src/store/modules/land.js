@@ -204,7 +204,7 @@ export default {
           commit("parcelUpdateStop");
         }
       } catch (error) {
-        commit("parcelUpdateStop", error);
+        commit("parcelUpdateStop", updatedProperty.error || error);
       }
     },
     // connectWebSocket

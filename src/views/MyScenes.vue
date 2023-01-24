@@ -24,7 +24,7 @@
           </div>
           <div class="text-h5 mt-4">Developer Access</div>
           <div class="text-body mb-4">
-            For developer preview, contact Unknower#0677 on Discord.
+            For developer preview, <a href="https://discord.gg/hYzxFZmbvf">Join the VLM Discord server</a>.
           </div>
         </v-col>
       </v-row>
