@@ -329,22 +329,58 @@
           </div>
         </v-col>
       </v-row>
-      <v-row v-if="totalInteractions.length">
-        <v-col>
-          <ccv-donut-chart
-            v-if="!loadingAnalytics"
-            :data="totalInteractions"
-            :options="donutChartOptions"
-          ></ccv-donut-chart>
+      <v-row v-if="totalInteractions.length && !loadingAnalytics">
+        <v-col cols="6">
+          <v-card class="pa-4">
+            <div class="text-h6">Unique Visitors</div>
+            <div class="text-body-1 font-weight-bold text-center mt-4">
+              Date Range
+            </div>
+            <div class="text-body-1 text-center">
+              {{ dateRange[0] }} to {{ dateRange[1] }}
+            </div>
+            <div class="d-flex justify-center my-6">
+              <div class="text-center text-h4 px-4 flex-grow-1">
+                {{ totalActiveUsers }}
+                <div class="text-center text-body-1">DCL Accounts</div>
+              </div>
+              <div class="text-center text-h4 px-4 flex-grow-1">
+                {{ totalActiveIps }}
+                <div class="text-center text-body-1">IP Addresses</div>
+              </div>
+            </div>
+            <div class="d-flex justify-center my-6">
+              <div class="text-center text-h4 px-4 flex-grow-1">
+                {{ totalActiveUsers - totalActiveGuests }}
+                <div class="text-center text-body-1">Web3 Users</div>
+              </div>
+              <div class="text-center text-h4 px-4 flex-grow-1">
+                {{ totalActiveGuests }}
+                <div class="text-center text-body-1">Guests</div>
+              </div>
+            </div>
+          </v-card>
+        </v-col>
+        <v-col cols="6" v-if="!loadingAnalytics">
+          <v-card class="pa-4">
+            <div class="text-h6">User Interactions</div>
+            <ccv-donut-chart
+              :data="totalInteractions"
+              :options="donutChartOptions"
+            ></ccv-donut-chart>
+          </v-card>
         </v-col>
       </v-row>
       <v-row v-if="totalInteractions.length">
         <v-col>
-          <ccv-line-chart
-            v-if="!loadingAnalytics"
-            :data="uniqueVisitorsGraph"
-            :options="interactionChartOptions"
-          ></ccv-line-chart>
+          <v-card class="pa-4">
+            <div class="text-h6">Interaction Timeline</div>
+            <ccv-line-chart
+              v-if="!loadingAnalytics"
+              :data="uniqueVisitorsGraph"
+              :options="interactionChartOptions"
+            ></ccv-line-chart>
+          </v-card>
         </v-col>
       </v-row>
     </div>
@@ -397,6 +433,8 @@ export default {
     analyticsByDate: {},
     analyticsByEventType: {},
     totalInteractions: {},
+    totalActiveUsers: 0,
+    totalActiveIps: 0,
     visitors: [],
     filteredVisitors: [],
     eventTypes: [],
@@ -427,7 +465,6 @@ export default {
     activeCountryCodes: {},
     activeCountries: [],
     interactionChartOptions: {
-      title: 'Interactions Over Time',
       axes: {
         bottom: {
           title: 'Date',
@@ -441,14 +478,20 @@ export default {
         }
       },
       curve: 'curveMonotoneX',
+      toolbar: { enabled: false },
+      resizable: false,
+      title: '',
       data: {
         loading: true
       },
-      theme: 'g100'
+      theme: 'g100',
+      height: '420px'
     },
     donutChartOptions: {
-      title: 'Total Interactions',
-      resizable: true,
+      title: '',
+      height: '300px',
+      toolbar: { enabled: false },
+      resizable: false,
       legend: {
         alignment: 'center'
       },
@@ -557,15 +600,16 @@ export default {
       }
     },
     async runQuery () {
+      if (!this.dateRange[1]) {
+        this.dateRange[1] = this.dateRange[0]
+      }
       this.loadingAnalytics = true
       let startDate = DateTime.fromFormat(this.dateRange[0], 'yyyy-MM-dd', {
           setZone: this.tz
         }),
-        endDate = DateTime.fromFormat(
-          this.dateRange[1] || this.dateRange[0],
-          'yyyy-MM-dd',
-          { setZone: this.tz }
-        ),
+        endDate = DateTime.fromFormat(this.dateRange[1], 'yyyy-MM-dd', {
+          setZone: this.tz
+        }),
         timescale =
           Interval.fromDateTimes(startDate, endDate).length('days') <= 2
             ? 'hour'
@@ -603,10 +647,16 @@ export default {
         const visitorOptions = await res.json()
         let eventTypes = visitorOptions.eventTypes || [],
           totalInteractions = visitorOptions.totalInteractions || [],
-          uniqueVisits = visitorOptions.uniqueVisits || []
+          uniqueVisits = visitorOptions.uniqueVisits || [],
+          totalActiveUsers = visitorOptions.totalActiveUsers || 0,
+          totalActiveGuests = visitorOptions.totalActiveGuests || 0,
+          totalActiveIps = visitorOptions.totalActiveIps || 0
 
         this.uniqueVisitorsGraph = uniqueVisits
         this.totalInteractions = totalInteractions
+        this.totalActiveUsers = totalActiveUsers
+        this.totalActiveGuests = totalActiveGuests
+        this.totalActiveIps = totalActiveIps
 
         this.loadingAnalytics = false
         this.interactionChartOptions.data.loading = false
