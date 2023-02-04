@@ -1,410 +1,419 @@
 <template>
-  <v-container class="py-6 mx-auto">
-    <v-row>
-      <v-col no-gutters>
-        <h1 class="text-h5 mb-6">Analytics</h1>
-      </v-col>
-    </v-row>
-    <div v-if="features.connectionData">
-      <v-row class="grey darken-3 mx-n3">
+  <div>
+    <v-container class="py-6 mx-auto">
+      <v-row>
         <v-col no-gutters>
-          <h1 class="text-h6 white--text">Connections</h1>
-        </v-col>
-        <v-col
-          cols="12"
-          xs="12"
-          sm="4"
-          md="4"
-          align="right"
-          order="1"
-          order-sm="12"
-        >
+          <h1 class="text-h5 mb-6">Analytics</h1>
         </v-col>
       </v-row>
-      <v-row v-if="loadingConnections">
-        <v-col cols="12">
-          <loader
-            message="Loading connection data..."
-            :loading="loadingConnections"
-            :grid="true"
-          />
-        </v-col>
-      </v-row>
-      <v-row cols="12">
-        <v-col cols="6">
-          <v-card>
-            <v-card-title>Users In Scene</v-card-title>
-            <v-card-text class="d-flex justify-space-between">
-              <div class="text-h6">Active Connections:</div>
-              <div class="text-body-1">
-                {{ connectedUsers }}
-              </div>
-            </v-card-text>
-            <v-card-text class="d-flex justify-space-between">
-              <div class="text-h6">Authentic Connections:</div>
-              <div class="text-body-1">
-                {{ connectedUsers - vpnConnections }}
-              </div>
-            </v-card-text>
-            <v-card-text class="d-flex justify-space-between">
-              <div class="text-h6">VPN Connections:</div>
-              <div class="text-body-1">
-                {{ vpnConnections }}
-              </div>
-            </v-card-text>
-          </v-card>
-          <v-card class="mt-4" v-if="connectedUsers">
-            <v-card-text class="text-center">
-              <MapChart
-                :countryData="activeCountryCodes"
-                highColor="purple"
-                lowColor="black"
-                countryStrokeColor="#909090"
-                defaultCountryFillColor="#000000"
-                legendHeaderBackgroundColor="#000000"
-                legendContentBackgroundColor="#000000"
-                :showLegend="false"
-              />
-            </v-card-text>
-          </v-card>
-        </v-col>
-        <v-col cols="6">
-          <v-card>
-            <v-card-title>Average Connection Time (7 Days)</v-card-title>
-            <v-card-text class="text-h5">{{
-              sevenDayConnectionAverage
-            }}</v-card-text>
-            <v-card-title>Average Connection Time (30 Days)</v-card-title>
-            <v-card-text class="text-h5">{{
-              thirtyDayConnectionAverage
-            }}</v-card-text>
-          </v-card>
-          <v-card class="mt-4" v-if="connectedUsers">
-            <v-card-title>Active Countries</v-card-title>
-            <v-card-text>
-              <v-data-table
-                :headers="activeCountryHeaders"
-                :items="activeCountries"
-              ></v-data-table>
-              <div class="text-body1 text-center mt-2">
-                Does not include users on VPN or proxy connections
-              </div>
-            </v-card-text>
-          </v-card>
-        </v-col>
-        <v-col cols="6"> </v-col>
-
-        <v-col cols="6"> </v-col>
-      </v-row>
-    </div>
-    <div v-if="features.interactions">
-      <v-row class="grey darken-3 mx-n3">
-        <v-col no-gutters>
-          <h1 class="text-h6">Interactions</h1>
-        </v-col>
-        <v-col
-          cols="12"
-          xs="12"
-          sm="4"
-          md="4"
-          align="right"
-          order="1"
-          order-sm="12"
-        >
-          <v-dialog v-model="exportDialog" width="500" retain-focus>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                v-if="isDev || features.dataExports"
-                v-bind="attrs"
-                v-on="on"
-                :loading="exportingQuery"
-              >
-                Export As CSV
-              </v-btn>
-            </template>
-
+      <div v-if="features.connectionData">
+        <v-row class="grey darken-3 mx-n3">
+          <v-col no-gutters>
+            <h1 class="text-h6 white--text">Connections</h1>
+          </v-col>
+          <v-col
+            cols="12"
+            xs="12"
+            sm="4"
+            md="4"
+            align="right"
+            order="1"
+            order-sm="12"
+          >
+          </v-col>
+        </v-row>
+        <v-row v-if="loadingConnections">
+          <v-col cols="12">
+            <loader
+              message="Loading connection data..."
+              :loading="loadingConnections"
+              :grid="true"
+            />
+          </v-col>
+        </v-row>
+        <v-row cols="12">
+          <v-col cols="6">
             <v-card>
-              <v-card-title class="text-h5">
-                Export Analytics Data
-              </v-card-title>
-              <v-card-text
-                class="pt-4 text-subtitle-1"
-                v-if="dateRangeCount > 60"
-              >
-                CSV exports are not currently supported for date ranges larger
-                than 60 days.
+              <v-card-title>Users In Scene</v-card-title>
+              <v-card-text class="d-flex justify-space-between">
+                <div class="text-h6">Active Connections:</div>
+                <div class="text-body-1">
+                  {{ connectedUsers }}
+                </div>
               </v-card-text>
-              <v-card-text
-                class="pt-4 text-subtitle-1"
-                v-if="dateRangeCount <= 60"
-              >
-                Select the data you would like to include in the CSV file:
-                <v-select
-                  label="Actions To Include"
-                  :items="eventTypes"
-                  v-model="eventTypeFilter"
-                  multiple
-                  hide-details
-                  @blur="validateActions"
-                  class="mb-4"
-                >
-                  <template v-slot:selection="{ item, index }">
-                    <v-chip v-if="includeAllActions && index === 0">
-                      <span>All Actions</span>
-                    </v-chip>
-                    <v-chip v-if="!includeAllActions && index < 3">
-                      <span>{{ item.text }}</span>
-                    </v-chip>
-                    <span
-                      v-if="!includeAllActions && index === 3"
-                      class="grey--text text-caption"
-                    >
-                      (+{{
-                        eventTypeFilter.length ? eventTypeFilter.length - 3 : 0
-                      }}
-                      others)
-                    </span>
-                  </template>
-                  <template v-slot:prepend-item>
-                    <v-list-item
-                      ripple
-                      @mousedown.prevent
-                      @click="handleSelectAll"
-                    >
-                      <v-list-item-action>
-                        <v-icon
-                          :color="
-                            eventTypeFilter.length && eventTypeFilter.length > 0
-                              ? 'red darken-4'
-                              : ''
-                          "
-                        >
-                          {{ selectAllIcon }}
-                        </v-icon>
-                      </v-list-item-action>
-                      <v-list-item-content>
-                        <v-list-item-title> Select All </v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-divider></v-divider>
-                  </template>
-                </v-select>
-                <v-container>
-                  <v-row>
-                    <v-col
-                      v-for="(value, key) in exportOptions"
-                      :key="key"
-                      class="col-6"
-                    >
-                      <v-checkbox
-                        v-model="value.selected"
-                        :label="value.text"
-                        :hint="value.hint"
-                        @change="updateExportOptions(key, value)"
-                        class="py-0 my-0"
-                      ></v-checkbox>
-                    </v-col>
-                  </v-row>
-                </v-container>
-                <v-container>
-                  <v-row>
-                    <v-col>
-                      <v-switch
-                        v-if="exportOptions.wallets.selected"
-                        v-model="removeDuplicateWallets"
-                        label="Remove Duplicate Wallet Addresses"
-                        class="py-0 my-0"
-                      >
-                      </v-switch>
-                      <v-switch
-                        v-if="exportOptions.clientIps.selected"
-                        v-model="removeDuplicateIps"
-                        label="Remove Duplicate IP Addresses"
-                        class="py-0 my-0"
-                      >
-                      </v-switch>
-                    </v-col>
-                  </v-row>
-                </v-container>
-                <div class="text-body-1 red">{{ selectDataError }}</div>
+              <v-card-text class="d-flex justify-space-between">
+                <div class="text-h6">Authentic Connections:</div>
+                <div class="text-body-1">
+                  {{ connectedUsers - vpnConnections }}
+                </div>
               </v-card-text>
+              <v-card-text class="d-flex justify-space-between">
+                <div class="text-h6">VPN Connections:</div>
+                <div class="text-body-1">
+                  {{ vpnConnections }}
+                </div>
+              </v-card-text>
+            </v-card>
+            <v-card class="mt-4" v-if="connectedUsers">
+              <v-card-text class="text-center">
+                <MapChart
+                  :countryData="activeCountryCodes"
+                  highColor="purple"
+                  lowColor="black"
+                  countryStrokeColor="#909090"
+                  defaultCountryFillColor="#000000"
+                  legendHeaderBackgroundColor="#000000"
+                  legendContentBackgroundColor="#000000"
+                  :showLegend="false"
+                />
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col cols="6">
+            <v-card>
+              <v-card-title>Average Connection Time (7 Days)</v-card-title>
+              <v-card-text class="text-h5">{{
+                sevenDayConnectionAverage
+              }}</v-card-text>
+              <v-card-title>Average Connection Time (30 Days)</v-card-title>
+              <v-card-text class="text-h5">{{
+                thirtyDayConnectionAverage
+              }}</v-card-text>
+            </v-card>
+            <v-card class="mt-4" v-if="connectedUsers">
+              <v-card-title>Active Countries</v-card-title>
+              <v-card-text>
+                <v-data-table
+                  :headers="activeCountryHeaders"
+                  :items="activeCountries"
+                ></v-data-table>
+                <div class="text-body1 text-center mt-2">
+                  Does not include users on VPN or proxy connections
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col cols="6"> </v-col>
 
-              <v-divider></v-divider>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
+          <v-col cols="6"> </v-col>
+        </v-row>
+      </div>
+      <div v-if="features.interactions">
+        <v-row class="grey darken-3 mx-n3">
+          <v-col no-gutters>
+            <h1 class="text-h6">Interactions</h1>
+          </v-col>
+          <v-col
+            cols="12"
+            xs="12"
+            sm="4"
+            md="4"
+            align="right"
+            order="1"
+            order-sm="12"
+          >
+            <v-dialog v-model="exportDialog" width="500" retain-focus>
+              <template v-slot:activator="{ on, attrs }">
                 <v-btn
-                  v-if="dateRangeCount <= 60"
-                  color="primary"
-                  text
-                  @click="exportQuery"
+                  v-if="isDev || features.dataExports"
+                  v-bind="attrs"
+                  v-on="on"
                   :loading="exportingQuery"
                 >
-                  Export
+                  Export As CSV
                 </v-btn>
-                <v-btn
+              </template>
+
+              <v-card>
+                <v-card-title class="text-h5">
+                  Export Analytics Data
+                </v-card-title>
+                <v-card-text
+                  class="pt-4 text-subtitle-1"
                   v-if="dateRangeCount > 60"
-                  color="primary"
-                  text
-                  @click="exportDialog = false"
-                  :loading="exportingQuery"
                 >
+                  CSV exports are not currently supported for date ranges larger
+                  than 60 days.
+                </v-card-text>
+                <v-card-text
+                  class="pt-4 text-subtitle-1"
+                  v-if="dateRangeCount <= 60"
+                >
+                  Select the data you would like to include in the CSV file:
+                  <v-select
+                    label="Actions To Include"
+                    :items="eventTypes"
+                    v-model="eventTypeFilter"
+                    multiple
+                    hide-details
+                    @blur="validateActions"
+                    class="mb-4"
+                  >
+                    <template v-slot:selection="{ item, index }">
+                      <v-chip v-if="includeAllActions && index === 0">
+                        <span>All Actions</span>
+                      </v-chip>
+                      <v-chip v-if="!includeAllActions && index < 3">
+                        <span>{{ item.text }}</span>
+                      </v-chip>
+                      <span
+                        v-if="!includeAllActions && index === 3"
+                        class="grey--text text-caption"
+                      >
+                        (+{{
+                          eventTypeFilter.length
+                            ? eventTypeFilter.length - 3
+                            : 0
+                        }}
+                        others)
+                      </span>
+                    </template>
+                    <template v-slot:prepend-item>
+                      <v-list-item
+                        ripple
+                        @mousedown.prevent
+                        @click="handleSelectAll"
+                      >
+                        <v-list-item-action>
+                          <v-icon
+                            :color="
+                              eventTypeFilter.length &&
+                              eventTypeFilter.length > 0
+                                ? 'red darken-4'
+                                : ''
+                            "
+                          >
+                            {{ selectAllIcon }}
+                          </v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                          <v-list-item-title> Select All </v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                      <v-divider></v-divider>
+                    </template>
+                  </v-select>
+                  <v-container>
+                    <v-row>
+                      <v-col
+                        v-for="(value, key) in exportOptions"
+                        :key="key"
+                        class="col-6"
+                      >
+                        <v-checkbox
+                          v-model="value.selected"
+                          :label="value.text"
+                          :hint="value.hint"
+                          @change="updateExportOptions(key, value)"
+                          class="py-0 my-0"
+                        ></v-checkbox>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                  <v-container>
+                    <v-row>
+                      <v-col>
+                        <v-switch
+                          v-if="exportOptions.wallets.selected"
+                          v-model="removeDuplicateWallets"
+                          label="Remove Duplicate Wallet Addresses"
+                          class="py-0 my-0"
+                        >
+                        </v-switch>
+                        <v-switch
+                          v-if="exportOptions.clientIps.selected"
+                          v-model="removeDuplicateIps"
+                          label="Remove Duplicate IP Addresses"
+                          class="py-0 my-0"
+                        >
+                        </v-switch>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                  <div class="text-body-1 red">{{ selectDataError }}</div>
+                </v-card-text>
+
+                <v-divider></v-divider>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    v-if="dateRangeCount <= 60"
+                    color="primary"
+                    text
+                    @click="exportQuery"
+                    :loading="exportingQuery"
+                  >
+                    Export
+                  </v-btn>
+                  <v-btn
+                    v-if="dateRangeCount > 60"
+                    color="primary"
+                    text
+                    @click="exportDialog = false"
+                    :loading="exportingQuery"
+                  >
+                    Cancel
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" sm="4" md="4" order="1">
+            <v-select
+              label="Interaction Types"
+              :items="dataMetrics"
+              v-model="selectedMetric"
+              prepend-icon="mdi-chart-line"
+              @change="changeSelectedMetric"
+            >
+            </v-select>
+          </v-col>
+          <v-col cols="12" sm="4" md="4" order="2">
+            <v-menu
+              ref="dateRangeMenu"
+              v-model="dateRangeMenu"
+              :close-on-content-click="false"
+              :return-value.sync="dateRange"
+              transition="scale-transition"
+              offset-y
+              min-width="auto"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  v-model="dateRangeText"
+                  label="Date range"
+                  prepend-icon="mdi-calendar"
+                  readonly
+                  v-bind="attrs"
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker
+                v-model="dateRange"
+                no-title
+                scrollable
+                range
+                @change="validateDateRange"
+              >
+                <v-spacer></v-spacer>
+                <v-btn text color="primary" @click="runQuery()"> OK </v-btn>
+                <v-btn text color="primary" @click="dateRangeMenu = false">
                   Cancel
                 </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12" sm="4" md="4" order="1">
-          <v-select
-            label="Interaction Types"
-            :items="dataMetrics"
-            v-model="selectedMetric"
-            prepend-icon="mdi-chart-line"
-            @change="changeSelectedMetric"
-          >
-          </v-select>
-        </v-col>
-        <v-col cols="12" sm="4" md="4" order="2">
-          <v-menu
-            ref="dateRangeMenu"
-            v-model="dateRangeMenu"
-            :close-on-content-click="false"
-            :return-value.sync="dateRange"
-            transition="scale-transition"
-            offset-y
-            min-width="auto"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-text-field
-                v-model="dateRangeText"
-                label="Date range"
-                prepend-icon="mdi-calendar"
-                readonly
-                v-bind="attrs"
-                v-on="on"
-              ></v-text-field>
-            </template>
-            <v-date-picker
-              v-model="dateRange"
-              no-title
-              scrollable
-              range
-              @change="validateDateRange"
+              </v-date-picker>
+            </v-menu>
+          </v-col>
+          <v-col cols="12" sm="4" md="4" order="3">
+            <v-autocomplete
+              label="Time Zone"
+              :items="timezoneList"
+              v-model="tz"
+              prepend-icon="mdi-clock"
+              @change="runQuery"
             >
-              <v-spacer></v-spacer>
-              <v-btn text color="primary" @click="runQuery()"> OK </v-btn>
-              <v-btn text color="primary" @click="dateRangeMenu = false">
-                Cancel
-              </v-btn>
-            </v-date-picker>
-          </v-menu>
-        </v-col>
-        <v-col cols="12" sm="4" md="4" order="3">
-          <v-autocomplete
-            label="Time Zone"
-            :items="timezoneList"
-            v-model="tz"
-            prepend-icon="mdi-clock"
-            @change="runQuery"
-          >
-          </v-autocomplete>
-        </v-col>
-      </v-row>
-      <v-row v-if="loadingAnalytics">
-        <v-col cols="12">
-          <loader
-            message="Loading analytics data..."
-            :loading="loadingAnalytics"
-            :grid="true"
-          />
-        </v-col>
-      </v-row>
-      <v-row v-if="!totalInteractions.length && !loadingAnalytics">
-        <v-col cols="12">
-          <div class="text-body1 text-center">
-            There are no recorded interactions for this date range.
-          </div>
-        </v-col>
-      </v-row>
-      <v-row v-if="totalInteractions.length && !loadingAnalytics">
-        <v-col cols="6">
-          <v-card class="pa-4">
-            <div class="text-h6">Unique Visitors</div>
-            <div class="text-body-1 font-weight-bold text-center mt-4">
-              Date Range
+            </v-autocomplete>
+          </v-col>
+        </v-row>
+        <v-row v-if="loadingAnalytics">
+          <v-col cols="12">
+            <loader
+              message="Loading analytics data..."
+              :loading="loadingAnalytics"
+              :grid="true"
+            />
+          </v-col>
+        </v-row>
+        <v-row v-if="!totalInteractions.length && !loadingAnalytics">
+          <v-col cols="12">
+            <div class="text-body1 text-center">
+              There are no recorded interactions for this date range.
             </div>
-            <div class="text-body-1 text-center">
-              {{ dateRange[0] }} to {{ dateRange[1] }}
-            </div>
-            <div class="d-flex justify-center my-6">
-              <div class="text-center text-h4 px-4 flex-grow-1">
-                {{ totalActiveUsers }}
-                <div class="text-center text-body-1">DCL Accounts</div>
+          </v-col>
+        </v-row>
+        <v-row v-if="totalInteractions.length && !loadingAnalytics">
+          <v-col cols="6">
+            <v-card class="pa-4">
+              <div class="text-h6">Unique Visitors</div>
+              <div class="text-body-1 font-weight-bold text-center mt-4">
+                Date Range
               </div>
-              <div class="text-center text-h4 px-4 flex-grow-1">
-                {{ totalActiveIps }}
-                <div class="text-center text-body-1">IP Addresses</div>
+              <div class="text-body-1 text-center">
+                {{ dateRange[0] }} to {{ dateRange[1] }}
               </div>
-            </div>
-            <div class="d-flex justify-center my-6">
-              <div class="text-center text-h4 px-4 flex-grow-1">
-                {{ totalActiveUsers - totalActiveGuests }}
-                <div class="text-center text-body-1">Web3 Users</div>
+              <div class="d-flex justify-center my-6">
+                <div class="text-center text-h4 px-4 flex-grow-1">
+                  {{ totalActiveUsers }}
+                  <div class="text-center text-body-1">DCL Accounts</div>
+                </div>
+                <div class="text-center text-h4 px-4 flex-grow-1">
+                  {{ totalActiveIps }}
+                  <div class="text-center text-body-1">IP Addresses</div>
+                </div>
               </div>
-              <div class="text-center text-h4 px-4 flex-grow-1">
-                {{ totalActiveGuests }}
-                <div class="text-center text-body-1">Guests</div>
+              <div class="d-flex justify-center my-6">
+                <div class="text-center text-h4 px-4 flex-grow-1">
+                  {{ totalActiveUsers - totalActiveGuests }}
+                  <div class="text-center text-body-1">Web3 Users</div>
+                </div>
+                <div class="text-center text-h4 px-4 flex-grow-1">
+                  {{ totalActiveGuests }}
+                  <div class="text-center text-body-1">Guests</div>
+                </div>
               </div>
-            </div>
-          </v-card>
-        </v-col>
-        <v-col cols="6" v-if="!loadingAnalytics">
-          <v-card class="pa-4">
-            <div class="text-h6">User Interactions</div>
-            <ccv-donut-chart
-              :data="totalInteractions"
-              :options="donutChartOptions"
-            ></ccv-donut-chart>
-          </v-card>
-        </v-col>
-      </v-row>
-      <v-row v-if="totalInteractions.length">
-        <v-col>
-          <v-card class="pa-4">
-            <div class="text-h6">Interaction Timeline</div>
-            <ccv-line-chart
-              v-if="!loadingAnalytics"
-              :data="uniqueVisitorsGraph"
-              :options="interactionChartOptions"
-            ></ccv-line-chart>
-          </v-card>
-        </v-col>
-      </v-row>
-    </div>
-  </v-container>
+            </v-card>
+          </v-col>
+          <v-col cols="6" v-if="!loadingAnalytics">
+            <v-card class="pa-4">
+              <div class="text-h6">User Interactions</div>
+              <ccv-donut-chart
+                :data="totalInteractions"
+                :options="donutChartOptions"
+              ></ccv-donut-chart>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row v-if="totalInteractions.length && !loadingAnalytics">
+          <v-col>
+            <v-card class="pa-4">
+              <div class="text-h6 mb-2">Interaction Timeline</div>
+              <div
+                style="position: relative; display: flex"
+                v-if="!loadingAnalytics"
+              >
+                <line-chart
+                  :data="uniqueVisitorsGraph"
+                  :options="interactionChartOptions"
+                ></line-chart>
+              </div>
+            </v-card>
+          </v-col>
+        </v-row>
+      </div>
+    </v-container>
+  </div>
 </template>
 
 <script>
 import Vue from 'vue'
+import '@carbon/styles/css/styles.css'
+import '@carbon/charts/styles.css'
+import chartsVue from '@carbon/charts-vue'
 import { DateTime, Interval, Duration } from 'luxon'
 import timezones from 'timezones-list'
 import Loader from '../components/Loader'
 import { downloadCsv } from '../helpers/download.js'
-import chartsVue from '@carbon/charts-vue'
 import MapChart from 'vue-map-chart'
 import { mapActions } from 'vuex'
-
-import '@carbon/styles/css/styles.css'
-import '@carbon/charts/styles.css'
+import LineChart from './LineChart.vue'
 
 Vue.use(chartsVue)
 
 export default {
   name: 'AnalyticsSystem',
-  components: { Loader, MapChart },
+  components: { Loader, MapChart, LineChart },
   data: () => ({
     loadingAnalytics: true,
     loadingConnections: true,
@@ -482,10 +491,11 @@ export default {
       resizable: false,
       title: '',
       data: {
-        loading: true
+        groupMapsTo: 'group',
+        loading: false
       },
       theme: 'g100',
-      height: '420px'
+      height: '200px'
     },
     donutChartOptions: {
       title: '',
@@ -544,6 +554,7 @@ export default {
         return this.dateRange[0]
       }
     },
+
     dateRangeCount () {
       const startDate = DateTime.fromISO(this.dateRange[0]),
         endDate = DateTime.fromISO(this.dateRange[1]),
@@ -659,7 +670,7 @@ export default {
         this.totalActiveIps = totalActiveIps
 
         this.loadingAnalytics = false
-        this.interactionChartOptions.data.loading = false
+        // this.interactionChartOptions.data.loading = false
         if (eventTypes) {
           this.eventTypes = eventTypes.map(eventType => ({
             value: eventType,

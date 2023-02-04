@@ -17,7 +17,12 @@
         </v-tabs>
       </template>
       <v-spacer></v-spacer>
-      <v-btn icon class="mr-2" href="https://discord.gg/hYzxFZmbvf" target="_blank">
+      <v-btn
+        icon
+        class="mr-2"
+        href="https://discord.gg/hYzxFZmbvf"
+        target="_blank"
+      >
         <img src="@/assets/discord-logo.svg" height="30" />
       </v-btn>
       <v-spacer></v-spacer>
@@ -31,35 +36,6 @@
         Connect Wallet
         <v-icon class="ml-2">mdi-wallet</v-icon>
       </v-btn>
-      <v-dialog
-        transition="dialog-top-transition"
-        max-width="600"
-        v-if="connected"
-      >
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn rounded color="white" text v-bind="attrs" v-on="on">
-            {{ 'Connected: ' + walletAddress }}
-          </v-btn>
-        </template>
-        <template v-slot:default="dialog">
-          <v-card>
-            <v-toolbar color="primary" dark>Trying to disconnect?</v-toolbar>
-            <v-card-text>
-              <div class="text-body pa-4">
-                For security reasons, you can only disconnect your wallet from
-                within your Web3 provider.<br />
-                Please open your wallet extension and disconnect from this site
-                from there.<br />
-                (This is also a good habit to get into when you're done using
-                Web3 sites.)
-              </div>
-            </v-card-text>
-            <v-card-actions class="justify-end">
-              <v-btn text @click="dialog.value = false">OK!</v-btn>
-            </v-card-actions>
-          </v-card>
-        </template>
-      </v-dialog>
     </v-app-bar>
 
     <v-main>
