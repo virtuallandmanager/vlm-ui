@@ -12,7 +12,8 @@ export default {
     loggingIn: false,
     loginError: null,
     noWeb3: false,
-    userInfo: {}
+    userInfo: {},
+    advancedUser:false
   }),
   mutations: {
     loginStart: (state) => (state.loggingIn = true),
@@ -43,13 +44,11 @@ export default {
       }
 
       const fetchUserInfo = await fetch(`${process.env.VUE_APP_API_URL}/user/login/${account}`);
-      if (fetchUserInfo.status > 200) {
-        return
+      if (fetchUserInfo.status == 200) {
+        const userInfoReq = await fetchUserInfo.json();
+        state.userInfo = userInfoReq.user;
+        state.advancedUser = state.userInfo && state.userInfo.roles && state.userInfo.roles.includes(1)
       }
-
-      const userInfoReq = await fetchUserInfo.json();
-      state.userInfo = userInfoReq.user;
-      state.advancedUser = state.userInfo && state.userInfo.roles && state.userInfo.roles.includes(1)
     },
   },
   actions: {
