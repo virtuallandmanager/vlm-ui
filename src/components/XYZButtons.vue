@@ -116,9 +116,9 @@ export default {
     getLabel (key) {
       if (!this.isPlane) {
         return key.toUpperCase()
-      } else if (key == "x") {
+      } else if (key == "x" && this.value == 'scale') {
         return "W"
-      } else if (key == "y") {
+      } else if (key == "y" && this.value == 'scale') {
         return "H"
       }
     },
