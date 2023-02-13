@@ -63,7 +63,7 @@
                 :property="property"
                 @updateProperties="updateProperties"
                 @onReplace="replaceImage"
-                @onRemove="removeImage"
+                @onRemove="removeImage(i)"
                 @handleDialog="handleDialog"
               />
             </v-card>
