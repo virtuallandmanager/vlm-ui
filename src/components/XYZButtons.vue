@@ -114,7 +114,7 @@ export default {
   },
   methods: {
     getLabel (key) {
-      if (!this.isPlane) {
+      if (!this.isPlane || this.value !== 'scale') {
         return key.toUpperCase()
       } else if (key == "x" && this.value == 'scale') {
         return "W"
