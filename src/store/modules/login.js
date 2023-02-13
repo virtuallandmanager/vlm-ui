@@ -43,7 +43,7 @@ export default {
       }
 
       const fetchUserInfo = await fetch(`${process.env.VUE_APP_API_URL}/user/login/${account}`);
-      if (fetchUserInfo.status > 400) {
+      if (fetchUserInfo.status > 200) {
         return
       }
 
