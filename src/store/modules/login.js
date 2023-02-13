@@ -7,8 +7,8 @@ const web3 = new Web3(
 export default {
   state: () => ({
     connected: false,
-    // account: "",
-    // testAccount: "0x959e104E1a4dB6317fA58F8295F586e1A978c297",
+    account: "",
+    // testAccount: "",
     loggingIn: false,
     loginError: null,
     noWeb3: false,
@@ -43,11 +43,13 @@ export default {
       }
 
       const fetchUserInfo = await fetch(`${process.env.VUE_APP_API_URL}/user/login/${account}`);
-      const userInfoReq = await fetchUserInfo.json(),
-       userInfo = userInfoReq.user;
+      if (fetchUserInfo.status > 400) {
+        return
+      }
 
-      state.userInfo = userInfo
-      state.advancedUser = userInfo.roles.includes(1)
+      const userInfoReq = await fetchUserInfo.json();
+      state.userInfo = userInfoReq.user;
+      state.advancedUser = state.userInfo && state.userInfo.roles && state.userInfo.roles.includes(1)
     },
   },
   actions: {
