@@ -48,15 +48,22 @@
             Last updated {{ lastUpdate.howLongAgo }}
             <v-dialog v-model="updateHistoryDialog" scrollable width="600px">
               <template v-slot:activator="{ on, attrs }">
-                <v-btn color="primary" dark icon x-small v-bind="attrs" v-on="on">
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-icon v-bind="attrs" x-small v-on="on">
-                      mdi-clock
-                  </v-icon>
-                  </template>
-                  <span>View Update History</span>
-                </v-tooltip>                    
+                <v-btn
+                  color="primary"
+                  dark
+                  icon
+                  x-small
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-icon v-bind="attrs" x-small v-on="on">
+                        mdi-clock
+                      </v-icon>
+                    </template>
+                    <span>View Update History</span>
+                  </v-tooltip>
                 </v-btn>
               </template>
               <v-card>
@@ -68,10 +75,10 @@
                     <div v-if="update.update" class="font-weight-bold">
                       {{ update.update.action.capitalize() }}
                       {{ update.update.entity }} {{ update.update.property
-                      }}{{ update.update.entityData && ' - '
+                      }}{{ update.update.entityData && " - "
                       }}{{
                         update.update.entityData &&
-                          update.update.entityData.name
+                        update.update.entityData.name
                       }}
                     </div>
                     <div v-if="!update.update" class="font-weight-bold">
@@ -100,7 +107,7 @@
 
           <h5>
             {{ property.parcels.length }} Parcel{{
-              property.parcels.length > 1 ? 's' : ''
+              property.parcels.length > 1 ? "s" : ""
             }}
           </h5>
           <h6>
@@ -194,6 +201,7 @@
           :settings="property.sceneData.moderation"
           :features="property.features"
           @updateProperties="updateProperties"
+          @sendMessage="sendMessage"
         />
       </v-tab-item>
       <v-tab-item :value="'tab-6'" v-if="property.features.customizations">
@@ -208,20 +216,20 @@
 </template>
 
 <script>
-import ParcelMap from '../components/ParcelMap'
-import SceneAnalytics from '../components/SceneAnalytics'
-import SceneDialogList from '../components/SceneDialogList'
-import SceneImageList from '../components/SceneImageList'
-import SceneVideoList from '../components/SceneVideoList'
-import SceneModeration from '../components/SceneModeration'
-import SceneCustomizationList from '../components/SceneCustomizationList'
+import ParcelMap from "../components/ParcelMap";
+import SceneAnalytics from "../components/SceneAnalytics";
+import SceneDialogList from "../components/SceneDialogList";
+import SceneImageList from "../components/SceneImageList";
+import SceneVideoList from "../components/SceneVideoList";
+import SceneModeration from "../components/SceneModeration";
+import SceneCustomizationList from "../components/SceneCustomizationList";
 // import Property from '../models/Property'
-import { mapGetters, mapActions } from 'vuex'
-import moment from 'moment'
-import { DateTime } from 'luxon'
+import { mapGetters, mapActions } from "vuex";
+import moment from "moment";
+import { DateTime } from "luxon";
 
 export default {
-  name: 'Parcel',
+  name: "Parcel",
   components: {
     SceneAnalytics,
     SceneDialogList,
@@ -229,7 +237,7 @@ export default {
     SceneVideoList,
     SceneModeration,
     SceneCustomizationList,
-    ParcelMap
+    ParcelMap,
   },
   data: () => ({
     showParcelMap: false,
@@ -237,108 +245,125 @@ export default {
     deleteScreenDialog: false,
     updateHistoryDialog: false,
     editingScreenName: false,
-    tab: null
+    tab: null,
   }),
-  created () {
+  created() {
     this.$watch(
       () => this.$route.params,
       (toParams, previousParams) => {
-        console.log(this.$route.params, toParams, previousParams)
+        console.log(this.$route.params, toParams, previousParams);
         // react to route changes...
       }
-    )
+    );
   },
   watch: {
     userLand: function (newVal, oldVal) {
       // watch it
-      console.log('Prop changed: ', newVal, ' | was: ', oldVal)
-    }
+      console.log("Prop changed: ", newVal, " | was: ", oldVal);
+    },
   },
-  mounted () {
+  mounted() {
     if (!this.userLand || !this.userLand.length) {
-      this.fetchUserLand()
+      this.fetchUserLand();
     }
-    console.log(this.property)
+    console.log(this.property);
   },
   computed: {
-    ...mapGetters('land', ['userLand']),
+    ...mapGetters("land", ["userLand"]),
     error: {
-      get () {
-        return this.$store.getters['land/error']
+      get() {
+        return this.$store.getters["land/error"];
       },
-      set (value) {
-        this.setErrorState(value)
-      }
+      set(value) {
+        this.setErrorState(value);
+      },
     },
     errorMessage: {
-      get () {
-        return this.$store.getters['land/errorMessage']
-      }
+      get() {
+        return this.$store.getters["land/errorMessage"];
+      },
     },
-    property () {
-      return this.$store.getters['land/property'](
+    property() {
+      return this.$store.getters["land/property"](
         this.$route.params.xCoord,
         this.$route.params.yCoord
-      )
+      );
     },
-    sceneData () {
-      return this.property.sceneData
+    sceneData() {
+      return this.property.sceneData;
     },
-    lastUpdate () {
-      const lastUpdate = this.property.updates[0]
+    lastUpdate() {
+      const lastUpdate = this.property.updates[0];
       if (!lastUpdate) {
-        return false
+        return false;
       }
       return {
         howLongAgo: moment(lastUpdate.timestamp).fromNow(),
-        date: moment(lastUpdate.timestamp).format('LL'),
-        time: moment(lastUpdate.timestamp).format('LT'),
-        wallet: lastUpdate.wallet
-      }
-    }
+        date: moment(lastUpdate.timestamp).format("LL"),
+        time: moment(lastUpdate.timestamp).format("LT"),
+        wallet: lastUpdate.wallet,
+      };
+    },
   },
   methods: {
     ...mapActions({
-      fetchUserLand: 'land/fetchUserLand',
-      updateLandProperties: 'land/updateLandProperties',
-      setErrorState: 'land/setErrorState'
+      fetchUserLand: "land/fetchUserLand",
+      updateLandProperties: "land/updateLandProperties",
+      sendUiMessage: "moderation/sendUiMessage",
+      setErrorState: "land/setErrorState",
     }),
-    editName () {
-      this.editingName = true
-      this.previousPropertyName = this.property.propertyName
+    editName() {
+      this.editingName = true;
+      this.previousPropertyName = this.property.propertyName;
     },
-    updateName () {
-      this.editingName = false
+    updateName() {
+      this.editingName = false;
       if (this.property.propertyName === this.previousPropertyName) {
-        return
+        return;
       }
       this.updateProperties({
-        action: 'update',
-        entity: 'scene',
-        property: 'name'
-      })
+        action: "update",
+        entity: "scene",
+        property: "name",
+      });
     },
-    updateProperties (options) {
+    updateProperties(options) {
       this.updateLandProperties({
-        wssMessages: {...options.wssMessages, features: this.property.features},
+        wssMessages: {
+          ...options.wssMessages,
+          features: this.property.features,
+        },
         property: {
           propertyName: this.property.propertyName,
           baseParcel: this.property.baseParcel,
           sceneData: this.property.sceneData,
-          tokenId: this.property.tokenId
-        }
-      })
+          tokenId: this.property.tokenId,
+        },
+      });
     },
-    goBack () {
-      this.$router.go(-1)
+    sendMessage(options) {
+      this.sendUiMessage({
+        wssMessages: {
+          ...options.wssMessages,
+        },
+        property: {
+          propertyName: this.property.propertyName,
+          baseParcel: this.property.baseParcel,
+          sceneData: this.property.sceneData,
+          tokenId: this.property.tokenId,
+        },
+      });
     },
-    getDateTime (timestamp) {
+    goBack() {
+      this.$router.go(-1);
+    },
+    getDateTime(timestamp) {
       return DateTime.fromMillis(timestamp).toLocaleString(
         DateTime.DATETIME_SHORT
-      )
-    }
-  }
-}
+      );
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

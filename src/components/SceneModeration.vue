@@ -5,8 +5,58 @@
         <h1 class="text-h5 ml-2 mb-4">Moderation</h1>
       </v-col>
     </v-row>
-    <v-row class="grey darken-3 mx-n3">
+    <v-row class="grey darken-3 mx-n3 d-flex">
       <v-col no-gutters>
+        <h1 class="text-h6">
+          Moderator Message
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon dark v-bind="attrs" v-on="on" small>
+                mdi-information-outline
+              </v-icon>
+            </template>
+            <span>Requires v1.4.0 or greater of the SDK library</span>
+          </v-tooltip>
+        </h1>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col class="flex-grow-1">
+        <v-select
+          label="Font Color"
+          :items="fontColors"
+          v-model="messageColor"
+        ></v-select>
+      </v-col>
+      <v-col class="flex-grow-1">
+        <v-select
+          label="Font Size"
+          :items="fontSizes"
+          v-model="messageFontSize"
+        ></v-select>
+      </v-col>
+      <v-col class="flex-grow-1">
+        <v-text-field
+          label="Display Time (Seconds)"
+          v-model="messageDelay"
+          type="number"
+        ></v-text-field>
+      </v-col>
+      <v-col class="flex-grow-0">
+        <v-btn tile color="primary" @click="sendMessage">Send Message</v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col class="col-12">
+        <v-text-field
+          label="Message"
+          placeholder="Hello World"
+          v-model="messageText"
+        ></v-text-field>
+      </v-col>
+    </v-row>
+    <v-row class="grey darken-3 mx-n3">
+      <v-col class="col-3" no-gutters>
         <h1 class="text-h6 white--text">Wearables</h1>
       </v-col>
     </v-row>
@@ -248,139 +298,174 @@
 </template>
 
 <script>
-import Vue from 'vue'
+import Vue from "vue";
 import {
   EAllowActions,
   EBanActions,
   EBanWallTypes,
-  SceneModeration
-} from '../models/SceneModeration'
+  SceneModeration,
+} from "../models/SceneModeration";
 
 export default {
-  name: 'SceneModeration',
+  name: "SceneModeration",
 
   data: () => ({
+    fontColors: [
+      { text: "Black", value: "black" },
+      { text: "Blue", value: "blue" },
+      { text: "Gray", value: "gray" },
+      { text: "Green", value: "green" },
+      { text: "Magenta", value: "magenta" },
+      { text: "Purple", value: "purple" },
+      { text: "Red", value: "red" },
+      { text: "Teal", value: "teal" },
+      { text: "Yellow", value: "yellow" },
+      { text: "White", value: "white", default: true },
+    ],
+    fontSizes: [8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 55, 60],
+    messageText: "",
+    messageColor: "white",
+    messageFontSize: 32,
+    messageDelay: 5,
     banActions: [
       { text: "Blackout Visitor's Screen", value: EBanActions.BLACKOUT },
-      { text: 'Remove User and Block From Scene (Beta)', value: EBanActions.WALL },
+      {
+        text: "Remove User and Block From Scene (Beta)",
+        value: EBanActions.WALL,
+      },
     ],
     banWallTypes: [
-      { text: 'Black Wall', value: EBanWallTypes.BLACK },
+      { text: "Black Wall", value: EBanWallTypes.BLACK },
       { text: "Invisible Wall", value: EBanWallTypes.INVISIBLE },
-      { text: "Mirage", value: EBanWallTypes.MIRROR }
+      { text: "Mirage", value: EBanWallTypes.MIRROR },
     ],
-    allowActions: [{ text: 'Move User', value: EAllowActions.MOVE }]
+    allowActions: [{ text: "Move User", value: EAllowActions.MOVE }],
   }),
   props: {
     settings: {
       type: Object,
       default: function () {
-        return new SceneModeration()
-      }
-    }
+        return new SceneModeration();
+      },
+    },
   },
   computed: {
-    showActions () {
+    showActions() {
       return (
         this.settings.banCertainUsers ||
         this.settings.banCertainWearables ||
         this.settings.allowCertainUsers ||
         this.settings.allowCertainWearables
-      )
+      );
     },
-    showBanActions () {
-      return this.settings.banCertainUsers || this.settings.banCertainWearables
+    showBanActions() {
+      return this.settings.banCertainUsers || this.settings.banCertainWearables;
     },
-    showAllowActions () {
+    showAllowActions() {
       return (
         this.settings.allowCertainUsers || this.settings.allowCertainWearables
-      )
-    }
+      );
+    },
   },
   methods: {
-    toggleBannedWearables () {
+    toggleBannedWearables() {
       if (this.settings.allowCertainWearables) {
-        this.settings.allowCertainWearables = false
+        this.settings.allowCertainWearables = false;
       }
-      this.updateProperties()
+      this.updateProperties();
     },
-    toggleAllowedWearables () {
+    toggleAllowedWearables() {
       if (this.settings.banCertainWearables) {
-        this.settings.banCertainWearables = false
+        this.settings.banCertainWearables = false;
       }
-      this.updateProperties()
+      this.updateProperties();
     },
-    toggleBannedUsers () {
+    toggleBannedUsers() {
       if (this.settings.allowCertainUsers) {
-        this.settings.allowCertainUsers = false
+        this.settings.allowCertainUsers = false;
       }
-      this.updateProperties()
+      this.updateProperties();
     },
-    toggleAllowedUsers () {
+    toggleAllowedUsers() {
       if (this.settings.banCertainUsers) {
-        this.settings.banCertainUsers = false
+        this.settings.banCertainUsers = false;
       }
-      this.updateProperties()
+      this.updateProperties();
     },
-    toggleWeb3Only () {
-      this.updateProperties()
+    toggleWeb3Only() {
+      this.updateProperties();
     },
-    changeRestrictionActions () {
-      this.updateProperties()
+    changeRestrictionActions() {
+      this.updateProperties();
     },
-    addBannedItem () {
-      const nextItem = { contractId: '', tokenId: '' }
-      this.settings.bannedWearables.push(nextItem)
-      this.updateProperties()
+    addBannedItem() {
+      const nextItem = { contractId: "", tokenId: "" };
+      this.settings.bannedWearables.push(nextItem);
+      this.updateProperties();
     },
-    addBannedUser () {
-      const nextItem = { walletAddress: '', displayName: '' }
-      this.settings.bannedUsers.push(nextItem)
-      this.updateProperties()
+    addBannedUser() {
+      const nextItem = { walletAddress: "", displayName: "" };
+      this.settings.bannedUsers.push(nextItem);
+      this.updateProperties();
     },
-    removeBannedItem (i) {
-      this.settings.bannedWearables.splice(i, 1)
+    removeBannedItem(i) {
+      this.settings.bannedWearables.splice(i, 1);
       Vue.nextTick(() => {
         if (this.settings.bannedWearables.length < 1) {
-          this.settings.banCertainWearables = false
-          this.settings.bannedWearables = [{ contractId: '', tokenId: '' }]
+          this.settings.banCertainWearables = false;
+          this.settings.bannedWearables = [{ contractId: "", tokenId: "" }];
         }
-        this.updateProperties()
-      })
+        this.updateProperties();
+      });
     },
-    removeBannedUser (i) {
-      this.settings.bannedUsers.splice(i, 1)
+    removeBannedUser(i) {
+      this.settings.bannedUsers.splice(i, 1);
       Vue.nextTick(() => {
         if (this.settings.bannedUsers.length < 1) {
-          this.settings.banCertainUsers = false
-          this.settings.bannedUsers = [{ walletAddress: '', displayName: '' }]
+          this.settings.banCertainUsers = false;
+          this.settings.bannedUsers = [{ walletAddress: "", displayName: "" }];
         }
-        this.updateProperties()
-      })
+        this.updateProperties();
+      });
     },
-    addAllowedItem () {
-      const nextItem = { contractId: '', tokenId: '' }
-      this.settings.allowedWearables.push(nextItem)
-      this.updateProperties()
+    addAllowedItem() {
+      const nextItem = { contractId: "", tokenId: "" };
+      this.settings.allowedWearables.push(nextItem);
+      this.updateProperties();
     },
-    removeAllowedItem (i) {
-      this.settings.allowedWearables.splice(i, 1)
+    removeAllowedItem(i) {
+      this.settings.allowedWearables.splice(i, 1);
       Vue.nextTick(() => {
         if (this.settings.allowedWearables.length < 1) {
-          this.settings.allowCertainWearables = false
-          this.settings.allowedWearables = [{ contractId: '', tokenId: '' }]
+          this.settings.allowCertainWearables = false;
+          this.settings.allowedWearables = [{ contractId: "", tokenId: "" }];
         }
-        this.updateProperties()
-      })
+        this.updateProperties();
+      });
     },
-    updateProperties () {
+    updateProperties() {
       const wssMessages = {
-        action: 'update',
-        entity: 'moderation',
-        settings: this.settings
-      }
-      this.$emit('updateProperties', { wssMessages })
-    }
-  }
-}
+        action: "update",
+        entity: "moderation",
+        settings: this.settings,
+      };
+      this.$emit("updateProperties", { wssMessages });
+    },
+    sendMessage() {
+      const wssMessages = {
+        action: "message",
+        message: {
+          text: this.messageText,
+          config: {
+            color: this.messageColor,
+            fontSize: this.messageFontSize,
+            delay: this.messageDelay,
+          },
+        },
+      };
+      this.$emit("sendMessage", { wssMessages });
+      this.messageText = "";
+    },
+  },
+};
 </script>
