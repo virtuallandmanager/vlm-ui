@@ -55,7 +55,7 @@
                 v-on="on"
                 :class="image.show ? '' : 'red--text'"
               >
-                {{ image.show ? 'mdi-eye' : 'mdi-eye-off' }}
+                {{ image.show ? "mdi-eye" : "mdi-eye-off" }}
               </v-icon>
             </template>
             <span>Show/Hide All</span>
@@ -119,7 +119,11 @@
         >
       </div>
       <div class="d-flex justify-end align-center px-3">
-        <v-switch v-model="image.showDetails" class="flex-shrink-1 pa-0" label="Detailed">
+        <v-switch
+          v-model="image.showDetails"
+          class="flex-shrink-1 pa-0"
+          label="Detailed"
+        >
           Detailed View
         </v-switch>
       </div>
@@ -145,27 +149,27 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import { mapActions } from 'vuex'
-import ImageInstanceCard from './ImageInstanceCard'
-import { SceneImage } from '../models/SceneImage'
-import { SceneImageInstance } from '../models/SceneImageInstance'
-import { EDialogType } from '../models/Dialog'
+import Vue from "vue";
+import { mapActions } from "vuex";
+import ImageInstanceCard from "./ImageInstanceCard";
+import { SceneImage } from "../models/SceneImage";
+import { SceneImageInstance } from "../models/SceneImageInstance";
+import { EDialogType } from "../models/Dialog";
 
 export default {
   components: {
-    ImageInstanceCard
+    ImageInstanceCard,
   },
-  name: 'SceneImage',
+  name: "SceneImage",
   props: {
     property: Object,
     i: Number,
     image: {
       type: Object,
       default: function () {
-        return new SceneImage()
-      }
-    }
+        return new SceneImage();
+      },
+    },
   },
   data: () => ({
     dialogCallback: () => {},
@@ -173,237 +177,238 @@ export default {
     selectedInstance: null,
     editingName: false,
     clickEvents: [
-      { text: 'None', value: 0, default: true },
-      { text: 'Website Link', value: 1 },
-      { text: 'Play Sound (Coming Soon)', value: 2, disabled: true },
-      { text: 'Move Player in Scene (Coming Soon)', value: 3, disabled: true },
-      { text: 'Teleport Player (Coming Soon)', value: 4, disabled: true }
+      { text: "None", value: 0, default: true },
+      { text: "Website Link", value: 1 },
+      { text: "Play Sound (Coming Soon)", value: 2, disabled: true },
+      { text: "Move Player in Scene (Coming Soon)", value: 3, disabled: true },
+      { text: "Teleport Player (Coming Soon)", value: 4, disabled: true },
     ],
     panels: [],
-    imageLink: ''
+    imageLink: "",
   }),
-  mounted () {
-    this.selectedImage = this.image
-    this.imageLink = this.image.imageLink
+  mounted() {
+    this.selectedImage = this.image;
+    this.imageLink = this.image.imageLink;
   },
   computed: {
-    truncatedName () {
-      const imageNameArr = this.image && this.image.name.split('')
-      let noSpacesLength = 0
-      let truncated = this.image.name
-      imageNameArr.forEach(char => {
-        if (char !== ' ') {
-          noSpacesLength++
+    truncatedName() {
+      const imageNameArr = this.image && this.image.name.split("");
+      let noSpacesLength = 0;
+      let truncated = this.image.name;
+      imageNameArr.forEach((char) => {
+        if (char !== " ") {
+          noSpacesLength++;
         } else {
-          noSpacesLength = 0
+          noSpacesLength = 0;
         }
 
         if (noSpacesLength > 18) {
-          truncated = truncated.substr(truncated.length - 18)
-          noSpacesLength = 0
+          truncated = truncated.substr(truncated.length - 18);
+          noSpacesLength = 0;
         }
-      })
+      });
 
       if (truncated !== this.image.name) {
-        return `...${truncated}`
+        return `...${truncated}`;
       } else {
-        return this.image.name
+        return this.image.name;
       }
-    }
+    },
   },
   methods: {
     ...mapActions({
-      uploadImage: 'image/uploadImage'
+      uploadImage: "image/uploadImage",
     }),
-    toggleEditMode () {
-      this.editingName = !this.editingName
+    toggleEditMode() {
+      this.editingName = !this.editingName;
     },
-    expandPanels () {
-      this.panels = []
+    expandPanels() {
+      this.panels = [];
       for (let i = 0; i < this.image.instances.length; i++) {
-        this.panels.push(i)
+        this.panels.push(i);
       }
     },
-    collapsePanels () {
-      this.panels = []
+    collapsePanels() {
+      this.panels = [];
     },
-    toggleDetails () {
-      Vue.set(this.image, 'showDetails', !this.image.showDetails)
+    toggleDetails() {
+      Vue.set(this.image, "showDetails", !this.image.showDetails);
     },
-    removeImage () {
-      this.deleteDialog = false
-      this.$emit('onRemove')
+    removeImage() {
+      this.deleteDialog = false;
+      this.$emit("onRemove");
     },
-    removeImageInstance (i) {
-      const instanceData = this.image.instances[i]
-      Vue.delete(this.image.instances, i)
+    removeImageInstance(i) {
+      const instanceData = this.image.instances[i];
+      Vue.delete(this.image.instances, i);
 
       this.updateProperties({
-        action: 'delete',
-        entity: 'imageInstance',
+        action: "delete",
+        entity: "imageInstance",
         id: instanceData.id,
         materialId: this.image.id,
         entityData: this.image,
-        instanceData
-      })
+        instanceData,
+      });
     },
-    addInstance (duplicate) {
-      const newInstance = new SceneImageInstance()
-      newInstance.name = `Instance ${this.image.instances.length + 1}`
-      newInstance.clickEvent = { ...this.image.clickEvent, sync: true }
-      newInstance.scale.x = this.image.width / 1000
-      newInstance.scale.y = this.image.height / 1000
+    addInstance(duplicate) {
+      const newInstance = new SceneImageInstance();
+      newInstance.name = `Instance ${this.image.instances.length + 1}`;
+      newInstance.clickEvent = { ...this.image.clickEvent, sync: true };
+      newInstance.scale.x = this.image.width / 1000;
+      newInstance.scale.y = this.image.height / 1000;
 
       if (duplicate) {
-        newInstance.show = !!duplicate.show
-        newInstance.position = { ...duplicate.position }
-        newInstance.scale = { ...duplicate.scale }
-        newInstance.rotation = { ...duplicate.rotation }
-        newInstance.name = `${duplicate.name} (Copy)`
-        newInstance.clickEvent = { ...duplicate.clickEvent }
+        newInstance.show = !!duplicate.show;
+        newInstance.position = { ...duplicate.position };
+        newInstance.scale = { ...duplicate.scale };
+        newInstance.rotation = { ...duplicate.rotation };
+        newInstance.name = `${duplicate.name} (Copy)`;
+        newInstance.clickEvent = { ...duplicate.clickEvent };
       }
 
-      this.image.instances.push(newInstance)
+      this.image.instances.push(newInstance);
       this.updateProperties({
-        action: 'create',
-        entity: 'imageInstance',
+        action: "create",
+        entity: "imageInstance",
         id: newInstance.id,
         entityData: this.image,
-        instanceData: newInstance
-      })
+        instanceData: newInstance,
+      });
     },
-    editInstanceName (instance) {
+    editInstanceName(instance) {
       this.updateProperties({
-        action: 'update',
-        entity: 'imageInstance',
-        property: 'name',
+        action: "update",
+        entity: "imageInstance",
+        property: "name",
         id: instance.id,
         entityData: this.image,
-        instanceData: instance
-      })
+        instanceData: instance,
+      });
     },
-    editImageName () {
+    editImageName() {
       this.updateProperties({
-        action: 'update',
-        entity: 'image',
-        property: 'name',
+        action: "update",
+        entity: "image",
+        property: "name",
         id: this.image.id,
-        entityData: this.image
-      })
+        entityData: this.image,
+      });
     },
-    saveImageProperties () {
-      this.closePropertiesDialog()
+    saveImageProperties() {
+      this.closePropertiesDialog();
     },
-    toggleVisibility (instance) {
+    toggleVisibility(instance) {
       if (instance) {
-        Vue.set(instance, 'show', !instance.show)
-        console.log('vis changed')
+        Vue.set(instance, "show", !instance.show);
+        console.log("vis changed");
         this.updateProperties({
-          action: 'update',
-          entity: 'imageInstance',
-          property: 'visibility',
+          action: "update",
+          entity: "imageInstance",
+          property: "visibility",
           id: instance.id,
           entityData: this.image,
-          instanceData: instance
-        })
+          instanceData: instance,
+        });
       } else {
-        Vue.set(this.image, 'show', !this.image.show)
+        Vue.set(this.image, "show", !this.image.show);
         this.updateProperties({
-          action: 'update',
-          entity: 'image',
-          property: 'visibility',
+          action: "update",
+          entity: "image",
+          property: "visibility",
           id: this.image.id,
-          entityData: this.image
-        })
+          entityData: this.image,
+        });
       }
     },
-    async replaceImage (image, i) {
+    async replaceImage(image, i) {
       const options = {
         image: this.$refs.replaceFileInput.files[0],
         baseParcel: this.property.baseParcel,
-        id: image.id
-      }
-      this.$refs.replaceFileInput.value = null
-      const img = new Image()
-      const uploadImageRes = await this.uploadImage(options)
-      const imageJson = await uploadImageRes.json()
-      const imageLink = `${process.env.VUE_APP_API_URL}/${imageJson.path}`
-      this.imageLink = imageLink
-      img.src = this.imageLink
+        id: image.id,
+      };
+      this.$refs.replaceFileInput.value = null;
+      const img = new Image();
+      const uploadImageRes = await this.uploadImage(options);
+      const imageJson = await uploadImageRes.json();
+      const imageLink = `${process.env.VUE_APP_API_URL}/${imageJson.path}`;
+      this.imageLink = imageLink;
+      img.src = this.imageLink;
       img.onload = () => {
         const height = img.height,
-          width = img.width
+          width = img.width;
 
-        this.$emit('onReplace', {
+        this.$emit("onReplace", {
           i,
           image: {
             ...image,
             id: image.id,
             imageLink: this.imageLink,
             height,
-            width
-          }
-        })
-      }
+            width,
+          },
+        });
+      };
     },
-    openImageClickEventDialog () {
+    openImageClickEventDialog() {
       this.handleDialog({
         type: EDialogType.clickEvent,
         entity: this.image,
-        callback: this.updateImageClickEvent
-      })
+        callback: this.updateImageClickEvent,
+      });
     },
-    openImagePropertiesDialog () {
+    openImagePropertiesDialog() {
       this.handleDialog({
         type: EDialogType.properties,
         entity: this.image,
-        callback: this.updateImageProperties
-      })
+        callback: this.updateImageProperties,
+      });
     },
-    openImageDeleteDialog () {
+    openImageDeleteDialog() {
       this.handleDialog({
         type: EDialogType.delete,
         entity: this.image,
-        callback: this.removeImage
-      })
+        callback: this.removeImage,
+      });
     },
-    updateImageClickEvent () {
+    updateImageClickEvent() {
+      console.log(this.image.clickEvent);
       this.updateProperties({
-        action: 'update',
-        entity: 'image',
-        property: 'clickEvent',
+        action: "update",
+        entity: "image",
+        property: "clickEvent",
         id: this.image.id,
-        entityData: this.image
-      })
+        entityData: this.image,
+      });
     },
-    updateImageProperties () {
+    updateImageProperties() {
       this.updateProperties({
-        action: 'update',
-        entity: 'image',
-        property: 'properties',
+        action: "update",
+        entity: "image",
+        property: "properties",
         id: this.image.id,
-        entityData: this.image
-      })
+        entityData: this.image,
+      });
     },
-    updateInstanceProperties (instance) {
+    updateInstanceProperties(instance) {
       this.updateProperties({
-        action: 'update',
-        entity: 'imageInstance',
-        property: 'properties',
+        action: "update",
+        entity: "imageInstance",
+        property: "properties",
         id: instance.id,
         entityData: this.image,
-        instanceData: instance
-      })
+        instanceData: instance,
+      });
     },
-    panelChange () {
-      console.log('panel changed')
+    panelChange() {
+      console.log("panel changed");
     },
-    updateProperties (wssMessages) {
-      this.$emit('updateProperties', wssMessages)
+    updateProperties(wssMessages) {
+      this.$emit("updateProperties", wssMessages);
     },
-    handleDialog (dialogOptions) {
-      this.$emit('handleDialog', { show: true, ...dialogOptions })
-    }
-  }
-}
+    handleDialog(dialogOptions) {
+      this.$emit("handleDialog", { show: true, ...dialogOptions });
+    },
+  },
+};
 </script>

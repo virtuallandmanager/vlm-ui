@@ -2,7 +2,7 @@
   <v-dialog v-model="show" max-width="400" persistent>
     <v-card>
       <v-card-title>
-        {{ !instance ? 'Default' : instance.name.capitalize() }} Click Action
+        {{ !instance ? "Default" : instance.name.capitalize() }} Click Action
       </v-card-title>
       <v-divider></v-divider>
       <v-card-subtitle class="pa-6 d-flex flex-column">
@@ -231,17 +231,16 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import { SceneImage } from '../../models/SceneImage'
-import { ClickEvent } from '../../models/ClickEvent'
+import Vue from "vue";
+import { ClickEvent } from "../../models/ClickEvent";
 
 export default {
-  name: 'ClickEventDialog',
+  name: "ClickEventDialog",
   data: () => ({
     clickEvent: null,
     originalClickEvent: null,
     displayedClickEvent: new ClickEvent(),
-    baseEntityType: '',
+    baseEntityType: "",
     hasErrors: false,
     EClickEventType: {
       NONE: 0,
@@ -250,131 +249,140 @@ export default {
       SOUND: 3,
       STREAM: 4,
       MOVE: 5,
-      TELEPORT: 6
+      TELEPORT: 6,
     },
     clickEvents: [
-      { text: 'None', value: 0, default: true },
-      { text: 'Tracking Only', value: 2 },
-      { text: 'Website Link', value: 1 },
-      { text: 'Play Sound', value: 3 },
+      { text: "None", value: 0, default: true },
+      { text: "Tracking Only", value: 2 },
+      { text: "Website Link", value: 1 },
+      { text: "Play Sound", value: 3 },
       // { text: 'Play Audio Stream (Coming Soon)', value: this.EClickEventType.STREAM },
-      { text: 'Move Player in Scene', value: 5 },
-      { text: 'Teleport Player', value: 6 }
-    ]
+      { text: "Move Player in Scene", value: 5 },
+      { text: "Teleport Player", value: 6 },
+    ],
   }),
   props: {
-    title: { type: String, default: 'Default Click Event' },
+    title: { type: String, default: "Default Click Event" },
     entity: {
       type: Object,
-      default: () => new SceneImage()
     },
     instance: {
       type: [Object, null],
-      default: () => null
+      default: () => null,
     },
-    entityType: { type: String, default: 'entity' },
-    value: Boolean
+    entityType: { type: String, default: "entity" },
+    value: Boolean,
   },
-  mounted () {
+  mounted() {
     const isInstance = !!this.instance,
       isInstanceGroup = !isInstance,
       isInstanceWithClickEvent = isInstance && !!this.instance.clickEvent,
       needsClickEvent =
         (isInstanceGroup && !this.entity.clickEvent) ||
         (isInstance && !this.instance.clickEvent),
-      entityHasClickEvent = this.entity && !!this.entity.clickEvent
+      entityHasClickEvent = this.entity && !!this.entity.clickEvent;
 
     this.synced =
-      isInstance && isInstanceWithClickEvent && this.instance.clickEvent.synced
+      isInstance && isInstanceWithClickEvent && this.instance.clickEvent.synced;
 
     if (this.synced) {
-      this.clickEvent = this.instance.clickEvent
+      this.clickEvent = this.instance.clickEvent;
       this.displayedClickEvent = {
         ...new ClickEvent(),
         ...this.entity.clickEvent,
-        synced: true
-      }
+        synced: true,
+      };
     } else if (isInstanceWithClickEvent) {
-      this.clickEvent = this.instance.clickEvent
+      this.clickEvent = this.instance.clickEvent;
       this.displayedClickEvent = {
         ...new ClickEvent(),
         ...this.instance.clickEvent,
-        synced: null
-      }
+        synced: null,
+      };
     } else if (isInstance && entityHasClickEvent) {
-      this.clickEvent = this.entity.clickEvent
+      this.clickEvent = this.entity.clickEvent;
       this.displayedClickEvent = {
         ...new ClickEvent(),
         ...this.entity.clickEvent,
-        synced: true
-      }
+        synced: true,
+      };
     } else if (!isInstance && entityHasClickEvent) {
-      this.clickEvent = this.entity.clickEvent
+      this.clickEvent = this.entity.clickEvent;
       this.displayedClickEvent = {
         ...new ClickEvent(),
         ...this.entity.clickEvent,
-        synced: null
-      }
+        synced: null,
+      };
     } else if (needsClickEvent) {
-      this.clickEvent = new ClickEvent()
-      this.displayedClickEvent = this.clickEvent
+      this.clickEvent = new ClickEvent();
+      this.displayedClickEvent = this.clickEvent;
+    } else {
+      return;
     }
 
-    this.originalClickEvent = { ...this.displayedClickEvent }
+    this.originalClickEvent = { ...this.displayedClickEvent };
   },
   computed: {
     show: {
-      get () {
-        return this.value
+      get() {
+        return this.value;
       },
-      set (value) {
-        this.$emit('input', value)
-      }
+      set(value) {
+        this.$emit("input", value);
+      },
     },
     override: {
-      get () {
-        return !this.displayedClickEvent.synced
+      get() {
+        return !this.displayedClickEvent.synced;
       },
-      set (value) {
-        this.displayedClickEvent.synced = value
-      }
+      set(value) {
+        this.displayedClickEvent.synced = value;
+      },
     },
-    formState () {
+    formState() {
       const displayedClickEvent = { ...this.displayedClickEvent },
         originalClickEvent = { ...this.originalClickEvent },
-        defaultClickEvent = { ...this.entity.clickEvent }
+        defaultClickEvent = { ...this.entity.clickEvent };
 
-      delete displayedClickEvent.synced
-      delete defaultClickEvent.synced
-      delete originalClickEvent.synced
+      delete displayedClickEvent.synced;
+      delete defaultClickEvent.synced;
+      delete originalClickEvent.synced;
       return {
         matchesDefault:
           JSON.stringify(displayedClickEvent) ===
           JSON.stringify(defaultClickEvent),
         matchesOriginal:
           JSON.stringify(displayedClickEvent) ===
-          JSON.stringify(originalClickEvent)
-      }
-    }
+          JSON.stringify(originalClickEvent),
+      };
+    },
   },
   methods: {
-    save () {
-      if (!this.hasErrors) {
-        this.show = false
+    save() {
+      if (this.hasErrors) {
+        return;
+      }
+      this.show = false;
+      if (!this.instance) {
+        Vue.set(this.entity, "clickEvent", this.displayedClickEvent);
+      } else {
+        Vue.set(this.instance, "clickEvent", this.displayedClickEvent);
       }
     },
-    revert () {
-      this.show = false
-      if (!this.instance) {
-        Vue.set(this.entity, 'clickEvent', this.originalClickEvent)
+    revert() {
+      this.show = false;
+      if (this.instance) {
+        Vue.set(this.instance, "clickEvent", this.originalClickEvent);
+      } else {
+        Vue.set(this.entity, "clickEvent", this.originalClickEvent);
       }
       Vue.nextTick(() => {
-        this.$emit('onChange')
-      })
+        this.$emit("onChange");
+      });
     },
-    changeType () {
+    changeType() {
       if (this.displayedClickEvent.type == this.EClickEventType.TRACKING_ONLY) {
-        this.displayedClickEvent.hasTracking = true
+        this.displayedClickEvent.hasTracking = true;
       }
       if (
         this.displayedClickEvent &&
@@ -382,93 +390,93 @@ export default {
           !this.displayedClickEvent.moveTo.position ||
           !this.displayedClickEvent.moveTo.cameraTarget)
       ) {
-        this.displayedClickEvent.moveTo = new ClickEvent().moveTo
+        this.displayedClickEvent.moveTo = new ClickEvent().moveTo;
       }
-      this.hasErrors = false
-      this.setClickTrackingId()
-      this.changeValue()
+      this.hasErrors = false;
+      this.setClickTrackingId();
+      this.changeValue();
     },
-    changeValue () {
+    changeValue() {
       if (this.instance) {
-        Vue.set(this.instance, 'clickEvent', this.displayedClickEvent)
+        Vue.set(this.instance, "clickEvent", this.displayedClickEvent);
       } else {
-        Vue.set(this.entity, 'clickEvent', this.displayedClickEvent)
+        Vue.set(this.entity, "clickEvent", this.displayedClickEvent);
       }
       Vue.nextTick(() => {
         if (this.hasErrors) {
-          return
+          return;
         }
-        this.$emit('onChange')
-      })
+        this.$emit("onChange");
+      });
     },
-    toggleHoverText (value) {
-      Vue.set(this.displayedClickEvent, 'showFeedback', value)
+    toggleHoverText(value) {
+      Vue.set(this.displayedClickEvent, "showFeedback", value);
       if (!value) {
-        this.hasErrors = false
+        this.hasErrors = false;
       }
-      this.changeValue()
+      this.changeValue();
     },
-    toggleTracking (value) {
+    toggleTracking(value) {
       if (!value) {
-        this.hasErrors = false
+        this.hasErrors = false;
       } else {
-        this.setClickTrackingId()
+        this.setClickTrackingId();
       }
-      this.changeValue()
+      this.changeValue();
     },
-    toggleSetCameraTarget (value) {
-      Vue.set(this.displayedClickEvent.moveTo, 'setCameraTarget', value)
-      this.changeValue()
+    toggleSetCameraTarget(value) {
+      Vue.set(this.displayedClickEvent.moveTo, "setCameraTarget", value);
+      this.changeValue();
     },
-    changeMoveTo () {
+    changeMoveTo() {
       Vue.set(
         this.displayedClickEvent.moveTo,
-        'position',
+        "position",
         this.displayedClickEvent.moveTo.position
-      )
+      );
       Vue.set(
         this.displayedClickEvent.moveTo,
-        'cameraTarget',
+        "cameraTarget",
         this.displayedClickEvent.moveTo.cameraTarget
-      )
+      );
       Vue.set(
         this.displayedClickEvent.moveTo,
-        'setCameraTarget',
+        "setCameraTarget",
         this.displayedClickEvent.moveTo.setCameraTarget
-      )
-      this.changeValue()
+      );
+      this.changeValue();
     },
-    toggleSync (override) {
+    toggleSync(override) {
       if (!override) {
         this.displayedClickEvent = {
           ...this.entity.clickEvent,
-          synced: !override
-        }
+          synced: !override,
+        };
       } else {
         this.displayedClickEvent = {
           ...this.instance.clickEvent,
-          synced: !override
-        }
-        this.hasErrors = false
+          synced: !override,
+        };
+        this.hasErrors = false;
       }
-      this.changeValue()
+      this.changeValue();
     },
-    restoreDefaults () {
+    restoreDefaults() {
       this.displayedClickEvent = {
-        ...this.entity.clickEvent
-      }
-      this.hasErrors = false
-      this.changeValue()
+        ...this.entity.clickEvent,
+      };
+      this.hasErrors = false;
+      this.changeValue();
     },
-    setClickTrackingId () {
-      let clickTrackingId
-      let defaultTrackingName
+    setClickTrackingId() {
+      let clickTrackingId;
+      let defaultTrackingName;
 
       if (this.instance) {
         defaultTrackingName =
-          this.instance.customId || this.instance.name || this.entity.name
+          this.instance.customId || this.instance.name || this.entity.name;
       } else {
-        defaultTrackingName = this.entity.customId || this.entity.name
+        defaultTrackingName = this.entity.customId || this.entity.name;
       }
 
       if (
@@ -481,66 +489,66 @@ export default {
       ) {
         clickTrackingId = `click-event-(external-link)-${
           this.clickEvent.externalLink || defaultTrackingName
-        }`
+        }`;
       } else if (
         this.displayedClickEvent.type == this.EClickEventType.TRACKING_ONLY
       ) {
         clickTrackingId = `click-event-${
           this.clickEvent.sound || defaultTrackingName
-        }`
+        }`;
       } else if (this.displayedClickEvent.type == this.EClickEventType.SOUND) {
         clickTrackingId = `click-event-(play-sound)-${
           this.clickEvent.sound || defaultTrackingName
-        }`
+        }`;
       } else if (this.displayedClickEvent.type == this.EClickEventType.STREAM) {
-        clickTrackingId = `click-event-(play-stream)-${defaultTrackingName}`
+        clickTrackingId = `click-event-(play-stream)-${defaultTrackingName}`;
       } else if (this.displayedClickEvent.type == this.EClickEventType.MOVE) {
-        clickTrackingId = `click-event-(move-player)-${defaultTrackingName}`
+        clickTrackingId = `click-event-(move-player)-${defaultTrackingName}`;
       } else if (
         this.displayedClickEvent.type == this.EClickEventType.TELEPORT
       ) {
         clickTrackingId = `click-event-(teleport-player)-${
           this.clickEvent.teleportTo || defaultTrackingName
-        }`
+        }`;
       }
 
       if (clickTrackingId) {
-        this.displayedClickEvent.trackingId = clickTrackingId
-        this.changeValue()
+        this.displayedClickEvent.trackingId = clickTrackingId;
+        this.changeValue();
       }
     },
-    validateExternalLink (value) {
+    validateExternalLink(value) {
       if (!value) {
-        this.hasErrors = true
-        return 'Enter a website URL'
-      } else if (value.includes('https://')) {
-        this.hasErrors = false
-        return true
+        this.hasErrors = true;
+        return "Enter a website URL";
+      } else if (value.includes("https://")) {
+        this.hasErrors = false;
+        return true;
       } else {
-        this.hasErrors = true
-        return 'Must use https:// links'
+        this.hasErrors = true;
+        return "Must use https:// links";
       }
     },
-    validateHoverText (value) {
+    validateHoverText(value) {
       if (!value) {
-        this.hasErrors = true
-        return 'Enter text or disable toggle'
+        this.hasErrors = true;
+        return "Enter text or disable toggle";
       } else {
-        this.hasErrors = false
-        return true
+        this.hasErrors = false;
+        return true;
       }
     },
-    validateTrackingId (value) {
+    validateTrackingId(value) {
       if (!value) {
-        this.hasErrors = true
-        return 'Enter text or disable toggle'
+        this.hasErrors = true;
+        return "Enter text or disable toggle";
       } else {
-        this.hasErrors = false
-        return true
+        this.hasErrors = false;
+        return true;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
