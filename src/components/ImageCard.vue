@@ -254,7 +254,8 @@ export default {
     addInstance(duplicate) {
       const newInstance = new SceneImageInstance();
       newInstance.name = `Instance ${this.image.instances.length + 1}`;
-      newInstance.clickEvent = { ...this.image.clickEvent, sync: true };
+      newInstance.clickEvent = { ...this.image.clickEvent, synced: true };
+      newInstance.scale.x = this.image.width / 1000;
       newInstance.scale.x = this.image.width / 1000;
       newInstance.scale.y = this.image.height / 1000;
 

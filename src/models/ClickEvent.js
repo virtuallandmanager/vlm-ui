@@ -11,8 +11,22 @@ export class ClickEvent {
   };
   teleportTo = "";
 
-  constructor() {}
+  constructor(config) {
+    this.type = config?.type || this.type;
+    this.showFeedback = config?.showFeedback || this.showFeedback;
+    this.hoverText = config?.hoverText || this.hoverText;
+    this.externalLink = config?.externalLink || this.externalLink;
+    this.sound = config?.sound || this.sound;
+    this.moveTo = config?.moveTo || this.moveTo;
+    this.teleportTo = config?.teleportTo || this.teleportTo;
+    this.context = config?.context || this.context;
+  }
 }
+
+export const EClickEventContext = {
+  group: 0,
+  instance: 1,
+};
 
 export const EClickEventType = {
   none: 0,
@@ -21,8 +35,8 @@ export const EClickEventType = {
   sound: 3,
   stream: 4,
   moveTo: 5,
-  teleportTo: 6
-}
+  teleportTo: 6,
+};
 
 export const EClickEventDashText = {
   0: "No Click Event",
@@ -31,5 +45,5 @@ export const EClickEventDashText = {
   3: "Plays Sound",
   4: "Controls Stream",
   5: "Move Player",
-  6: "Teleport Player"
-}
+  6: "Teleport Player",
+};

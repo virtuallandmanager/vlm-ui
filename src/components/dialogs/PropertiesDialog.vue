@@ -26,7 +26,7 @@
           label="Enable Collider"
           @change="changeCollisions"
         ></v-switch>
-        <div v-if="advancedUser">
+        <div>
           <div class="text-body1 font-weight-bold">Advanced Features</div>
           <v-text-field
             v-model="refObj.customId"
@@ -105,9 +105,6 @@ export default {
           this.refObj.customRendering = value
         }
       }
-    },
-    advancedUser () {
-      return this.$store.state.login.advancedUser
     }
   },
   methods: {
