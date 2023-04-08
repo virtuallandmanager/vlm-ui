@@ -229,7 +229,7 @@ import moment from "moment";
 import { DateTime } from "luxon";
 
 export default {
-  name: "Parcel",
+  name: "Scene",
   components: {
     SceneAnalytics,
     SceneDialogList,

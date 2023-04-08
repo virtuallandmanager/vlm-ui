@@ -3,7 +3,7 @@
     <v-container class="">
       <v-row class="text-left">
         <v-col>
-          <h1 class="text-h2 font-weight-light mb-3">My Scenes</h1>
+          <h1 class="text-h2 font-weight-light mb-3">Scenes</h1>
         </v-col>
       </v-row>
       <v-row class="text-center mb-12" v-if="fetchingUserLand">

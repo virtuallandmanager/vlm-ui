@@ -12,14 +12,9 @@ export class ClickEvent {
   teleportTo = "";
 
   constructor(config) {
-    this.type = config?.type || this.type;
-    this.showFeedback = config?.showFeedback || this.showFeedback;
-    this.hoverText = config?.hoverText || this.hoverText;
-    this.externalLink = config?.externalLink || this.externalLink;
-    this.sound = config?.sound || this.sound;
-    this.moveTo = config?.moveTo || this.moveTo;
-    this.teleportTo = config?.teleportTo || this.teleportTo;
-    this.context = config?.context || this.context;
+    Object.keys(config).forEach(key => {
+      this[key] = config[key]
+    })
   }
 }
 

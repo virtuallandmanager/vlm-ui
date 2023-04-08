@@ -12,6 +12,7 @@
     "@carbon/charts": "^1.6.3",
     "@carbon/charts-vue": "^1.6.3",
     "@carbon/styles": "^1.21.0",
+    "axios": "^1.3.4",
     "carbon-components": "^10.58.3",
     "chart.js": "^3.9.1",
     "core-js": "^3.6.5",
@@ -27,11 +28,13 @@
     "vue-chartjs": "^4.1.1",
     "vue-map-chart": "^0.0.2",
     "vue-router": "^3.2.0",
+    "vue-tel-input-vuetify": "^1.5.3",
     "vuetify": "^2.6.0",
     "vuex": "^3.4.0",
     "web3": "^1.7.1"
   },
   "devDependencies": {
+    "@types/luxon": "^3.2.0",
     "@vue/cli-plugin-babel": "~4.5.15",
     "@vue/cli-plugin-eslint": "~4.5.15",
     "@vue/cli-plugin-router": "~4.5.15",

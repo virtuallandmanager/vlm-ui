@@ -152,7 +152,7 @@
             color="primary"
             x-large
             class="mb-6"
-            @click.stop="login()"
+            @click.stop="connect()"
           >
             GET STARTED
           </v-btn>
@@ -168,7 +168,7 @@ import { mapActions } from 'vuex'
 export default {
   name: 'Home',
   methods: {
-    ...mapActions(['login', 'fetchAccount'])
+    ...mapActions(['connect', 'fetchAccount'])
   }
 }
 </script>
