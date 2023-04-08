@@ -7,6 +7,13 @@
       entityType="video"
       @onChange="updateVideoProperties"
     />
+    <properties-dialog
+      v-if="instancePropertiesDialog"
+      v-model="instancePropertiesDialog"
+      :entity="selectedVideoInstance"
+      entityType="video instance"
+      @onChange="updateVideoInstanceProperties"
+    />
     <delete-dialog
       v-if="deleteDialog"
       v-model="deleteDialog"
@@ -83,7 +90,7 @@
                   v-on="on"
                   :class="video.show ? '' : 'red--text'"
                 >
-                  {{ video.show ? 'mdi-eye' : 'mdi-eye-off' }}
+                  {{ video.show ? "mdi-eye" : "mdi-eye-off" }}
                 </v-icon>
               </template>
               <span>Show/Hide All</span>
@@ -181,9 +188,7 @@
     </div>
     <div v-if="video.offType == 2">
       <div class="d-flex justify-space-between align-center grey darken-2 pa-4">
-        <h1 class="d-block text-body-1 font-weight-bold">
-          Image
-        </h1>
+        <h1 class="d-block text-body-1 font-weight-bold">Image</h1>
       </div>
       <div class="px-4">
         <v-text-field
@@ -204,9 +209,7 @@
       </div>
     </div>
     <div class="d-flex justify-space-between align-center grey darken-2 pa-4">
-      <h1 class="d-block text-body-1 font-weight-bold">
-        Instances
-      </h1>
+      <h1 class="d-block text-body-1 font-weight-bold">Instances</h1>
       <v-btn @click="addInstance">
         <v-icon>mdi-plus</v-icon> Add Instance
       </v-btn>
@@ -237,7 +240,7 @@
                       :class="video.show && instance.show ? '' : 'red--text'"
                     >
                       {{
-                        video.show && instance.show ? 'mdi-eye' : 'mdi-eye-off'
+                        video.show && instance.show ? "mdi-eye" : "mdi-eye-off"
                       }}
                     </v-icon>
                   </template>
@@ -254,19 +257,23 @@
               <v-btn icon @click.stop="openTransformDialog(i)">
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-icon v-bind="attrs" v-on="on">
-                      mdi-axis-arrow
-                    </v-icon>
+                    <v-icon v-bind="attrs" v-on="on"> mdi-axis-arrow </v-icon>
                   </template>
                   <span>Transform</span>
+                </v-tooltip>
+              </v-btn>
+              <v-btn icon @click.stop="openInstancePropertiesDialog(i)">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
+                  </template>
+                  <span>Properties</span>
                 </v-tooltip>
               </v-btn>
               <v-btn icon @click.stop="openInstanceDeleteDialog(i)">
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-icon v-bind="attrs" v-on="on">
-                      mdi-trash-can
-                    </v-icon>
+                    <v-icon v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
                   </template>
                   <span>Remove</span>
                 </v-tooltip>
@@ -280,282 +287,297 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import { mapActions } from 'vuex'
-import PropertiesDialog from './dialogs/PropertiesDialog'
-import TransformDialog from './dialogs/TransformDialog'
-import DeleteDialog from './dialogs/DeleteDialog'
-import { SceneVideo } from '../models/SceneVideo'
-import { SceneVideoInstance } from '../models/SceneVideoInstance'
+import Vue from "vue";
+import { mapActions } from "vuex";
+import PropertiesDialog from "./dialogs/PropertiesDialog";
+import TransformDialog from "./dialogs/TransformDialog";
+import DeleteDialog from "./dialogs/DeleteDialog";
+import { SceneVideo } from "../models/SceneVideo";
+import { SceneVideoInstance } from "../models/SceneVideoInstance";
 
 export default {
   components: {
     PropertiesDialog,
     TransformDialog,
-    DeleteDialog
+    DeleteDialog,
   },
-  name: 'SceneVideo',
+  name: "SceneVideo",
   data: () => ({
     propertiesDialog: false,
+    instancePropertiesDialog: false,
     deleteDialog: false,
     deleteInstanceDialog: false,
     deletePlaylistItemDialog: false,
-    selectedPlaylistItem: '',
+    selectedPlaylistItem: "",
     editingName: false,
     offTypes: [
-      { text: 'None', value: 3 },
-      { text: 'Video Playlist', value: 1 },
-      { text: 'Image', value: 2 }
-    ]
+      { text: "None", value: 3 },
+      { text: "Video Playlist", value: 1 },
+      { text: "Image", value: 2 },
+    ],
   }),
   props: {
     video: {
       type: Object,
       default: function () {
-        return new SceneVideo()
-      }
+        return new SceneVideo();
+      },
     },
-    features: Object
+    features: Object,
   },
-  mounted () {},
+  mounted() {},
   methods: {
     ...mapActions({
-      uploadImage: 'video/uploadImage'
+      uploadImage: "video/uploadImage",
     }),
-    addVideo () {
-      const nextItem = ''
-      this.video.playlist.push(nextItem)
+    addVideo() {
+      const nextItem = "";
+      this.video.playlist.push(nextItem);
       this.updateProperties({
-        action: 'update',
-        entity: 'video',
-        property: 'playlist',
+        action: "update",
+        entity: "video",
+        property: "playlist",
         id: this.video.id,
-        entityData: this.video
-      })
+        entityData: this.video,
+      });
     },
 
-    addInstance () {
-      const newInstance = new SceneVideoInstance()
+    addInstance() {
+      const newInstance = new SceneVideoInstance();
       if (!this.video.instances) {
-        this.video.instances = []
+        this.video.instances = [];
       }
-      this.video.instances.push(newInstance)
+      this.video.instances.push(newInstance);
       this.updateProperties({
-        action: 'create',
-        entity: 'videoInstance',
+        action: "create",
+        entity: "videoInstance",
         id: newInstance.id,
         entityData: this.video,
-        instanceData: newInstance
-      })
+        instanceData: newInstance,
+      });
     },
-    removeVideo () {
-      this.$emit('onRemove')
+    removeVideo() {
+      this.$emit("onRemove");
     },
-    removeInstance () {
+    removeInstance() {
       const i = this.video.instances.findIndex(
-          instance => instance.id == this.selectedVideoInstance.id
+          (instance) => instance.id == this.selectedVideoInstance.id
         ),
-        instance = this.selectedVideoInstance
+        instance = this.selectedVideoInstance;
 
-      Vue.delete(this.video.instances, i)
+      Vue.delete(this.video.instances, i);
 
       this.updateProperties({
-        action: 'delete',
-        entity: 'videoInstance',
+        action: "delete",
+        entity: "videoInstance",
         id: instance.id,
         entityData: this.video,
-        instanceData: instance
-      })
+        instanceData: instance,
+      });
     },
-    removePlaylistItem () {
+    removePlaylistItem() {
       const i = this.video.playlist.findIndex(
-        video => video == this.selectedPlaylistItem
-      )
+        (video) => video == this.selectedPlaylistItem
+      );
 
-      Vue.delete(this.video.playlist, i)
+      Vue.delete(this.video.playlist, i);
 
       this.updateProperties({
-        action: 'update',
-        entity: 'video',
-        property: 'playlist',
+        action: "update",
+        entity: "video",
+        property: "playlist",
         id: this.video.id,
-        entityData: this.video
-      })
+        entityData: this.video,
+      });
     },
-    toggleEditMode () {
-      this.editingName = !this.editingName
+    toggleEditMode() {
+      this.editingName = !this.editingName;
     },
-    toggleVisibility (instance, i) {
+    toggleVisibility(instance, i) {
       if (instance) {
-        Vue.set(this.video.instances[i], 'show', !this.video.instances[i].show)
+        Vue.set(this.video.instances[i], "show", !this.video.instances[i].show);
         this.updateProperties({
-          action: 'update',
-          entity: 'videoInstance',
-          property: 'visibility',
+          action: "update",
+          entity: "videoInstance",
+          property: "visibility",
           id: instance.id,
           entityData: this.video,
-          instanceData: instance
-        })
+          instanceData: instance,
+        });
       } else {
-        this.video.show = !this.video.show
+        this.video.show = !this.video.show;
         this.updateProperties({
-          action: 'update',
-          entity: 'video',
-          property: 'visibility',
+          action: "update",
+          entity: "video",
+          property: "visibility",
           id: this.video.id,
-          entityData: this.video
-        })
+          entityData: this.video,
+        });
       }
     },
-    toggleLiveStream () {
+    toggleLiveStream() {
       this.updateProperties({
-        action: 'update',
-        entity: 'video',
-        property: 'type',
+        action: "update",
+        entity: "video",
+        property: "type",
         id: this.video.id,
-        entityData: this.video
-      })
+        entityData: this.video,
+      });
     },
-    updateVideoProperties () {
+    updateVideoProperties() {
       this.updateProperties({
-        action: 'update',
-        entity: 'video',
-        property: 'properties',
+        action: "update",
+        entity: "video",
+        property: "properties",
         id: this.video.id,
-        entityData: this.video
-      })
+        entityData: this.video,
+      });
     },
-    openClickEventDialog () {
-      this.selectedImage = this.video
-      this.clickEventDialog = true
+    openClickEventDialog() {
+      this.selectedImage = this.video;
+      this.clickEventDialog = true;
     },
-    openPropertiesDialog () {
-      this.selectedVideo = this.video
-      this.propertiesDialog = true
+    openPropertiesDialog() {
+      this.selectedVideo = this.video;
+      this.propertiesDialog = true;
     },
-    openDeleteDialog () {
-      this.deleteDialog = true
+    openDeleteDialog() {
+      this.deleteDialog = true;
     },
-    openInstanceDeleteDialog (i) {
-      this.selectedVideoInstance = this.video.instances[i]
-      this.deleteInstanceDialog = true
+    openInstancePropertiesDialog(i) {
+      this.selectedVideoInstance = this.video.instances[i];
+      this.instancePropertiesDialog = true;
     },
-    openPlaylistItemDeleteDialog (i) {
-      this.selectedPlaylistItem = this.video.playlist[i]
-      this.deletePlaylistItemDialog = true
+    openInstanceDeleteDialog(i) {
+      this.selectedVideoInstance = this.video.instances[i];
+      this.deleteInstanceDialog = true;
     },
-    openTransformDialog (i) {
-      Vue.set(this.video.instances[i], 'transformDialog', true)
+    openPlaylistItemDeleteDialog(i) {
+      this.selectedPlaylistItem = this.video.playlist[i];
+      this.deletePlaylistItemDialog = true;
     },
-    updateVideoName () {
+    openTransformDialog(i) {
+      Vue.set(this.video.instances[i], "transformDialog", true);
+    },
+    updateVideoInstanceProperties(instance) {
       this.updateProperties({
-        action: 'update',
-        entity: 'video',
-        property: 'name',
+        action: "update",
+        entity: "videoInstance",
+        property: "properties",
         id: this.video.id,
-        entityData: this.video
-      })
+        entityData: this.video,
+        instanceData: instance,
+      });
     },
-    updateInstanceName (instance) {
+    updateVideoName() {
       this.updateProperties({
-        action: 'update',
-        entity: 'videoInstance',
-        property: 'name',
+        action: "update",
+        entity: "video",
+        property: "name",
+        id: this.video.id,
+        entityData: this.video,
+      });
+    },
+    updateInstanceName(instance) {
+      this.updateProperties({
+        action: "update",
+        entity: "videoInstance",
+        property: "name",
         id: instance.id,
         entityData: this.video,
-        instanceData: instance
-      })
+        instanceData: instance,
+      });
     },
-    updateInstanceTransform (instance) {
+    updateInstanceTransform(instance) {
       this.updateProperties({
-        action: 'update',
-        entity: 'videoInstance',
-        property: 'transform',
+        action: "update",
+        entity: "videoInstance",
+        property: "transform",
         id: instance.id,
         entityData: this.video,
-        instanceData: instance
-      })
+        instanceData: instance,
+      });
     },
-    updateLiveLink () {
+    updateLiveLink() {
       if (!this.video.liveLink) {
-        this.video.enableLiveStream = false
+        this.video.enableLiveStream = false;
       }
       this.updateProperties({
-        action: 'update',
-        entity: 'video',
-        property: 'liveLink',
+        action: "update",
+        entity: "video",
+        property: "liveLink",
         id: this.video.id,
-        entityData: this.video
-      })
+        entityData: this.video,
+      });
     },
-    updateLiveToggle () {
+    updateLiveToggle() {
       this.updateProperties({
-        action: 'update',
-        entity: 'video',
-        property: 'enableLiveStream',
+        action: "update",
+        entity: "video",
+        property: "enableLiveStream",
         id: this.video.id,
-        entityData: this.video
-      })
+        entityData: this.video,
+      });
     },
-    updateVolume () {
+    updateVolume() {
       this.updateProperties({
-        action: 'update',
-        entity: 'video',
-        property: 'volume',
+        action: "update",
+        entity: "video",
+        property: "volume",
         id: this.video.id,
-        entityData: this.video
-      })
+        entityData: this.video,
+      });
     },
-    updateEmission () {
+    updateEmission() {
       this.updateProperties({
-        action: 'update',
-        entity: 'video',
-        property: 'emission',
+        action: "update",
+        entity: "video",
+        property: "emission",
         id: this.video.id,
-        entityData: this.video
-      })
+        entityData: this.video,
+      });
     },
-    updatePlaylist () {
+    updatePlaylist() {
       this.updateProperties({
-        action: 'update',
-        entity: 'video',
-        property: 'playlist',
+        action: "update",
+        entity: "video",
+        property: "playlist",
         id: this.video.id,
-        entityData: this.video
-      })
+        entityData: this.video,
+      });
     },
-    updateOffType () {
+    updateOffType() {
       this.updateProperties({
-        action: 'update',
-        entity: 'video',
-        property: 'offType',
+        action: "update",
+        entity: "video",
+        property: "offType",
         id: this.video.id,
-        entityData: this.video
-      })
+        entityData: this.video,
+      });
     },
-    updateOffImage () {
+    updateOffImage() {
       this.updateProperties({
-        action: 'update',
-        entity: 'video',
-        property: 'offImage',
+        action: "update",
+        entity: "video",
+        property: "offImage",
         id: this.video.id,
-        entityData: this.video
-      })
+        entityData: this.video,
+      });
     },
-    updateProperties (wssMessages) {
-      this.$emit('updateProperties', wssMessages)
+    updateProperties(wssMessages) {
+      this.$emit("updateProperties", wssMessages);
     },
-    validateStreamLink (value) {
-      if (value && value.includes('http://')) {
-        return 'Insecure url detected - Must be an https:// link'
-      } else if (value && !value.includes('https://')) {
-        return 'Stream url must include https://'
-      } else if (value && !value.includes('.m3u8')) {
-        return 'Stream format must be a .m3u8'
+    validateStreamLink(value) {
+      if (value && value.includes("http://")) {
+        return "Insecure url detected - Must be an https:// link";
+      } else if (value && !value.includes("https://")) {
+        return "Stream url must include https://";
+      } else if (value && !value.includes(".m3u8")) {
+        return "Stream format must be a .m3u8";
       } else {
-        return true
+        return true;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

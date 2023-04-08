@@ -63,110 +63,110 @@
 </template>
 
 <script>
-import Vue from 'vue'
+import Vue from "vue";
 export default {
-  name: 'PropertiesDialog',
+  name: "PropertiesDialog",
   data: () => ({
     refObj: {},
-    baseObj: {}
+    baseObj: {},
   }),
   props: {
-    title: { type: String, default: 'Properties' },
+    title: { type: String, default: "Properties" },
     entity: Object,
-    entityType: { type: String, default: 'Entity' },
+    entityType: { type: String, default: "Entity" },
     instance: [Object, null],
-    value: Boolean
+    value: Boolean,
   },
-  mounted () {
-    this.refObj = this.instance || this.entity
-    this.baseObj = { customRendering: false, ...this.entity }
+  mounted() {
+    this.refObj = this.instance || this.entity;
+    this.baseObj = { customRendering: false, ...this.entity };
     this.originalProperties = {
-      ...this.refObj
-    }
+      ...this.refObj,
+    };
   },
   computed: {
     show: {
-      get () {
-        return this.value
+      get() {
+        return this.value;
       },
-      set (value) {
-        this.$emit('input', value)
-      }
+      set(value) {
+        this.$emit("input", value);
+      },
     },
     customRendering: {
-      get () {
-        return this.baseObj.customRendering || this.refObj.customRendering
+      get() {
+        return this.baseObj.customRendering || this.refObj.customRendering;
       },
-      set (value) {
+      set(value) {
         if (
           (this.instance && !this.baseObj.customRendering) ||
           !this.instance
         ) {
-          this.refObj.customRendering = value
+          this.refObj.customRendering = value;
         }
-      }
-    }
+      },
+    },
   },
   methods: {
-    getRefObj () {
-      return this.instance || this.entity
+    getRefObj() {
+      return this.instance || this.entity;
     },
-    changeTransparency () {
-      Vue.set(this.refObj, 'isTransparent', this.refObj.isTransparent)
-      this.$emit('onChange')
+    changeTransparency() {
+      Vue.set(this.refObj, "isTransparent", this.refObj.isTransparent);
+      this.$emit("onChange", this.refObj);
     },
-    changeCollisions () {
-      Vue.set(this.refObj, 'withCollisions', this.refObj.withCollisions)
-      this.$emit('onChange')
+    changeCollisions() {
+      Vue.set(this.refObj, "withCollisions", this.refObj.withCollisions);
+      this.$emit("onChange", this.refObj);
     },
-    changeCustomRendering () {
-      Vue.set(this.refObj, 'customRendering', this.refObj.customRendering)
-      this.$emit('onChange')
+    changeCustomRendering() {
+      Vue.set(this.refObj, "customRendering", this.refObj.customRendering);
+      this.$emit("onChange", this.refObj);
     },
-    changeParent () {
-      Vue.set(this.refObj, 'parent', this.refObj.parent)
-      this.$emit('onChange')
+    changeParent() {
+      Vue.set(this.refObj, "parent", this.refObj.parent);
+      this.$emit("onChange", this.refObj);
     },
-    changeId () {
-      Vue.set(this.refObj, 'customId', this.refObj.customId)
-      this.$emit('onChange')
+    changeId() {
+      Vue.set(this.refObj, "customId", this.refObj.customId);
+      this.$emit("onChange", this.refObj);
     },
-    customRenderingMessage () {
-      let baseEntity
-      if (this.entityType.includes('image')) {
-        baseEntity = 'image'
-      } else if (this.entityType.includes('video')) {
-        baseEntity = 'video'
+    customRenderingMessage() {
+      let baseEntity;
+      if (this.entityType.includes("image")) {
+        baseEntity = "image";
+      } else if (this.entityType.includes("video")) {
+        baseEntity = "video";
       }
       if (this.instance && this.baseObj.customRendering) {
-        return `Enabled on base ${baseEntity || 'entity'}`
+        return `Enabled on base ${baseEntity || "entity"}`;
       }
     },
-    save () {
-      this.show = false
-      this.$emit('onChange')
+    save() {
+      this.show = false;
+      this.$emit("onChange", this.refObj);
     },
-    revert () {
-      this.show = false
+    revert() {
+      this.show = false;
       Vue.set(
         this.refObj,
-        'isTransparent',
+        "isTransparent",
         this.originalProperties.isTransparent
-      )
-      Vue.set(this.refObj, 'customId', this.originalProperties.customId)
-      Vue.set(this.refObj, 'parent', this.originalProperties.parent)
+      );
+      Vue.set(this.refObj, "customId", this.originalProperties.customId);
+      Vue.set(this.refObj, "parent", this.originalProperties.parent);
       Vue.set(
         this.refObj,
-        'customRendering',
+        "customRendering",
         this.originalProperties.customRendering
-      )
+      );
       Vue.set(
         this.refObj,
-        'withCollisions',
+        "withCollisions",
         this.originalProperties.withCollisions
-      )
-      this.$emit('onChange')
-    }
-  }
-}
+      );
+      this.$emit("onChange", this.refObj);
+    },
+  },
+};
 </script>
