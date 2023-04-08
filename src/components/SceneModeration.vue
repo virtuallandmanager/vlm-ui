@@ -15,7 +15,7 @@
                 mdi-information-outline
               </v-icon>
             </template>
-            <span>Requires v1.4.0 or greater of the SDK library</span>
+            <span>Requires v1.5.0 or greater of the SDK library</span>
           </v-tooltip>
         </h1>
       </v-col>

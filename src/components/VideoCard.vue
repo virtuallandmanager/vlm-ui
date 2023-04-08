@@ -82,7 +82,12 @@
           ></v-slider>
         </div>
         <div>
-          <v-btn icon dark @click="toggleVisibility()">
+          <v-btn
+            icon
+            dark
+            @click="toggleVisibility()"
+            :disabled="video.customRendering"
+          >
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-icon
@@ -231,7 +236,11 @@
               ></v-text-field>
             </div>
             <div class="mt-3">
-              <v-btn icon @click="toggleVisibility(instance, i)">
+              <v-btn
+                icon
+                @click="toggleVisibility(instance, i)"
+                :disabled="video.customRendering || instance.customRendering"
+              >
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-icon
@@ -244,9 +253,9 @@
                       }}
                     </v-icon>
                   </template>
-                  <span>Show/Hide</span>
                 </v-tooltip>
               </v-btn>
+              <span>Show/Hide</span>
               <transform-dialog
                 v-if="instance.transformDialog"
                 v-model="instance.transformDialog"
