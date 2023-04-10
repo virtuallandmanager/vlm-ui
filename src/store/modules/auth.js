@@ -109,7 +109,7 @@ export default {
     async updateUserInfo({ commit }, userInfo) {
       try {
         await this.updateUserInfo(userInfo);
-        commit("updateUserInfo", userInfo);
+        commit("auth", "updateUserInfo", userInfo);
       } catch (error) {
         console.log(error);
       }
