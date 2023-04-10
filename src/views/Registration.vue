@@ -1,5 +1,6 @@
 <template>
   <v-card elevation="2" class="mx-auto pb-4" max-width="960">
+    <gdpr-notice :value="showPrivacyPolicy" @input="togglePrivacyPolicy"></gdpr-notice>
     <v-card-title class="text-center">
       <div class="mx-auto text-h3">Welcome to Virtual Land Manager!</div>
     </v-card-title>
@@ -16,9 +17,7 @@
         Mobile Phone and Email Address will be used in the future for opt-in
         only notifications and multi-factor authentication.
       </div>
-      <div class="text-display text-center">
-        GDPR Privacy Notice: All your cookies are belong to us.
-      </div>
+      <div class="text-display text-center">GDPR Privacy Notice</div>
       <v-text-field
         label="Primary Wallet Address"
         v-model="newUserInfo.connectedWallet"
@@ -51,21 +50,30 @@
         />
       </div>
     </v-card-text>
-    <v-card-actions class="d-flex justify-space-around">
-      <v-btn @click="reset">Reset</v-btn>
-      <v-btn @click="saveAndContinue">Next</v-btn>
+    <v-card-actions class="d-flex px-4">
+      <div class="flex-grow-1 justify-space-around">
+        <v-btn @click="showPrivacyPolicy = true">Privacy Policy</v-btn>
+      </div>
+      <div class="flex-shrink-0 justify-space-around">
+        <v-btn @click="saveAndContinue" color="primary"
+          >Save User Profile</v-btn
+        >
+      </div>
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import GdprNotice from "../components/dialogs/GdprNotice";
 
 export default {
+  components: { GdprNotice },
   name: "Registration",
   data: () => ({
     newUserInfo: {},
     phone: null,
+    showPrivacyPolicy: false,
   }),
   mounted() {
     this.newUserInfo = { ...this.userInfo } || {};
@@ -79,11 +87,7 @@ export default {
       if (this.newUserInfo?.phone?.number && !this.newUserInfo?.phone?.valid) {
         return;
       }
-    },
-    reset() {
-      this.newUserInfo.smsPhoneNumber = null;
-      this.newUserInfo.emailAddress = null;
-      this.newUserInfo.displayName = this.userInfo.displayName || "";
+      this.updateUserInfo(this.newUserInfo);
     },
     validateDisplayName() {
       if (!this.newUserInfo?.displayName) {
@@ -112,6 +116,9 @@ export default {
         valid,
         country,
       };
+    },
+    togglePrivacyPolicy() {
+      this.showPrivacyPolicy = !this.showPrivacyPolicy;
     },
     handleDialog(dialogOptions) {
       this.$emit("handleDialog", { show: true, ...dialogOptions });

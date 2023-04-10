@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" max-width="350" persistent>
+  <v-dialog v-model="show" max-width="900">
     <v-card>
       <v-card-title>GDPR Notice</v-card-title>
       <v-card-text>
@@ -176,7 +176,7 @@
       <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="accenttext" text @click="close"> Okay </v-btn>
+        <v-btn color="accenttext" text @click="closeWindow"> Okay </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -184,7 +184,7 @@
 
 <script>
 export default {
-  name: "GDPRNotice",
+  name: "GdprNotice",
   data: () => ({}),
   props: {
     value: Boolean,
@@ -201,13 +201,9 @@ export default {
     },
   },
   methods: {
-    close() {
+    closeWindow() {
       this.show = false;
-      this.onChange();
-    },
-    onChange() {
-      this.$emit("onChange");
-    },
+    }
   },
 };
 </script>

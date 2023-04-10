@@ -45,16 +45,3 @@ export const restoreSession = async () => {
     return error;
   }
 };
-
-export const updateUser = async () => {
-  try {
-    const { sessionToken, userInfo } = store.state.auth;
-    const payload = { userInfo };
-    return new AuthenticatedFetch(sessionToken).post(
-      "/auth/vlm/user/update",
-      payload
-    );
-  } catch (error) {
-    return error;
-  }
-};

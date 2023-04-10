@@ -29,7 +29,10 @@ export default {
   getters: {
     connected: (state) => !!(state.connectedWallet && state.sessionToken),
     signing: (state) => state.signing,
-    userInfo: (state) => ({  ...state.userInfo, location: state.sessionIpData?.location }),
+    userInfo: (state) => ({
+      ...state.userInfo,
+      location: state.sessionIpData?.location,
+    }),
   },
   mutations: {
     start: (state) => (state.loggingIn = true),
@@ -104,7 +107,12 @@ export default {
       }
     },
     async updateUserInfo({ commit }, userInfo) {
-      commit("updateUserInfo", userInfo);
+      try {
+        await this.updateUserInfo(userInfo);
+        commit("updateUserInfo", userInfo);
+      } catch (error) {
+        console.log(error);
+      }
     },
     async connect({ commit, state, dispatch }, newAccountList) {
       commit("start");

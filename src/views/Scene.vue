@@ -114,7 +114,7 @@
             <span>Base Parcel: {{ property.baseParcel }}</span>
           </h6>
         </v-col>
-        <v-col no-gutters align="right">
+        <v-col no-gutters class="text-right">
           <v-menu
             v-model="showParcelMap"
             transition="scale-transition"
