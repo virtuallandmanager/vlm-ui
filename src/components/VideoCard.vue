@@ -253,9 +253,9 @@
                       }}
                     </v-icon>
                   </template>
+                  <span>Show/Hide</span>
                 </v-tooltip>
               </v-btn>
-              <span>Show/Hide</span>
               <transform-dialog
                 v-if="instance.transformDialog"
                 v-model="instance.transformDialog"
