@@ -1,15 +1,12 @@
+import { updateUserInfo, setupUserInfo } from "../dal/user";
+import router from "../../router";
+// import store from "..";
+
 export default {
   namespaced: true,
   state: () => ({
     userInfo: {},
   }),
-  getters: {
-
-    userInfo: (state) => ({
-      ...state.userInfo,
-      location: this.$store.state.auth.sessionIpData?.location,
-    }),
-  },
   mutations: {
     start: (state) => (state.loggingIn = true),
     retry: (state) => {
@@ -24,12 +21,27 @@ export default {
     updateUserInfo(state, userInfo) {
       state.userInfo = { ...state.userInfo, ...userInfo };
     },
+    updateUserOrgInfo(state, userOrgInfo) {
+      state.userOrgInfo = { ...state.userOrgInfo, ...userOrgInfo };
+    },
   },
   actions: {
     async updateUserInfo({ commit }, userInfo) {
       try {
-        await this.updateUserInfo(userInfo);
+        await updateUserInfo();
         commit("updateUserInfo", userInfo);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async setupUserInfo({ commit }, { userInfo, userOrgInfo }) {
+      try {
+        console.log(userInfo);
+        console.log(userOrgInfo);
+        commit("updateUserInfo", userInfo);
+        commit("updateUserOrgInfo", userOrgInfo);
+        await setupUserInfo();
+        router.push("/welcome");
       } catch (error) {
         console.log(error);
       }

@@ -3,9 +3,7 @@ import { DateTime } from "luxon";
 import { authenticate, login } from "../dal/auth";
 import router from "../../router";
 
-const web3 = new Web3(
-  window.ethereum || (window.web3 && window.web3.currentProvider)
-);
+const web3 = new Web3(window.ethereum || (window.web3 && window.web3.currentProvider));
 
 export default {
   namespaced: true,
@@ -15,24 +13,29 @@ export default {
     loginError: null,
     retries: 0,
     noWeb3: false,
-    userInfo: {},
     signatureToken: "", // temp token granted to sign message and get session/sessionToken
     signatureMessage: "", // contents of crypto message signed by user
     signature: "", // hash of the cryptographically signed message from user
     signatureAccount: "", // crypto account that signed the message
     sessionToken: "", // session token used for long term login
     sigTokenExpires: "",
-    signing: "",
+    signing: false,
     signingTimerInterval: null,
-    showUserRegistration: false,
   }),
   getters: {
     connected: (state) => !!(state.connectedWallet && state.sessionToken),
-    signing: (state) => state.signing,
     userInfo: (state) => ({
       ...state.userInfo,
       location: state.sessionIpData?.location,
     }),
+    walletAddress: (state) => (before, after) => {
+      const full = state.connectedWallet;
+      if (!full) {
+        return "Connection Error";
+      }
+      const truncated = full && full.substring(0, before) + "..." + full.substring(full.length - after);
+      return truncated;
+    },
   },
   mutations: {
     start: (state) => (state.loggingIn = true),
@@ -44,10 +47,6 @@ export default {
       state.loggingIn = false;
       state.loginError = errorMessage;
       state.retries = 0;
-    },
-    storeLogin: (state, userInfo) => {
-      state.userInfo = userInfo;
-      state.connectedWallet = userInfo.connectedWallet;
     },
     restoreSessionToken: (state, sessionToken) => {
       state.sessionToken = sessionToken;
@@ -63,24 +62,16 @@ export default {
       console.log("Connected.");
       state.connectedWallet = connectedWallet;
     },
-    saveSignatureMessage(state, { text, signatureToken }) {
-      state.signatureMessage = text;
+    saveSignatureMessage(state, { signatureMessage, signatureToken }) {
+      state.signatureMessage = signatureMessage;
       state.signatureToken = signatureToken;
       state.signatureAccount = state.connectedWallet;
-      state.sigTokenExpires = DateTime.now()
-        .plus({ minutes: 1, seconds: 30 })
-        .toUnixInteger();
+      state.sigTokenExpires = DateTime.now().plus({ minutes: 1, seconds: 30 }).toUnixInteger();
       state.signing = true;
     },
     saveSignature(state, signature) {
       state.signing = false;
       state.signature = signature;
-    },
-    openUserRegistration(state) {
-      state.showUserRegistration = true;
-    },
-    closeUserRegistration(state) {
-      state.showUserRegistration = false;
     },
     disconnect(state) {
       console.log("Disconnecting...");
@@ -92,9 +83,6 @@ export default {
       localStorage.removeItem("sessionToken");
       localStorage.removeItem("connectedWallet");
     },
-    updateUserInfo(state, userInfo) {
-      state.userInfo = { ...state.userInfo, ...userInfo };
-    },
   },
   actions: {
     async requestAccounts({ commit }) {
@@ -104,14 +92,6 @@ export default {
         return accounts;
       } catch (error) {
         commit("stop", null);
-      }
-    },
-    async updateUserInfo({ commit }, userInfo) {
-      try {
-        await this.updateUserInfo(userInfo);
-        commit("auth", "updateUserInfo", userInfo);
-      } catch (error) {
-        console.log(error);
       }
     },
     async connect({ commit, state, dispatch }, newAccountList) {
@@ -138,15 +118,12 @@ export default {
         });
       } catch (error) {
         console.log(error);
-        commit("stop", null);
+        commit("disconnect", null);
       }
     },
-    async disconnect({ commit, dispatch }, accounts) {
+    async disconnect({ commit }) {
       try {
-        localStorage.removeItem("sessionToken");
-        localStorage.removeItem("connectedWallet");
         commit("disconnect");
-        dispatch("connect", accounts);
       } catch (error) {
         commit("stop", error);
       }
@@ -165,12 +142,13 @@ export default {
 
         if (response.sessionToken) {
           commit("restoreSessionToken", response.sessionToken);
-        } else {
+        } else if (response.signatureToken) {
           commit("saveSignatureMessage", response);
           await dispatch("signMessage", response.signatureMessage);
         }
         dispatch("login");
       } catch (error) {
+        commit("disconnect");
         commit("stop", error);
       }
     },
@@ -179,19 +157,27 @@ export default {
         if (retry) {
           commit("retry");
         }
-        const { status, user, session } = await login();
+        const { status, user, userOrgs, session } = await login();
 
         await dispatch("handleLoginStatus", status);
 
         if (user) {
-          commit("storeLogin", user);
+          commit("user/updateUserInfo", user, { root: true });
+        }
+
+        if (userOrgs) {
+          commit("organization/updateUserOrgs", userOrgs, { root: true });
         }
 
         if (session) {
           commit("storeSession", session);
         }
+
+        router.push("/scenes");
+
         commit("stop");
       } catch (error) {
+        commit("disconnect");
         commit("stop", error);
       }
     },
@@ -199,10 +185,7 @@ export default {
     async handleLoginStatus({ commit, state, dispatch }, status) {
       try {
         if (status > 401 && state.retries == 3) {
-          commit(
-            "stop",
-            "Login failed after 3 attempts. Please check your internet connection and then contact support."
-          );
+          commit("stop", "Login failed after 3 attempts. Please check your internet connection and then contact support.");
           return;
         } else if (status > 401) {
           commit("retry");
@@ -210,22 +193,20 @@ export default {
         } else if (status == 401) {
           commit("disconnect");
         } else if (status == 201) {
-          commit("openUserRegistration");
           router.push("/join");
         }
       } catch (error) {
+        commit("disconnect");
         commit("stop", error);
       }
     },
     async signMessage({ commit, state }, message) {
       try {
-        const signature = await web3.eth.personal.sign(
-          message,
-          state.connectedWallet
-        );
+        const signature = await web3.eth.personal.sign(message, state.connectedWallet);
         commit("saveSignature", signature);
         return signature;
       } catch (error) {
+        commit("disconnect");
         commit("stop", error);
         console.log("Reject message: ", error);
         return null;

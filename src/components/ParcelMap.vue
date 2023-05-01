@@ -6,9 +6,9 @@
       id="parcelMap"
       :style="
         'height:' +
-        (propertyRows * 20 + 2) +
+        (sceneRows * 20 + 2) +
         'px; width:' +
-        (propertyCols * 20 + 2) +
+        (sceneCols * 20 + 2) +
         'px'
       "
     >
@@ -29,7 +29,7 @@ export default {
   name: "ParcelMap",
   data: () => ({}),
   props: {
-    property: {
+    scene: {
       baseParcel: String,
       parcels: Array,
     },
@@ -42,7 +42,7 @@ export default {
       return this.computeParcels();
     },
     sortedCoords() {
-      const coords = this.property.parcels.map((parcel) => [
+      const coords = this.scene.parcels.map((parcel) => [
         parcel.x,
         parcel.y,
       ]);
@@ -54,21 +54,21 @@ export default {
       });
     },
     xCoords() {
-      return parcelHelper.xCoords(this.property.parcels);
+      return parcelHelper.xCoords(this.scene.parcels);
     },
     yCoords() {
-      return parcelHelper.yCoords(this.property.parcels);
+      return parcelHelper.yCoords(this.scene.parcels);
     },
-    propertyRows() {
-      return parcelHelper.propertyRows(this.yCoords);
+    sceneRows() {
+      return parcelHelper.sceneRows(this.yCoords);
     },
-    propertyCols() {
-      return parcelHelper.propertyCols(this.xCoords);
+    sceneCols() {
+      return parcelHelper.sceneCols(this.xCoords);
     },
   },
   methods: {
     computeParcels() {
-      const baseParcel = this.property.baseParcel.split(",");
+      const baseParcel = this.scene.baseParcel.split(",");
       const mappedParcels = this.sortedCoords.map((coord) => {
         const xOffset = (coord[0] - parcelHelper.lowestX(this.xCoords)) * 20;
         const yOffset = (coord[1] - parcelHelper.lowestY(this.yCoords)) * 20;
@@ -82,7 +82,7 @@ export default {
 
         if (coord[0] == baseParcel[0] && coord[1] == baseParcel[1]) {
           console.log(
-            this.property.name +
+            this.scene.name +
               "'s base parcel is " +
               baseParcel[0] +
               ", " +

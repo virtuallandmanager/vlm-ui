@@ -1,11 +1,6 @@
 <template>
   <v-sheet elevation="2" class="px-4 mx-auto fill-height" max-width="1024">
     <v-container class="">
-      <v-row class="text-left">
-        <v-col>
-          <h1 class="text-h2 font-weight-light mb-3">Scenes</h1>
-        </v-col>
-      </v-row>
       <v-row class="text-center mb-12" v-if="loading">
         <v-col>
           <loader
@@ -17,14 +12,30 @@
       </v-row>
       <v-row class="text-center" v-if="!scenes.length && !loading">
         <v-col cols="12">
-          <div class="text-h4 mb-4">VLM Early Access Program</div>
-          <v-card width="420px" class="pa-4 mx-auto grey">
-            <div class="text-h5" v-if="userInfo.displayName">
-              {{ userInfo.displayName }}
-            </div>
-            <div v-for="(org, i) of userOrgs" :key="i">
+          <v-card
+            width="420px"
+            class="pa-6 my-6 mx-auto grey d-flex flex-column justify-space-between"
+          >
+            <div v-for="(org, i) of userOrgs" :key="i" class="text-left">
               <div class="text-body-1" v-if="org.displayName">
                 {{ org.displayName }}
+              </div>
+              <div
+                class="text-caption grey--text text--darken-2 text-left"
+                v-if="userInfo.displayName"
+              >
+                ORGANIZATION
+              </div>
+            </div>
+            <div class="mb-4">
+              <div class="text-h5 text-center" v-if="userInfo.displayName">
+                {{ userInfo.displayName }}
+              </div>
+              <div
+                class="text-caption grey--text text--darken-2 text-center"
+                v-if="userInfo.displayName"
+              >
+                MEMBER NAME
               </div>
             </div>
             <div class="d-flex justify-space-between">
@@ -40,9 +51,9 @@
             </div>
           </v-card>
           <div class="text-body">
-            Thank you for signing up for VLM Early Access.
+            Thank you for signing up for VLM Early Access!
           </div>
-          <div class="text-body mb-4">
+          <div class="text-body mt-4">
             For progress updates, please
             <a href="https://discord.gg/hYzxFZmbvf"
               >Join the VLM Discord server</a
@@ -50,36 +61,23 @@
           </div>
         </v-col>
       </v-row>
-      <v-row class="text-center">
-        <v-col cols="12" v-for="(property, i) in scenes" :key="i">
-          <router-link
-            :to="getSlug(property.baseParcel)"
-            class="scene-card-link"
-          >
-            <scene-card :property="property" />
-          </router-link>
-        </v-col>
-      </v-row>
     </v-container>
   </v-sheet>
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import SceneCard from "../components/SceneCard";
+import { mapGetters } from "vuex";
 import Loader from "../components/Loader";
 import store from "../store";
 import { DateTime } from "luxon";
 
 export default {
-  components: { SceneCard, Loader },
-  name: "MyScenes",
+  components: { Loader },
+  name: "Welcome",
   data: () => ({
     loading: false,
   }),
-  mounted() {
-    // this.getSceneCards();
-  },
+  mounted() {},
   computed: {
     userInfo() {
       return store.state.user.userInfo;
@@ -94,11 +92,7 @@ export default {
       return DateTime.fromSeconds(this.userInfo.registeredAt).toLocaleString();
     },
   },
-  methods: {
-    ...mapActions({
-      getSceneCards: "scene/getSceneCards",
-    }),
-  },
+  methods: {},
 };
 </script>
 

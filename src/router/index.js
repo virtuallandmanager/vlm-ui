@@ -20,8 +20,7 @@ const router = new Router({
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () =>
-        import(/* webpackChunkName: "about" */ "../views/About.vue"),
+      component: () => import(/* webpackChunkName: "about" */ "../views/About.vue"),
     },
     {
       path: "/join",
@@ -29,8 +28,7 @@ const router = new Router({
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () =>
-        import(/* webpackChunkName: "about" */ "../views/Registration.vue"),
+      component: () => import(/* webpackChunkName: "about" */ "../views/Registration.vue"),
     },
     {
       path: "/events",
@@ -38,42 +36,40 @@ const router = new Router({
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () =>
-        import(/* webpackChunkName: "about" */ "../views/About.vue"),
+      component: () => import(/* webpackChunkName: "about" */ "../views/About.vue"),
     },
     {
       path: "/scenes",
       name: "Scenes",
-      component: () =>
-        import(/* webpackChunkName: "land" */ "../views/MyScenes.vue"),
+      component: () => import(/* webpackChunkName: "land" */ "../views/MyScenes.vue"),
     },
     {
       path: "/scene/:sceneId",
       name: "Scene",
-      component: () =>
-        import(/* webpackChunkName: "land" */ "../views/Scene.vue"),
+      component: () => import(/* webpackChunkName: "land" */ "../views/Scene.vue"),
+    },
+    {
+      path: "/welcome",
+      name: "Welcome",
+      component: () => import(/* webpackChunkName: "land" */ "../views/Welcome.vue"),
     },
   ],
 });
 
 router.beforeEach(async (to, from, next) => {
-  const connected = store.state.auth.connected,
-  showUserRegistration = store.state.auth.showUserRegistration,
-  loggingIn = store.state.auth.loggingIn;
-  
-  // if (to.fullPath == from.fullPath) {
-  //   return;
-  // }
+  const connected = store.state.auth.connectedWallet && store.state.auth.sessionToken,
+    loggingIn = store.state.auth.loggingIn,
+    userInfo = store.state.user.userInfo;
 
   if (!connected && !loggingIn) {
     await store.dispatch("auth/restoreSession");
   }
-  if (!showUserRegistration && to.fullPath === "/join") {
-    next("/");
-  } else if (connected && to.fullPath === "/") {
-    next("/scenes");
-  } else if (to.fullPath.includes("/scene")) {
-    next("/");
+  if ((!connected || userInfo?.roles?.length) && to.fullPath === "/join") {
+    return next("/");
+  } else if (connected && (to.fullPath === "" || to.fullPath === "/")) {
+    return next("/welcome");
+  } else if (!connected && to.fullPath.includes("/scene")) {
+    return next("/");
   }
 
   next();

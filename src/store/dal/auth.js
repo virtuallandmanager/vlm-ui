@@ -4,7 +4,7 @@ import { AuthenticatedFetch, UnauthenticatedFetch } from "./common";
 export const authenticate = async () => {
   try {
     const { connectedWallet } = store.state.auth;
-    return new UnauthenticatedFetch(connectedWallet).get("/auth/vlm/web3");
+    return await new UnauthenticatedFetch(connectedWallet).get("/auth/web3");
   } catch (error) {
     return error;
   }
@@ -21,10 +21,10 @@ export const login = async () => {
     } = store.state.auth;
     const payload = { signatureAccount, signatureMessage, signature };
     if (sessionToken) {
-      return new AuthenticatedFetch(sessionToken).get("/auth/vlm/restore");
+      return await new AuthenticatedFetch(sessionToken).get("/auth/restore");
     } else {
-      return new UnauthenticatedFetch(signatureToken).post(
-        "/auth/vlm/login",
+      return await new UnauthenticatedFetch(signatureToken).post(
+        "/auth/login",
         payload
       );
     }
@@ -37,8 +37,8 @@ export const restoreSession = async () => {
   try {
     const { sessionToken, connectedWallet } = store.state.auth;
     const payload = { connectedWallet };
-    return new AuthenticatedFetch(sessionToken).post(
-      "/auth/vlm/restore",
+    return await new AuthenticatedFetch(sessionToken).post(
+      "/auth/restore",
       payload
     );
   } catch (error) {

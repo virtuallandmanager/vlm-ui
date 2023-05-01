@@ -12,9 +12,9 @@
         <v-tabs align-with-title color="nav" v-if="connected">
           <!-- <v-tab v-if="!connected">About</v-tab> -->
           <!-- <v-tab v-if="!connected">Pricing</v-tab> -->
-          <v-tab>Scenes</v-tab>
-          <v-tab>Events</v-tab>
-          <v-tab>Docs</v-tab>
+          <!-- <v-tab to="/scenes">Scenes</v-tab> -->
+          <!-- <v-tab to="/events">Events</v-tab> -->
+          <!-- <v-tab to="/docs">Docs</v-tab> -->
           <!-- <v-tab>Wiki</v-tab> -->
         </v-tabs>
       </template>
@@ -37,11 +37,11 @@
         <v-icon class="mr-2">mdi-wallet</v-icon>
         Connect Wallet
       </v-btn>
-      <v-menu offset-y bottom nudge-bottom="15px">
+      <v-menu offset-y bottom nudge-bottom="15px" v-if="connected && !signing">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn v-bind="attrs" v-on="on" text v-if="connected && !signing">
+          <v-btn v-bind="attrs" v-on="on" text>
             <v-icon class="mr-2">mdi-wallet</v-icon>
-            <span>{{ walletAddress }}</span>
+            <span>{{ connectedWallet }}</span>
           </v-btn>
         </template>
         <v-list>
@@ -148,18 +148,6 @@ export default {
     signingTime: null,
   }),
   computed: {
-    walletAddress() {
-      const fullAddress = this.$store.state.auth?.userInfo?.connectedWallet;
-      if (!fullAddress) {
-        return "";
-      }
-      const truncAddress =
-        fullAddress &&
-        fullAddress.substring(0, 6) +
-          "..." +
-          fullAddress.substring(fullAddress.length - 5);
-      return truncAddress;
-    },
     environment() {
       return process.env.VUE_APP_NODE_ENV;
     },
@@ -181,8 +169,18 @@ export default {
         return "error--text";
       }
     },
-    ...mapGetters("auth", ["connected", "signing"]),
-    ...mapState("auth", ["loggingIn", "sigTokenExpires", "signatureMessage"]),
+    connectedWallet() {
+      return this.$store.getters["auth/walletAddress"](6, 4);
+    },
+    ...mapGetters({
+      connected: "auth/connected",
+    }),
+    ...mapState("auth", [
+      "loggingIn",
+      "signing",
+      "sigTokenExpires",
+      "signatureMessage",
+    ]),
   },
   methods: {
     connectButton() {
