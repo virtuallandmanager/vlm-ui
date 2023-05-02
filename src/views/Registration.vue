@@ -108,7 +108,7 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import GdprNotice from "../components/dialogs/GdprNotice";
+import GdprNotice from "../components/dialogs/GDPRNotice";
 
 export default {
   components: { GdprNotice },
