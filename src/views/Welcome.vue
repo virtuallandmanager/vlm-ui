@@ -3,11 +3,7 @@
     <v-container class="">
       <v-row class="text-center mb-12" v-if="loading">
         <v-col>
-          <div
-            class="text-h5"
-          >
-            WELCOME
-          </div>
+          <div class="text-h5">WELCOME</div>
         </v-col>
       </v-row>
       <v-row class="text-center" v-if="!scenes.length && !loading">
@@ -17,34 +13,34 @@
             class="pa-6 my-6 mx-auto grey d-flex flex-column justify-space-between"
           >
             <div v-for="(org, i) of userOrgs" :key="i" class="text-left">
-              <div class="text-body-1" v-if="org.displayName">
-                {{ org.displayName }}
+              <div class="text-body-1" v-if="org">
+                {{ org?.displayName }}
               </div>
               <div
                 class="text-caption grey--text text--darken-2 text-left"
-                v-if="userInfo.displayName"
+                v-if="org.displayName"
               >
                 ORGANIZATION
               </div>
             </div>
             <div class="mb-4">
-              <div class="text-h5 text-center" v-if="userInfo.displayName">
-                {{ userInfo.displayName }}
+              <div class="text-h5 text-center" v-if="userInfo?.displayName">
+                {{ userInfo?.displayName }}
               </div>
               <div
                 class="text-caption grey--text text--darken-2 text-center"
-                v-if="userInfo.displayName"
+                v-if="userInfo?.displayName"
               >
                 MEMBER NAME
               </div>
             </div>
             <div class="d-flex justify-space-between">
-              <div class="text-caption ma-0 pa-0" v-if="userInfo.registeredAt">
+              <div class="text-caption ma-0 pa-0" v-if="userInfo?.registeredAt">
                 Member Since {{ memberSince }}
               </div>
               <div
                 class="text-right text-caption grey--text text--darken-2"
-                v-if="userInfo.registeredAt"
+                v-if="earlyAccess"
               >
                 EARLY ACCESS MEMBER
               </div>
@@ -82,6 +78,9 @@ export default {
     },
     userOrgs() {
       return store.state.organization.userOrgs;
+    },
+    earlyAccess() {
+      return store.state.user.userInfo?.roles?.includes(1);
     },
     ...mapGetters({
       scenes: "scene/sceneList",

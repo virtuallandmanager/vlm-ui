@@ -25,10 +25,10 @@ export const setupUserInfo = async () => {
     const { sessionToken } = store.state.auth;
     const { userInfo, userOrgInfo } = store.state.user;
     const payload = { userInfo };
-    if (userInfo.roles.includes(3)) {
+    if (userInfo?.roles?.includes(4)) {
       payload.userOrgInfo = userOrgInfo;
     }
-    return await new AuthenticatedFetch(sessionToken).post("/user/vlm/setup", payload);
+    return await new AuthenticatedFetch(sessionToken).post("/user/setup", payload);
   } catch (error) {
     return error;
   }

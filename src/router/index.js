@@ -57,21 +57,22 @@ const router = new Router({
 });
 
 router.beforeEach(async (to, from, next) => {
-  const connected = store.state.auth.connectedWallet && store.state.auth.sessionToken,
-    loggingIn = store.state.auth.loggingIn,
+  const connected = store.state.auth.connectedWallet,
     userInfo = store.state.user.userInfo;
 
-  if (!connected && !loggingIn) {
-    await store.dispatch("auth/restoreSession");
+  if (!connected) {
+    // if not connected, always go to '/'
+    if (to.fullPath !== "/") {
+      return next("/");
+    } else {
+      await store.dispatch("auth/attemptRestoreSession");
+    }
+  } else if (to.fullPath === "/" && to.fullPath !== "/welcome" && userInfo?.registeredAt) {
+    next("/welcome");
+  } else if (to.fullPath === "/" && to.fullPath !== "/join" && !userInfo?.registeredAt) {
+    // if connected and userInfo.registeredAt is not defined, go to '/join'
+    next("/join");
   }
-  if ((!connected || userInfo?.roles?.length) && to.fullPath === "/join") {
-    return next("/");
-  } else if (connected && (to.fullPath === "" || to.fullPath === "/")) {
-    return next("/welcome");
-  } else if (!connected && to.fullPath.includes("/scene")) {
-    return next("/");
-  }
-
   next();
 });
 

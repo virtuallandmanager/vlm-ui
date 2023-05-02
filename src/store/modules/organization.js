@@ -1,4 +1,3 @@
-import { createOrganization, updateOrgInfo } from "../dal/organization";
 export default {
   namespaced: true,
   state: () => ({
@@ -24,25 +23,5 @@ export default {
       state.userOrgs = userOrgs;
     },
   },
-  actions: {
-    async createOrganization({ commit }, orgInfo) {
-      try {
-        commit("start");
-        await createOrganization(orgInfo);
-        commit("stop");
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    async updateOrgInfo({ commit }, orgInfo) {
-      try {
-        commit("start");
-        await updateOrgInfo(orgInfo);
-        commit("updateOrgInfo", orgInfo);
-        commit("stop");
-      } catch (error) {
-        console.log(error);
-      }
-    },
-  },
+  actions: {},
 };

@@ -45,10 +45,10 @@
           </v-btn>
         </template>
         <v-list>
-          <v-list-item link>
+          <!-- <v-list-item link>
             <v-list-item-title>User Profile</v-list-item-title>
-          </v-list-item>
-          <v-list-item link>
+          </v-list-item> -->
+          <v-list-item link @click="logOut">
             <v-list-item-title>Log Out</v-list-item-title>
           </v-list-item>
         </v-list>
@@ -134,6 +134,11 @@
         | {{ environment.toUpperCase() }}
       </span>
     </v-footer>
+    <div v-for="(error, i) of errorMessages" :key="i">
+      <v-snackbar :timeout="error.timeout" :value="error.message" center bottom>
+        {{ error.message }}
+      </v-snackbar>
+    </div>
   </v-app>
 </template>
 
@@ -175,12 +180,15 @@ export default {
     ...mapGetters({
       connected: "auth/connected",
     }),
-    ...mapState("auth", [
-      "loggingIn",
-      "signing",
-      "sigTokenExpires",
-      "signatureMessage",
-    ]),
+    ...mapState({
+      loggingIn: "auth/loggingIn",
+      signing: "auth/signing",
+      sigTokenExpires: "auth/sigTokenExpires",
+      signatureMessage: "auth/signatureMessage",
+      errorMessages: "banners/errorMessages",
+      warningMessages: "banners/warningMessages",
+      successMessages: "banners/successMessages",
+    }),
   },
   methods: {
     connectButton() {
@@ -207,9 +215,12 @@ export default {
           this.signingTime = null;
         }
       }, 1000);
-      this.connect();
+      this.connectWallet();
     },
-    ...mapActions("auth", ["connect", "fetchAccount"]),
+    logOut() {
+      this.disconnect();
+    },
+    ...mapActions("auth", ["connectWallet", "disconnect"]),
   },
 };
 </script>

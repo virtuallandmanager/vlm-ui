@@ -64,7 +64,7 @@
               label="Advanced User"
               hint="Enables use of advanced developer features and custom SDK implementation"
               persistent-hint
-              v-model="newUserRoles[1]"
+              v-model="newUserRoles[2]"
             ></v-switch>
           </div>
           <div class="d-flex">
@@ -72,12 +72,12 @@
               label="Organization Admin"
               hint="Enables team administration features"
               persistent-hint
-              v-model="newUserRoles[3]"
+              v-model="newUserRoles[4]"
             ></v-switch>
           </div>
         </v-card-text>
       </v-card>
-      <v-card elevation="12" class="pa-6" v-if="newUserRoles[3]">
+      <v-card elevation="12" class="pa-6" v-if="orgAdmin">
         <v-card-title> Create Organization </v-card-title>
         <v-card-subtitle>
           Set a name for your organization - you'll be able to make more changes
@@ -98,7 +98,11 @@
         <v-btn @click="showPrivacyPolicy = true">Privacy Policy</v-btn>
       </div>
       <div class="flex-shrink-0 justify-space-around">
-        <v-btn @click="saveAndContinue" color="primary"
+        <v-btn
+          @click="saveAndContinue"
+          :loading="saving"
+          :disabled="saving"
+          color="primary"
           >Save And Continue</v-btn
         >
       </div>
@@ -114,48 +118,66 @@ export default {
   components: { GdprNotice },
   name: "Registration",
   data: () => ({
-    newUserInfo: {},
+    newUserInfo: { roles: [0, 1] },
     newOrg: { displayName: "AnonCo" },
     newOrgMembers: [],
-    newUserRoles: [true, false, false, false],
+    newUserRoles: [true, true, false, false, false],
     phone: null,
     showPrivacyPolicy: false,
   }),
   mounted() {
-    this.newUserInfo = { ...this.userInfo } || {};
+    this.newUserInfo = { roles: [this.newUserRoles], ...this.userInfo } || {};
     this.newOrgMembers.push(this.newUserInfo.connectedWallet);
   },
   computed: {
     ...mapState("user", ["userInfo"]),
     orgAdmin() {
-      return this.newUserRoles[3];
+      return this.newUserRoles[4];
+    },
+    saving() {
+      return this.$store.state.user.processing;
     },
   },
   methods: {
-    ...mapActions("user", ["setupUserInfo"]),
-    saveAndContinue() {
-      if (this.newUserRoles[3] && !this.newOrg.displayName) {
-        return;
-      }
-      if (this.newUserInfo?.phone?.number && !this.newUserInfo?.phone?.valid) {
-        return;
-      }
-      const smsCountryData = {
-        name: this.newUserInfo?.phone?.country?.name,
-        code: this.newUserInfo?.phone?.country?.iso2,
-      };
-      this.newUserInfo.smsPhoneNumber = {
-        ...this.newUserInfo.phone,
-        country: smsCountryData,
-      };
-      this.newUserInfo.roles = this.newUserRoles
-        .map((role, i) => (role ? i : null))
-        .filter((x) => x !== null);
+    async saveAndContinue() {
+      try {
+        if (this.orgAdmin && !this.newOrg.displayName) {
+          this.showError({
+            message: "Please enter a name for your organization.",
+            timeout: 4000,
+          });
+          return;
+        }
+        if (
+          this.newUserInfo?.phone?.number &&
+          !this.newUserInfo?.phone?.valid
+        ) {
+          this.showError({ message: "Invalid phone number.", timeout: 4000 });
+          return;
+        }
+        const smsCountryData = {
+          name: this.newUserInfo?.phone?.country?.name,
+          code: this.newUserInfo?.phone?.country?.iso2,
+        };
+        this.newUserInfo.smsPhoneNumber = {
+          ...this.newUserInfo.phone,
+          country: smsCountryData,
+        };
 
-      this.setupUserInfo({
-        userInfo: this.newUserInfo,
-        userOrgInfo: this.orgAdmin ? this.newOrg : null,
-      });
+        this.newUserRoles.forEach((role, i) => {
+          if (role && !this.newUserInfo?.roles?.includes(i)) {
+            this.newUserInfo.roles.push(i);
+          }
+        });
+
+        await this.setupUserInfo({
+          userInfo: this.newUserInfo,
+          userOrgInfo: this.orgAdmin ? this.newOrg : null,
+        });
+      } catch (error) {
+        console.log(error);
+        this.showError({ message: error, timeout: 4000 });
+      }
     },
     validateDisplayName() {
       if (!this.newUserInfo?.displayName) {
@@ -207,6 +229,10 @@ export default {
     handleDialog(dialogOptions) {
       this.$emit("handleDialog", { show: true, ...dialogOptions });
     },
+    ...mapActions({
+      setupUserInfo: "user/setupUserInfo",
+      showError: "banners/showError",
+    }),
   },
 };
 </script>

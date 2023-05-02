@@ -1,6 +1,6 @@
 import Web3 from "web3";
 import { DateTime } from "luxon";
-import { authenticate, login } from "../dal/auth";
+import { web3Authenticate, sendSignature, restoreSession } from "../dal/auth";
 import router from "../../router";
 
 const web3 = new Web3(window.ethereum || (window.web3 && window.web3.currentProvider));
@@ -50,9 +50,9 @@ export default {
     },
     restoreSessionToken: (state, sessionToken) => {
       state.sessionToken = sessionToken;
-      localStorage.setItem("sessionToken", sessionToken);
     },
     storeSession: (state, session) => {
+      state.connectedWallet = session.connectedWallet;
       state.sessionExpires = session.expires;
       state.sessionToken = session.sessionToken;
       state.sessionIpData = session.ipData;
@@ -61,6 +61,7 @@ export default {
     connect(state, connectedWallet) {
       console.log("Connected.");
       state.connectedWallet = connectedWallet;
+      localStorage.setItem("connectedWallet", connectedWallet);
     },
     saveSignatureMessage(state, { signatureMessage, signatureToken }) {
       state.signatureMessage = signatureMessage;
@@ -85,126 +86,72 @@ export default {
     },
   },
   actions: {
-    async requestAccounts({ commit }) {
-      try {
-        console.log("Prompting user to connect wallet...");
-        const accounts = await web3.eth.requestAccounts();
-        return accounts;
-      } catch (error) {
-        commit("stop", null);
+    async attemptRestoreSession({ commit, dispatch }) {
+      console.log("attemptRestoreSession");
+
+      const token = localStorage.getItem("sessionToken");
+
+      if (token) {
+        commit("start");
+        commit("restoreSessionToken", token);
+        await dispatch("sendTokenToServer");
       }
     },
-    async connect({ commit, state, dispatch }, newAccountList) {
+
+    async sendTokenToServer({ commit, dispatch }) {
+      console.log("sendTokenToServer");
+
+      // Send token to server and handle response
+      const response = await restoreSession();
+
+      //If active session
+      if (response?.status < 400) {
+        await dispatch("handleSuccessfulLogin", response);
+      } else if (response?.status >= 400) {
+        commit("banners/showError", { message: "Session expired. Please reconnect.", timeout: 3000 }, { root: true });
+      }
+    },
+
+    async connectWallet({ commit, dispatch }, newAccountList) {
+      console.log("connectWallet");
+
+      // connect the user's wallet
       commit("start");
-      try {
-        let accountList = newAccountList;
+      let accountList = newAccountList;
 
-        if (!accountList) {
-          accountList = await dispatch("requestAccounts");
-        }
-
-        commit("connect", accountList[0]);
-
-        localStorage.setItem("connectedWallet", state.connectedWallet);
-
-        if (state.sessionToken) {
-          await dispatch("login");
-        } else {
-          await dispatch("authenticate");
-        }
-
-        window.ethereum.on("accountsChanged", function (accounts) {
-          dispatch("reconnect", accounts);
-        });
-      } catch (error) {
-        console.log(error);
-        commit("disconnect", null);
+      if (!accountList) {
+        accountList = await web3.eth.requestAccounts();
       }
+
+      commit("connect", accountList[0]);
+
+      // send address to the server
+      dispatch("sendWalletAddress", accountList[0]);
     },
-    async disconnect({ commit }) {
-      try {
-        commit("disconnect");
-      } catch (error) {
-        commit("stop", error);
+
+    async sendWalletAddress({ commit, dispatch }) {
+      console.log("sendWalletAddress");
+
+      // Send walletAddress to server and handle response
+      const response = await web3Authenticate();
+
+      if (response.activeSession) {
+        commit("restoreSessionToken", response.sessionToken);
       }
-    },
-    async reconnect({ commit, dispatch }, accounts) {
-      try {
-        commit("disconnect");
-        dispatch("connect", accounts);
-      } catch (error) {
-        commit("stop", error);
-      }
-    },
-    async authenticate({ commit, dispatch }) {
-      try {
-        const response = await authenticate();
 
-        if (response.sessionToken) {
-          commit("restoreSessionToken", response.sessionToken);
-        } else if (response.signatureToken) {
-          commit("saveSignatureMessage", response);
-          await dispatch("signMessage", response.signatureMessage);
-        }
-        dispatch("login");
-      } catch (error) {
-        commit("disconnect");
-        commit("stop", error);
-      }
-    },
-    async login({ commit, dispatch }, retry) {
-      try {
-        if (retry) {
-          commit("retry");
-        }
-        const { status, user, userOrgs, session } = await login();
-
-        await dispatch("handleLoginStatus", status);
-
-        if (user) {
-          commit("user/updateUserInfo", user, { root: true });
-        }
-
-        if (userOrgs) {
-          commit("organization/updateUserOrgs", userOrgs, { root: true });
-        }
-
-        if (session) {
-          commit("storeSession", session);
-        }
-
-        router.push("/scenes");
-
-        commit("stop");
-      } catch (error) {
-        commit("disconnect");
-        commit("stop", error);
+      if (response.signatureToken) {
+        commit("saveSignatureMessage", response);
+        await dispatch("signMessage", response.signatureMessage);
       }
     },
 
-    async handleLoginStatus({ commit, state, dispatch }, status) {
-      try {
-        if (status > 401 && state.retries == 3) {
-          commit("stop", "Login failed after 3 attempts. Please check your internet connection and then contact support.");
-          return;
-        } else if (status > 401) {
-          commit("retry");
-          return await dispatch("login");
-        } else if (status == 401) {
-          commit("disconnect");
-        } else if (status == 201) {
-          router.push("/join");
-        }
-      } catch (error) {
-        commit("disconnect");
-        commit("stop", error);
-      }
-    },
-    async signMessage({ commit, state }, message) {
+    async signMessage({ commit, state, dispatch }, message) {
+      console.log("signMessage");
+
       try {
         const signature = await web3.eth.personal.sign(message, state.connectedWallet);
         commit("saveSignature", signature);
-        return signature;
+        dispatch("sendSignature");
       } catch (error) {
         commit("disconnect");
         commit("stop", error);
@@ -212,13 +159,56 @@ export default {
         return null;
       }
     },
-    restoreSession({ commit, dispatch }) {
-      console.log("Restoring session token...");
-      const sessionToken = localStorage.getItem("sessionToken");
-      if (sessionToken) {
-        commit("restoreSessionToken", sessionToken);
-        dispatch("connect");
+
+    async sendSignature({ dispatch }) {
+      console.log("sendSignature");
+
+      const response = await sendSignature();
+
+      if (response.status >= 400) {
+        dispatch("handleFailedLogin", response);
+      } else {
+        dispatch("handleSuccessfulLogin", response);
       }
+    },
+
+    handleSuccessfulLogin({ commit }, response) {
+      console.log("handleSuccessfulLogin");
+
+      const { user, userOrgs, session, status } = response;
+
+      if (user) {
+        commit("user/updateUserInfo", user, { root: true });
+      }
+
+      if (userOrgs) {
+        commit("organization/updateUserOrgs", userOrgs, { root: true });
+      }
+
+      if (session) {
+        commit("storeSession", session);
+      }
+
+      if (status == 200) {
+        router.push("/welcome");
+      } else if (status == 201) {
+        router.push("/join");
+      }
+      commit("banners/showSuccess", { message: `Welcome to VLM, ${user.displayName}!`, timeout: 2000 }, { root: true });
+      commit("stop");
+    },
+
+    handleFailedLogin({ commit }) {
+      console.log("handleFailedLogin");
+
+      commit("disconnect");
+      commit("stop");
+      commit("banners/showError", { message: "Login failed. Please check your connection.", timeout: 5000 }, { root: true });
+    },
+
+    disconnect({ commit }) {
+      console.log("disconnect");
+      commit("disconnect");
     },
   },
 };

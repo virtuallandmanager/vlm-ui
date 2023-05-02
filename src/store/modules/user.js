@@ -5,42 +5,38 @@ import router from "../../router";
 export default {
   namespaced: true,
   state: () => ({
+    processing: false,
     userInfo: {},
   }),
   mutations: {
-    start: (state) => (state.loggingIn = true),
-    retry: (state) => {
-      state.retries++;
-    },
-    stop: (state, errorMessage) => {
-      state.signing = false;
-      state.loggingIn = false;
-      state.loginError = errorMessage;
-      state.retries = 0;
+    start: (state) => (state.processing = true),
+    stop: (state) => {
+      state.processing = false;
     },
     updateUserInfo(state, userInfo) {
       state.userInfo = { ...state.userInfo, ...userInfo };
-    },
-    updateUserOrgInfo(state, userOrgInfo) {
-      state.userOrgInfo = { ...state.userOrgInfo, ...userOrgInfo };
     },
   },
   actions: {
     async updateUserInfo({ commit }, userInfo) {
       try {
+        commit("start");
         await updateUserInfo();
         commit("updateUserInfo", userInfo);
+        commit("stop");
       } catch (error) {
         console.log(error);
       }
     },
-    async setupUserInfo({ commit }, { userInfo, userOrgInfo }) {
+    async setupUserInfo({ commit }, { newUserInfo, userOrgInfo }) {
       try {
-        console.log(userInfo);
-        console.log(userOrgInfo);
+        commit("start");
+        commit("updateUserInfo", newUserInfo);
+        commit("organization/updateUserOrgs", [userOrgInfo], { root: true });
+        const { userInfo, orgInfo } = await setupUserInfo();
         commit("updateUserInfo", userInfo);
-        commit("updateUserOrgInfo", userOrgInfo);
-        await setupUserInfo();
+        commit("organization/updateUserOrgs", [orgInfo], { root: true });
+        commit("stop");
         router.push("/welcome");
       } catch (error) {
         console.log(error);
