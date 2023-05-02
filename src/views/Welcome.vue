@@ -3,11 +3,11 @@
     <v-container class="">
       <v-row class="text-center mb-12" v-if="loading">
         <v-col>
-          <loader
-            message="Loading your scenes..."
-            :loading="loading"
-            :grid="true"
-          />
+          <div
+            class="text-h5"
+          >
+            WELCOME
+          </div>
         </v-col>
       </v-row>
       <v-row class="text-center" v-if="!scenes.length && !loading">
@@ -67,12 +67,10 @@
 
 <script>
 import { mapGetters } from "vuex";
-import Loader from "../components/Loader";
 import store from "../store";
 import { DateTime } from "luxon";
 
 export default {
-  components: { Loader },
   name: "Welcome",
   data: () => ({
     loading: false,
