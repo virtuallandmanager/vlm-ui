@@ -18,7 +18,7 @@
               </div>
               <div
                 class="text-caption grey--text text--darken-2 text-left"
-                v-if="org.displayName"
+                v-if="org?.displayName"
               >
                 ORGANIZATION
               </div>

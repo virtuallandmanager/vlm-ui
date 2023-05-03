@@ -28,30 +28,30 @@ const router = new Router({
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ "../views/Registration.vue"),
+      component: () => import(/* webpackChunkName: "join" */ "../views/Registration.vue"),
     },
-    {
-      path: "/events",
-      name: "Events",
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ "../views/About.vue"),
-    },
+    // {
+    //   path: "/events",
+    //   name: "Events",
+    //   // route level code-splitting
+    //   // this generates a separate chunk (about.[hash].js) for this route
+    //   // which is lazy-loaded when the route is visited.
+    //   component: () => import(/* webpackChunkName: "events" */ "../views/Events.vue"),
+    // },
     {
       path: "/scenes",
       name: "Scenes",
-      component: () => import(/* webpackChunkName: "land" */ "../views/MyScenes.vue"),
+      component: () => import(/* webpackChunkName: "scenes" */ "../views/MyScenes.vue"),
     },
     {
       path: "/scene/:sceneId",
       name: "Scene",
-      component: () => import(/* webpackChunkName: "land" */ "../views/Scene.vue"),
+      component: () => import(/* webpackChunkName: "scene" */ "../views/Scene.vue"),
     },
     {
       path: "/welcome",
       name: "Welcome",
-      component: () => import(/* webpackChunkName: "land" */ "../views/Welcome.vue"),
+      component: () => import(/* webpackChunkName: "welcome" */ "../views/Welcome.vue"),
     },
   ],
 });
