@@ -111,7 +111,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import GdprNotice from "../components/dialogs/GDPRNotice";
 
 export default {
@@ -128,7 +128,7 @@ export default {
     this.newUserInfo = { roles: this.newUserRoles, ...this.userInfo } || {};
   },
   computed: {
-    ...mapState("user", ["userInfo"]),
+    ...mapGetters("user", ["userInfo"]),
     orgAdmin() {
       return this.newUserRoles[4];
     },
@@ -153,14 +153,6 @@ export default {
           this.showError({ message: "Invalid phone number.", timeout: 4000 });
           return;
         }
-        const smsCountryData = {
-          name: this.newUserInfo?.phone?.country?.name,
-          code: this.newUserInfo?.phone?.country?.iso2,
-        };
-        this.newUserInfo.smsPhoneNumber = {
-          ...this.newUserInfo.phone,
-          country: smsCountryData,
-        };
 
         this.newUserInfo.roles = this.newUserRoles
           .map((role, i) => (role ? i : -1))
@@ -212,11 +204,15 @@ export default {
       }
     },
     onInput(formattedNumber, { number, valid, country }) {
-      this.userInfo.smsPhoneNumber = {
+      const smsCountryData = {
+        name: country?.name,
+        code: country?.iso2,
+      };
+      this.newUserInfo.smsPhoneNumber = {
         formattedNumber,
         number,
         valid,
-        country,
+        country: smsCountryData,
       };
     },
     togglePrivacyPolicy() {

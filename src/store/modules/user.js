@@ -1,6 +1,6 @@
 import { updateUserInfo, setupUserInfo } from "../dal/user";
 import router from "../../router";
-// import store from "..";
+import store from "..";
 
 export default {
   namespaced: true,
@@ -8,6 +8,9 @@ export default {
     processing: false,
     userInfo: {},
   }),
+  getters: {
+    userInfo: (state) => ({ location: store?.state?.auth?.session?.ipData?.location, ...state.userInfo }),
+  },
   mutations: {
     start: (state) => (state.processing = true),
     stop: (state) => {
