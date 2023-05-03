@@ -120,14 +120,12 @@ export default {
   data: () => ({
     newUserInfo: { roles: [0, 1] },
     newOrg: { displayName: "AnonCo" },
-    newOrgMembers: [],
     newUserRoles: [true, true, false, false, false],
     phone: null,
     showPrivacyPolicy: false,
   }),
   mounted() {
-    this.newUserInfo = { roles: [this.newUserRoles], ...this.userInfo } || {};
-    this.newOrgMembers.push(this.newUserInfo.connectedWallet);
+    this.newUserInfo = { roles: this.newUserRoles, ...this.userInfo } || {};
   },
   computed: {
     ...mapState("user", ["userInfo"]),
@@ -165,13 +163,13 @@ export default {
         };
 
         this.newUserRoles.forEach((role, i) => {
-          if (role && !this.newUserInfo?.roles?.includes(i)) {
+          if (role && this.newUserInfo && !this.newUserInfo.roles.includes(i)) {
             this.newUserInfo.roles.push(i);
           }
         });
 
         await this.setupUserInfo({
-          userInfo: this.newUserInfo,
+          newUserInfo: this.newUserInfo,
           userOrgInfo: this.orgAdmin ? this.newOrg : null,
         });
       } catch (error) {

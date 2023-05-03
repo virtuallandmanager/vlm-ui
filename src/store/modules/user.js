@@ -33,9 +33,9 @@ export default {
         commit("start");
         commit("updateUserInfo", newUserInfo);
         commit("organization/updateUserOrgs", [userOrgInfo], { root: true });
-        const { userInfo, orgInfo } = await setupUserInfo();
+        const { userInfo, userOrgs } = await setupUserInfo();
         commit("updateUserInfo", userInfo);
-        commit("organization/updateUserOrgs", [orgInfo], { root: true });
+        commit("organization/updateUserOrgs", [userOrgs], { root: true });
         commit("stop");
         router.push("/welcome");
       } catch (error) {
