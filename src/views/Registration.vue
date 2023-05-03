@@ -162,11 +162,9 @@ export default {
           country: smsCountryData,
         };
 
-        this.newUserRoles.forEach((role, i) => {
-          if (role && this.newUserInfo && !this.newUserInfo.roles.includes(i)) {
-            this.newUserInfo.roles.push(i);
-          }
-        });
+        this.newUserInfo.roles = this.newUserRoles
+          .map((role, i) => (role ? i : -1))
+          .filter((x) => x > -1);
 
         await this.setupUserInfo({
           newUserInfo: this.newUserInfo,

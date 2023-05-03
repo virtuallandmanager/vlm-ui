@@ -23,10 +23,11 @@ export const updateUserInfo = async () => {
 export const setupUserInfo = async () => {
   try {
     const { sessionToken } = store.state.auth;
-    const { userInfo, userOrgInfo } = store.state.user;
+    const { userInfo } = store.state.user;
+    const { userOrgs } = store.state.organization;
     const payload = { userInfo };
     if (userInfo?.roles?.includes(4)) {
-      payload.userOrgInfo = userOrgInfo;
+      payload.userOrgInfo = userOrgs[0];
     }
     return await new AuthenticatedFetch(sessionToken).post("/user/setup", payload);
   } catch (error) {
