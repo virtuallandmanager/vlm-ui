@@ -1,95 +1,61 @@
 <template>
-  <div>
-    <div class="d-flex pa-6 mx-auto align-baseline justify-space-between">
-      <div class="text-h5">Video Screens</div>
-      <v-btn @click="addVideoScreen()">
-        <v-icon class="mr-1">mdi-plus</v-icon>
-        Add Video Source
+  <content-sub-panel :loading="processing" :hasContent="!!videos?.length" loadingMessage="Loading video screens...">
+    <template v-slot:header>
+      <div>Video Screens</div>
+      <v-spacer />
+      <v-btn @click="addVideoScreen()" v-if="videos?.length">
+        <v-icon class="mr-2">mdi-television</v-icon>
+        New Video Screen
       </v-btn>
-    </div>
-    <v-row v-if="videos && videos.length < 1" class="mt-6">
-      <v-col cols="12">
-        <div class="text-body1 text-center">
-          There are no video screens in this scene
-        </div>
-      </v-col>
-    </v-row>
-    <div v-if="videos && videos.length > 0">
-      <div v-for="(video, i) in videos" :key="video.id">
-        <video-card
-          :video="video"
-          :i="i"
-          :features="features"
-          @updateProperties="updateProperties"
-          @onRemove="removeVideoScreen(i)"
-        />
-      </div>
-    </div>
-  </div>
+    </template>
+
+    <template v-slot:no-content-header>No Video Screens Have Been Added</template>
+    <template v-slot:no-content-text>Would you like to add one?</template>
+    <template v-slot:no-content-cta>
+      <v-btn @click="addVideoScreen()">
+        <v-icon class="mr-2">mdi-television</v-icon>
+        New Video Screen
+      </v-btn>
+    </template>
+
+    <v-container fluid class="pa-0">
+      <v-row>
+        <v-col md="4" sm="6" xs="12" v-for="(video, i) in videos" :key="video.id">
+          <scene-video-card :video="video" :i="i" />
+        </v-col>
+      </v-row>
+    </v-container>
+  </content-sub-panel>
 </template>
 
 <script>
-import Vue from 'vue'
-import { mapActions } from 'vuex'
-import VideoCard from './VideoCard'
-import { SceneVideo } from '../models/SceneVideo'
+import { mapActions, mapGetters } from "vuex";
+import SceneVideoCard from "./SceneVideoCard";
+import ContentSubPanel from "./ContentSubPanel";
+import { SceneVideo } from "../models/SceneVideo";
 
 export default {
   components: {
-    VideoCard
+    ContentSubPanel,
+    SceneVideoCard,
   },
-  name: 'SceneVideoList',
-  data: () => ({
-    deleteVideoDialog: false
-  }),
-  props: {
-    videos: {
-      type: Array,
-      default: function () {
-        return []
-      }
-    },
-    features: Object,
+  name: "SceneVideoList",
+  computed: {
+    ...mapGetters({
+      videos: "scene/sceneVideos",
+      processing: "scene/processing",
+    }),
   },
   methods: {
     ...mapActions({
-      uploadImage: 'image/uploadImage'
+      createSceneElement: "scene/createSceneElement",
+      updateSceneElement: "scene/updateSceneElement",
+      deleteSceneElement: "scene/deleteSceneElement",
     }),
-    addVideoScreen () {
-      const screenCount = this.videos.length + 1
-      const nextItem = {
-        ...new SceneVideo(),
-        name: `Screen ${screenCount}`
-      }
-
-      this.videos.push(nextItem)
-
-      window.scrollTo(
-        0,
-        document.body.scrollHeight || document.documentElement.scrollHeight
-      )
+    addVideoScreen() {
+      const elementData = new SceneVideo({ name: `Video Source ${this.videos.length + 1}` });
+      this.createSceneElement({ element: "video", elementData });
     },
-    removeVideoScreen (i) {
-      const videoId = this.videos[i].id
-      Vue.delete(this.videos, i)
-
-      this.updateProperties({
-        action: 'delete',
-        entity: 'video',
-        id: videoId,
-        entityData: this.videos[i]
-      })
-    },
-    toggleEditMode (i) {
-      Vue.set(this.videos[i], 'editing', !this.videos[i].editing)
-
-      if (!this.videos[i].editing && !this.videos[i].locked) {
-        Vue.set(this.videos[i], 'id', this.videos[i].name.createSlug())
-      }
-    },
-    updateProperties (wssMessages) {
-      this.$emit('updateProperties', { wssMessages })
-    }
-  }
-}
+  },
+};
 </script>

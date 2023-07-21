@@ -446,7 +446,7 @@ export default {
     updateProperties() {
       const wssMessages = {
         action: "update",
-        entity: "moderation",
+        element: "moderation",
         settings: this.settings,
       };
       this.$emit("updateProperties", { wssMessages });

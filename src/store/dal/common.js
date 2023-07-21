@@ -28,6 +28,11 @@ export class AuthenticatedFetch {
     const response = await fetch(process.env.VUE_APP_API_URL + endpoint, payload),
       responseJson = await response.json();
 
+    // if (response.status == 401) {
+    //   store.dispatch("auth/connect");
+    //   return;
+    // }
+
     return { status: response.status, ...responseJson };
   };
   post = async (endpoint, payloadBody) => {
@@ -45,7 +50,10 @@ export class AuthenticatedFetch {
 
     const response = await fetch(process.env.VUE_APP_API_URL + endpoint, payload),
       responseJson = await response.json();
-
+    // if (response.status == 401) {
+    //   store.dispatch("auth/connect");
+    //   return;
+    // }
     return { status: response.status, ...responseJson };
   };
 }

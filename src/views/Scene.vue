@@ -1,383 +1,239 @@
 <template>
-  <v-sheet
-    elevation="2"
-    class="mx-auto fill-height pb-4"
-    max-width="960"
-    v-if="property"
-  >
-    <v-snackbar v-model="error" tile color="red accent-2" width="550">
-      {{ errorMessage }}
-    </v-snackbar>
-    <v-container v-if="property">
-      <v-row>
-        <v-col>
-          <v-btn @click="goBack">Back</v-btn>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-text-field
-            v-if="editingName"
-            v-model="property.propertyName"
-            class="parcel-name-input"
-            autofocus
-            @blur="updateName()"
-            append-icon="mdi-pencil"
-          ></v-text-field>
-          <v-hover
-            v-slot="{ hover }"
-            :value="editingName"
-            open-delay="200"
-            close-delay="200"
-          >
-            <h1 v-if="!editingName" @click="editName()">
-              {{ property.propertyName }}
-              <v-btn
-                :class="!editingName && hover ? 'visible' : 'hidden'"
-                icon
-                color="black"
-                fab
-                x-small
-                class="mb-1"
-                @click="editName()"
-                ><v-icon>mdi-pencil</v-icon></v-btn
-              >
-            </h1>
-          </v-hover>
-          <h5 v-if="property.updates.length">
-            Last updated {{ lastUpdate.howLongAgo }}
-            <v-dialog v-model="updateHistoryDialog" scrollable width="600px">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  color="primary"
-                  dark
-                  icon
-                  x-small
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-icon v-bind="attrs" x-small v-on="on">
-                        mdi-clock
-                      </v-icon>
-                    </template>
-                    <span>View Update History</span>
-                  </v-tooltip>
-                </v-btn>
-              </template>
-              <v-card>
-                <v-card-title>
-                  <span class="text-h5">Update History</span>
-                </v-card-title>
-                <v-card-text>
-                  <div v-for="(update, i) in property.updates" :key="i">
-                    <div v-if="update.update" class="font-weight-bold">
-                      {{ update.update.action.capitalize() }}
-                      {{ update.update.entity }} {{ update.update.property
-                      }}{{ update.update.entityData && " - "
-                      }}{{
-                        update.update.entityData &&
-                        update.update.entityData.name
-                      }}
-                    </div>
-                    <div v-if="!update.update" class="font-weight-bold">
-                      Unknown update
-                    </div>
-                    <div>
-                      {{ getDateTime(update.timestamp) }} by
-                      {{ update.wallet.truncateWallet() }}
-                    </div>
-                    <br />
-                  </div>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    color="gray darken-1"
-                    text
-                    @click="updateHistoryDialog = false"
-                  >
-                    Close
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </h5>
-
-          <h5>
-            {{ property.parcels.length }} Parcel{{
-              property.parcels.length > 1 ? "s" : ""
-            }}
-          </h5>
-          <h6>
-            <span>Base Parcel: {{ property.baseParcel }}</span>
-          </h6>
-        </v-col>
-        <v-col no-gutters class="text-right">
-          <v-menu
-            v-model="showParcelMap"
-            transition="scale-transition"
-            origin="top right"
-            offset-y
-            nudge-left="200"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on">
-                <v-icon v-if="showParcelMap"> mdi-close </v-icon>
-                <v-icon v-else> mdi-map </v-icon>
-              </v-btn>
-            </template>
-            <parcel-map
-              :property="property"
-              wrapperClass="pa-4 elevation-0"
-              hClass="pb-4 text-center"
-            />
-          </v-menu>
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-tabs v-model="tab" centered icons-and-text color="nav">
-      <v-tabs-slider></v-tabs-slider>
-
-      <v-tab href="#tab-1" v-if="property.features.analytics">
-        Analytics
-        <v-icon>mdi-chart-timeline-variant</v-icon>
-      </v-tab>
-      <v-tab href="#tab-2" v-if="property.features.entityPlacement">
-        Video Screens
-        <v-icon>mdi-video</v-icon>
-      </v-tab>
-      <v-tab href="#tab-3" v-if="property.features.entityPlacement">
-        Images
-        <v-icon>mdi-image</v-icon>
-      </v-tab>
-      <v-tab href="#tab-4" v-if="property.features.dialogs">
-        Dialogs
-        <v-icon>mdi-message</v-icon>
-      </v-tab>
-      <v-tab href="#tab-5" v-if="property.features.moderation">
-        Moderation
-        <v-icon>mdi-gavel</v-icon>
-      </v-tab>
-      <v-tab href="#tab-6" v-if="property.features.customizations">
-        Customizations
-        <v-icon>mdi-palette</v-icon>
-      </v-tab>
-    </v-tabs>
-
-    <v-tabs-items v-model="tab" class="elevation-0" v-if="property">
-      <v-tab-item :value="'tab-1'" v-if="property.features.analytics">
-        <scene-analytics
-          :baseParcel="property.baseParcel"
-          :features="property.features"
-          @updateProperties="updateProperties"
-        />
-      </v-tab-item>
-      <v-tab-item :value="'tab-2'" v-if="property.features.entityPlacement">
-        <scene-video-list
-          :videos="property.sceneData.videoScreens"
-          :features="property.features"
-          @updateProperties="updateProperties"
-        />
-      </v-tab-item>
-      <v-tab-item :value="'tab-3'" v-if="property.features.entityPlacement">
-        <scene-image-list
-          :images="property.sceneData.images"
-          :property="property"
-          :features="property.features"
-          @updateProperties="updateProperties"
-        />
-      </v-tab-item>
-      <v-tab-item :value="'tab-4'" v-if="property.features.dialogs">
-        <scene-dialog-list
-          :dialogs="property.sceneData.dialogs"
-          :features="property.features"
-          @updateProperties="updateProperties"
-        />
-      </v-tab-item>
-      <v-tab-item :value="'tab-5'" v-if="property.features.moderation">
-        <scene-moderation
-          :settings="property.sceneData.moderation"
-          :features="property.features"
-          @updateProperties="updateProperties"
-          @sendMessage="sendMessage"
-        />
-      </v-tab-item>
-      <v-tab-item :value="'tab-6'" v-if="property.features.customizations">
-        <scene-customization-list
-          :customizations="property.sceneData.customizations"
-          :features="property.features"
-          @updateProperties="updateProperties"
-        />
-      </v-tab-item>
-    </v-tabs-items>
-  </v-sheet>
+  <focus-page :loadingMessage="`Connecting To ${scene.name || 'Scene'}...`" :loading="processing || loadingPreset" :noContent="!scene" :imageLink="scene?.imageLink || placeholder">
+    <transform-dialog />
+    <delete-dialog />
+    <click-event-dialog />
+    <properties-dialog />
+    <template v-slot:header>{{ scene?.name }}</template>
+    <template v-slot:header-actions>
+      <div class="d-flex align-center flex-center" style="position: absolute">
+        <v-fade-transition>
+          <v-chip v-if="connected" :color="connectedColor" :border-color="connectedColor">Connected To Scene </v-chip>
+        </v-fade-transition>
+      </div>
+    </template>
+    <template v-slot:no-content-header>Could Not Load Scene</template>
+    <template v-slot:no-content-text> Please try again and contact support if the problem continues. </template>
+    <v-card class="cyberpunk-border py-4">
+      <v-tabs v-model="tab" centered icons-and-text center-active grow color="nav" :show-arrows="true">
+        <v-tabs-slider />
+        <v-tab href="#tab-1" disabled>
+          Analytics
+          (Coming Soon)
+          <v-icon>mdi-chart-timeline-variant</v-icon>
+        </v-tab>
+        <v-tab href="#tab-2">
+          Video Screens
+          <v-icon>mdi-television</v-icon>
+        </v-tab>
+        <v-tab href="#tab-3">
+          Art
+          <v-icon>mdi-image-frame</v-icon>
+        </v-tab>
+        <!--<v-tab href="#tab-4">
+          Sounds
+          <v-icon>mdi-speaker</v-icon>
+        </v-tab>
+        -->
+        <!-- <v-tab href="#tab-5">
+              Events
+              <v-icon>mdi-balloon</v-icon>
+            </v-tab> -->
+        <v-tab href="#tab-6">
+          Widgets
+          <v-icon>mdi-palette</v-icon>
+        </v-tab>
+        <v-tab href="#tab-7">
+          Presets
+          <v-icon>mdi-folder</v-icon>
+        </v-tab>
+        <v-tab href="#tab-8">
+          Settings
+          <v-icon>mdi-cog</v-icon>
+        </v-tab>
+      </v-tabs>
+    </v-card>
+    <v-spacer class="p"></v-spacer>
+    <v-card class="cyberpunk-border pa-6 mt-4">
+      <v-tabs-items v-model="tab">
+        <!-- <v-tab-item value="tab-1"> -->
+        <!-- <scene-analytics /> -->
+        <!-- </v-tab-item> -->
+        <v-tab-item value="tab-2">
+          <scene-video-list />
+        </v-tab-item>
+        <v-tab-item value="tab-3">
+          <scene-art-list />
+        </v-tab-item>
+        <!-- <v-tab-item value="tab-4">
+          <scene-sound-list />
+        </v-tab-item> -->
+        <v-tab-item value="tab-5">
+          <scene-event-list />
+        </v-tab-item>
+        <v-tab-item value="tab-6">
+          <scene-widget-list />
+        </v-tab-item>
+        <v-tab-item value="tab-7">
+          <scene-preset-list />
+        </v-tab-item>
+        <v-tab-item value="tab-8">
+          <scene-settings />
+        </v-tab-item>
+      </v-tabs-items>
+    </v-card>
+  </focus-page>
 </template>
 
 <script>
-import ParcelMap from "../components/ParcelMap";
-import SceneAnalytics from "../components/SceneAnalytics";
-import SceneDialogList from "../components/SceneDialogList";
-import SceneImageList from "../components/SceneImageList";
+// import SceneAnalytics from "../components/SceneAnalytics";
+import SceneArtList from "../components/SceneArtList";
 import SceneVideoList from "../components/SceneVideoList";
-import SceneModeration from "../components/SceneModeration";
-import SceneCustomizationList from "../components/SceneCustomizationList";
-// import Property from '../models/Property'
-import { mapGetters, mapActions } from "vuex";
-import moment from "moment";
+import SceneEventList from "../components/SceneEventList";
+// import SceneSoundList from "../components/SceneSoundList";
+import SceneWidgetList from "../components/SceneWidgetList";
+import ScenePresetList from "../components/ScenePresetList";
+// import SceneModeration from "../components/SceneModeration";
+// import SceneSettings from "../components/SceneSettings";
+// import ImageLibrary from "../components/ImageLibrary";
+import { mapActions, mapGetters } from "vuex";
 import { DateTime } from "luxon";
+import placeholderImg from "@/assets/placeholder.png";
+import FocusPage from "../components/FocusPage";
+import TransformDialog from "../components/dialogs/TransformDialog";
+import PropertiesDialog from "../components/dialogs/PropertiesDialog";
+import DeleteDialog from "../components/dialogs/DeleteDialog";
+import ClickEventDialog from "../components/dialogs/ClickEventDialog";
+import store from "../store";
 
 export default {
   name: "Scene",
   components: {
-    SceneAnalytics,
-    SceneDialogList,
-    SceneImageList,
+    // SceneAnalytics,
+    SceneArtList,
     SceneVideoList,
-    SceneModeration,
-    SceneCustomizationList,
-    ParcelMap,
+    // SceneSoundList,
+    SceneEventList,
+    // SceneModeration,
+    // ImageLibrary,
+    // SceneSettings,
+    SceneWidgetList,
+    ScenePresetList,
+    FocusPage,
+    TransformDialog,
+    PropertiesDialog,
+    ClickEventDialog,
+    DeleteDialog,
   },
   data: () => ({
-    showParcelMap: false,
     editingName: false,
     deleteScreenDialog: false,
     updateHistoryDialog: false,
     editingScreenName: false,
-    tab: null,
+    selectedPreset: null,
+    tab: "tab-2",
   }),
-  created() {
-    this.$watch(
-      () => this.$route.params,
-      (toParams, previousParams) => {
-        console.log(this.$route.params, toParams, previousParams);
-        // react to route changes...
-      }
-    );
-  },
-  watch: {
-    userLand: function (newVal, oldVal) {
-      // watch it
-      console.log("Prop changed: ", newVal, " | was: ", oldVal);
-    },
-  },
-  mounted() {
-    if (!this.userLand || !this.userLand.length) {
-      this.fetchUserLand();
+  beforeRouteEnter(to, from, next) {
+    const isAuthenticated = store.getters["auth/authenticated"];
+
+    if (!isAuthenticated) {
+      next("/"); // Redirect to the login page if the user is not authenticated
+    } else {
+      next(); // Continue rendering the component
     }
-    console.log(this.property);
   },
+  async mounted() {
+    await this.connectToScene("00000000-0000-0000-0000-000000000000");
+  },
+  beforeDestroy() {},
   computed: {
-    ...mapGetters("land", ["userLand"]),
-    error: {
-      get() {
-        return this.$store.getters["land/error"];
-      },
-      set(value) {
-        this.setErrorState(value);
-      },
+    scene() {
+      return this.$store.state.scene.activeScene || {};
     },
-    errorMessage: {
-      get() {
-        return this.$store.getters["land/errorMessage"];
-      },
-    },
-    property() {
-      return this.$store.getters["land/property"](
-        this.$route.params.xCoord,
-        this.$route.params.yCoord
-      );
-    },
-    sceneData() {
-      return this.property.sceneData;
-    },
-    lastUpdate() {
-      const lastUpdate = this.property.updates[0];
-      if (!lastUpdate) {
-        return false;
+    scenePreset() {
+      if (!this.$store.state.scene.activeScene) {
+        return {};
       }
-      return {
-        howLongAgo: moment(lastUpdate.timestamp).fromNow(),
-        date: moment(lastUpdate.timestamp).format("LL"),
-        time: moment(lastUpdate.timestamp).format("LT"),
-        wallet: lastUpdate.wallet,
-      };
+
+      const activeScene = this.$store.state.scene.activeScene;
+      if (!activeScene) {
+        return {};
+      }
+      const presetId = activeScene.scenePreset,
+        preset = activeScene?.presets?.find((preset) => preset.sk == presetId),
+        scenePresets = activeScene.presets || [];
+
+      return preset || scenePresets[0] || {};
     },
+    placeholder() {
+      return placeholderImg;
+    },
+    connectedColor() {
+      let colors = { r: 100, g: 100, b: 100 };
+      if (this.connected) {
+        colors.g += 100;
+      } else {
+        colors.r += 100;
+        colors.g -= 100;
+      }
+
+      return `rgba(${colors.r},${colors.g},${colors.b},${this.blinkBrightness})`;
+    },
+    worlds() {
+      const worldNames = [];
+      if (this.scene.worlds) {
+        this.scene.worlds.forEach((world) => {
+          switch (world) {
+            case 0:
+              worldNames.push("Decentraland");
+              break;
+            case 1:
+              worldNames.push("Hyperfy");
+          }
+        });
+      }
+      return worldNames.join(", ") || "None";
+    },
+    ...mapGetters({ user: "user/userInfo", connected: "scene/connected", inBlink: "scene/inBlink", outBlink: "scene/outBlink", processing: "scene/processing", loadingPreset: "scene/loadingPreset" }),
   },
   methods: {
     ...mapActions({
-      fetchUserLand: "land/fetchUserLand",
-      updateLandProperties: "land/updateLandProperties",
+      create: "scene/create",
+      setActiveScene: "scene/setActiveScene",
+      clearActiveScene: "scene/clearActiveScene",
+      loadScenePreset: "scene/loadScenePreset",
+      updateScene: "scene/updateScene",
+      connectToScene: "scene/connectToScene",
       sendUiMessage: "moderation/sendUiMessage",
-      setErrorState: "land/setErrorState",
     }),
-    editName() {
-      this.editingName = true;
-      this.previousPropertyName = this.property.propertyName;
-    },
-    updateName() {
-      this.editingName = false;
-      if (this.property.propertyName === this.previousPropertyName) {
-        return;
-      }
-      this.updateProperties({
-        action: "update",
-        entity: "scene",
-        property: "name",
-      });
-    },
-    updateProperties(options) {
-      this.updateLandProperties({
-        wssMessages: {
-          ...options.wssMessages,
-          features: this.property.features,
-        },
-        property: {
-          propertyName: this.property.propertyName,
-          baseParcel: this.property.baseParcel,
-          sceneData: this.property.sceneData,
-          tokenId: this.property.tokenId,
-        },
-      });
-    },
-    sendMessage(options) {
-      this.sendUiMessage({
-        wssMessages: {
-          ...options.wssMessages,
-        },
-        property: {
-          propertyName: this.property.propertyName,
-          baseParcel: this.property.baseParcel,
-          sceneData: this.property.sceneData,
-          tokenId: this.property.tokenId,
-        },
-      });
-    },
-    goBack() {
-      this.$router.go(-1);
+    connectScene() {
+      return false;
     },
     getDateTime(timestamp) {
-      return DateTime.fromMillis(timestamp).toLocaleString(
-        DateTime.DATETIME_SHORT
-      );
+      return DateTime.fromSeconds(timestamp).toLocaleString(DateTime.DATETIME_SHORT);
     },
+    relDateTime(timestamp) {
+      return DateTime.fromSeconds(timestamp).toRelative();
+    },
+    addImage() {},
+    addNft() {},
   },
 };
 </script>
 
-<style lang="scss" scoped>
-.parcel-name-input {
-  font-size: 2em;
-  font-weight: bold;
-  height: 2em;
-  width: 60%;
-  max-width: 580px;
-}
+<style scoped>
 .visible {
   opacity: 1;
 }
 .hidden {
   opacity: 0;
+}
+.frosted {
+  background-color: rgba(75, 75, 125, 0.3);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+.cyberpunk-border {
+  border: 1px solid rgb(128, 0, 255);
 }
 </style>

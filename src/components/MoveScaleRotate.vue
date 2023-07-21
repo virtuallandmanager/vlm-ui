@@ -16,14 +16,8 @@
       </v-tab>
     </v-tabs>
     <v-tabs-items v-model="mode" class="mx-auto">
-      <v-tab-item :value="mode">
-        <x-y-z-buttons
-          :xyz="entity[mode]"
-          :value="mode"
-          :isPlane="isPlane"
-          @onChange="onChange"
-          class="mx-auto"
-        />
+      <v-tab-item :value="mode" class="text-center mt-2">
+        <x-y-z-buttons :xyz="instanceData[mode]" :value="mode" :isPlane="isPlane" @onChange="onChange" class="mx-auto" />
       </v-tab-item>
     </v-tabs-items>
   </div>
@@ -38,9 +32,12 @@ export default {
   data: () => ({
     mode: "position",
   }),
+  mounted() {
+    console.log("FUUUUUUU");
+    console.log(this.instanceData);
+  },
   props: {
-    entity: {
-      name: String,
+    instanceData: {
       position: {
         x: Number,
         y: Number,

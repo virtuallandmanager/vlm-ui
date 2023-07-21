@@ -1,73 +1,99 @@
 <template>
-  <v-dialog v-model="show" max-width="350" persistent>
+  <v-dialog v-if="show" v-model="show" max-width="375" persistent>
     <v-card>
       <v-card-title>Move, Scale, Rotate</v-card-title>
       <v-card-subtitle>
         {{ subtitle }}
       </v-card-subtitle>
       <v-card-text>
-        <move-scale-rotate
-          :entity="entity"
-          :isPlane="entityType == 'image' || entityType == 'video'"
-          @onChange="onChange"
-        />
+        <move-scale-rotate :instanceData="instanceData" @onChange="onChange" :isPlane="element == 'image' || element == 'video'" />
       </v-card-text>
       <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="accenttext" text @click="save"> Save </v-btn>
-        <v-btn color="red darken-1" text @click="revert"> Revert </v-btn>
+        <v-btn color="primary" text @click="save"> Save </v-btn>
+        <v-btn :color="dirty ? 'red' : 'grey'" text @click="revert">{{ dirty ? "Revert" : "Cancel" }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import Vue from 'vue'
-import MoveScaleRotate from '../MoveScaleRotate'
+import Vue from "vue";
+import MoveScaleRotate from "../MoveScaleRotate";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
-  name: 'TransformDialog',
+  name: "TransformDialog",
   components: { MoveScaleRotate },
-  data: () => ({}),
+  data: () => ({
+    dirty: false,
+    originalInstance: null,
+  }),
   props: {
-    entity: Object,
-    entityType: { type: String, default: 'entity' },
-    value: Boolean
+    value: Boolean,
   },
-  mounted () {
-    this.originalPosition = { ...this.entity.position }
-    this.originalScale = { ...this.entity.scale }
-    this.originalRotation = { ...this.entity.rotation }
+  mounted() {
+    console.log(this.props, this.dialogProps);
+    this.dirty = false;
+    this.originalInstance = this.dialogProps?.instanceData;
+  },
+  watch: {
+    instanceData() {
+      if (!this.originalInstance && !this.dirty) {
+        this.originalInstance = this.dialogProps?.instanceData;
+      }
+    },
   },
   computed: {
-    subtitle () {
-      return this.entity.name
+    ...mapGetters({ show: "dialog/transformDialogOpen", dialogProps: "dialog/transformDialogProps" }),
+    subtitle() {
+      return this.dialogProps?.title;
     },
-    show: {
-      get () {
-        return this.value
-      },
-      set (value) {
-        this.$emit('input', value)
-      }
-    }
+    instanceData() {
+      return this.dialogProps?.instanceData;
+    },
+    elementData() {
+      return this.dialogProps?.elementData;
+    },
+    element() {
+      return this.dialogProps?.element;
+    },
   },
   methods: {
-    save () {
-      this.show = false
-      this.onChange()
+    ...mapActions({ updateSceneElement: "scene/updateSceneElement", showTransformDialog: "dialog/showTransformDialog", hideTransformDialog: "dialog/hideTransformDialog" }),
+    onChange() {
+      this.dirty = true;
+      this.updateSceneElement({
+        property: "transform",
+        element: this.element,
+        elementData: this.elementData,
+        instance: true,
+        id: this.instanceData.sk,
+        instanceData: this.instanceData,
+      });
     },
-    revert () {
-      Vue.set(this.entity, 'position', this.originalPosition)
-      Vue.set(this.entity, 'scale', this.originalScale)
-      Vue.set(this.entity, 'rotation', this.originalRotation)
-      this.show = false
-      this.onChange()
+    save() {
+      this.dirty = false;
+      this.hideTransformDialog();
     },
-    onChange () {
-      this.$emit('onChange')
-    }
-  }
-}
+    revert() {
+      if (this.dirty) {
+        this.dirty = false;
+        Vue.set(this.dialogProps.instanceData, "instanceData", this.originalInstance);
+        console.log(this.originalInstance);
+        this.updateSceneElement({
+          property: "transform",
+          element: this.element,
+          elementData: this.elementData,
+          instance: true,
+          id: this.instanceData?.sk,
+          instanceData: this.originalInstance,
+        });
+      }
+
+      this.hideTransformDialog();
+    },
+  },
+};
 </script>

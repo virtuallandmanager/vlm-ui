@@ -16,16 +16,16 @@ export function highestX(xCoords) {
 export function highestY(yCoords) {
   return yCoords.sort((a, b) => b - a)[0] - 0;
 }
-export function propertyRows(yArray) {
+export function parcelRows(yArray) {
   return 1 + highestY(yArray) - lowestY(yArray);
 }
-export function propertyCols(xArray) {
+export function parcelCols(xArray) {
   return 1 + highestX(xArray) - lowestX(xArray);
 }
 export function createRows(parcels) {
   const yArray = yCoords(parcels);
   const highestYCoord = highestY(yArray);
-  const numberOfRows = propertyRows(yArray);
+  const numberOfRows = parcelRows(yArray);
   const rows = new Array(numberOfRows);
 
   for (let i = 0; i < numberOfRows; i++) {
@@ -39,7 +39,7 @@ export function createRows(parcels) {
 export function createCols(parcels) {
   const xArray = xCoords(parcels);
   const highestXCoord = highestX(xArray);
-  const numberOfCols = propertyCols(xArray);
+  const numberOfCols = parcelCols(xArray);
   const cols = new Array(numberOfCols);
 
   for (let i = 0; i < numberOfCols; i++) {

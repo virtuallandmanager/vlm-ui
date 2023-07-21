@@ -10,6 +10,16 @@ export default {
   }),
   getters: {
     userInfo: (state) => ({ location: store?.state?.auth?.session?.ipData?.location, ...state.userInfo }),
+    isVLMAdmin: (state) => !!state.user?.roles?.filter((role) => role >= 7).length,
+    walletAddress: (state) => (before, after) => {
+      const full = state.userInfo.connectedWallet;
+      if (!full) {
+        return "Connection Error";
+      }
+      const truncated = full && full.substring(0, before) + "..." + full.substring(full.length - after);
+      return truncated;
+    },
+    advancedUser: (state) => state.userInfo.roles.includes(2),
   },
   mutations: {
     start: (state) => (state.processing = true),
@@ -40,7 +50,7 @@ export default {
         commit("updateUserInfo", userInfo);
         commit("organization/updateUserOrgs", userOrgs, { root: true });
         commit("stop");
-        router.push("/welcome");
+        router.push("/scenes");
       } catch (error) {
         console.log(error);
       }

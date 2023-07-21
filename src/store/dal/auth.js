@@ -22,10 +22,10 @@ export const sendSignature = async () => {
 
 export const restoreSession = async () => {
   try {
-    const { sessionToken, connectedWallet } = store.state.auth;
-    const payload = { connectedWallet };
-    return await new AuthenticatedFetch(sessionToken).get("/auth/restore", payload);
+    const { sessionToken } = store.state.auth;
+    return await new AuthenticatedFetch(sessionToken).get("/auth/restore");
   } catch (error) {
     return error;
   }
 };
+

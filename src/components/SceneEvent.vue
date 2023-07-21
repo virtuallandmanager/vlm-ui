@@ -1,22 +1,9 @@
 <template>
   <div>
-    <edit-select-dialog
-      v-if="editingSelections"
-      :selections="customization.selections"
-      v-model="editingSelections"
-      @onChange="editCustomization()"
-    />
-    <delete-dialog
-      v-model="deleteDialog"
-      :entity="customization"
-      entityType="customization"
-      :removeAll="true"
-      @onRemove="removeCustomization()"
-    />
     <div class="grey darken-3 pa-6">
       <div class="d-flex justify-space-between">
         <div class="text-h5 white--text" v-if="!editingName">
-          {{ customization.name }}
+          {{ event.name }}
           <v-btn icon small @click="toggleEditMode()">
             <v-icon small>mdi-pencil</v-icon>
           </v-btn>
@@ -24,8 +11,8 @@
         <div class="text-h5" v-if="editingName">
           <v-text-field
             autofocus
-            label="Customization Name"
-            v-model="customization.name"
+            label="Event Name"
+            v-model="event.name"
             hide-details="auto"
             append-outer-icon="mdi-content-save"
             @click:append-outer="toggleEditMode()"
@@ -35,22 +22,22 @@
         </div>
         <div>
           <v-select
-            label="Customization Type"
-            :items="customizationTypes"
+            label="Event Type"
+            :items="eventTypes"
             hide-details="auto"
-            v-model="customization.type"
+            v-model="event.type"
             :disabled="locked"
-            @change="changeCustomizationType()"
+            @change="changeEventType()"
           >
           </v-select>
         </div>
         <div>
           <v-text-field
-            label="Customization Id"
-            v-model="customization.id"
+            label="Event Id"
+            v-model="event.id"
             hide-details="auto"
             :disabled="locked"
-            @blur="editCustomization()"
+            @blur="editEvent()"
           ></v-text-field>
         </div>
         <div>
@@ -58,14 +45,14 @@
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 icon
-                @click="toggleCustomizationLock()"
+                @click="toggleEventLock()"
                 v-bind="attrs"
                 v-on="on"
               >
                 <v-icon>{{ locked ? 'mdi-lock' : 'mdi-lock-open' }}</v-icon>
               </v-btn>
             </template>
-            <span>{{ locked ? 'Unlock' : 'Lock' }} Customization Settings</span>
+            <span>{{ locked ? 'Unlock' : 'Lock' }} Event Settings</span>
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
@@ -78,45 +65,45 @@
                 <v-icon>mdi-trash-can</v-icon>
               </v-btn>
             </template>
-            <span>Remove Customization</span>
+            <span>Remove Event</span>
           </v-tooltip>
         </div>
       </div>
     </div>
     <div class="pa-4">
       <v-switch
-        v-if="customization.type == 0"
-        v-model="customization.value"
+        v-if="event.type == 0"
+        v-model="event.value"
         hide-details
         class="mt-0"
-        @change="editCustomization()"
+        @change="editEvent()"
         ><template v-slot:label>
           <div class="text-body">
-            {{ customization.name }} is
+            {{ event.name }} is
             <strong
-              :class="customization.value ? 'green--text' : 'red--text'"
-              >{{ customization.value ? 'Enabled' : 'Disabled' }}</strong
+              :class="event.value ? 'green--text' : 'red--text'"
+              >{{ event.value ? 'Enabled' : 'Disabled' }}</strong
             >
           </div>
         </template></v-switch
       >
       <v-text-field
-        v-if="customization.type == 1"
-        v-model="customization.value"
-        :label="`${customization.name} Value`"
-        @change="editCustomization()"
+        v-if="event.type == 1"
+        v-model="event.value"
+        :label="`${event.name} Value`"
+        @change="editEvent()"
       ></v-text-field>
 
       <div
         class="d-flex align-center justify-space-between"
-        v-if="customization.type == 2"
+        v-if="event.type == 2"
       >
         <v-select
-          :items="customizationSelections"
-          v-model="customization.value"
-          :label="`${customization.name} State`"
+          :items="eventSelections"
+          v-model="event.value"
+          :label="`${event.name} State`"
           hide-details="auto"
-          @change="editCustomization()"
+          @change="editEvent()"
         ></v-select>
         <v-btn
           class="ml-4"
@@ -128,10 +115,10 @@
       </div>
       <div class="d-flex justify-center">
         <v-btn
-          v-if="customization.type == 3"
+          v-if="event.type == 3"
           color="green"
-          @click="triggerCustomization()"
-          >Trigger {{ customization.name }}</v-btn
+          @click="triggerEvent()"
+          >Trigger {{ event.name }}</v-btn
         >
       </div>
     </div>
@@ -155,7 +142,7 @@ export default {
     editingName: false,
     editingSelections: false,
     deleteDialog: false,
-    customizationTypes: [
+    eventTypes: [
       { text: 'Toggle', value: 0 },
       { text: 'Text', value: 1 },
       { text: 'Selector', value: 2 },
@@ -164,21 +151,21 @@ export default {
     locked: false
   }),
   props: {
-    customization: {
+    event: {
       type: Object,
       default: function () {
-        return new SceneCustomization()
+        return new SceneEvent()
       }
     }
   },
   mounted () {
-    this.locked = this.customization.locked
+    
   },
   computed: {
-    customizationSelections () {
-      return this.customization.selections.map(customization => ({
-        text: `${customization.text}  [ id: ${customization.value} ]`,
-        value: customization.value
+    eventSelections () {
+      return this.event.selections.map(event => ({
+        text: `${event.text}  [ id: ${event.value} ]`,
+        value: event.value
       }))
     }
   },
@@ -186,24 +173,24 @@ export default {
     ...mapActions({
       uploadImage: 'image/uploadImage'
     }),
-    removeCustomization () {
+    removeEvent () {
       this.$emit('onRemove')
     },
-    editCustomization () {
+    editEvent () {
       this.updateProperties({
         action: 'update',
-        entity: 'customization',
-        id: this.customization.id,
-        customizationData: this.customization
+        element: 'event',
+        id: this.event.id,
+        eventData: this.event
       })
     },
-    triggerCustomization () {
-      this.customization.value = true;
+    triggerEvent () {
+      this.event.value = true;
       this.updateProperties({
         action: 'update',
-        entity: 'customization',
-        id: this.customization.id,
-        customizationData: this.customization
+        element: 'event',
+        id: this.event.id,
+        eventData: this.event
       })
     },
     openEditSelectDialog () {
@@ -216,23 +203,23 @@ export default {
       this.editingName = !this.editingName
 
       if (!this.editingName && !this.locked) {
-        this.customization.id = this.customization.name.createSlug()
+        this.event.id = this.event.name.createSlug()
       }
       
-      this.editCustomization()
+      this.editEvent()
     },
-    changeCustomizationType () {
-      if (this.customization.type == 0) {
-        this.customization.value = false
-      } else if (this.customization.type == 1) {
-        this.customization.value = ''
+    changeEventType () {
+      if (this.event.type == 0) {
+        this.event.value = false
+      } else if (this.event.type == 1) {
+        this.event.value = ''
       }
-      this.editCustomization()
+      this.editEvent()
     },
-    toggleCustomizationLock () {
+    toggleEventLock () {
       this.locked = !this.locked
-      Vue.set(this.customization, 'locked', this.locked)
-      this.editCustomization()
+      Vue.set(this.event, 'locked', this.locked)
+      this.editEvent()
     },
     updateProperties (wssMessages) {
       this.$emit('updateProperties', { ...wssMessages })

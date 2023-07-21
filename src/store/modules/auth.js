@@ -9,8 +9,8 @@ export default {
   namespaced: true,
   state: () => ({
     connectedWallet: "",
-    loggingIn: false,
-    loginError: null,
+    authenticated: false,
+    processing: false,
     retries: 0,
     noWeb3: false,
     signatureToken: "", // temp token granted to sign message and get session/sessionToken
@@ -21,94 +21,123 @@ export default {
     sigTokenExpires: "",
     signing: false,
     signingTimerInterval: null,
+    attemptedRestore: null,
   }),
   getters: {
-    connected: (state) => !!(state.connectedWallet && state.sessionToken),
-    userInfo: (state) => ({
-      ...state.userInfo,
-      location: state.sessionIpData?.location,
-    }),
+    attemptedRestore: (state) => !!state.attemptedRestore,
+    signing: (state) => !!state.signing,
+    processing: (state) => !!state.processing,
+    sigTokenExpires: (state) => state.sigTokenExpires,
+    signature: (state) => state.signature,
+    signatureMessage: (state) => state.signatureMessage,
+    connected: (state) => !!state.connectedWallet,
+    authenticated: (state) => !!(state.connectedWallet && state.authenticated),
     walletAddress: (state) => (before, after) => {
       const full = state.connectedWallet;
+      let truncated = "";
+
       if (!full) {
         return "Connection Error";
       }
-      const truncated = full && full.substring(0, before) + "..." + full.substring(full.length - after);
-      return truncated;
+
+      if (before) {
+        truncated += full.substring(0, before);
+      }
+
+      if (before || after) {
+        truncated += "...";
+      }
+
+      if (after) {
+        truncated += full.substring(full.length - after);
+      }
+      return truncated || full;
     },
   },
   mutations: {
-    start: (state) => (state.loggingIn = true),
-    retry: (state) => {
+    START: (state) => (state.processing = true),
+    RETRY: (state) => {
       state.retries++;
     },
-    stop: (state, errorMessage) => {
+    STOP: (state) => {
       state.signing = false;
-      state.loggingIn = false;
-      state.loginError = errorMessage;
+      state.processing = false;
       state.retries = 0;
     },
-    restoreSessionToken: (state, sessionToken) => {
+    RESTORE_SESSION_TOKEN: (state, sessionToken) => {
       state.sessionToken = sessionToken;
     },
-    storeSession: (state, session) => {
+    STORE_SESSION: (state, session) => {
       state.connectedWallet = session.connectedWallet;
       state.sessionExpires = session.expires;
       state.sessionToken = session.sessionToken;
       state.sessionIpData = session.ipData;
       localStorage.setItem("sessionToken", session.sessionToken);
     },
-    connect(state, connectedWallet) {
+    CONNECT(state, connectedWallet) {
       console.log("Connected.");
       state.connectedWallet = connectedWallet;
       localStorage.setItem("connectedWallet", connectedWallet);
     },
-    saveSignatureMessage(state, { signatureMessage, signatureToken }) {
+    AUTHENTICATE(state) {
+      state.authenticated = true;
+    },
+    ATTEMPT_SESSION_RESTORE(state) {
+      state.attemptedRestore = true;
+    },
+    RESET_SESSION_RESTORE(state) {
+      state.attemptedRestore = false;
+    },
+    SAVE_SIGNATURE_MESSAGE(state, { signatureMessage, signatureToken }) {
       state.signatureMessage = signatureMessage;
       state.signatureToken = signatureToken;
       state.signatureAccount = state.connectedWallet;
       state.sigTokenExpires = DateTime.now().plus({ minutes: 1, seconds: 30 }).toUnixInteger();
       state.signing = true;
+      console.log(`sig token expires in ${state.sigTokenExpires - DateTime.now().toUnixInteger()}`);
     },
-    saveSignature(state, signature) {
+    SAVE_SIGNATURE(state, signature) {
       state.signing = false;
       state.signature = signature;
+      state.sigTokenExpires = null;
     },
-    disconnect(state) {
+    DISCONNECT(state) {
       console.log("Disconnecting...");
+      state.authenticated = false;
       state.connectedWallet = null;
-      state.loggingIn = false;
+      state.processing = false;
       state.signing = false;
       state.sessionToken = false;
       state.signatureToken = false;
       localStorage.removeItem("sessionToken");
       localStorage.removeItem("connectedWallet");
+      router.push("/");
     },
   },
   actions: {
     async attemptRestoreSession({ commit, dispatch }) {
-      console.log("attemptRestoreSession");
-
       const token = localStorage.getItem("sessionToken");
-
       if (token) {
-        commit("start");
-        commit("restoreSessionToken", token);
-        await dispatch("sendTokenToServer");
+        commit("START");
+        commit("ATTEMPT_SESSION_RESTORE");
+        commit("RESTORE_SESSION_TOKEN", token);
+        return await dispatch("sendTokenToServer");
+      } else {
+        return false;
       }
     },
 
-    async sendTokenToServer({ commit, dispatch }) {
-      console.log("sendTokenToServer");
-
+    async sendTokenToServer({ dispatch }) {
       // Send token to server and handle response
       const response = await restoreSession();
 
       //If active session
       if (response?.status < 400) {
         await dispatch("handleSuccessfulLogin", response);
+        return true;
       } else if (response?.status >= 400) {
-        commit("banners/showError", { message: "Session expired. Please reconnect.", timeout: 3000 }, { root: true });
+        await dispatch("handleFailedRestore");
+        return false;
       }
     },
 
@@ -116,14 +145,14 @@ export default {
       console.log("connectWallet");
 
       // connect the user's wallet
-      commit("start");
+      commit("START");
       let accountList = newAccountList;
 
       if (!accountList) {
         accountList = await web3.eth.requestAccounts();
       }
 
-      commit("connect", accountList[0]);
+      commit("CONNECT", accountList[0]);
 
       // send address to the server
       dispatch("sendWalletAddress", accountList[0]);
@@ -136,11 +165,11 @@ export default {
       const response = await web3Authenticate();
 
       if (response.activeSession) {
-        commit("restoreSessionToken", response.sessionToken);
+        commit("RESTORE_SESSION_TOKEN", response.sessionToken);
       }
 
       if (response.signatureToken) {
-        commit("saveSignatureMessage", response);
+        commit("SAVE_SIGNATURE_MESSAGE", response);
         await dispatch("signMessage", response.signatureMessage);
       }
     },
@@ -150,11 +179,10 @@ export default {
 
       try {
         const signature = await web3.eth.personal.sign(message, state.connectedWallet);
-        commit("saveSignature", signature);
+        commit("SAVE_SIGNATURE", signature);
         dispatch("sendSignature");
       } catch (error) {
-        commit("disconnect");
-        commit("stop", error);
+        commit("STOP", error);
         console.log("Reject message: ", error);
         return null;
       }
@@ -172,13 +200,13 @@ export default {
       }
     },
 
-    handleSuccessfulLogin({ commit }, response) {
-      console.log("handleSuccessfulLogin");
-
+    async handleSuccessfulLogin({ commit, dispatch }, response) {
       const { user, userOrgs, session, status } = response;
 
       if (user) {
         commit("user/updateUserInfo", user, { root: true });
+      } else {
+        dispatch("handleFailedLogin");
       }
 
       if (userOrgs) {
@@ -186,29 +214,44 @@ export default {
       }
 
       if (session) {
-        commit("storeSession", session);
+        commit("STORE_SESSION", session);
+      } else {
+        dispatch("handleFailedLogin");
       }
+
+      commit("AUTHENTICATE");
 
       if (status == 200) {
-        router.push("/welcome");
+        dispatch("banner/showInfo", { message: `Welcome back, ${user.displayName}!` }, { root: true });
+        // dispatch("app/setDemoMode", true, { root: true });
       } else if (status == 201) {
-        router.push("/join");
+        dispatch("banner/showInfo", { message: `Welcome to VLM!` }, { root: true });
+        router.push("/welcome");
       }
-      commit("banners/showSuccess", { message: `Welcome to VLM, ${user.displayName}!`, timeout: 2000 }, { root: true });
-      commit("stop");
+
+      if (status == 200 && router.currentRoute.path !== "/demo" && router.currentRoute.path !== "/scenes") {
+        router.push("/scenes");
+      }
+
+      commit("STOP");
+      return true;
     },
 
-    handleFailedLogin({ commit }) {
-      console.log("handleFailedLogin");
+    handleFailedLogin({ dispatch }) {
+      dispatch("disconnect");
+      dispatch("banner/showError", { message: "Login failed. Please check your connection." }, { root: true });
+      return false;
+    },
 
-      commit("disconnect");
-      commit("stop");
-      commit("banners/showError", { message: "Login failed. Please check your connection.", timeout: 5000 }, { root: true });
+    handleFailedRestore({ dispatch }) {
+      dispatch("disconnect");
+      return false;
     },
 
     disconnect({ commit }) {
-      console.log("disconnect");
-      commit("disconnect");
+      router.push("/");
+      commit("DISCONNECT");
+      commit("STOP");
     },
   },
 };

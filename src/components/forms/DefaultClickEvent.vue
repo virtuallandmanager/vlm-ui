@@ -2,7 +2,7 @@
   <v-card>
     <v-card-title> Default Click Action </v-card-title>
     <v-card-subtitle>
-      {{ entity.name.capitalize() }}
+      {{ element.capitalize() }}
     </v-card-subtitle>
     <v-divider></v-divider>
     <v-card-subtitle class="pa-6 d-flex flex-column">
@@ -205,14 +205,14 @@ export default {
   }),
   props: {
     title: { type: String, default: "Default Click Event" },
-    entity: {
+    elementData: {
       type: Object,
     },
-    entityType: { type: String, default: "entity" },
+    element: { type: String, default: "element" },
     value: Boolean,
   },
   mounted() {
-    this.displayedClickEvent = new ClickEvent(this.entity?.clickEvent);
+    this.displayedClickEvent = new ClickEvent(this.element?.clickEvent);
     this.originalClickEvent = { ...this.displayedClickEvent };
   },
   computed: {
@@ -245,7 +245,7 @@ export default {
       this.changeValue();
     },
     changeValue() {
-      Vue.set(this.entity, "clickEvent", this.displayedClickEvent);
+      Vue.set(this.element, "clickEvent", this.displayedClickEvent);
 
       Vue.nextTick(() => {
         if (this.hasErrors) {
@@ -293,7 +293,7 @@ export default {
     },
     setClickTrackingId() {
       let clickTrackingId;
-      let defaultTrackingName = this.entity.customId || this.entity.name;
+      let defaultTrackingName = this.element.customId || this.element.name;
 
       if (
         this.displayedClickEvent?.trackingId ||

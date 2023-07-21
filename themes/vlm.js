@@ -1,18 +1,18 @@
-import colors from "vuetify/lib/util/colors";
+// import colors from "vuetify/lib/util/colors";
 
 export default {
   primary: {
-    base: colors.purple.lighten2,
-    darken1: colors.purple.darken2,
-    button: colors.purple.accent1
+    base: "#8077FF",
+    darken1: "#8000FF",
+    button: "#008CFF",
   },
-  secondary: colors.indigo,
+  secondary: "#0098FF",
   // All keys will generate theme styles,
   // Here we add a custom `tertiary` color
-  tertiary: colors.pink.base,
-  nav: colors.purple.lighten2,
-  accenttext: colors.purple.lighten2,
-  development: colors.pink.lighten1,
-  staging: colors.indigo.darken4,
-  production: colors.black
+  tertiary: "#00D2FF",
+  nav: "#8077FF",
+  accenttext: "#47FCE4",
+  development: "#756A95",
+  staging: "#0080E5",
+  production: "#050010",
 };

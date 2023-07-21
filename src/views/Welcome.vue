@@ -9,7 +9,7 @@
       <v-row class="text-center" v-if="!scenes.length && !loading">
         <v-col cols="12">
           <v-card
-            width="420px"
+            max-width="420px"
             class="pa-6 my-6 mx-auto grey d-flex flex-column justify-space-between"
           >
             <div v-for="(org, i) of userOrgs" :key="i" class="text-left">

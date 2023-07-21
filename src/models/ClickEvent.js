@@ -11,10 +11,10 @@ export class ClickEvent {
   };
   teleportTo = "";
 
-  constructor(config) {
-    Object.keys(config).forEach(key => {
-      this[key] = config[key]
-    })
+  constructor(config = {}) {
+    Object.keys(config).forEach((key) => {
+      this[key] = config[key];
+    });
   }
 }
 

@@ -6,9 +6,9 @@
       id="parcelMap"
       :style="
         'height:' +
-        (sceneRows * 20 + 2) +
+        (parcelRows * 20 + 2) +
         'px; width:' +
-        (sceneCols * 20 + 2) +
+        (parcelCols * 20 + 2) +
         'px'
       "
     >
@@ -42,10 +42,7 @@ export default {
       return this.computeParcels();
     },
     sortedCoords() {
-      const coords = this.scene.parcels.map((parcel) => [
-        parcel.x,
-        parcel.y,
-      ]);
+      const coords = this.scene.parcels.map((parcel) => [parcel.x, parcel.y]);
       return coords.sort((a, b) => {
         if (a[0] == b[0]) {
           return a[1] - b[1];
@@ -59,11 +56,11 @@ export default {
     yCoords() {
       return parcelHelper.yCoords(this.scene.parcels);
     },
-    sceneRows() {
-      return parcelHelper.sceneRows(this.yCoords);
+    parcelRows() {
+      return parcelHelper.parcelRows(this.yCoords);
     },
-    sceneCols() {
-      return parcelHelper.sceneCols(this.xCoords);
+    parcelCols() {
+      return parcelHelper.parcelCols(this.xCoords);
     },
   },
   methods: {

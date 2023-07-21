@@ -1,13 +1,11 @@
 <template>
   <v-dialog v-model="show" max-width="350">
     <v-card>
-      <v-card-title class="text-h5">
-        Remove {{ entityType.capitalize() }}
-      </v-card-title>
+      <v-card-title class="text-h5"> Remove {{ instanceData?.name || elementData.name || "Element" }} </v-card-title>
       <v-card-text v-if="!text" class="pt-4">
         Are you sure you want to remove
-        {{ removeAll ? 'all instances of' : '' }}
-        {{ entity.name || `this ${entityType}` }} from the scene?
+        {{ removeAll ? "all instances of" : "" }}
+        {{ instanceData?.name || elementData.name || `this ${element}` }} from the scene?
       </v-card-text>
       <v-card-text v-else class="pt-4">
         {{ text }}
@@ -25,36 +23,46 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
 export default {
-  name: 'DeleteDialog',
+  name: "DeleteDialog",
   data: () => ({}),
   props: {
-    buttonText: { type: String, default: 'Remove' },
-    entity: [Object, String],
-    entityType: { type: String, default: 'entity' },
-    removeAll: { type: Boolean, default: false },
     value: Boolean,
-    text: String
   },
-  mounted () {},
+  mounted() {},
   computed: {
-    show: {
-      get () {
-        return this.value
-      },
-      set (value) {
-        this.$emit('input', value)
-      }
-    }
+    ...mapGetters({ show: "dialog/deleteDialogOpen", dialogProps: "dialog/deleteDialogProps" }),
+    element() {
+      return this.dialogProps.element;
+    },
+    elementData() {
+      return this.dialogProps.elementData;
+    },
+    instanceData() {
+      return this.dialogProps.instanceData;
+    },
+    buttonText() {
+      return this.dialogProps.buttonText || "Remove";
+    },
+    text() {
+      return this.dialogProps.text;
+    },
+    removeAll() {
+      return this.dialogProps.removeAll;
+    },
   },
   methods: {
-    remove () {
-      this.show = false
-      this.$emit('onRemove')
+    ...mapActions({ deleteSceneElement: "scene/deleteSceneElement", showDeleteDialog: "dialog/showDeleteDialog", hideDeleteDialog: "dialog/hideDeleteDialog" }),
+    cancel() {
+      this.hideDeleteDialog();
     },
-    cancel () {
-      this.show = false
-    }
-  }
-}
+    remove() {
+      const { element, elementData, instanceData, instance } = this.dialogProps;
+      const id = instance ? instanceData?.sk : elementData?.sk;
+      this.deleteSceneElement({ element, elementData, instanceData, instance, id });
+      this.hideDeleteDialog();
+    },
+  },
+};
 </script>

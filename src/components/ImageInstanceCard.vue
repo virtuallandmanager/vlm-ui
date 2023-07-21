@@ -1,24 +1,13 @@
 <template>
   <div>
-    <div
-      class="d-flex ma-0 pa-3 align-center grey"
-      :class="i % 2 ? 'darken-3' : 'darken-4'"
-    >
+    <div class="d-flex ma-0 pa-3 align-center grey" :class="i % 2 ? 'darken-3' : 'darken-4'">
       <!-- <span class="grey--text flex-shrink-1 flex-grow-0 pr-1">{{ i + 1 }}</span> -->
       <span class="grey--text flex-shrink-1 flex-grow-0 pr-1">
-        <v-btn
-          icon
-          @click.stop="toggleVisibility()"
-          :disabled="image.customRendering || instance.customRendering"
-        >
+        <v-btn icon @click.stop="toggleVisibility()" :disabled="image.customRendering || instance.customRendering">
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-icon
-                v-bind="attrs"
-                v-on="on"
-                :class="image.show && instance.show ? '' : 'red--text'"
-              >
-                {{ image.show && instance.show ? 'mdi-eye' : 'mdi-eye-off' }}
+              <v-icon v-bind="attrs" v-on="on" :class="image.enabled && instance.enabled ? '' : 'red--text'">
+                {{ image.enabled && instance.enabled ? "mdi-eye" : "mdi-eye-off" }}
               </v-icon>
             </template>
             <span>Show/Hide</span>
@@ -26,11 +15,7 @@
         </v-btn></span
       >
       <div class="d-inline-flex align-center pa-0 ma-0" v-if="editingName">
-        <v-text-field
-          hide-details
-          v-model="instance.name"
-          label="Rename Instance"
-        ></v-text-field>
+        <v-text-field hide-details v-model="instance.name" label="Rename Instance"></v-text-field>
         <v-btn small icon @click="editInstanceName()">
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
@@ -64,10 +49,9 @@
           <v-btn small icon @click="addInstance(instance)">
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
-                <v-icon small v-bind="attrs" v-on="on">
-                  mdi-content-copy
-                </v-icon>
+                <v-icon small v-bind="attrs" v-on="on"> mdi-content-duplicate </v-icon>
               </template>
+
               <span>Duplicate</span>
             </v-tooltip>
           </v-btn>
@@ -77,12 +61,14 @@
             small
             icon
             @click.stop="
-              handleDialog({
-                type: EDialogType.delete,
-                callback: removeImageInstance
+              showDeleteDialog({
+                title: 'Image Instance',
+                element: 'image',
+                elementData: image,
+                instance: true,
+                instanceData: instance,
               })
-            "
-          >
+            ">
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
@@ -93,25 +79,18 @@
         </div>
       </div>
     </div>
-    <quick-view
-      v-if="image.showDetails"
-      :instance="instance"
-      class="grey px-3"
-      :class="i % 2 ? 'darken-3' : 'darken-4'"
-    />
-    <div
-      class="d-flex pb-3 flex-row justify-space-around grey"
-      :class="i % 2 ? 'darken-3' : 'darken-4'"
-    >
+    <quick-view v-if="image.showDetails" :instance="instance" class="grey px-3" :class="i % 2 ? 'darken-3' : 'darken-4'" />
+    <div class="d-flex pb-3 flex-row justify-space-around grey" :class="i % 2 ? 'darken-3' : 'darken-4'">
       <v-btn
         icon
         @click.stop="
-          handleDialog({
-            type: EDialogType.transform,
-            callback: updateInstanceTransform
+          showTransformDialog({
+            element: 'image',
+            elementData: image,
+            instance: true,
+            instanceData: instance,
           })
-        "
-      >
+        ">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-axis-arrow </v-icon>
@@ -121,13 +100,15 @@
       </v-btn>
       <v-btn
         icon
-        @click.stop="
-          handleDialog({
-            type: EDialogType.clickEvent,
-            callback: updateInstanceClickEvent
+        @click="
+          showClickEventDialog({
+            title: 'Image Instance',
+            element: 'image',
+            elementData: image,
+            instance: true,
+            instanceData: instance,
           })
-        "
-      >
+        ">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-mouse </v-icon>
@@ -138,12 +119,14 @@
       <v-btn
         icon
         @click.stop="
-          handleDialog({
-            type: EDialogType.properties,
-            callback: updateInstanceProperties
+          showPropertiesDialog({
+            title: 'Image Instance',
+            element: 'image',
+            elementData: image,
+            instance: true,
+            instanceData: instance,
           })
-        "
-      >
+        ">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
@@ -156,157 +139,161 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import { EDialogType } from '../models/Dialog'
-import { SceneImage } from '../models/SceneImage'
-import { SceneImageInstance } from '../models/SceneImageInstance'
-import QuickView from './QuickView.vue'
+import Vue from "vue";
+import { SceneImage } from "../models/SceneImage";
+import { SceneImageInstance } from "../models/SceneImageInstance";
+import QuickView from "./QuickView.vue";
+import { mapActions } from "vuex";
 
 export default {
   components: { QuickView },
-  name: 'ImageInstanceCard',
+  name: "ImageInstanceCard",
   props: {
     property: Object,
     i: Number,
     instance: {
       type: Object,
       default: function () {
-        return new SceneImageInstance()
-      }
+        return new SceneImageInstance();
+      },
     },
     image: {
       type: Object,
       default: function () {
-        return new SceneImage()
-      }
-    }
+        return new SceneImage();
+      },
+    },
   },
   data: () => ({
-    EDialogType: EDialogType,
-    editingName: false
+    editingName: false,
   }),
   computed: {
-    truncatedName () {
-      const imageNameArr = this.image && this.image.name.split('')
-      let noSpacesLength = 0
-      let truncated = this.image.name
-      imageNameArr.forEach(char => {
-        if (char !== ' ') {
-          noSpacesLength++
+    truncatedName() {
+      const imageNameArr = this.image && this.image.name.split("");
+      let noSpacesLength = 0;
+      let truncated = this.image.name;
+      imageNameArr.forEach((char) => {
+        if (char !== " ") {
+          noSpacesLength++;
         } else {
-          noSpacesLength = 0
+          noSpacesLength = 0;
         }
 
         if (noSpacesLength > 18) {
-          truncated = truncated.substr(truncated.length - 18)
-          noSpacesLength = 0
+          truncated = truncated.substr(truncated.length - 18);
+          noSpacesLength = 0;
         }
-      })
+      });
 
       if (truncated !== this.image.name) {
-        return `...${truncated}`
+        return `...${truncated}`;
       } else {
-        return this.image.name
+        return this.image.name;
       }
-    }
+    },
   },
   methods: {
-    showRenameField () {
-      this.editingName = true
-      this.originalName = this.instance.name
+    ...mapActions({
+      updateSceneElement: "scene/updateSceneElement",
+      deleteSceneElement: "scene/deleteSceneElement",
+      showTransformDialog: "dialog/showTransformDialog",
+      showPropertiesDialog: "dialog/showPropertiesDialog",
+      showClickEventDialog: "dialog/showClickEventDialog",
+      showDeleteDialog: "dialog/showDeleteDialog",
+    }),
+    showRenameField() {
+      this.editingName = true;
+      this.originalName = this.instance.name;
     },
-    removeImageInstance () {
-      const instanceData = { ...this.image.instances[this.i] }
-      Vue.delete(this.image.instances, this.i)
+    removeImageInstance() {
+      const instanceData = { ...this.image.instances[this.i] };
+      Vue.delete(this.image.instances, this.i);
 
-      this.updateProperties({
-        action: 'delete',
-        entity: 'imageInstance',
+      this.deleteSceneElement({
+        element: "image",
+        instance: true,
         id: instanceData.id,
         materialId: this.image.id,
-        entityData: this.image,
-        instanceData
-      })
+        elementData: this.image,
+        instanceData,
+      });
     },
-    cancelEditInstanceName () {
-      this.editingName = false
-      this.instance.name = this.originalName
+    cancelEditInstanceName() {
+      this.editingName = false;
+      this.instance.name = this.originalName;
     },
-    editInstanceName () {
+    editInstanceName() {
       if (!this.instance.name) {
-        return this.cancelEditInstanceName()
+        return this.cancelEditInstanceName();
       }
-      this.editingName = false
-      this.updateProperties({
-        action: 'update',
-        entity: 'imageInstance',
-        property: 'name',
+      this.editingName = false;
+      this.updateSceneElement({
+        element: "image",
+        instance: true,
+        property: "name",
         id: this.instance.id,
-        entityData: this.image,
-        instanceData: this.instance
-      })
+        elementData: this.image,
+        instanceData: this.instance,
+      });
     },
-    toggleVisibility () {
-      Vue.set(this.instance, 'show', !this.instance.show)
-      this.updateProperties({
-        action: 'update',
-        entity: 'imageInstance',
-        property: 'visibility',
+    toggleVisibility() {
+      Vue.set(this.instance, "enabled", !this.instance.enabled);
+      this.updateSceneElement({
+        element: "image",
+        instance: true,
+        property: "enabled",
+        id: this.instance.sk,
+        elementData: this.image,
+        instanceData: this.instance,
+      });
+    },
+    updateInstanceClickEvent() {
+      this.updateSceneElement({
+        element: "image",
+        instance: true,
+        property: "clickEvent",
         id: this.instance.id,
-        entityData: this.image,
-        instanceData: this.instance
-      })
+        elementData: this.image,
+        instanceData: this.instance,
+      });
     },
-    updateInstanceClickEvent () {
-      this.updateProperties({
-        action: 'update',
-        entity: 'imageInstance',
-        property: 'clickEvent',
+    updateInstanceProperties() {
+      this.updateSceneElement({
+        element: "image",
+        instance: true,
+        property: "properties",
         id: this.instance.id,
-        entityData: this.image,
-        instanceData: this.instance
-      })
+        elementData: this.image,
+        instanceData: this.instance,
+      });
     },
-    updateInstanceProperties () {
-      this.updateProperties({
-        action: 'update',
-        entity: 'imageInstance',
-        property: 'properties',
-        id: this.instance.id,
-        entityData: this.image,
-        instanceData: this.instance
-      })
-    },
-    updateInstanceTransform () {
-      this.updateProperties({
-        action: 'update',
-        entity: 'imageInstance',
-        property: 'transform',
+    updateInstanceTransform() {
+      this.updateSceneElement({
+        element: "image",
+        instance: true,
+        property: "transform",
         custom: this.instance.customRendering,
         id: this.instance.id,
-        entityData: this.image,
-        instanceData: this.instance
-      })
+        elementData: this.image,
+        instanceData: this.instance,
+      });
     },
-    addInstance (instance) {
-      this.$emit('addInstance', instance)
+    addInstance(instance) {
+      this.$emit("addInstance", instance);
     },
-    updateProperties (wssMessages) {
-      this.$emit('updateProperties', wssMessages)
-    },
-    handleDialog (options) {
+    handleDialog(options) {
       const dialogOptions = {
-        show: options.show || true,
+        show: options.enabled || true,
         type: options.type,
         callback: options.callback,
-        entity: this.image,
-        instance: this.instance
-      }
+        element: this.image,
+        instance: this.instance,
+      };
 
-      this.$emit('handleDialog', dialogOptions)
-    }
-  }
-}
+      this.$emit("handleDialog", dialogOptions);
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

@@ -101,9 +101,9 @@ export default {
       this.dialogs[d].messages.push(nextItem),
       this.updateProperties({
         action: 'create',
-        entity: 'dialog',
+        element: 'dialog',
         property: 'message',
-        entityData: this.dialogs[d]
+        elementData: this.dialogs[d]
       })
     },
     removeMessage (d, m) {
@@ -111,9 +111,9 @@ export default {
       this.dialogs[d].messages.splice(m, 1)
       this.updateProperties({
         action: 'update',
-        entity: 'dialog',
+        element: 'dialog',
         property: 'message',
-        entityData: this.dialogs[d]
+        elementData: this.dialogs[d]
       })
     },
     editMessageText (d) {
@@ -121,17 +121,17 @@ export default {
       Vue.set(this.dialogs[d], 'messages', this.dialogs[d].messages)
       this.updateProperties({
         action: 'update',
-        entity: 'dialog',
+        element: 'dialog',
         property: 'message',
-        entityData: this.dialogs[d]
+        elementData: this.dialogs[d]
       })
     },
     toggleDialog (d) {
       this.updateProperties({
         action: 'update',
-        entity: 'dialog',
+        element: 'dialog',
         property: 'visibility',
-        entityData: this.dialogs[d]
+        elementData: this.dialogs[d]
       })
     },
     dialogType (dialogType) {

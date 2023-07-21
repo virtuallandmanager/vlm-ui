@@ -1,17 +1,12 @@
 <template>
   <v-dialog v-model="show" max-width="400" persistent>
-    <instance-click-event
-      v-if="instance"
-      :instance="instance"
-      :entity="entity"
-      @onUpdate="update"
-    />
-    <default-click-event v-else :entity="entity" @onUpdate="update" />
+    <instance-click-event v-if="instance" :instanceData="instanceData" :elementData="elementData" @onUpdate="updateInstance" />
+    <default-click-event v-else :elementData="element" @onUpdate="updateElement" />
   </v-dialog>
 </template>
 
 <script>
-import Vue from "vue";
+import { mapActions, mapGetters } from "vuex";
 import { ClickEvent } from "../../models/ClickEvent";
 import InstanceClickEvent from "../forms/InstanceClickEvent.vue";
 import DefaultClickEvent from "../forms/DefaultClickEvent.vue";
@@ -44,41 +39,34 @@ export default {
       { text: "Teleport Player", value: 6 },
     ],
   }),
-  props: {
-    title: { type: String, default: "Default Click Event" },
-    entity: {
-      type: Object,
-    },
-    instance: {
-      type: [Object, null],
-      default: () => null,
-    },
-    entityType: { type: String, default: "entity" },
-    value: Boolean,
-  },
   computed: {
-    show: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit("input", value);
-      },
+    ...mapGetters({ show: "dialog/clickEventDialogOpen", dialogProps: "dialog/clickEventDialogProps" }),
+    element() {
+      return this.dialogProps.element;
+    },
+    elementData() {
+      return this.dialogProps.elementData;
+    },
+    instance() {
+      return this.dialogProps.instance;
+    },
+    instanceData() {
+      return this.dialogProps.instanceData;
     },
   },
   methods: {
-    update(clickEvent, done) {
+    ...mapActions({ updateSceneElement: "scene/updateSceneElement", showClickEventDialog: "dialog/showClickEventDialog", hideClickEventDialog: "dialog/hideClickEventDialog" }),
+    updateInstance(clickEvent, done) {
       if (done) {
-        this.show = false;
+        this.hideClickEventDialog();
       }
-      if (!this.instance) {
-        Vue.set(this.entity, "clickEvent", clickEvent);
-      } else {
-        Vue.set(this.instance, "clickEvent", clickEvent);
+      this.updateSceneElement({ element: this.element, property: "clickEvent", elementData: this.elementData, instance: true, id: this.instanceData.sk, instanceData: { ...this.instanceData, clickEvent } });
+    },
+    updateElement(clickEvent, done) {
+      if (done) {
+        this.hideClickEventDialog();
       }
-      Vue.nextTick(() => {
-        this.$emit("onChange");
-      });
+      this.updateSceneElement({ element: this.element, property: "clickEvent", elementData: { ...this.elementData, clickEvent } });
     },
   },
 };

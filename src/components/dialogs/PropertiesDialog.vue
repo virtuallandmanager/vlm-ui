@@ -1,171 +1,145 @@
 <template>
   <v-dialog v-model="show" max-width="350" persistent>
     <v-card>
-      <v-card-title class="text-h5">
-        {{ entityType.capitalize() }} Properties
-      </v-card-title>
+      <v-card-title class="text-h5">{{ element.capitalize() }}{{ instance && " Instance" }} Properties </v-card-title>
       <v-card-text>
-        <div
-          v-if="entityType == 'image' && !instance"
-          class="text-body1 font-weight-bold"
-        >
-          Appearance
-        </div>
-        <v-switch
-          v-if="entityType == 'image' && !instance"
-          v-model="refObj.isTransparent"
-          label="Enable Transparency"
-          @change="changeTransparency"
-        ></v-switch>
-        <div v-if="instance" class="text-body1 font-weight-bold">
-          Interactions
-        </div>
-        <v-switch
-          v-if="instance"
-          v-model="refObj.withCollisions"
-          label="Enable Collider"
-          @change="changeCollisions"
-        ></v-switch>
-        <div>
-          <div class="text-body1 font-weight-bold">Advanced Features</div>
-          <v-text-field
-            v-model="refObj.customId"
-            label="Custom ID"
-            @change="changeId"
-            placeholder="Custom ID"
-          ></v-text-field>
-          <v-text-field
-            v-model="refObj.parent"
-            label="Parent Entity"
-            dense
-            @change="changeParent"
-            hide-details="true"
-            placeholder="Parent Entity"
-          ></v-text-field>
-          <v-switch
-            v-model="customRendering"
-            label="Custom Rendering"
-            :disabled="instance && baseObj.customRendering"
-            :messages="customRenderingMessage()"
-            hide-details="auto"
-            @change="changeCustomRendering"
-          ></v-switch>
+        <div v-if="element == 'image' && !instance" class="text-body-1 font-weight-bold">Appearance</div>
+        <v-switch v-if="element == 'image' && !instance" v-model="isTransparent" label="Enable Transparency" @change="changeTransparency"></v-switch>
+        <div v-if="instance" class="text-body-1 font-weight-bold">Interactions</div>
+        <v-switch v-if="instance" v-model="refObj.withCollisions" label="Enable Collider" @change="changeCollisions"></v-switch>
+        <div v-if="advancedUser">
+          <div class="text-body-1 font-weight-bold">Advanced Features</div>
+          <v-text-field v-model="refObj.customId" label="Custom ID" @change="changeId" placeholder="Custom ID"></v-text-field>
+          <v-text-field v-model="refObj.parent" label="Parent Entity" dense @change="changeParent" hide-details="true" placeholder="Parent Entity"></v-text-field>
+          <v-switch v-model="customRendering" label="Custom Rendering" :disabled="instance && elementData.customRendering" :messages="customRenderingMessage()" hide-details="auto" @change="changeCustomRendering"></v-switch>
         </div>
       </v-card-text>
       <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="accenttext" text @click="save"> Save </v-btn>
-        <v-btn color="grey darken-1" text @click="revert"> Cancel </v-btn>
+        <v-btn :color="dirty ? 'error' : 'grey darken-1'" text @click="revert"> {{ dirty ? "Revert" : "Cancel" }} </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import Vue from "vue";
+import { mapActions, mapGetters } from "vuex";
 export default {
   name: "PropertiesDialog",
   data: () => ({
-    refObj: {},
-    baseObj: {},
+    original: null,
+    dirty: false,
   }),
-  props: {
-    title: { type: String, default: "Properties" },
-    entity: Object,
-    entityType: { type: String, default: "Entity" },
-    instance: [Object, null],
-    value: Boolean,
-  },
   mounted() {
-    this.refObj = this.instance || this.entity;
-    this.baseObj = { customRendering: false, ...this.entity };
-    this.originalProperties = {
-      ...this.refObj,
-    };
+    if (this.instance) {
+      this.original = { ...this.instanceData };
+    } else {
+      this.original = { ...this.elementData };
+    }
   },
   computed: {
-    show: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit("input", value);
-      },
+    ...mapGetters({ show: "dialog/propertiesDialogOpen", dialogProps: "dialog/propertiesDialogProps", advancedUser: "user/advancedUser" }),
+    instance() {
+      return this.dialogProps?.instance;
     },
-    customRendering: {
-      get() {
-        return this.baseObj.customRendering || this.refObj.customRendering;
-      },
-      set(value) {
-        if (
-          (this.instance && !this.baseObj.customRendering) ||
-          !this.instance
-        ) {
-          this.refObj.customRendering = value;
-        }
-      },
+    instanceData() {
+      return this.dialogProps?.instanceData;
+    },
+    elementData() {
+      return this.dialogProps?.elementData;
+    },
+    element() {
+      return this.dialogProps?.element || "";
+    },
+    refObj() {
+      if (this.instance) {
+        return this.instanceData;
+      } else {
+        return this.elementData;
+      }
+    },
+    isTransparent() {
+      return this.elementData.isTransparent;
+    },
+    customRendering() {
+      return this.refObj.isTransparent;
     },
   },
   methods: {
-    getRefObj() {
-      return this.instance || this.entity;
-    },
+    ...mapActions({ updateSceneElement: "scene/updateSceneElement", showPropertiesDialog: "dialog/showPropertiesDialog", hidePropertiesDialog: "dialog/hidePropertiesDialog" }),
     changeTransparency() {
-      Vue.set(this.refObj, "isTransparent", this.refObj.isTransparent);
-      this.$emit("onChange", this.refObj);
+      this.updateSceneElement({
+        elementData: this.elementData,
+        instance: this.instance,
+        instanceData: this.instanceData,
+        property: "isTransparent",
+      });
+      this.dirty = true;
     },
     changeCollisions() {
-      Vue.set(this.refObj, "withCollisions", this.refObj.withCollisions);
-      this.$emit("onChange", this.refObj);
+      this.updateSceneElement({
+        elementData: this.elementData,
+        instance: this.instance,
+        instanceData: this.instanceData,
+        property: "withCollisions",
+      });
+      this.dirty = true;
     },
     changeCustomRendering() {
-      Vue.set(this.refObj, "customRendering", this.refObj.customRendering);
-      this.$emit("onChange", this.refObj);
+      this.updateSceneElement({
+        elementData: this.elementData,
+        instance: this.instance,
+        instanceData: this.instanceData,
+        property: "customRendering",
+      });
+      this.dirty = true;
     },
     changeParent() {
-      Vue.set(this.refObj, "parent", this.refObj.parent);
-      this.$emit("onChange", this.refObj);
+      this.updateSceneElement({
+        elementData: this.elementData,
+        instance: this.instance,
+        instanceData: this.instanceData,
+        property: "parent",
+      });
+      this.dirty = true;
     },
     changeId() {
-      Vue.set(this.refObj, "customId", this.refObj.customId);
-      this.$emit("onChange", this.refObj);
+      this.updateSceneElement({
+        elementData: this.elementData,
+        instance: this.instance,
+        instanceData: this.instanceData,
+        property: "customId",
+      });
+      this.dirty = true;
     },
     customRenderingMessage() {
       let baseEntity;
-      if (this.entityType.includes("image")) {
+      if (this.element.includes("image")) {
         baseEntity = "image";
-      } else if (this.entityType.includes("video")) {
+      } else if (this.element.includes("video")) {
         baseEntity = "video";
       }
-      if (this.instance && this.baseObj.customRendering) {
-        return `Enabled on base ${baseEntity || "entity"}`;
+      if (this.instance && this.elementData?.customRendering) {
+        return `Enabled on base ${baseEntity || "element"}`;
       }
     },
     save() {
-      this.show = false;
-      this.$emit("onChange", this.refObj);
+      this.dirty = false;
+      this.hidePropertiesDialog();
     },
     revert() {
-      this.show = false;
-      Vue.set(
-        this.refObj,
-        "isTransparent",
-        this.originalProperties.isTransparent
-      );
-      Vue.set(this.refObj, "customId", this.originalProperties.customId);
-      Vue.set(this.refObj, "parent", this.originalProperties.parent);
-      Vue.set(
-        this.refObj,
-        "customRendering",
-        this.originalProperties.customRendering
-      );
-      Vue.set(
-        this.refObj,
-        "withCollisions",
-        this.originalProperties.withCollisions
-      );
-      this.$emit("onChange", this.refObj);
+      if (this.dirty) {
+        this.updateSceneElement({
+          elementData: this.elementData,
+          instance: this.instance,
+          instanceData: this.instanceData,
+          property: "properties",
+        });
+      }
+      this.dirty = false;
+      this.hidePropertiesDialog();
     },
   },
 };

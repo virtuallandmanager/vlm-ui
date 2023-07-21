@@ -2,7 +2,11 @@ export default {
   namespaced: true,
   state: () => ({
     uploadingImage: false,
+    library: [],
   }),
+  getters: {
+    library: (state) => state.library,
+  },
   mutations: {
     startImageUpload: (state) => (state.uploadingImage = true),
     stopImageUpload: (state, errorMessage) => {
@@ -12,11 +16,10 @@ export default {
   },
   actions: {
     async uploadImage({ commit }, payload) {
-      if (!payload.image || !payload.baseParcel) {
+      if (!payload.image || !payload.sceneId) {
         return;
       }
-      const baseCoords = payload.baseParcel.split(","),
-        formData = new FormData(),
+      const formData = new FormData(),
         options = {
           method: "POST",
           body: formData,
@@ -25,12 +28,7 @@ export default {
       formData.append("imageFile", payload.image);
       commit("startImageUpload");
       try {
-        const uploadedImage = await fetch(
-          `${process.env.VUE_APP_API_URL}/image/upload/${baseCoords[0]}/${
-            baseCoords[1]
-          }${payload.id ? `?id=${payload.id}` : ""}`,
-          options
-        );
+        const uploadedImage = await fetch(`${process.env.VUE_APP_API_URL}/image/upload/${payload.sceneId}${payload.id ? `?id=${payload.id}` : ""}`, options);
         commit("stopImageUpload");
         return uploadedImage;
       } catch (error) {
