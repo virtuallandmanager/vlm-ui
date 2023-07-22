@@ -30,9 +30,7 @@
         <v-list-item-title>{{ previousRoute }}</v-list-item-title>
       </v-list-item>
     </v-list>
-    <v-divider v-if="demoMode"></v-divider>
-
-    <v-divider v-if="activeScene"></v-divider>
+    <v-divider v-if="showBackArrow"></v-divider>
 
     <v-list nav dense v-if="activeEvent" class="cyberpunk-border">
       <v-list-item link @click="tab = 0" disabled :to="`${activeEvent.sk}/analytics`">
@@ -57,7 +55,7 @@
 
     <v-divider v-if="activeEvent"></v-divider>
 
-    <v-list nav dense v-if="!demoMode">
+    <v-list nav dense>
       <v-list-item link to="/scenes" v-if="!activeScene">
         <v-list-item-icon>
           <v-icon>mdi-island</v-icon>
@@ -83,13 +81,7 @@
         </v-list-item-icon>
         <v-list-item-title>Docs</v-list-item-title>
       </v-list-item>
-      <v-list-item link to="/organizations" v-if="orgAdmin && funGuy">
-        <v-list-item-icon>
-          <v-icon>mdi-mushroom</v-icon>
-        </v-list-item-icon>
-        <v-list-item-title>Organisms</v-list-item-title>
-      </v-list-item>
-      <v-list-item link to="/organizations" v-else-if="orgAdmin">
+      <v-list-item link to="/organizations" v-if="orgAdmin">
         <v-list-item-icon>
           <v-icon>mdi-account-group-outline</v-icon>
         </v-list-item-icon>
@@ -117,6 +109,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+
 export default {
   name: "LeftNav",
   data: () => ({
@@ -145,7 +138,7 @@ export default {
       return !!this.user?.roles?.filter((role) => role >= 7).length;
     },
     showBackArrow() {
-      return (!this.demoMode && this.activeScene) || this.activeEvent;
+      return this.activeScene || this.activeEvent;
     },
     ...mapGetters({
       demoMode: "app/demoMode",
