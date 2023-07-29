@@ -113,9 +113,19 @@
 
 <script>
 import { mapActions } from "vuex";
+import store from "../store";
 
 export default {
   name: "Home",
+  beforeRouteEnter(to, from, next) {
+    const isAuthenticated = store.getters["auth/authenticated"];
+    const isAdmin = store.getters["user/isVLMAdmin"];
+    if (isAuthenticated && isAdmin) {
+      next("/scenes"); // Redirect to the scenes page if the user is authenticated
+    } else {
+      next(); // Continue rendering the component
+    }
+  },
   methods: {
     ...mapActions({ connect: "auth/connectWallet" }),
   },

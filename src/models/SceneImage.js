@@ -8,7 +8,10 @@ export class SceneImage {
   name = "";
   height;
   width;
-  imageLink = "";
+  density;
+  imageSrc = "";
+  textureSrc = "";
+  thumbnailSrc = "";
   emission = 1;
   clickEvent = new ClickEvent();
   instances = [];
@@ -16,15 +19,17 @@ export class SceneImage {
   withCollisions = false;
   createdAt;
 
-  constructor(config={}) {
+  constructor(config = {}) {
     this.sk = config.sk || this.sk;
     this.customId = config.customId || this.customId;
     this.enabled = config.enabled || this.enabled;
     this.name = config.name || this.name;
-    this.height = config.height || this.height;
-    this.width = config.width || this.width;
-    this.imageLink = config.imageLink || this.imageLink;
-    this.offType = config.offType || this.offType;
+    this.height = config.height;
+    this.width = config.width;
+    this.density = config.density;
+    this.imageSrc = config.imageSrc || this.imageSrc;
+    this.textureSrc = config.textureSrc || this.textureSrc;
+    this.thumbnailSrc = config.thumbnailSrc || this.thumbnailSrc;
     this.emission = config.emission || this.emission;
     this.clickEvent = config.clickEvent || this.clickEvent;
     this.instances = config.instances || this.instances;

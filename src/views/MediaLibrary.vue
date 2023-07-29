@@ -51,7 +51,7 @@ export default {
   data: () => ({}),
   methods: {
     ...mapActions({
-      uploadImage: "image/uploadImage",
+      uploadImage: "media/uploadImage",
     }),
     folders() {
       return [];

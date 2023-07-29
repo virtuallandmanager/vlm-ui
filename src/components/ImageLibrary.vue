@@ -7,32 +7,16 @@
         Add Image
       </v-btn>
     </div>
-    <input
-      style="display: none"
-      ref="fileInput"
-      type="file"
-      accept=".png,.jpg,.jpeg"
-      @change="addImage"
-    />
+    <input style="display: none" ref="fileInput" type="file" accept=".png,.jpg,.jpeg" @change="addImage" />
     <div v-if="images.length < 1" class="mt-6">
-      <div class="text-body-1 text-center">
-        There are no images in your library.
-      </div>
+      <div class="text-body-1 text-center">There are no images in your library.</div>
     </div>
     <div v-if="images.length > 0" class="mt-6">
-      <v-card
-        v-for="(folder, i) in folders"
-        :key="i"
-        class="text-body-1 text-center"
-      >
+      <v-card v-for="(folder, i) in folders" :key="i" class="text-body-1 text-center">
         <v-icon>mdi-folder</v-icon>
         <v-icon>{{ folder }}</v-icon>
       </v-card>
-      <v-card
-        v-for="(image, i) in image"
-        :key="i"
-        class="text-body-1 text-center"
-      >
+      <v-card v-for="(image, i) in image" :key="i" class="text-body-1 text-center">
         <v-img :src="image" />
       </v-card>
     </div>
@@ -49,19 +33,21 @@ export default {
   },
   data: () => ({
     ...mapGetters({
-      imageLibrary: "image/library",
+      mediaLibrary: "media/library",
     }),
   }),
+  computed: {
+    images() {
+      return this.mediaLibrary.images;
+    },
+    folders() {
+      return this.mediaLibrary.folders;
+    },
+  },
   methods: {
     ...mapActions({
-      uploadImage: "image/uploadImage",
+      uploadImage: "media/uploadImage",
     }),
-    folders() {
-      return [];
-    },
-    images() {
-      return [];
-    },
   },
 };
 </script>

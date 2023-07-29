@@ -142,7 +142,6 @@ export default {
     },
 
     async connectWallet({ commit, dispatch }, newAccountList) {
-      console.log("connectWallet");
 
       // connect the user's wallet
       commit("START");
@@ -183,7 +182,7 @@ export default {
         dispatch("sendSignature");
       } catch (error) {
         commit("STOP", error);
-        console.log("Reject message: ", error);
+        dispatch("banner/showError", { message: "Verification signature failed or was rejected." }, { root: true });
         return null;
       }
     },
@@ -221,9 +220,10 @@ export default {
 
       commit("AUTHENTICATE");
 
-      if (status == 200) {
+      if (status == 200 && user.roles.includes(1)) {
         dispatch("banner/showInfo", { message: `Welcome back, ${user.displayName}!` }, { root: true });
         // dispatch("app/setDemoMode", true, { root: true });
+        router.push("/scenes");
       } else if (status == 201) {
         dispatch("banner/showInfo", { message: `Welcome to VLM!` }, { root: true });
         router.push("/welcome");
@@ -249,7 +249,6 @@ export default {
     },
 
     disconnect({ commit }) {
-      router.push("/");
       commit("DISCONNECT");
       commit("STOP");
     },

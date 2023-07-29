@@ -1,11 +1,15 @@
+import { uploadUserImage } from "../dal/media";
+
 export default {
   namespaced: true,
   state: () => ({
+    currentFolderPath: "/",
     uploadingImage: false,
     library: [],
   }),
   getters: {
     library: (state) => state.library,
+    uploadingImage: (state) => state.uploadingImage,
   },
   mutations: {
     startImageUpload: (state) => (state.uploadingImage = true),
@@ -15,20 +19,19 @@ export default {
     },
   },
   actions: {
-    async uploadImage({ commit }, payload) {
-      if (!payload.image || !payload.sceneId) {
+    async uploadUserImage({ commit }, payload) {
+      if (!payload.image) {
         return;
       }
-      const formData = new FormData(),
-        options = {
-          method: "POST",
-          body: formData,
-        };
 
-      formData.append("imageFile", payload.image);
+      const formData = new FormData();
+
+      // Append extra data to the form data
+      formData.append("image", payload.image);
+
       commit("startImageUpload");
       try {
-        const uploadedImage = await fetch(`${process.env.VUE_APP_API_URL}/image/upload/${payload.sceneId}${payload.id ? `?id=${payload.id}` : ""}`, options);
+        const uploadedImage = await uploadUserImage(formData);
         commit("stopImageUpload");
         return uploadedImage;
       } catch (error) {

@@ -231,7 +231,7 @@ export default {
         element: "image",
         instance: true,
         property: "name",
-        id: this.instance.id,
+        id: this.instance.sk,
         elementData: this.image,
         instanceData: this.instance,
       });
@@ -252,7 +252,7 @@ export default {
         element: "image",
         instance: true,
         property: "clickEvent",
-        id: this.instance.id,
+        id: this.instance.sk,
         elementData: this.image,
         instanceData: this.instance,
       });
@@ -262,7 +262,7 @@ export default {
         element: "image",
         instance: true,
         property: "properties",
-        id: this.instance.id,
+        id: this.instance.sk,
         elementData: this.image,
         instanceData: this.instance,
       });
@@ -273,24 +273,13 @@ export default {
         instance: true,
         property: "transform",
         custom: this.instance.customRendering,
-        id: this.instance.id,
+        id: this.instance.sk,
         elementData: this.image,
         instanceData: this.instance,
       });
     },
     addInstance(instance) {
       this.$emit("addInstance", instance);
-    },
-    handleDialog(options) {
-      const dialogOptions = {
-        show: options.enabled || true,
-        type: options.type,
-        callback: options.callback,
-        element: this.image,
-        instance: this.instance,
-      };
-
-      this.$emit("handleDialog", dialogOptions);
     },
   },
 };

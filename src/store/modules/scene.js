@@ -180,10 +180,6 @@ export default {
     // END SCENE C/U/D //
 
     // ACTIVE SCENE MANAGEMENT //
-    setActiveScene: async ({ commit, dispatch }, sceneId) => {
-      commit("SET_ACTIVE_SCENE", sceneId);
-      return await dispatch("connectToScene");
-    },
     clearActiveScene: async ({ commit }) => {
       commit("CLEAR_ACTIVE_SCENE");
     },

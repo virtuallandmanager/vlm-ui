@@ -33,7 +33,7 @@
         </v-app-bar>
       </div>
     </v-main>
-    <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000" top right>
+    <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000" bottom center>
       {{ snackbar.message }}
     </v-snackbar>
   </v-app>

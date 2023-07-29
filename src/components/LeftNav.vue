@@ -56,37 +56,37 @@
     <v-divider v-if="activeEvent"></v-divider>
 
     <v-list nav dense>
-      <v-list-item link to="/scenes" v-if="!activeScene">
+      <v-list-item link to="/scenes">
         <v-list-item-icon>
           <v-icon>mdi-island</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Scenes</v-list-item-title>
       </v-list-item>
 
-      <v-list-item link to="/events">
+      <v-list-item link to="/events" disabled>
         <v-list-item-icon>
-          <v-icon>mdi-calendar-star</v-icon>
+          <v-icon disabled>mdi-calendar-star</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Events</v-list-item-title>
       </v-list-item>
-      <v-list-item link to="/media">
+      <v-list-item link to="/media" disabled>
         <v-list-item-icon>
-          <v-icon>mdi-folder-multiple-image</v-icon>
+          <v-icon disabled>mdi-folder-multiple-image</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Media Library</v-list-item-title>
       </v-list-item>
-      <v-list-item link to="/docs">
+      <v-list-item link to="/docs" disabled>
         <v-list-item-icon>
-          <v-icon>mdi-book</v-icon>
+          <v-icon disabled>mdi-book</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Docs</v-list-item-title>
       </v-list-item>
-      <v-list-item link to="/organizations" v-if="orgAdmin">
+      <!-- <v-list-item link to="/organizations" v-if="orgAdmin">
         <v-list-item-icon>
           <v-icon>mdi-account-group-outline</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Organizations</v-list-item-title>
-      </v-list-item>
+      </v-list-item> -->
       <v-list-item link to="/admin" v-if="vlmAdmin">
         <v-list-item-icon>
           <v-icon>mdi-shield-account</v-icon>

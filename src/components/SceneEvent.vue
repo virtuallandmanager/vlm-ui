@@ -171,7 +171,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      uploadImage: 'image/uploadImage'
+      uploadImage: 'media/uploadImage'
     }),
     removeEvent () {
       this.$emit('onRemove')

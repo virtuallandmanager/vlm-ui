@@ -35,25 +35,36 @@ export class AuthenticatedFetch {
 
     return { status: response.status, ...responseJson };
   };
-  post = async (endpoint, payloadBody) => {
-    const payload = {
-      method: "POST",
-      headers: {
+
+  post = async (endpoint, payloadBody, file) => {
+    let body;
+    let headers;
+
+    if (file) {
+      body = payloadBody;
+
+      // Headers for multipart/form-data request
+      headers = {
+        Authorization: "Bearer " + this.sessionToken,
+      };
+    } else {
+      body = JSON.stringify(payloadBody);
+
+      // Headers for application/json request
+      headers = {
         "Content-Type": "application/json",
         Authorization: "Bearer " + this.sessionToken,
-      },
-    };
-
-    if (payloadBody) {
-      payload.body = JSON.stringify(payloadBody);
+      };
     }
 
-    const response = await fetch(process.env.VUE_APP_API_URL + endpoint, payload),
-      responseJson = await response.json();
-    // if (response.status == 401) {
-    //   store.dispatch("auth/connect");
-    //   return;
-    // }
+    const payload = {
+      method: "POST",
+      headers,
+      body,
+    };
+
+    const response = await fetch(process.env.VUE_APP_API_URL + endpoint, payload);
+    const responseJson = await response.json();
     return { status: response.status, ...responseJson };
   };
 }

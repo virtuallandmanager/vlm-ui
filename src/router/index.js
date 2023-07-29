@@ -143,23 +143,27 @@ const router = new Router({
 });
 
 router.beforeEach(async (to, from, next) => {
-  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-  const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin);
-  const isAuthenticated = store.getters["auth/authenticated"];
-  const attemptedRestore = store.getters["auth/attemptedRestore"];
-  const isAdmin = store.getters["admin/isVLMAdmin"];
-  // Implement your own authentication check
+  try {
+    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+    const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin);
+    const isAuthenticated = store.getters["auth/authenticated"];
+    const attemptedRestore = store.getters["auth/attemptedRestore"];
+    const isAdmin = store.getters["admin/isVLMAdmin"];
+    // Implement your own authentication check
 
-  if (!isAuthenticated && !attemptedRestore) {
-    await store.dispatch("auth/attemptRestoreSession");
-  }
+    if (!isAuthenticated && !attemptedRestore) {
+      return await store.dispatch("auth/attemptRestoreSession");
+    }
 
-  if (requiresAuth && !isAuthenticated) {
-    next("/"); // Redirect to the login page if the route requires authentication and the user is not authenticated
-  } else if (requiresAdmin && !isAdmin) {
-    next("/"); // Redirect to the login page if the route requires admin authentication and the user is not an admin
-  } else {
-    next(); // Continue to the next route
+    if (requiresAuth && !isAuthenticated) {
+      // next("/"); // Redirect to the login page if the route requires authentication and the user is not authenticated
+    } else if (requiresAdmin && !isAdmin) {
+      // next("/"); // Redirect to the login page if the route requires admin authentication and the user is not an admin
+    } else {
+      next(); // Continue to the next route
+    }
+  } catch (error) {
+    console.log(error);
   }
 });
 

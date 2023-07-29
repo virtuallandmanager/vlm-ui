@@ -69,8 +69,8 @@
       </v-btn>
     </div>
     <div class="pa-4 grey darken-4">
-      <video-stream-player :src="video.liveLink" @updateVideoState="updateVideoState" v-if="video.enableLiveStream"/>
-      <v-img :src="video.offImageLink" v-if="video.offType == 1 && !videoState || !video.enableLiveStream" :contain="true"></v-img>
+      <video-stream-player :src="video.liveLink" @updateVideoState="updateVideoState" v-if="video.enableLiveStream" />
+      <v-img :src="video.offImageLink" v-if="(video.offType == 1 && !videoState) || !video.enableLiveStream" :contain="true"></v-img>
     </div>
     <div class="grey darken-2 d-flex justify-space-between align-center">
       <h1 class="d-block text-body-1 font-weight-bold pa-4" dark>Video Source</h1>
@@ -83,7 +83,7 @@
     <div class="my-0 pa-4">
       <v-select outlined v-model="video.offType" label="Off Air Content" :items="offTypes" :persistent-hint="true" @change="updateOffType" hint="Off-air content is shown when the live video is disabled or not actively streaming"> </v-select>
     </div>
-    <div v-if="video.offType == 1">
+    <div v-if="video.offType == 2">
       <div class="d-flex justify-space-between align-center grey darken-2 pa-4">
         <h1 class="d-block text-body-1 font-weight-bold" dark>Video Playlist</h1>
         <v-btn @click="addVideo()"><v-icon>mdi-playlist-plus</v-icon> New</v-btn>
@@ -100,7 +100,7 @@
         </v-btn>
       </div>
     </div>
-    <div v-if="video.offType == 2">
+    <div v-if="video.offType == 1">
       <div class="d-flex justify-space-between align-center grey darken-2 pa-4">
         <h1 class="d-block text-body-1 font-weight-bold">Image</h1>
       </div>

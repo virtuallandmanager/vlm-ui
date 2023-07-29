@@ -78,8 +78,11 @@ export default {
   }),
   beforeRouteEnter(to, from, next) {
     const isAuthenticated = store.getters["auth/authenticated"];
+    const isAdmin = store.getters["user/isVLMAdmin"];
     if (!isAuthenticated) {
-      next("/"); // Redirect to the login page if the user is not authenticated
+      // next("/"); // Redirect to the login page if the user is not authenticated
+    } else if (!isAdmin) {
+      // next("/"); // Redirect to the login page if the user is not authenticated
     } else {
       store.dispatch("scene/getSceneCards");
       next(); // Continue rendering the component

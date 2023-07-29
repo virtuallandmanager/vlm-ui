@@ -7,11 +7,10 @@
     </v-row>
     <v-row>
       <v-col>
-        <div class="text-display">Scene Details</div>
-        <v-text-field label="Scene Name" outlined />
+        <v-text-field label="Scene Name" outlined v-model="scene.name" />
         <div class="text-display">Scene Image</div>
-        <v-img :src="scene.imageLink" v-if="scene.imageLink" />
-        <v-btn :src="scene.imageLink" v-if="!scene.imageLink">
+        <v-img :src="scene.imageSrc" v-if="scene.imageSrc" />
+        <v-btn :src="scene.imageSrc" v-if="!scene.imageSrc">
           <v-icon>mdi-upload</v-icon>
           Upload Image
         </v-btn>
@@ -21,6 +20,8 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   name: "SceneSettings",
 
@@ -30,6 +31,17 @@ export default {
       return this.$store.state.scene.activeScene;
     },
   },
-  methods: {},
+  methods: {
+    ...mapActions({
+      showTransformDialog: "dialog/showTransformDialog",
+      showPropertiesDialog: "dialog/showPropertiesDialog",
+      showClickEventDialog: "dialog/showClickEventDialog",
+      showDeleteDialog: "dialog/showDeleteDialog",
+      createSceneElement: "scene/createSceneElement",
+      updateSceneElement: "scene/updateSceneElement",
+      deleteSceneElement: "scene/deleteSceneElement",
+      uploadImage: "media/uploadSceneImage",
+    }),
+  },
 };
 </script>

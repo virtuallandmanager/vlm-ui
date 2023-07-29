@@ -123,7 +123,7 @@ export default {
     const isAuthenticated = store.getters["auth/authenticated"];
 
     if (!isAuthenticated) {
-      next("/"); // Redirect to the login page if the user is not authenticated
+      // next("/"); // Redirect to the login page if the user is not authenticated
     } else {
       next(); // Continue rendering the component
     }

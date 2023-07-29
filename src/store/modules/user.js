@@ -10,7 +10,9 @@ export default {
   }),
   getters: {
     userInfo: (state) => ({ location: store?.state?.auth?.session?.ipData?.location, ...state.userInfo }),
-    isVLMAdmin: (state) => !!state.user?.roles?.filter((role) => role >= 7).length,
+    userDisplayName: (state) => state.userInfo.displayName,
+    isEarlyAccess: (state) => state.userInfo?.roles?.includes(2),
+    isVLMAdmin: (state) => !!state.userInfo?.roles?.filter((role) => role >= 7).length,
     walletAddress: (state) => (before, after) => {
       const full = state.userInfo.connectedWallet;
       if (!full) {

@@ -18,8 +18,7 @@
       <v-tabs v-model="tab" centered icons-and-text center-active grow color="nav" :show-arrows="true">
         <v-tabs-slider />
         <v-tab href="#tab-1" disabled>
-          Analytics
-          (Coming Soon)
+          Analytics (Coming Soon)
           <v-icon>mdi-chart-timeline-variant</v-icon>
         </v-tab>
         <v-tab href="#tab-2">
@@ -94,7 +93,7 @@ import SceneEventList from "../components/SceneEventList";
 import SceneWidgetList from "../components/SceneWidgetList";
 import ScenePresetList from "../components/ScenePresetList";
 // import SceneModeration from "../components/SceneModeration";
-// import SceneSettings from "../components/SceneSettings";
+import SceneSettings from "../components/SceneSettings";
 // import ImageLibrary from "../components/ImageLibrary";
 import { mapActions, mapGetters } from "vuex";
 import { DateTime } from "luxon";
@@ -116,7 +115,7 @@ export default {
     SceneEventList,
     // SceneModeration,
     // ImageLibrary,
-    // SceneSettings,
+    SceneSettings,
     SceneWidgetList,
     ScenePresetList,
     FocusPage,
@@ -135,15 +134,18 @@ export default {
   }),
   beforeRouteEnter(to, from, next) {
     const isAuthenticated = store.getters["auth/authenticated"];
+    const isAdmin = store.getters["user/isVLMAdmin"];
 
-    if (!isAuthenticated) {
-      next("/"); // Redirect to the login page if the user is not authenticated
+    if (!isAuthenticated || !isAdmin) {
+      // next("/"); // Redirect to the login page if the user is not authenticated
     } else {
       next(); // Continue rendering the component
     }
   },
   async mounted() {
-    await this.connectToScene("00000000-0000-0000-0000-000000000000");
+    console.log(this.$route.params);
+    console.log(this.$route.params.sceneId);
+    await this.connectToScene(this.$route.params.sceneId);
   },
   beforeDestroy() {},
   computed: {
@@ -206,9 +208,6 @@ export default {
       connectToScene: "scene/connectToScene",
       sendUiMessage: "moderation/sendUiMessage",
     }),
-    connectScene() {
-      return false;
-    },
     getDateTime(timestamp) {
       return DateTime.fromSeconds(timestamp).toLocaleString(DateTime.DATETIME_SHORT);
     },
