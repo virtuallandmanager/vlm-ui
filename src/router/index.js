@@ -46,11 +46,11 @@ const router = new Router({
     },
     {
       path: "/welcome",
-      name: "Triage",
+      name: "Welcome",
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "triage" */ "../views/Triage.vue"),
+      component: () => import(/* webpackChunkName: "triage" */ "../views/Welcome.vue"),
       meta: {
         requiresAuth: true,
       },

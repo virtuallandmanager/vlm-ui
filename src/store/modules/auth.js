@@ -220,17 +220,12 @@ export default {
 
       commit("AUTHENTICATE");
 
-      if (status == 200 && user.roles.includes(1)) {
+      if (status == 200 && rootGetters["user/isEarlyAccess"]) {
         dispatch("banner/showInfo", { message: `Welcome back, ${user.displayName}!` }, { root: true });
-        // dispatch("app/setDemoMode", true, { root: true });
         router.push("/scenes");
       } else if (status == 201) {
         dispatch("banner/showInfo", { message: `Welcome to VLM!` }, { root: true });
         router.push("/welcome");
-      }
-
-      if (status == 200 && router.currentRoute.path !== "/demo" && router.currentRoute.path !== "/scenes") {
-        router.push("/scenes");
       }
 
       commit("STOP");

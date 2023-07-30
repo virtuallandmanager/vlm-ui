@@ -134,10 +134,10 @@ export default {
   }),
   beforeRouteEnter(to, from, next) {
     const isAuthenticated = store.getters["auth/authenticated"];
-    const isAdmin = store.getters["user/isVLMAdmin"];
+    const isEarlyAccess = store.getters["user/isEarlyAccess"];
 
-    if (!isAuthenticated || !isAdmin) {
-      // next("/"); // Redirect to the login page if the user is not authenticated
+    if (!isAuthenticated || !isEarlyAccess) {
+      next("/"); // Redirect to the login page if the user is not authenticated
     } else {
       next(); // Continue rendering the component
     }
