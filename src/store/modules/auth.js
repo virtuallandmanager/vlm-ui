@@ -199,7 +199,7 @@ export default {
       }
     },
 
-    async handleSuccessfulLogin({ commit, dispatch }, response) {
+    async handleSuccessfulLogin({ rootGetters, commit, dispatch }, response) {
       const { user, userOrgs, session, status } = response;
 
       if (user) {
