@@ -154,21 +154,29 @@ export default {
     selectImage() {
       this.$refs.fileInput.click();
     },
-    createExternalImage() {
+    setExternalImage() {
+      const objThis = this;
+      const currentImage = objThis.image;
       if (this.validateExternalLink(this.newImageSrc) === true) {
-        const newImage = new SceneImage({
-          name: "External Image",
-          height: 0,
-          width: 0,
-          imageSrc: this.newImageSrc,
-        });
+        let img = new Image();
+        img.src = this.newImageSrc;
+        img.onload = function () {
+          currentImage.width = this.width;
+          currentImage.height = this.height;
+          currentImage.textureSrc = "";
+          currentImage.thumbnailSrc = "";
+          currentImage.externalUrl = true;
+          const newImage = new SceneImage({
+            ...currentImage,
+            name: "External Image",
+            imageSrc: this.src,
+            externalUrl: true,
+          });
 
-        this.createSceneElement({
-          element: "image",
-          elementData: newImage,
-        });
-        this.newImageSrc = "";
-        this.resetDialogs();
+          objThis.createSceneElement({ element: "image", elementData: newImage });
+          objThis.newImageSrc = "";
+          objThis.resetDialogs();
+        };
       }
     },
     async onFileSelected(e) {

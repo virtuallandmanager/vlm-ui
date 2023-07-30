@@ -407,6 +407,7 @@ export default {
             ...currentImage,
             name: "External Image",
             imageSrc: this.src,
+            externalUrl: true,
           });
 
           objThis.updateImage(newImage);
@@ -427,6 +428,7 @@ export default {
         this.image.thumbnailSrc = `${process.env.VUE_APP_API_URL}/${uploadImageRes.imageSrc}`;
         this.image.textureSrc = `${process.env.VUE_APP_API_URL}/${uploadImageRes.textureSrc}`;
         this.image.imageSrc = `${process.env.VUE_APP_API_URL}/${uploadImageRes.thumbnailSrc}`;
+        this.image.externalUrl = false;
         const metadata = uploadImageRes.metadata;
 
         const newImage = new SceneImage({
