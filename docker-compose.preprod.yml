@@ -1,7 +1,6 @@
-version: '3.9'
+version: "3.9"
 
 services:
-
   vlm-ui-preprod:
     container_name: vlm-ui
     restart: unless-stopped
@@ -9,14 +8,16 @@ services:
       context: .
       dockerfile: Dockerfile.preprod
     ports:
-      - '8280:8280'
+      - "8280:8280"
     logging:
       driver: "json-file"
       options:
         max-size: "200k"
         max-file: "10"
+    env_file:
+      - .env
 
 networks:
- default:
-  external:
-   name: proxy
+  default:
+    external:
+      name: proxy
