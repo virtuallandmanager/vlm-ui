@@ -2,7 +2,7 @@ import store from "..";
 import { AuthenticatedFetch } from "./common";
 import * as Colyseus from "colyseus.js";
 
-const client = new Colyseus.Client(process.env.VUE_APP_API_URL);
+const client = new Colyseus.Client(process.env.VUE_APP_WSS_URL);
 let room;
 
 export const connectToScene = async (sceneId) => {
