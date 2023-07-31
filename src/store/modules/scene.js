@@ -216,7 +216,7 @@ export default {
     connectToScene: async ({ rootGetters, state, commit, dispatch }, sceneId) => {
       commit("START");
       const room = await connectToScene(sceneId);
-      if (!room?.connected) {
+      if (!room) {
         dispatch("banner/showError", { message: `Could not connect to the scene.` }, { root: true });
         router.push("/scenes");
         commit("STOP");
