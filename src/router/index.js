@@ -156,9 +156,9 @@ router.beforeEach(async (to, from, next) => {
     }
 
     if (requiresAuth && !isAuthenticated) {
-      // next("/"); // Redirect to the login page if the route requires authentication and the user is not authenticated
+      next("/"); // Redirect to the login page if the route requires authentication and the user is not authenticated
     } else if (requiresAdmin && !isAdmin) {
-      // next("/"); // Redirect to the login page if the route requires admin authentication and the user is not an admin
+      next("/"); // Redirect to the login page if the route requires admin authentication and the user is not an admin
     } else {
       next(); // Continue to the next route
     }
