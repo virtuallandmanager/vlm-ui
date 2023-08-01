@@ -74,7 +74,6 @@ export default {
       this.show = false;
     },
     handleDialog(dialogOptions) {
-      console.log(dialogOptions);
       this.show = dialogOptions.show;
       this.buttonText = dialogOptions.buttonText || "Save";
       this.dialogTitle = dialogOptions.title;

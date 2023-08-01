@@ -32,10 +32,6 @@ export default {
   data: () => ({
     mode: "position",
   }),
-  mounted() {
-    console.log("FUUUUUUU");
-    console.log(this.instanceData);
-  },
   props: {
     instanceData: {
       position: {

@@ -1,23 +1,9 @@
 <template>
   <v-card :elevation="hideWrapper ? 0 : 2" :class="wrapperClass">
     <h5 v-if="!hideWrapper" :class="hClass">Parcel Map</h5>
-    <div
-      class="mx-auto"
-      id="parcelMap"
-      :style="
-        'height:' +
-        (parcelRows * 20 + 2) +
-        'px; width:' +
-        (parcelCols * 20 + 2) +
-        'px'
-      "
-    >
+    <div class="mx-auto" id="parcelMap" :style="'height:' + (parcelRows * 20 + 2) + 'px; width:' + (parcelCols * 20 + 2) + 'px'">
       <div v-for="(parcel, i) in mappedParcels" :key="i">
-        <div
-          :class="parcel.baseParcel ? 'base-parcel' : 'parcel'"
-          v-bind:key="parcel.x + '-' + parcel.y"
-          :style="'left: ' + parcel.x + 'px; bottom: ' + parcel.y + 'px'"
-        ></div>
+        <div :class="parcel.baseParcel ? 'base-parcel' : 'parcel'" v-bind:key="parcel.x + '-' + parcel.y" :style="'left: ' + parcel.x + 'px; bottom: ' + parcel.y + 'px'"></div>
       </div>
     </div>
   </v-card>
@@ -78,13 +64,6 @@ export default {
         };
 
         if (coord[0] == baseParcel[0] && coord[1] == baseParcel[1]) {
-          console.log(
-            this.scene.name +
-              "'s base parcel is " +
-              baseParcel[0] +
-              ", " +
-              baseParcel[1]
-          );
           parcel.baseParcel = true;
         }
 

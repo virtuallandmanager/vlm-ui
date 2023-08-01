@@ -148,7 +148,6 @@ export default {
     toggleSoundLocators: async ({ rootGetters, state }, { property, element, instance, id, setting, elementData, instanceData, settingData }) => {
       const scenePreset = state.activeScene.presets.find((preset) => preset.sk == state.activeScene.scenePreset);
       const userInfo = rootGetters["user/userInfo"];
-      console.log(userInfo);
       const userId = userInfo.sk;
       await state.room.send("scene_sound_locator", { action: "scene_sound_locator", userId, property, id, element, instance, setting, elementData, instanceData, settingData, scenePreset, stage: "pre" });
     },

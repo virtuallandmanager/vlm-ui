@@ -47,7 +47,6 @@ export default {
       commit("SHOW_TRANSFORM_DIALOG", props);
     },
     hideTransformDialog: ({ commit }, props) => {
-      console.log("gorp");
       commit("HIDE_TRANSFORM_DIALOG", props);
     },
     showPropertiesDialog: ({ commit }, props) => {

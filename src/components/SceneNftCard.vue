@@ -253,7 +253,6 @@ export default {
     toggleVisibility(instance) {
       if (instance) {
         Vue.set(instance, "enabled", !instance.enabled);
-        console.log("vis changed");
         this.updateProperties({
           action: "update",
           element: "nft",
@@ -296,7 +295,6 @@ export default {
       });
     },
     updateImageClickEvent() {
-      console.log(this.nft.clickEvent);
       this.updateProperties({
         action: "update",
         element: "nft",
@@ -326,7 +324,6 @@ export default {
       });
     },
     panelChange() {
-      console.log("panel changed");
     },
     updateProperties(wssMessages) {
       this.$emit("updateProperties", wssMessages);

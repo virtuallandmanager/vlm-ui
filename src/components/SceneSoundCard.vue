@@ -289,7 +289,6 @@ export default {
       console.log(sound, i);
     },
     updateSoundClickEvent() {
-      console.log(this.sound.clickEvent);
       this.updateSceneElement({
         element: "sound",
         property: "clickEvent",

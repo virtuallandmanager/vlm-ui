@@ -357,7 +357,6 @@ export default {
       });
     },
     updateImageClickEvent() {
-      console.log(this.image.clickEvent);
       this.updateSceneElement({
         element: "image",
         property: "clickEvent",
@@ -383,7 +382,6 @@ export default {
       });
     },
     panelChange() {
-      console.log("panel changed");
     },
     resetDialogs() {
       this.replaceImageDialog = false;

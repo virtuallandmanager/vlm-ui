@@ -117,7 +117,6 @@ export default {
       })
     },
     editMessageText (d) {
-      console.log(this.dialogs[d].messages)
       Vue.set(this.dialogs[d], 'messages', this.dialogs[d].messages)
       this.updateProperties({
         action: 'update',
