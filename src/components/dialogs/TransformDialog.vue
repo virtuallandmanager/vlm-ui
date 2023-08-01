@@ -34,7 +34,6 @@ export default {
     value: Boolean,
   },
   mounted() {
-    console.log(this.props, this.dialogProps);
     this.dirty = false;
     this.originalInstance = this.dialogProps?.instanceData;
   },
@@ -81,7 +80,6 @@ export default {
       if (this.dirty) {
         this.dirty = false;
         Vue.set(this.dialogProps.instanceData, "instanceData", this.originalInstance);
-        console.log(this.originalInstance);
         this.updateSceneElement({
           property: "transform",
           element: this.element,

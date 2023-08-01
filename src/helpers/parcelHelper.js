@@ -33,7 +33,6 @@ export function createRows(parcels) {
     const filteredRows = parcels.filter((parcel) => parcel.y == rowNumber);
     rows[i] = filteredRows.map((row) => ({ rowNumber, row }));
   }
-  console.log("rows: ", rows);
   return rows;
 }
 export function createCols(parcels) {
@@ -47,7 +46,6 @@ export function createCols(parcels) {
     const filteredCols = parcels.filter((parcel) => parcel.x == colNumber);
     cols[i] = filteredCols.map((column) => ({ colNumber, column }));
   }
-  console.log("cols: ", cols);
   return cols;
 }
 
@@ -62,7 +60,6 @@ export function groupAdjacentParcels(parcels) {
     parcelsAdded = 0; //tracks the number of parcels added to a group after one full iteration
 
   for (let i = 0; ungroupedParcels.length > 0; i++) {
-    console.log(`${ungroupedParcels.length} ungrouped parcels left`);
     const parcel = ungroupedParcels[i],
       parcelString = `${parcel.x},${parcel.y}`;
 
@@ -77,7 +74,6 @@ export function groupAdjacentParcels(parcels) {
       this is the first parcel or we're starting a new group
       create a new group, then we'll compare the other parcels in the array against this parcel
       */
-      console.log(`adding ${parcelString} to group ${groupId}`);
       groupedParcels[groupId] = [parcelString];
       ungroupedParcels.splice(i, 1);
       parcelsAdded++;
@@ -96,7 +92,6 @@ export function groupAdjacentParcels(parcels) {
       this parcel is adjacent to another parcel in the current group
       add it to that group and remove it from the ungrouped array
       */
-      console.log(`adding ${parcelString} to group ${groupId}`);
       groupedParcels[groupId].push(parcelString);
       ungroupedParcels.splice(i, 1);
       parcelsAdded++;

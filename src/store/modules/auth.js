@@ -75,7 +75,6 @@ export default {
       localStorage.setItem("sessionToken", session.sessionToken);
     },
     CONNECT(state, connectedWallet) {
-      console.log("Connected.");
       state.connectedWallet = connectedWallet;
       localStorage.setItem("connectedWallet", connectedWallet);
     },
@@ -94,7 +93,6 @@ export default {
       state.signatureAccount = state.connectedWallet;
       state.sigTokenExpires = DateTime.now().plus({ minutes: 1, seconds: 30 }).toUnixInteger();
       state.signing = true;
-      console.log(`sig token expires in ${state.sigTokenExpires - DateTime.now().toUnixInteger()}`);
     },
     SAVE_SIGNATURE(state, signature) {
       state.signing = false;
@@ -102,7 +100,6 @@ export default {
       state.sigTokenExpires = null;
     },
     DISCONNECT(state) {
-      console.log("Disconnecting...");
       state.authenticated = false;
       state.connectedWallet = null;
       state.processing = false;
@@ -158,7 +155,6 @@ export default {
     },
 
     async sendWalletAddress({ commit, dispatch }) {
-      console.log("sendWalletAddress");
 
       // Send walletAddress to server and handle response
       const response = await web3Authenticate();
@@ -174,7 +170,6 @@ export default {
     },
 
     async signMessage({ commit, state, dispatch }, message) {
-      console.log("signMessage");
 
       try {
         const signature = await web3.eth.personal.sign(message, state.connectedWallet);
@@ -188,7 +183,6 @@ export default {
     },
 
     async sendSignature({ dispatch }) {
-      console.log("sendSignature");
 
       const response = await sendSignature();
 

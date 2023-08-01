@@ -56,7 +56,6 @@ export default {
       this.isValidUrl = false;
       this.isStreaming = false;
       this.updateVideoState();
-      console.log(e);
     }
   },
   beforeDestroy() {
