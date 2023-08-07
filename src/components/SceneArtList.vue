@@ -154,7 +154,7 @@ export default {
     selectImage() {
       this.$refs.fileInput.click();
     },
-    setExternalImage() {
+    createExternalImage() {
       const objThis = this;
       const currentImage = objThis.image;
       if (this.validateExternalLink(this.newImageSrc) === true) {
