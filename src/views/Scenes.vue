@@ -19,12 +19,6 @@
                   ><img src="@/assets/hyperfy-logo-sm.png" width="20px" height="20px" class="mr-2" /><v-icon v-if="newSceneWorlds.hyperfy" small class="ml-n6 mr-2"></v-icon> Hyperfy (Coming Soon!)
                 </v-btn>
               </div>
-
-              <div class="d-flex">
-                <v-btn block outlined disabled class="my-2" @click="toggleWorld('roblox')"
-                  ><img src="@/assets/roblox-logo-sm.png" width="20px" height="20px" class="mr-2" /><v-icon v-if="newSceneWorlds.roblox" small class="ml-n6 mr-2"></v-icon> Roblox (Coming Soon!)
-                </v-btn>
-              </div>
             </div>
           </div>
         </v-card-text>

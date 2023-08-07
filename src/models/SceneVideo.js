@@ -9,7 +9,7 @@ export class SceneVideo {
   offType = 1;
   liveLink = "";
   playlist = [""];
-  offImageLink = "";
+  offImageSrc = "";
   clickEvent = new ClickEvent();
   emission = 1;
   volume = 1;
@@ -25,7 +25,7 @@ export class SceneVideo {
     this.offType = config.offType || this.offType;
     this.liveLink = config.liveLink || this.liveLink;
     this.playlist = config.playlist || this.playlist;
-    this.offImageLink = config.offImageLink || this.offImageLink;
+    this.offImageSrc = config.offImageSrc || this.offImageSrc;
     this.clickEvent = config.clickEvent || this.clickEvent;
     this.emission = config.emission || this.emission;
     this.volume = config.volume || this.volume;

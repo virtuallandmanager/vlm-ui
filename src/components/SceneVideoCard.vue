@@ -70,7 +70,7 @@
     </div>
     <div class="pa-4 grey darken-4">
       <video-stream-player :src="video.liveLink" @updateVideoState="updateVideoState" v-if="video.enableLiveStream" />
-      <v-img :src="video.offImageLink" v-if="(video.offType == 1 && !videoState) || !video.enableLiveStream" :contain="true"></v-img>
+      <v-img :src="video.offImageSrc" v-if="(video.offType == 1 && !videoState) || !video.enableLiveStream" :contain="true"></v-img>
     </div>
     <div class="grey darken-2 d-flex justify-space-between align-center">
       <h1 class="d-block text-body-1 font-weight-bold pa-4" dark>Video Source</h1>
@@ -110,7 +110,7 @@
       <!-- <v-btn>New Image</v-btn> -->
       <!-- </div> -->
       <div class="px-4 pt-6">
-        <v-text-field outlined v-model="video.offImageLink" label="Image Link" placeholder="Enter Image URL" @blur="updateOffImage" />
+        <v-text-field outlined v-model="video.offImageSrc" label="Image Link" placeholder="Enter Image URL" @blur="updateOffImage" />
       </div>
       <div>
         <v-img max-height="250" max-width="250" contain :src="video.videoLink" class="mx-auto"></v-img>
@@ -373,7 +373,7 @@ export default {
     updateOffImage() {
       this.updateSceneElement({
         element: "video",
-        property: "offImageLink",
+        property: "offImageSrc",
         id: this.video.id,
         elementData: this.video,
       });
