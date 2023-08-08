@@ -109,7 +109,7 @@
 
     <div class="my-0 pa-4">
       <v-select outlined v-model="video.offType" label="Off Air Content" :items="offTypes" :persistent-hint="true"
-        @change="updateOffType" hint="Off-air content is shown when the live video is disabled or not actively streaming">
+        @change="updateOffType()" hint="Off-air content is shown when the live video is disabled or not actively streaming">
       </v-select>
     </div>
     <div v-if="video.offType == 2">
