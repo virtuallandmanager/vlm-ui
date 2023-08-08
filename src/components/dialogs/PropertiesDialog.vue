@@ -4,20 +4,20 @@
       <v-card-title class="text-h5">{{ element.capitalize() }}{{ instance && " Instance" }} Properties </v-card-title>
       <v-card-text>
         <div v-if="element == 'image' && !instance" class="text-body-1 font-weight-bold">Appearance</div>
-        <v-switch v-if="element == 'image' && !instance" v-model="isTransparent" label="Enable Transparency" @change="changeTransparency"></v-switch>
+        <v-switch v-if="element == 'image'" v-model="elementData.isTransparent" label="Enable Transparency" :disabled="instance" @change="changeTransparency"></v-switch>
         <div v-if="instance" class="text-body-1 font-weight-bold">Interactions</div>
         <v-switch v-if="instance" v-model="refObj.withCollisions" label="Enable Collider" @change="changeCollisions"></v-switch>
         <div v-if="advancedUser">
           <div class="text-body-1 font-weight-bold">Advanced Features</div>
           <v-text-field v-model="refObj.customId" label="Custom ID" @change="changeId" placeholder="Custom ID"></v-text-field>
           <v-text-field v-model="refObj.parent" label="Parent Entity" dense @change="changeParent" hide-details="true" placeholder="Parent Entity"></v-text-field>
-          <v-switch v-model="customRendering" label="Custom Rendering" :disabled="instance && elementData.customRendering" :messages="customRenderingMessage()" hide-details="auto" @change="changeCustomRendering"></v-switch>
+          <v-switch v-model="refObj.customRendering" label="Custom Rendering" :disabled="instance && elementData.customRendering" :messages="customRenderingMessage()" hide-details="auto" @change="changeCustomRendering"></v-switch>
         </div>
       </v-card-text>
       <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="accenttext" text @click="save"> Save </v-btn>
+        <v-btn color="primary" text @click="save"> Save </v-btn>
         <v-btn :color="dirty ? 'error' : 'grey darken-1'" text @click="revert"> {{ dirty ? "Revert" : "Cancel" }} </v-btn>
       </v-card-actions>
     </v-card>
@@ -63,17 +63,13 @@ export default {
     isTransparent() {
       return this.elementData.isTransparent;
     },
-    customRendering() {
-      return this.refObj.isTransparent;
-    },
   },
   methods: {
     ...mapActions({ updateSceneElement: "scene/updateSceneElement", showPropertiesDialog: "dialog/showPropertiesDialog", hidePropertiesDialog: "dialog/hidePropertiesDialog" }),
     changeTransparency() {
       this.updateSceneElement({
         elementData: this.elementData,
-        instance: this.instance,
-        instanceData: this.instanceData,
+        instance: !!this.instance,
         property: "isTransparent",
       });
       this.dirty = true;
@@ -81,7 +77,7 @@ export default {
     changeCollisions() {
       this.updateSceneElement({
         elementData: this.elementData,
-        instance: this.instance,
+        instance: !!this.instance,
         instanceData: this.instanceData,
         property: "withCollisions",
       });
@@ -90,7 +86,7 @@ export default {
     changeCustomRendering() {
       this.updateSceneElement({
         elementData: this.elementData,
-        instance: this.instance,
+        instance: !!this.instance,
         instanceData: this.instanceData,
         property: "customRendering",
       });
@@ -99,7 +95,7 @@ export default {
     changeParent() {
       this.updateSceneElement({
         elementData: this.elementData,
-        instance: this.instance,
+        instance: !!this.instance,
         instanceData: this.instanceData,
         property: "parent",
       });

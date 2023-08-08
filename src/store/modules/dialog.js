@@ -4,7 +4,7 @@ export default {
     transform: { open: false, props: { instanceData: {}, title: "" } },
     properties: { open: false, props: { element: "", elementData: {}, instanceData: {}, instance: false, title: "" } },
     clickEvent: { open: false, props: { element: "", elementData: {}, instanceData: {}, instance: false, title: "" } },
-    delete: { open: false, props: { element: "", elementData: {}, instanceData: {}, instance: false, title: "" } },
+    delete: { open: false, props: { element: "", elementData: {}, instanceData: {}, instance: false, title: "", property: "" } },
   }),
   getters: {
     transformDialogOpen: (state) => state.transform.open,

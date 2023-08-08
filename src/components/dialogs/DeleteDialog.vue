@@ -1,7 +1,8 @@
 <template>
   <v-dialog v-model="show" max-width="350">
     <v-card>
-      <v-card-title class="text-h5"> Remove {{ instanceData?.name || elementData.name || "Element" }} </v-card-title>
+      <v-card-title class="text-h5"> Remove {{ title || instanceData?.name || elementData.name || "Element" }}
+      </v-card-title>
       <v-card-text v-if="!text" class="pt-4">
         Are you sure you want to remove
         {{ removeAll ? "all instances of" : "" }}
@@ -23,6 +24,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import { mapActions, mapGetters } from "vuex";
 export default {
   name: "DeleteDialog",
@@ -30,7 +32,6 @@ export default {
   props: {
     value: Boolean,
   },
-  mounted() {},
   computed: {
     ...mapGetters({ show: "dialog/deleteDialogOpen", dialogProps: "dialog/deleteDialogProps" }),
     element() {
@@ -51,6 +52,9 @@ export default {
     removeAll() {
       return this.dialogProps.removeAll;
     },
+    title() {
+      return this.dialogProps.title;
+    },
   },
   methods: {
     ...mapActions({ deleteSceneElement: "scene/deleteSceneElement", showDeleteDialog: "dialog/showDeleteDialog", hideDeleteDialog: "dialog/hideDeleteDialog" }),
@@ -60,6 +64,10 @@ export default {
     remove() {
       const { element, elementData, instanceData, instance } = this.dialogProps;
       const id = instance ? instanceData?.sk : elementData?.sk;
+      if (instance) {
+        const index = elementData.instances.findIndex((i) => i.sk === id);
+        Vue.delete(elementData.instances, index);
+      }
       this.deleteSceneElement({ element, elementData, instanceData, instance, id });
       this.hideDeleteDialog();
     },

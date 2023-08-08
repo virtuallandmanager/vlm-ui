@@ -1,13 +1,24 @@
 <template>
-  <div v-if="src && isValidUrl">
-    <div class="mb-4">
+  <div>
+    <div v-if="isStreaming">
       <video ref="videoPlayer" class="video-js"></video>
     </div>
-    <div class="d-flex justify-center align-center" v-if="src">
-      <div class="text-center mr-2">Stream Status:</div>
-      <div v-if="isLiveStream && isValidUrl && isStreaming" class="success--text"><v-icon class="success--text mr-1" small>mdi-check-circle</v-icon>LIVE</div>
-      <div v-if="!isLiveStream && isValidUrl && isStreaming" class="info--text"><v-icon class="info--text mr-1" small>mdi-help-circle</v-icon>STATIC CONTENT</div>
-      <div v-if="(!isLiveStream && !isValidUrl) || !isStreaming" class="error--text"><v-icon class="error--text mr-1" small>mdi-minus-circle</v-icon>INACTIVE / INVALID</div>
+    <div class="d-flex justify-space-between">
+      <v-chip label small>Stream Status:</v-chip>
+      <div v-if="src && isValidUrl">
+        <v-chip small label color="success" v-if="isLiveStream && isValidUrl && isStreaming"><v-icon x-small
+            class="mr-1">mdi-check-circle</v-icon>LIVE</v-chip>
+        <v-chip small label color="info" v-if="!isLiveStream && isValidUrl && isStreaming"><v-icon x-small
+            class="mr-1">mdi-help-circle</v-icon>STATIC CONTENT</v-chip>
+        <v-chip small label color="error" v-if="(!isLiveStream && !isValidUrl) || !isStreaming"><v-icon x-small
+            class="mr-1">mdi-minus-circle</v-icon>INACTIVE / INVALID</v-chip>
+      </div>
+      <v-chip small label color="info" v-else-if="src" class="text-center">
+        <v-icon x-small class="mr-1">mdi-server-off</v-icon>NO LIVE CONTENT
+      </v-chip>
+      <v-chip small label color="error" v-else class="text-center"><v-icon class="mr-1"
+          x-small>mdi-minus-circle</v-icon>NO
+        STREAM URL</v-chip>
     </div>
   </div>
 </template>
@@ -34,7 +45,7 @@ export default {
   },
   mounted() {
     try {
-      this.player = videojs(this.$refs.videoPlayer, this.getOptions(), function onPlayerReady() {});
+      this.player = videojs(this.$refs.videoPlayer, this.getOptions(), function onPlayerReady() { });
 
       this.player.on("loadedmetadata", () => {
         this.isLiveStream = this.player.duration() === Infinity;

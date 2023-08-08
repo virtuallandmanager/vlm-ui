@@ -6,8 +6,8 @@ export class SceneVideo {
   customId = "";
   name = "New Video Screen";
   type = 0;
-  offType = 1;
-  liveLink = "";
+  offType = 0;
+  liveSrc = "";
   playlist = [""];
   offImageSrc = "";
   clickEvent = new ClickEvent();
@@ -23,7 +23,7 @@ export class SceneVideo {
     this.name = config.name || this.name;
     this.type = config.type || this.type;
     this.offType = config.offType || this.offType;
-    this.liveLink = config.liveLink || this.liveLink;
+    this.liveSrc = config.liveSrc || this.liveSrc;
     this.playlist = config.playlist || this.playlist;
     this.offImageSrc = config.offImageSrc || this.offImageSrc;
     this.clickEvent = config.clickEvent || this.clickEvent;

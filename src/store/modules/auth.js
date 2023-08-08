@@ -193,7 +193,7 @@ export default {
       }
     },
 
-    async handleSuccessfulLogin({ rootGetters, commit, dispatch }, response) {
+    async handleSuccessfulLogin({ commit, dispatch }, response) {
       const { user, userOrgs, session, status } = response;
 
       if (user) {
@@ -214,7 +214,7 @@ export default {
 
       commit("AUTHENTICATE");
 
-      if (status == 200 && rootGetters["user/isEarlyAccess"]) {
+      if (status == 200) {
         dispatch("banner/showInfo", { message: `Welcome back, ${user.displayName}!` }, { root: true });
         router.push("/scenes");
       } else if (status == 201) {

@@ -178,9 +178,6 @@ export default {
     togglePrivacyPolicy() {
       this.showPrivacyPolicy = !this.showPrivacyPolicy;
     },
-    handleDialog(dialogOptions) {
-      this.$emit("handleDialog", { show: true, ...dialogOptions });
-    },
     ...mapActions({
       setupUserInfo: "user/setupUserInfo",
       showError: "banner/showError",

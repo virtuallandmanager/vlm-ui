@@ -89,7 +89,7 @@
       </div>
       <div class="d-flex flex-column my-0" v-if="nft.instances.length">
         <div v-for="(instance, ii) in nft.instances" :key="ii">
-          <nft-instance-card :instance="instance" :nft="nft" :i="ii" @updateProperties="updateProperties" @handleDialog="handleDialog" @addInstance="addInstance" />
+          <nft-instance-card :instance="instance" :nft="nft" :i="ii" @updateProperties="updateProperties" @addInstance="addInstance" />
         </div>
       </div>
     </div>

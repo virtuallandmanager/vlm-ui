@@ -12,8 +12,7 @@
             </template>
             <span>Show/Hide</span>
           </v-tooltip>
-        </v-btn></span
-      >
+        </v-btn></span>
       <div class="d-inline-flex align-center pa-0 ma-0" v-if="editingName">
         <v-text-field hide-details v-model="instance.name" label="Rename Instance"></v-text-field>
         <v-btn small icon @click="editInstanceName()">
@@ -56,14 +55,7 @@
           </v-btn>
         </div>
         <div>
-          <v-btn
-            small
-            icon
-            @click.stop="
-              handleDialog({
-                type: EDialogType.delete,
-                callback: removeImageInstance,
-              })
+          <v-btn small icon @click.stop="() => { }
             ">
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
@@ -77,13 +69,8 @@
     </div>
     <quick-view v-if="nft.showDetails" :instance="instance" class="grey px-3" :class="i % 2 ? 'darken-3' : 'darken-4'" />
     <div class="d-flex pb-3 flex-row justify-space-around grey" :class="i % 2 ? 'darken-3' : 'darken-4'">
-      <v-btn
-        icon
-        @click.stop="
-          handleDialog({
-            type: EDialogType.transform,
-            callback: updateInstanceTransform,
-          })
+      <v-btn icon @click.stop="() => { }
+
         ">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
@@ -92,13 +79,8 @@
           <span>Transform</span>
         </v-tooltip>
       </v-btn>
-      <v-btn
-        icon
-        @click.stop="
-          handleDialog({
-            type: EDialogType.clickEvent,
-            callback: updateInstanceClickEvent,
-          })
+      <v-btn icon @click.stop="() => { }
+
         ">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
@@ -107,13 +89,8 @@
           <span>Click Action</span>
         </v-tooltip>
       </v-btn>
-      <v-btn
-        icon
-        @click.stop="
-          handleDialog({
-            type: EDialogType.properties,
-            callback: updateInstanceProperties,
-          })
+      <v-btn icon @click.stop="() => { }
+
         ">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
@@ -269,17 +246,6 @@ export default {
     },
     updateProperties(wssMessages) {
       this.$emit("updateProperties", wssMessages);
-    },
-    handleDialog(options) {
-      const dialogOptions = {
-        show: options.enabled || true,
-        type: options.type,
-        callback: options.callback,
-        element: this.nft,
-        instance: this.instance,
-      };
-
-      this.$emit("handleDialog", dialogOptions);
     },
   },
 };

@@ -145,7 +145,7 @@
         </div>
         <div class="d-flex flex-column my-0" v-if="image.instances.length">
           <div v-for="(instance, ii) in image.instances" :key="ii">
-            <image-instance-card :instance="instance" :image="image" @updateSceneElement="updateSceneElement" @handleDialog="handleDialog" @addInstance="addInstance" />
+            <image-instance-card :instance="instance" :image="image" @updateSceneElement="updateSceneElement" @addInstance="addInstance" />
           </div>
         </div>
       </div>
@@ -159,7 +159,6 @@ import { mapActions } from "vuex";
 import ImageInstanceCard from "./ImageInstanceCard";
 import { SceneImage } from "../models/SceneImage";
 import { SceneImageInstance } from "../models/SceneImageInstance";
-import { EDialogType } from "../models/Dialog";
 
 export default {
   components: {
@@ -335,27 +334,6 @@ export default {
         elementData: this.image,
       });
     },
-    openImageClickEventDialog() {
-      this.handleDialog({
-        type: EDialogType.clickEvent,
-        element: this.image,
-        callback: this.updateImageClickEvent,
-      });
-    },
-    openImagePropertiesDialog() {
-      this.handleDialog({
-        type: EDialogType.properties,
-        element: this.image,
-        callback: this.updateImageProperties,
-      });
-    },
-    openImageDeleteDialog() {
-      this.handleDialog({
-        type: EDialogType.delete,
-        element: this.image,
-        callback: this.removeImage,
-      });
-    },
     updateImageClickEvent() {
       this.updateSceneElement({
         element: "image",
@@ -380,8 +358,6 @@ export default {
         elementData: this.image,
         instanceData: instance,
       });
-    },
-    panelChange() {
     },
     resetDialogs() {
       this.replaceImageDialog = false;

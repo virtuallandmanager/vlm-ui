@@ -17,7 +17,7 @@
         <v-row>
           <v-col md="4" sm="12" v-for="(image, i) in images" :key="image.id">
             <v-card>
-              <event-card v-if="images.length > 0" :image="image" :i="i" :property="property" @updateProperties="updateProperties" @onReplace="replaceImage" @onRemove="removeImage(i)" @handleDialog="handleDialog" />
+              <event-card v-if="images.length > 0" :image="image" :i="i" :property="property" @updateProperties="updateProperties" @onReplace="replaceImage" @onRemove="removeImage(i)" />
             </v-card>
           </v-col>
         </v-row>
