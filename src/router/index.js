@@ -132,8 +132,8 @@ const router = new Router({
       },
     },
     {
-      path: "/demo",
-      name: "Demo Mode",
+      path: "/scene/demo",
+      name: "Demo Scene",
       component: () => import(/* webpackChunkName: "demo" */ "../views/Demo.vue"),
       meta: {
         requiresAuth: true,
