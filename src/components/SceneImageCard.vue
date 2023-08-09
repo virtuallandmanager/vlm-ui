@@ -57,7 +57,7 @@
             @click:append-outer="toggleEditMode()"
             @blur="toggleEditMode()"
             dense
-            @change="editSoundName()"></v-text-field>
+            @change="editImageName()"></v-text-field>
         </div>
       </div>
       <div class="d-flex justify-end align-center black dark pa-1">
