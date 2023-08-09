@@ -67,15 +67,11 @@ export default {
     newSceneWorlds: {
       decentraland: false,
       hyperfy: false,
-      roblox: false,
     },
   }),
   beforeRouteEnter(to, from, next) {
     const isAuthenticated = store.getters["auth/authenticated"];
-    const isEarlyAccess = store.getters["user/isEarlyAccess"];
     if (!isAuthenticated) {
-      next("/"); // Redirect to the login page if the user is not authenticated
-    } else if (!isEarlyAccess) {
       next("/"); // Redirect to the login page if the user is not authenticated
     } else {
       store.dispatch("scene/getSceneCards");

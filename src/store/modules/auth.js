@@ -219,7 +219,7 @@ export default {
         router.push("/scenes");
       } else if (status == 201) {
         dispatch("banner/showInfo", { message: `Welcome to VLM!` }, { root: true });
-        router.push("/welcome");
+        router.push("/join");
       }
 
       commit("STOP");

@@ -134,17 +134,14 @@ export default {
   }),
   beforeRouteEnter(to, from, next) {
     const isAuthenticated = store.getters["auth/authenticated"];
-    const isEarlyAccess = store.getters["user/isEarlyAccess"];
 
-    if (!isAuthenticated || !isEarlyAccess) {
+    if (!isAuthenticated) {
       next("/"); // Redirect to the login page if the user is not authenticated
     } else {
       next(); // Continue rendering the component
     }
   },
   async mounted() {
-    console.log(this.$route.params);
-    console.log(this.$route.params.sceneId);
     await this.connectToScene(this.$route.params.sceneId);
   },
   beforeDestroy() {},
@@ -213,9 +210,7 @@ export default {
     },
     relDateTime(timestamp) {
       return DateTime.fromSeconds(timestamp).toRelative();
-    },
-    addImage() {},
-    addNft() {},
+    }
   },
 };
 </script>

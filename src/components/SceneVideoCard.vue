@@ -103,7 +103,7 @@
     </div>
     <div class="my-0 pa-4 d-flex">
       <v-text-field outlined v-model="video.liveSrc" label="Live Video Link" hide-details="auto"
-        :rules="[validateStreamLink]" :persistent-hint="true" @blur="updateliveSrc"
+        :rules="[validateStreamLink]" :persistent-hint="true" @blur="updateLiveSrc"
         hint="Enter a .m3u8 link to enable live streaming"> </v-text-field>
     </div>
 
@@ -350,7 +350,7 @@ export default {
         instanceData: instance,
       });
     },
-    updateliveSrc() {
+    updateLiveSrc() {
       const video = { ...this.video };
       if (!video.liveSrc) {
         video.enableLiveStream = false;

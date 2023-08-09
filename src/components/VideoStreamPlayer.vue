@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="isStreaming">
+    <div v-if="src && isStreaming">
       <video ref="videoPlayer" class="video-js"></video>
     </div>
     <div class="d-flex justify-space-between">
@@ -13,7 +13,7 @@
         <v-chip small label color="error" v-if="(!isLiveStream && !isValidUrl) || !isStreaming"><v-icon x-small
             class="mr-1">mdi-minus-circle</v-icon>INACTIVE / INVALID</v-chip>
       </div>
-      <v-chip small label color="info" v-else-if="src" class="text-center">
+      <v-chip small label color="info" v-else-if="src && !isStreaming" class="text-center">
         <v-icon x-small class="mr-1">mdi-server-off</v-icon>NO LIVE CONTENT
       </v-chip>
       <v-chip small label color="error" v-else class="text-center"><v-icon class="mr-1"
@@ -38,7 +38,7 @@ export default {
   data() {
     return {
       player: null,
-      isStreaming: false,
+      isStreaming: true,
       isLiveStream: false,
       isValidUrl: true,
     };
