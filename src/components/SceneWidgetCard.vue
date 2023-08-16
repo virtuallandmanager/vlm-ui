@@ -9,13 +9,13 @@
         </div>
         <div v-if="editingName" class="flex-grow-1">
           <v-text-field outlined autofocus color="white" label="Widget Name" v-model="widget.name" hide-details="auto"
-            append-outer-icon="mdi-content-save" @click:append-outer="toggleEditMode()" @blur="toggleEditMode()"
+            append-outer-icon="mdi-content-save" @click:stop:append-outer="toggleEditMode" @blur="toggleEditMode"
             dense></v-text-field>
         </div>
         <v-spacer v-if="editingName" class="flex-grow-2"></v-spacer>
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn icon small @click="toggleEditMode()" class="ml-2" v-if="!editingName" v-bind="attrs" v-on="on">
+            <v-btn icon small @click="toggleEditMode" class="ml-2" v-if="!editingName" v-bind="attrs" v-on="on">
               <v-icon small>mdi-rename</v-icon>
             </v-btn>
           </template>
@@ -28,7 +28,7 @@
       <v-spacer> </v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn icon @click="copyIdToClipboard()" v-bind="attrs" v-on="on">
+          <v-btn icon @click="copyIdToClipboard" v-bind="attrs" v-on="on">
             <v-icon>mdi-information</v-icon>
           </v-btn>
         </template>
@@ -62,14 +62,14 @@
       <div v-if="widget.type == 0">
         <v-row class="text-center d-flex justify-space-around">
           <v-col>
-            <v-btn outlined @click="reconfigure()"><v-icon class="mr-2">mdi-wrench</v-icon> Configure Widget</v-btn>
+            <v-btn outlined @click="reconfigure"><v-icon class="mr-2">mdi-wrench</v-icon> Configure Widget</v-btn>
           </v-col>
           <v-col>
-            <v-btn outlined @click="removeWidget()"><v-icon class="mr-2">mdi-trash-can</v-icon> Delete Widget</v-btn>
+            <v-btn outlined @click="removeWidget"><v-icon class="mr-2">mdi-trash-can</v-icon> Delete Widget</v-btn>
           </v-col>
         </v-row>
       </div>
-      <v-switch v-if="widget.type == 1" v-model="widget.value" hide-details class="mt-0" @change="editWidget()"><template
+      <v-switch v-if="widget.type == 1" v-model="widget.value" hide-details class="mt-0" @change="editWidget"><template
           v-slot:label>
           <div class="text-body">
             {{ widget.name }} is
@@ -78,7 +78,7 @@
           </div>
         </template></v-switch>
       <v-text-field outlined v-if="widget.type == 2" v-model="widget.value" :label="`${widget.name} Value`"
-        @change="editWidget()"></v-text-field>
+        @change="editWidget"></v-text-field>
 
       <div class="d-flex align-center justify-center" v-if="widget.type == 3">
         <v-select outlined :items="widgetSelections" v-model="widget.value" :label="`${widget.name} State`"

@@ -6,7 +6,7 @@
       </div>
       <v-tooltip v-if="!editingName" top>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn v-bind="attrs" v-on="on" class="d-flex-grow-0" icon small dark @click="toggleEditMode()"
+          <v-btn v-bind="attrs" v-on="on" class="d-flex-grow-0" icon small dark @click="toggleEditMode"
             v-if="!editingName">
             <v-icon small>mdi-rename</v-icon>
           </v-btn>
@@ -16,7 +16,7 @@
 
       <div class="text-h5 flex-grow-1" v-if="editingName">
         <v-text-field autofocus outlined color="white" label="Video Screen Name" v-model="video.name" hide-details="auto"
-          append-outer-icon="mdi-content-save" @click:append-outer="toggleEditMode()" @blur="toggleEditMode()" dense
+          append-outer-icon="mdi-content-save" @click:append-outer="toggleEditMode" @blur="toggleEditMode" dense
           @change="editSoundName()"></v-text-field>
       </div>
     </div>
@@ -28,7 +28,7 @@
           prepend-icon="mdi-television-ambient-light" max="1" min="0" step=".1" class="ma-0" dense
           hide-details="auto"></v-slider>
       </div>
-      <v-btn icon dark @click="toggleVisibility()" :disabled="video.customRendering">
+      <v-btn icon dark @click="toggleVisibility" :disabled="video.customRendering">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on" :class="video.enabled ? '' : 'red--text'">
@@ -130,11 +130,11 @@
         <div>
           <div class="d-flex justify-space-between align-center grey darken-2 pa-4">
             <h1 class="d-block text-body-1 font-weight-bold" dark>On-Demand Playlist</h1>
-            <v-btn @click="addVideo()"><v-icon>mdi-playlist-plus</v-icon></v-btn>
+            <v-btn @click="addVideo"><v-icon>mdi-playlist-plus</v-icon></v-btn>
           </div>
           <div v-for="(item, v) in video.playlist" :key="v" class="d-flex align-center pa-4">
             <v-text-field outlined v-model="video.playlist[v]" :label="`Video ${v + 1}`" placeholder="Enter Video URL"
-              hide-details="true" @blur="updatePlaylist()" class="flex-grow-1" />
+              hide-details="true" @blur="updatePlaylist" class="flex-grow-1" />
             <v-btn icon @click.stop="removePlaylistItem(v)" v-if="video.playlist.length > 1">
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
@@ -293,28 +293,16 @@ export default {
     toggleEditMode() {
       this.editingName = !this.editingName;
     },
-    toggleVisibility(instance, i) {
-      if (instance) {
-        Vue.set(this.video.instances[i], "enabled", !this.video.instances[i].enabled);
-        this.updateSceneElement({
-          action: "update",
-          element: "video",
-          instance: true,
-          property: "enabled",
-          id: instance.sk,
-          elementData: this.video,
-          instanceData: instance,
-        });
-      } else {
-        this.video.enabled = !this.video.enabled;
-        this.updateSceneElement({
-          action: "update",
-          element: "video",
-          property: "enabled",
-          id: this.video.sk,
-          elementData: this.video,
-        });
-      }
+    toggleVisibility() {
+      this.video.enabled = !this.video?.enabled;
+      this.updateSceneElement({
+        action: "update",
+        element: "video",
+        property: "enabled",
+        id: this.video.sk,
+        elementData: this.video,
+      });
+
     },
     toggleLiveStream() {
       this.updateSceneElement({
