@@ -16,152 +16,65 @@
     <v-card-text>
       <!-- <div class="d-flex align-center justify-start"> -->
       <!-- </div> -->
-      <v-select
-        v-model="displayedClickEvent.type"
-        label="Click Behavior"
-        :items="clickEvents"
-        class="mt-4"
-        @change="changeType"
-      ></v-select>
-      <v-text-field
-        v-if="
-          displayedClickEvent &&
-          displayedClickEvent.type == this.EClickEventType.EXTERNAL
-        "
-        v-model="displayedClickEvent.externalLink"
-        label="External Link"
-        :rules="[validateExternalLink]"
-        dense
-        @change="changeValue"
-      ></v-text-field>
-      <v-text-field
-        v-if="
-          displayedClickEvent &&
-          displayedClickEvent.type == this.EClickEventType.SOUND
-        "
-        v-model="displayedClickEvent.sound"
-        label="Audio File"
-        dense
-        @change="changeValue"
-      ></v-text-field>
-      <div
-        v-if="
-          displayedClickEvent &&
-          displayedClickEvent.type == this.EClickEventType.MOVE
-        "
-      >
+      <v-select v-model="displayedClickEvent.type" label="Click Behavior" :items="clickEvents" class="mt-4"
+        @change="changeType"></v-select>
+      <v-text-field v-if="displayedClickEvent &&
+        displayedClickEvent.type == this.EClickEventType.EXTERNAL
+        " v-model="displayedClickEvent.externalLink" label="External Link" :rules="[validateExternalLink]" dense
+        @change="changeValue"></v-text-field>
+      <v-text-field v-if="displayedClickEvent &&
+        displayedClickEvent.type == this.EClickEventType.SOUND
+        " v-model="displayedClickEvent.sound" label="Audio File" dense @change="changeValue"></v-text-field>
+      <div v-if="displayedClickEvent &&
+        displayedClickEvent.type == this.EClickEventType.MOVE
+        ">
         <div class="display-caption">Position</div>
         <div class="d-inline-flex align-content-space-between coords">
-          <v-text-field
-            v-model="displayedClickEvent.moveTo.position.x"
-            label="X"
-            @change="changeMoveTo"
-            type="number"
-          ></v-text-field>
-          <v-text-field
-            v-model="displayedClickEvent.moveTo.position.y"
-            label="Y"
-            @change="changeMoveTo"
-            type="number"
-          ></v-text-field>
-          <v-text-field
-            v-model="displayedClickEvent.moveTo.position.z"
-            label="Z"
-            @change="changeMoveTo"
-            type="number"
-          ></v-text-field>
+          <v-text-field v-model="displayedClickEvent.moveTo.position.x" label="X" @change="changeMoveTo"
+            type="number"></v-text-field>
+          <v-text-field v-model="displayedClickEvent.moveTo.position.y" label="Y" @change="changeMoveTo"
+            type="number"></v-text-field>
+          <v-text-field v-model="displayedClickEvent.moveTo.position.z" label="Z" @change="changeMoveTo"
+            type="number"></v-text-field>
         </div>
-        <v-switch
-          v-if="
-            displayedClickEvent &&
-            displayedClickEvent.type !== EClickEventType.NONE
-          "
-          v-model="displayedClickEvent.moveTo.setCameraTarget"
-          label="Set New Camera Target"
-          @change="toggleSetCameraTarget"
-        ></v-switch>
-        <div
-          v-if="
-            displayedClickEvent &&
-            displayedClickEvent.moveTo &&
-            displayedClickEvent.moveTo.setCameraTarget
-          "
-        >
+        <v-switch v-if="displayedClickEvent &&
+          displayedClickEvent.type !== EClickEventType.NONE
+          " v-model="displayedClickEvent.moveTo.setCameraTarget" label="Set New Camera Target"
+          @change="toggleSetCameraTarget"></v-switch>
+        <div v-if="displayedClickEvent &&
+          displayedClickEvent.moveTo &&
+          displayedClickEvent.moveTo.setCameraTarget
+          ">
           <div class="display-caption">Camera Target</div>
           <div class="d-inline-flex align-content-space-between coords">
-            <v-text-field
-              v-model="displayedClickEvent.moveTo.cameraTarget.x"
-              label="X"
-              @change="changeMoveTo"
-              type="number"
-            ></v-text-field>
-            <v-text-field
-              v-model="displayedClickEvent.moveTo.cameraTarget.y"
-              label="Y"
-              @change="changeMoveTo"
-              type="number"
-            ></v-text-field>
-            <v-text-field
-              v-model="displayedClickEvent.moveTo.cameraTarget.z"
-              label="Z"
-              @change="changeMoveTo"
-              type="number"
-            ></v-text-field>
+            <v-text-field v-model="displayedClickEvent.moveTo.cameraTarget.x" label="X" @change="changeMoveTo"
+              type="number"></v-text-field>
+            <v-text-field v-model="displayedClickEvent.moveTo.cameraTarget.y" label="Y" @change="changeMoveTo"
+              type="number"></v-text-field>
+            <v-text-field v-model="displayedClickEvent.moveTo.cameraTarget.z" label="Z" @change="changeMoveTo"
+              type="number"></v-text-field>
           </div>
         </div>
       </div>
-      <v-text-field
-        v-if="
-          displayedClickEvent &&
-          displayedClickEvent.type == this.EClickEventType.TELEPORT
-        "
-        v-model="displayedClickEvent.teleportTo"
-        label="Destination Coordinates"
-        dense
-        placeholder="0,0"
-        @change="changeValue"
-      ></v-text-field>
-      <v-switch
-        v-if="
-          displayedClickEvent && displayedClickEvent.type > EClickEventType.NONE
-        "
-        v-model="displayedClickEvent.showFeedback"
-        label="Show Hover Text"
-        @change="toggleHoverText"
-      ></v-switch>
-      <v-text-field
-        v-if="
-          displayedClickEvent &&
-          displayedClickEvent.type > EClickEventType.NONE &&
-          displayedClickEvent.showFeedback
-        "
-        v-model="displayedClickEvent.hoverText"
-        label="Hover Text"
-        dense
-        @change="changeValue"
-        :rules="[validateHoverText]"
-      ></v-text-field>
-      <v-switch
-        v-if="
-          displayedClickEvent &&
-          displayedClickEvent.type !== EClickEventType.NONE
-        "
-        v-model="displayedClickEvent.hasTracking"
-        label="Track Click Event"
-        @change="toggleTracking"
-      ></v-switch>
-      <v-text-field
-        v-if="
-          displayedClickEvent &&
-          displayedClickEvent.type !== EClickEventType.NONE &&
-          displayedClickEvent.hasTracking
-        "
-        v-model="displayedClickEvent.trackingId"
-        label="Tracking ID"
-        dense
-        @change="changeValue"
-        :rules="[validateTrackingId]"
-      ></v-text-field>
+      <v-text-field v-if="displayedClickEvent &&
+        displayedClickEvent.type == this.EClickEventType.TELEPORT
+        " v-model="displayedClickEvent.teleportTo" label="Destination Coordinates" dense placeholder="0,0"
+        @change="changeValue"></v-text-field>
+      <v-switch v-if="displayedClickEvent && displayedClickEvent.type > EClickEventType.NONE
+        " v-model="displayedClickEvent.showFeedback" label="Show Hover Text" @change="toggleHoverText"></v-switch>
+      <v-text-field v-if="displayedClickEvent &&
+        displayedClickEvent.type > EClickEventType.NONE &&
+        displayedClickEvent.showFeedback
+        " v-model="displayedClickEvent.hoverText" label="Hover Text" dense @change="changeValue"
+        :rules="[validateHoverText]"></v-text-field>
+      <v-switch v-if="displayedClickEvent &&
+        displayedClickEvent.type !== EClickEventType.NONE
+        " v-model="displayedClickEvent.hasTracking" label="Track Click Event" @change="toggleTracking"></v-switch>
+      <v-text-field v-if="displayedClickEvent &&
+        displayedClickEvent.type !== EClickEventType.NONE &&
+        displayedClickEvent.hasTracking
+        " v-model="displayedClickEvent.trackingId" label="Tracking ID" dense @change="changeValue"
+        :rules="[validateTrackingId]"></v-text-field>
     </v-card-text>
     <v-divider></v-divider>
     <v-card-actions>
@@ -172,7 +85,7 @@
   </v-card>
 </template>
     
-  <script>
+<script>
 import Vue from "vue";
 import { ClickEvent } from "../../models/ClickEvent";
 
@@ -212,7 +125,7 @@ export default {
     value: Boolean,
   },
   mounted() {
-    this.displayedClickEvent = new ClickEvent(this.element?.clickEvent);
+    this.displayedClickEvent = new ClickEvent(this.elementData?.clickEvent);
     this.originalClickEvent = { ...this.displayedClickEvent };
   },
   computed: {
@@ -231,10 +144,10 @@ export default {
       if (this.hasErrors) {
         return;
       }
-      this.$emit("onUpdate", this.displayedClickEvent,true);
+      this.$emit("onUpdate", this.displayedClickEvent, true);
     },
     revert() {
-      this.$emit("onUpdate", this.originalClickEvent,true);
+      this.$emit("onUpdate", this.originalClickEvent, true);
     },
     changeType() {
       if (this.displayedClickEvent.type == this.EClickEventType.TRACKING_ONLY) {
@@ -245,7 +158,7 @@ export default {
       this.changeValue();
     },
     changeValue() {
-      Vue.set(this.element, "clickEvent", this.displayedClickEvent);
+      Vue.set(this.elementData, "clickEvent", this.displayedClickEvent);
 
       Vue.nextTick(() => {
         if (this.hasErrors) {
@@ -293,7 +206,7 @@ export default {
     },
     setClickTrackingId() {
       let clickTrackingId;
-      let defaultTrackingName = this.element.customId || this.element.name;
+      let defaultTrackingName = this.elementData.customId || this.elementData.name;
 
       if (
         this.displayedClickEvent?.trackingId ||
@@ -303,19 +216,16 @@ export default {
       } else if (
         this.displayedClickEvent?.type == this.EClickEventType.EXTERNAL
       ) {
-        clickTrackingId = `click_event_(external_link)_${
-          this.displayedClickEvent?.externalLink || defaultTrackingName
-        }`;
+        clickTrackingId = `click_event_(external_link)_${this.displayedClickEvent?.externalLink || defaultTrackingName
+          }`;
       } else if (
         this.displayedClickEvent?.type == this.EClickEventType.TRACKING_ONLY
       ) {
-        clickTrackingId = `click_event_${
-          this.displayedClickEvent?.sound || defaultTrackingName
-        }`;
+        clickTrackingId = `click_event_${this.displayedClickEvent?.sound || defaultTrackingName
+          }`;
       } else if (this.displayedClickEvent?.type == this.EClickEventType.SOUND) {
-        clickTrackingId = `click_event_(play_sound)_${
-          this.displayedClickEvent?.sound || defaultTrackingName
-        }`;
+        clickTrackingId = `click_event_(play_sound)_${this.displayedClickEvent?.sound || defaultTrackingName
+          }`;
       } else if (
         this.displayedClickEvent?.type == this.EClickEventType.STREAM
       ) {
@@ -325,9 +235,8 @@ export default {
       } else if (
         this.displayedClickEvent?.type == this.EClickEventType.TELEPORT
       ) {
-        clickTrackingId = `click_event_(teleport_player)_${
-          this.displayedClickEvent?.teleportTo || defaultTrackingName
-        }`;
+        clickTrackingId = `click_event_(teleport_player)_${this.displayedClickEvent?.teleportTo || defaultTrackingName
+          }`;
       }
 
       if (clickTrackingId) {
@@ -369,15 +278,17 @@ export default {
 };
 </script>
   
-  <style lang="scss" scoped>
+<style lang="scss" scoped>
 .coords {
   .v-input {
     padding-right: 4px;
     padding-left: 4px;
+
     &:first-child {
       padding-right: 4px;
       padding-left: 0;
     }
+
     &:last-child {
       padding-right: 0;
       padding-left: 4px;

@@ -12,6 +12,7 @@ export default {
     userInfo: (state) => ({ location: store?.state?.auth?.session?.ipData?.location, ...state.userInfo }),
     userDisplayName: (state) => state.userInfo.displayName,
     isEarlyAccess: (state) => state.userInfo?.roles?.includes(1),
+    isAdvancedUser: (state) => state.userInfo?.roles?.includes(2),
     isVLMAdmin: (state) => !!state.userInfo?.roles?.filter((role) => role >= 7).length,
     walletAddress: (state) => (before, after) => {
       const full = state.userInfo.connectedWallet;

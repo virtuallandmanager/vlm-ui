@@ -11,7 +11,7 @@ export class SceneModeration {
   banActions = [EBanActions.BLACKOUT];
   allowActions = [EAllowActions.MOVE];
 
-  constructor() {}
+  constructor() { }
 }
 
 export const EBanActions = {
@@ -28,3 +28,9 @@ export const EBanWallTypes = {
 export const EAllowActions = {
   MOVE: 0
 };
+
+export const ESceneSettingType = {
+  LOCALIZATION: 0,
+  MODERATION: 1,
+  INTEROPERABILITY: 2
+}

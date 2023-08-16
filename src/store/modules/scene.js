@@ -17,10 +17,16 @@ export default {
     activeScene: (state) => {
       return state.activeScene;
     },
+    isDemoScene: (state) => {
+      return state.activeScene.sk == "00000000-0000-0000-0000-000000000000";
+    },
     activePreset: (state) => {
       const activePresetId = state.activeScene?.scenePreset,
         activePreset = state.activeScene?.presets?.find((preset) => preset.sk == activePresetId);
       return activePreset;
+    },
+    sceneSettings: (state) => {
+      return state.activeScene?.settings;
     },
     sceneVideos: (state) => {
       const activePresetId = state.activeScene?.scenePreset,
@@ -78,10 +84,10 @@ export default {
       state.loadingPreset = false;
     },
     STORE_SCENE(state, scene) {
-      if (scene.sk && state.userSceneCache) {
+      if (scene?.sk && state.userSceneCache) {
         state.userSceneCache = { ...state.userSceneCache, [scene.sk]: scene };
       }
-      if (state.activeScene.sk == scene.sk) {
+      if (state.activeScene?.sk == scene?.sk) {
         state.activeScene = scene;
       }
     },
@@ -93,6 +99,14 @@ export default {
       const { sk, displayName } = this.$store.state.user.userInfo;
       const orgs = this.$store.state.organization.userOrgs.map((org) => org.sk);
       sendSceneMessage("update_scene", { scene: scene || state.activeScene, user: { sk, displayName, orgs }, prop, val });
+    },
+    UPDATE_SCENE_SETTING(state, { settingName, settingValue }) {
+      const sceneSetting = state.activeScene.settings.find((setting) => setting.settingName === settingName);
+      if (sceneSetting) {
+        sceneSetting.settingValue = settingValue;
+      } else {
+        state.activeScene.settings.push({ settingName, settingValue });
+      }
     },
     ADD_PRESET(state, preset) {
       state.activeScene.presets.push(preset);
@@ -151,6 +165,19 @@ export default {
       const userId = userInfo.sk;
       await state.room.send("scene_sound_locator", { action: "scene_sound_locator", userId, property, id, element, instance, setting, elementData, instanceData, settingData, scenePreset, stage: "pre" });
     },
+    updateSceneSetting: async ({ commit, state }, { setting, settingName, settingValue }) => {
+      commit("UPDATE_SCENE_SETTING", { settingName, settingValue });
+      const settingData = state.activeScene.settings.find((setting) => setting.settingName === settingName);
+      await state.room.send("scene_setting_update", { action: "update", id: settingData.sk, setting, settingData, sceneData: state.activeScene });
+    },
+    sendModMessage: async ({ rootGetters, state, dispatch }, { message, color, fontSize, delay }) => {
+      const userInfo = rootGetters["user/userInfo"];
+      await state.room.send("scene_moderator_message", { message, color, fontSize, delay, userInfo });
+      dispatch("banner/showSuccess", { message: `Message sent successfully: ${message}` }, { root: true });
+    },
+    crashSceneUser: async ({ state }, { walletAddress, displayName }) => {
+      await state.room.send("scene_moderator_crash", { walletAddress, displayName });
+    },
     // END SCENE ELEMENT ACTIONS //
 
     // SCENE C/U/D //
@@ -167,6 +194,7 @@ export default {
       const { scene } = await createScene(sceneConfig);
       commit("STORE_SCENE", scene);
       commit("STOP");
+      return scene;
     },
     updateScene({ commit, dispatch }, scene, prop, val) {
       dispatch("fadeBlink", "out");
@@ -254,8 +282,7 @@ export default {
             dispatch(
               "banner/showSuccess",
               {
-                message: `${message.user.displayName} made an update to the scene.
-                }`,
+                message: `${message.user.displayName} made an update to the scene.`,
               },
               { root: true }
             );

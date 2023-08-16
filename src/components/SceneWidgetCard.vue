@@ -1,13 +1,16 @@
 <template>
   <v-card elevation="6">
-    <edit-select-dialog v-if="editingSelections" :selections="widget.selections" v-model="editingSelections" @onChange="editWidget()" />
+    <edit-select-dialog v-if="editingSelections" :selections="widget.selections" v-model="editingSelections"
+      @onChange="editWidget()" />
     <div class="primary darken-4 pa-6">
       <div class="d-flex align-center">
         <div class="text-h6 white--text" v-if="!editingName">
           {{ widget.name }}
         </div>
         <div v-if="editingName" class="flex-grow-1">
-          <v-text-field outlined autofocus color="white" label="Widget Name" v-model="widget.name" hide-details="auto" append-outer-icon="mdi-content-save" @click:append-outer="toggleEditMode()" @blur="toggleEditMode()" dense></v-text-field>
+          <v-text-field outlined autofocus color="white" label="Widget Name" v-model="widget.name" hide-details="auto"
+            append-outer-icon="mdi-content-save" @click:append-outer="toggleEditMode()" @blur="toggleEditMode()"
+            dense></v-text-field>
         </div>
         <v-spacer v-if="editingName" class="flex-grow-2"></v-spacer>
         <v-tooltip bottom>
@@ -43,16 +46,12 @@
       </v-tooltip>
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            icon
-            @click="
-              showDeleteDialog({
-                element: 'widget',
-                elementData: widget,
-              })
-            "
-            v-bind="attrs"
-            v-on="on">
+          <v-btn icon @click="
+            showDeleteDialog({
+              element: 'widget',
+              elementData: widget,
+            })
+            " v-bind="attrs" v-on="on">
             <v-icon>mdi-trash-can</v-icon>
           </v-btn>
         </template>
@@ -70,55 +69,67 @@
           </v-col>
         </v-row>
       </div>
-      <v-switch v-if="widget.type == 1" v-model="widget.value" hide-details class="mt-0" @change="editWidget()"
-        ><template v-slot:label>
+      <v-switch v-if="widget.type == 1" v-model="widget.value" hide-details class="mt-0" @change="editWidget()"><template
+          v-slot:label>
           <div class="text-body">
             {{ widget.name }} is
-            <strong :class="widget.value ? 'green--text' : 'red--text'">{{ widget.value ? "Enabled" : "Disabled" }}</strong>
+            <strong :class="widget.value ? 'green--text' : 'red--text'">{{ widget.value ? "Enabled" : "Disabled"
+            }}</strong>
           </div>
-        </template></v-switch
-      >
-      <v-text-field outlined v-if="widget.type == 2" v-model="widget.value" :label="`${widget.name} Value`" @change="editWidget()"></v-text-field>
+        </template></v-switch>
+      <v-text-field outlined v-if="widget.type == 2" v-model="widget.value" :label="`${widget.name} Value`"
+        @change="editWidget()"></v-text-field>
 
       <div class="d-flex align-center justify-center" v-if="widget.type == 3">
-        <v-select outlined :items="widgetSelections" v-model="widget.value" :label="`${widget.name} State`" hide-details="auto" @change="editWidget()"></v-select>
+        <v-select outlined :items="widgetSelections" v-model="widget.value" :label="`${widget.name} State`"
+          hide-details="auto" @change="editWidget()"></v-select>
       </div>
       <div class="d-flex align-center justify-space-around" v-if="widget.type == 4">
         <v-menu v-model="editingDate" :close-on-content-click="false" max-width="290">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn outlined color="primary" v-bind="attrs" v-on="on"><v-icon class="mr-2">mdi-calendar</v-icon>Set Date</v-btn>
+            <v-btn outlined color="primary" v-bind="attrs" v-on="on"><v-icon class="mr-2">mdi-calendar</v-icon>Set
+              Date</v-btn>
           </template>
           <v-date-picker color="primary" v-model="date" @change="setDateTime"></v-date-picker>
         </v-menu>
         <v-menu v-model="editingTime" :close-on-content-click="false" max-width="290">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn outlined color="primary" v-bind="attrs" v-on="on"><v-icon class="mr-2">mdi-clock</v-icon>Set Time</v-btn>
+            <v-btn outlined color="primary" v-bind="attrs" v-on="on"><v-icon class="mr-2">mdi-clock</v-icon>Set
+              Time</v-btn>
           </template>
           <v-time-picker v-if="editingTime" color="primary" v-model="time" @change="setDateTime"></v-time-picker>
         </v-menu>
       </div>
       <div v-if="widget.type === 4" class="text-button my-2 text-center">
         <div>Format</div>
-        <v-btn-toggle v-if="widget.type === 4" v-model="dateTimeFormat" @change="setDateTime"><v-btn>ISO 8601</v-btn><v-btn>Timestamp</v-btn></v-btn-toggle>
+        <v-btn-toggle v-if="widget.type === 4" v-model="dateTimeFormat" @change="setDateTime"><v-btn>ISO
+            8601</v-btn><v-btn>Timestamp</v-btn></v-btn-toggle>
       </div>
       <!-- <v-autocomplete v-if="widget.type === 4" outlined :items="timeZones" label="Select a time zone" v-model="selectedTimeZone" item-text="text" item-value="value" @change="setDateTime" class="mt-2"></v-autocomplete> -->
       <div class="d-flex justify-center" v-if="widget.type == 5">
-        <v-btn outlined v-if="widget.type == 5" color="primary" @click="triggerWidget()" elevation="6">Trigger Action</v-btn>
+        <v-btn outlined v-if="widget.type == 5" color="primary" @click="triggerWidget()" elevation="6">Trigger
+          Action</v-btn>
       </div>
       <div class="d-flex justify-center" v-if="widget.type == 6">
-        <v-slider v-if="widget.type == 6" v-model="widget.value" color="primary" @change="editWidget()" elevation="6" />
+        <v-slider v-if="widget.type == 6" v-model="widget.value" :step="(widget.range[1] - widget.range[0]) / 100"
+          :min="widget.range[0]" :max="widget.range[1]" thumb-label color="primary" @change="editWidget()"
+          elevation="6" />
       </div>
     </div>
     <div v-if="reconfiguring" class="pa-6">
       <div class="d-flex align-center">
-        <v-select outlined label="Widget Type" :items="widgetTypes" hide-details="auto" v-model="widget.type" @change="changeWidgetType()"> </v-select>
+        <v-select outlined label="Widget Type" :items="widgetTypes" hide-details="auto" v-model="widget.type"
+          @change="changeWidgetType()"> </v-select>
         <v-btn outlined v-if="widget.type == 3" class="ml-4" @click.stop="openEditSelectDialog"> Edit Selections </v-btn>
       </div>
       <div class="d-flex" v-if="widget.type === 6">
-        <v-text-field outlined v-model="widget.range[0]" label="Slider Start" hide-details="auto" @blur="editWidget()" class="mt-4"></v-text-field>
-        <v-text-field outlined v-model="widget.range[1]" label="Slider End" hide-details="auto" @blur="editWidget()" class="mt-4"></v-text-field>
+        <v-text-field outlined v-model="widget.range[0]" label="Slider Start" hide-details="auto" @blur="editWidget()"
+          class="mt-4"></v-text-field>
+        <v-text-field outlined v-model="widget.range[1]" label="Slider End" hide-details="auto" @blur="editWidget()"
+          class="mt-4"></v-text-field>
       </div>
-      <v-text-field outlined label="Widget Id" v-model="widget.id" hide-details="auto" @blur="editWidget()" class="mt-4"></v-text-field>
+      <v-text-field outlined label="Widget Id" v-model="widget.id" hide-details="auto" @blur="editWidget()"
+        class="mt-4"></v-text-field>
     </div>
   </v-card>
 </template>

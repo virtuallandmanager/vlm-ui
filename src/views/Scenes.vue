@@ -5,18 +5,23 @@
         <v-card-title class="text-h5"> Create New Scene </v-card-title>
 
         <v-card-text class="text-center">
-          <v-text-field autofocus outlined label="Scene Name" v-model="newSceneName" placeholder="Enter A Scene Name..." />
+          <v-text-field autofocus outlined label="Scene Name" v-model="newSceneName"
+            placeholder="Enter A Scene Name..." />
           <div class="text-button">Show me how to connect to:</div>
           <div class="d-flex justify-center">
             <div>
               <div class="d-flex">
-                <v-icon v-if="newSceneWorlds.decentraland" color="primary" small class="ml-n6 mr-2">mdi-check-circle</v-icon>
-                <v-btn block outlined class="my-2" :color="newSceneWorlds.decentraland ? 'primary' : 'white'" @click="toggleWorld('decentraland')"><img src="@/assets/dcl-logo-sm.png" width="20px" height="20px" class="mr-2" /> Decentraland </v-btn>
+                <v-icon v-if="newSceneWorlds.decentraland" color="primary" small
+                  class="ml-n6 mr-2">mdi-check-circle</v-icon>
+                <v-btn block outlined class="my-2" :color="newSceneWorlds.decentraland ? 'primary' : 'white'"
+                  @click="toggleWorld('decentraland')"><img src="@/assets/dcl-logo-sm.png" width="20px" height="20px"
+                    class="mr-2" /> Decentraland </v-btn>
               </div>
 
               <div class="d-flex">
-                <v-btn block outlined disabled class="my-2" @click="toggleWorld('hyperfy')"
-                  ><img src="@/assets/hyperfy-logo-sm.png" width="20px" height="20px" class="mr-2" /><v-icon v-if="newSceneWorlds.hyperfy" small class="ml-n6 mr-2"></v-icon> Hyperfy (Coming Soon!)
+                <v-btn block outlined disabled class="my-2" @click="toggleWorld('hyperfy')"><img
+                    src="@/assets/hyperfy-logo-sm.png" width="20px" height="20px" class="mr-2" /><v-icon
+                    v-if="newSceneWorlds.hyperfy" small class="ml-n6 mr-2"></v-icon> Hyperfy (Coming Soon!)
                 </v-btn>
               </div>
             </div>
@@ -27,7 +32,7 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="createScene"> Create </v-btn>
+          <v-btn color="primary" text @click="createNewScene"> Create </v-btn>
           <v-btn color="grey" text @click="resetNewSceneDialog"> Cancel </v-btn>
         </v-card-actions>
       </v-card>
@@ -105,7 +110,7 @@ export default {
     },
     resetNewSceneDialog() {
       this.newSceneDialog = false;
-      this.newSceneName = false;
+      this.newSceneName = "";
       this.newSceneWorlds = {
         decentraland: false,
         hyperfy: false,
@@ -115,19 +120,21 @@ export default {
     toggleWorld(key) {
       this.newSceneWorlds[key] = !this.newSceneWorlds[key];
     },
-    createNewScene(name) {
-      this.createScene({ name });
+    async createNewScene() {
+      const name = this.newSceneName
+      const scene = await this.createScene({ name });
       Object.keys(this.newSceneWorlds).forEach((key) => {
-        window.open(`/docs/${key}/setup`, "_blank");
+        if (this.newSceneWorlds[key]) {
+          window.open(`/docs`, "_blank");
+        }
       });
+      this.$router.push(`/scene/${scene.sk}`);
       this.resetNewSceneDialog();
     },
   },
 };
 </script>
 
-<style scoped>
-.scene-card-link {
+<style scoped>.scene-card-link {
   text-decoration: none;
-}
-</style>
+}</style>

@@ -139,6 +139,22 @@ const router = new Router({
         requiresAuth: true,
       },
     },
+    {
+      path: "/docs",
+      name: "DocsHome",
+      // route level code-splitting
+      // this generates a separate chunk (about.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import(/* webpackChunkName: "docshome" */ "../docs/Home.vue"),
+    },
+    {
+      path: "/docs/getting-started",
+      name: "DocsGettingStarted",
+      // route level code-splitting
+      // this generates a separate chunk (about.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import(/* webpackChunkName: "docshome" */ "../docs/GettingStarted.vue"),
+    },
   ],
 });
 
@@ -151,7 +167,7 @@ router.beforeEach(async (to, from, next) => {
     const isAdmin = store.getters["admin/isVLMAdmin"];
     // Implement your own authentication check
 
-    if (!isAuthenticated && !attemptedRestore) {
+    if (requiresAuth && !isAuthenticated && !attemptedRestore) {
       return await store.dispatch("auth/attemptRestoreSession");
     }
 

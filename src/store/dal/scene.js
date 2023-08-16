@@ -19,7 +19,8 @@ export const connectToScene = async (sceneId) => {
 export const sendSceneMessage = async (messageType, payload) => {
   try {
     const { sessionToken } = store.state.auth;
-    room.send(messageType, { sessionToken, ...payload });
+    const { userInfo } = store.state.user;
+    room.send(messageType, { sessionToken, userInfo, ...payload });
     return room;
   } catch (error) {
     return error;

@@ -1,5 +1,6 @@
 <template>
-  <focus-page :loadingMessage="`Connecting To ${scene.name || 'Scene'}...`" :loading="processing || loadingPreset" :noContent="!scene" :imageLink="scene?.imageLink || placeholder">
+  <focus-page :loadingMessage="`Connecting To ${scene.name || 'Scene'}...`" :loading="processing || loadingPreset"
+    :noContent="!scene" :imageLink="scene?.imageLink || placeholder">
     <transform-dialog />
     <delete-dialog />
     <click-event-dialog />
@@ -38,7 +39,7 @@
               Events
               <v-icon>mdi-balloon</v-icon>
             </v-tab> -->
-        <v-tab href="#tab-6">
+        <v-tab href="#tab-6" v-if="isAdvancedUser">
           Widgets
           <v-icon>mdi-palette</v-icon>
         </v-tab>
@@ -70,7 +71,7 @@
         <v-tab-item value="tab-5">
           <scene-event-list />
         </v-tab-item>
-        <v-tab-item value="tab-6">
+        <v-tab-item value="tab-6" v-if="isAdvancedUser">
           <scene-widget-list />
         </v-tab-item>
         <v-tab-item value="tab-7">
@@ -108,13 +109,9 @@ import store from "../store";
 export default {
   name: "Scene",
   components: {
-    // SceneAnalytics,
     SceneArtList,
     SceneVideoList,
-    // SceneSoundList,
     SceneEventList,
-    // SceneModeration,
-    // ImageLibrary,
     SceneSettings,
     SceneWidgetList,
     ScenePresetList,
@@ -144,7 +141,7 @@ export default {
   async mounted() {
     await this.connectToScene(this.$route.params.sceneId);
   },
-  beforeDestroy() {},
+  beforeDestroy() { },
   computed: {
     scene() {
       return this.$store.state.scene.activeScene || {};
@@ -193,7 +190,7 @@ export default {
       }
       return worldNames.join(", ") || "None";
     },
-    ...mapGetters({ user: "user/userInfo", connected: "scene/connected", inBlink: "scene/inBlink", outBlink: "scene/outBlink", processing: "scene/processing", loadingPreset: "scene/loadingPreset" }),
+    ...mapGetters({ user: "user/userInfo", isAdvancedUser: "user/isAdvancedUser", connected: "scene/connected", inBlink: "scene/inBlink", outBlink: "scene/outBlink", processing: "scene/processing", loadingPreset: "scene/loadingPreset" }),
   },
   methods: {
     ...mapActions({
@@ -219,15 +216,17 @@ export default {
 .visible {
   opacity: 1;
 }
+
 .hidden {
   opacity: 0;
 }
+
 .frosted {
   background-color: rgba(75, 75, 125, 0.3);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
 }
+
 .cyberpunk-border {
   border: 1px solid rgb(128, 0, 255);
-}
-</style>
+}</style>

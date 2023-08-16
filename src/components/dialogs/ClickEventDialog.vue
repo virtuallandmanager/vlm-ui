@@ -1,7 +1,8 @@
 <template>
   <v-dialog v-model="show" max-width="400" persistent>
-    <instance-click-event v-if="instance" :instanceData="instanceData" :elementData="elementData" @onUpdate="updateInstance" />
-    <default-click-event v-else :elementData="element" @onUpdate="updateElement" />
+    <instance-click-event v-if="instance" :element="element" :instanceData="instanceData" :elementData="elementData"
+      @onUpdate="updateInstance" />
+    <default-click-event v-else :element="element" :elementData="elementData" @onUpdate="updateElement" />
   </v-dialog>
 </template>
 
@@ -60,7 +61,7 @@ export default {
       if (done) {
         this.hideClickEventDialog();
       }
-      this.updateSceneElement({ element: this.element, property: "clickEvent", elementData: this.elementData, instance: true, id: this.instanceData.sk, instanceData: { ...this.instanceData, clickEvent } });
+      this.updateSceneElement({ element: this.element, property: "clickEvent", elementData: this.elementData, instance: true, id: this.instanceData?.sk, instanceData: { ...this.instanceData, clickEvent } });
     },
     updateElement(clickEvent, done) {
       if (done) {
@@ -77,14 +78,15 @@ export default {
   .v-input {
     padding-right: 4px;
     padding-left: 4px;
+
     &:first-child {
       padding-right: 4px;
       padding-left: 0;
     }
+
     &:last-child {
       padding-right: 0;
       padding-left: 4px;
     }
   }
-}
-</style>
+}</style>

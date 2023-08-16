@@ -144,7 +144,7 @@ export default {
     formState() {
       const displayedClickEvent = { ...this.displayedClickEvent },
         originalClickEvent = { ...this.originalClickEvent },
-        defaultClickEvent = { ...this.element.clickEvent };
+        defaultClickEvent = { ...this.elementData.clickEvent };
 
       delete displayedClickEvent.synced;
       delete defaultClickEvent.synced;
@@ -226,7 +226,7 @@ export default {
     },
     restoreDefaults() {
       this.displayedClickEvent = {
-        ...this.element.clickEvent,
+        ...this.elementData.clickEvent,
       };
       this.hasErrors = false;
       this.changeValue();
