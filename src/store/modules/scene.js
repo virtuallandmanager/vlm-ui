@@ -93,7 +93,9 @@ export default {
     },
     SET_ACTIVE_SCENE(state, sceneId) {
       state.activeScene = state.userSceneCache[sceneId];
-      state.activePreset = state.activeScene.presets.find((preset) => preset.sk == state.activeScene.scenePreset);
+      if (state.activeScene) {
+        state.activePreset = state.activeScene.presets.find((preset) => preset.sk == state.activeScene.scenePreset);
+      }
     },
     UPDATE_SCENE(state, { scene, prop, val }) {
       const { sk, displayName } = this.$store.state.user.userInfo;
