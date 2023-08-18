@@ -14,28 +14,21 @@
           <div class="mb-4">Run this command in a terminal window from the directory that contains your project files.
           </div>
           <v-btn @click="copyInstallCode" color="secondary">Copy install command</v-btn>
-          <v-divider class="my-4" v-if="!sceneId"></v-divider>
-
-          <div v-if="!sceneId">2. Copy your scene id from your scene's <strong><v-icon
-                x-small>mdi-cog</v-icon>Settings</strong> tab.</div>
-          <v-divider class="my-4" v-if="!sceneId"></v-divider>
-
-          <div v-if="!sceneId">3. Replace the zeros copied in step 1 with the scene id you copied in step 2.</div>
           <v-divider class="my-4"></v-divider>
-        </div>
-        <div class="text-left mb-1">
-          2. Add this line to your <code>scene.json</code> file.
-          <!-- Display the code in a textarea -->
-          <v-textarea :value="sceneJsonCode" rows="1" disabled filled ref="sceneJsonBlock"></v-textarea>
-          <!-- Copy button -->
-          <v-btn @click="copySceneJson" color="secondary">Copy scene.json code</v-btn>
+          <div class="text-left mb-1">
+            2. Add this line to your <code>scene.json</code> file.
+            <!-- Display the code in a textarea -->
+            <v-textarea :value="sceneJsonCode" rows="1" disabled filled ref="sceneJsonBlock"></v-textarea>
+            <!-- Copy button -->
+            <v-btn @click="copySceneJson" color="secondary">Copy scene.json code</v-btn>
+          </div>
           <v-divider class="my-4" v-if="!sceneId"></v-divider>
 
-          <div v-if="!sceneId">2. Copy your scene id from your scene's <strong><v-icon
+          <div v-if="!sceneId">3. Copy your scene id from your scene's <strong><v-icon
                 x-small>mdi-cog</v-icon>Settings</strong> tab.</div>
           <v-divider class="my-4" v-if="!sceneId"></v-divider>
 
-          <div v-if="!sceneId">3. Replace the zeros copied in step 1 with the scene id you copied in step 2.</div>
+          <div v-if="!sceneId">4. Replace the zeros copied in step 1 with the scene id you copied in step 2.</div>
           <v-divider class="my-4"></v-divider>
         </div>
         <div class="text-left mb-1">
@@ -52,13 +45,15 @@
 
           <!-- Display the code in a textarea -->
           <v-textarea :value="mainSceneCode" rows="3" disabled filled ref="tsConfigBlock"></v-textarea>
-          <div class="mb-4">You can also create a new file called <code>vlm.ts</code> to put this in if you prefer to keep things
+          <div class="mb-4">You can also create a new file called <code>vlm.ts</code> to put this in if you prefer to keep
+            things
             separate.</div>
           <!-- Copy button -->
           <v-btn @click="copySceneCode" color="secondary">Copy scene code</v-btn>
         </div>
         <v-divider class="my-4" v-if="sceneId"></v-divider>
-        <v-btn v-if="sceneId" @click="backToScene" color="primary">Back To Scene</v-btn>
+        <v-btn v-if="sceneId" @click="backToScene" color="primary" class="mr-2">Back To Scene</v-btn>
+        <v-btn @click="backToScene" color="primary" disabled>Advanced Feature Setup (Coming Soon)</v-btn>
       </div>
     </v-card>
   </content-page>
