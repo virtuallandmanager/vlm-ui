@@ -409,7 +409,7 @@ export default {
       });
     },
     showSceneSetup() {
-      this.$router.push({ name: "SceneSetup", params: { sceneId: this.scene.sk } });
+      this.$router.push(`/docs/getting-started?sceneId=${this.scene.sk}`);
     },
     sendMessage() {
       this.sendModMessage({

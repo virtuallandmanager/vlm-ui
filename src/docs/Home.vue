@@ -16,9 +16,9 @@
           <p class="lead mt-4">
             Connecting a Metaverse scene to VLM
           </p>
-          <div class="mt-2">How-Tos Coming Soon</div>
+          <div class="mt-2">How-Tos</div>
           <div class="d-flex flex-column">
-            <v-btn class="mt-4" color="primary" large outlined to="/docs/getting-started" disabled>Decentraland SDK
+            <v-btn class="mt-4" color="primary" large outlined to="/docs/getting-started?world=decentraland">Decentraland SDK
               6</v-btn>
             <v-btn class="mt-4" color="primary" large outlined to="/docs/getting-started" disabled>Decentraland SDK
               7</v-btn>

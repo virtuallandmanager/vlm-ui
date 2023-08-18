@@ -65,7 +65,7 @@ const router = new Router({
     // },
     {
       path: "/media",
-      name: "Media Library",
+      name: "MediaLibrary",
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -108,11 +108,11 @@ const router = new Router({
     },
     {
       path: "/admin",
-      name: "Admin Panel",
+      name: "AdminPanel",
       component: () => import(/* webpackChunkName: "events" */ "../views/AdminPanel.vue"),
       meta: {
-        requiresAuth: true,
-        requiresAdmin: true,
+        // requiresAuth: true,
+        // requiresAdmin: true,
       },
     },
     {
@@ -154,6 +154,7 @@ const router = new Router({
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "docshome" */ "../docs/GettingStarted.vue"),
+      props: route => ({ sceneId: route.query.sceneId, world: route.query.world })
     },
   ],
 });
@@ -164,11 +165,10 @@ router.beforeEach(async (to, from, next) => {
     const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin);
     const isAuthenticated = store.getters["auth/authenticated"];
     const attemptedRestore = store.getters["auth/attemptedRestore"];
-    const isAdmin = store.getters["admin/isVLMAdmin"];
-    // Implement your own authentication check
+    const isAdmin = store.getters["user/isVLMAdmin"];
 
     if (requiresAuth && !isAuthenticated && !attemptedRestore) {
-      return await store.dispatch("auth/attemptRestoreSession");
+      await store.dispatch("auth/attemptRestoreSession");
     }
 
     if (requiresAuth && !isAuthenticated) {

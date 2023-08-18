@@ -78,6 +78,7 @@
 import { mapActions, mapGetters } from "vuex";
 import ContentPage from "../components/ContentPage.vue";
 import router from "../router";
+import store from "../store";
 
 export default {
   name: "AdminPanel",
@@ -100,15 +101,17 @@ export default {
     ],
   }),
   beforeRouteEnter(to, from, next) {
-    const isAuthenticated = this.$store.getters["auth/authenticated"];
-    const isAdmin = this.$store.getters["user/isVlmAdmin"];
+    const isAuthenticated = store.getters["auth/authenticated"];
+    const isAdmin = store.getters["user/isVLMAdmin"];
 
     if (!isAuthenticated || !isAdmin) {
       next("/"); // Redirect to the login page if the user is not authenticated
     } else {
-      this.getAdminPanelKeys();
       next(); // Continue rendering the component
     }
+  },
+  mounted(){
+    this.getAdminPanelKeys();
   },
   computed: {
     ...mapGetters({
@@ -119,6 +122,7 @@ export default {
       adminEvents: "admin/events",
       userSessions: "admin/userSessions",
       analyticsSessions: "admin/analyticsSessions",
+      getAdminPanelKeys: "admin/getAdminPanelKeys"
     }),
     composite() {
       const users = this.adminUsers?.map((user) => ({
