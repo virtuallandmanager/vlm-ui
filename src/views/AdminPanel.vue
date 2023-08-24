@@ -2,27 +2,22 @@
   <content-page loadingMessage="Loading the admin panel..." :loading="loading" :noContent="false">
     <template v-slot:header>Admin Panel</template>
     <template v-slot:header-actions>
-      <!-- <v-menu offset-y :close-on-content-click="true">
+      <v-menu offset-y :close-on-content-click="true">
         <template v-slot:activator="{ on, attrs }">
           <v-btn color="primary" dark v-bind="attrs" v-on="on" class="mr-4">
-            <v-icon class="mr-2">mdi-filter</v-icon
-            >{{ filterTypes[filterType].text }}
+            <v-icon class="mr-2">mdi-filter</v-icon>{{ filterTypes[filterType].text }}
           </v-btn>
         </template>
 
         <v-list>
-          <v-list-item
-            v-for="(filter, index) in filterTypes"
-            :key="index"
-            @click="changeFilterType(filter)"
-          >
+          <v-list-item v-for="(filter, index) in filterTypes" :key="index" @click="changeFilterType(filter)">
             <v-list-item-content>
               {{ filter.text }}
             </v-list-item-content>
           </v-list-item>
         </v-list>
-      </v-menu> -->
-      <!-- <v-menu offset-y :close-on-content-click="true">
+      </v-menu>
+      <v-menu offset-y :close-on-content-click="true">
         <template v-slot:activator="{ on, attrs }">
           <v-btn color="primary" dark v-bind="attrs" v-on="on" class="mr-4">
             <v-icon class="mr-2">mdi-account</v-icon>
@@ -30,18 +25,14 @@
           </v-btn>
         </template>
         <v-list>
-          <v-list-item
-            v-for="(owner, index) in owners"
-            :key="index"
-            @click="changeAdminScope(owner)"
-          >
+          <v-list-item v-for="(owner, index) in owners" :key="index" @click="changeAdminScope(owner)">
             <v-list-item-content>
               {{ owner.text }}
             </v-list-item-content>
           </v-list-item>
         </v-list>
-      </v-menu> -->
-      <!-- <v-menu :close-on-content-click="true" v-model="sortTypes[0]">
+      </v-menu>
+      <v-menu :close-on-content-click="true" v-model="sortTypes[0]">
         <template v-slot:activator="{ on, attrs }">
           <v-btn color="primary" dark v-bind="attrs" v-on="on">
             <v-icon class="mr-2">mdi-sort</v-icon>{{ sortTypes[sortType].text }}
@@ -49,17 +40,13 @@
         </template>
 
         <v-list>
-          <v-list-item
-            v-for="(sort, index) in sortTypes"
-            :key="index"
-            v-model="sortType"
-          >
+          <v-list-item v-for="(sort, index) in sortTypes" :key="index" v-model="sortType">
             <v-list-item-title @click="changeSortType(sort.value)">{{
               sort.text
             }}</v-list-item-title>
           </v-list-item>
         </v-list>
-      </v-menu> -->
+      </v-menu>
     </template>
     <v-card>
       <v-card-title>
@@ -67,9 +54,9 @@
       </v-card-title>
       <v-data-table :headers="userHeaders" :items="composite" group-by="group" :items-per-page="100" :search="search">
         <template v-slot:item.actions="{ item }">
-          <v-btn small color="primary" @click="editItem(item)"> <v-icon small class="mr-1"> mdi-pencil </v-icon> Edit </v-btn>
-        </template></v-data-table
-      >
+          <v-btn small color="primary" @click="editItem(item)"> <v-icon small class="mr-1"> mdi-pencil </v-icon> Edit
+          </v-btn>
+        </template></v-data-table>
     </v-card>
   </content-page>
 </template>
@@ -110,7 +97,7 @@ export default {
       next(); // Continue rendering the component
     }
   },
-  mounted(){
+  mounted() {
     this.getAdminPanelKeys();
   },
   computed: {
@@ -121,15 +108,17 @@ export default {
       adminScenes: "admin/scenes",
       adminEvents: "admin/events",
       userSessions: "admin/userSessions",
+      adminLogs: "admin/adminLogs",
       analyticsSessions: "admin/analyticsSessions",
-      getAdminPanelKeys: "admin/getAdminPanelKeys"
+      getAdminPanelKeys: "admin/getAdminPanelKeys",
+      getAdminLogs: "admin/getAdminPanelKeys"
     }),
     composite() {
       const users = this.adminUsers?.map((user) => ({
-          ...user,
-          name: user.displayName,
-          group: "Users",
-        })),
+        ...user,
+        name: user.displayName,
+        group: "Users",
+      })),
         orgs = this.adminOrgs?.map((org) => ({
           ...org,
           name: org.displayName,
