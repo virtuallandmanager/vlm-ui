@@ -75,7 +75,7 @@
         </v-list-item-icon>
         <v-list-item-title>Media Library</v-list-item-title>
       </v-list-item>
-      <v-list-item link :to="proces.env.VUE_APP_DOCS_URL">
+      <v-list-item link :href="process.env.VUE_APP_DOCS_URL">
         <v-list-item-icon>
           <v-icon >mdi-book</v-icon>
         </v-list-item-icon>
