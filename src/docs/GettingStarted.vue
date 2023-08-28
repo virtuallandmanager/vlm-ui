@@ -74,7 +74,7 @@ export default {
     test: false,
     tsConfigJsonCode: "",
     sceneJsonCode: "",
-    installCode: "dcl installl vlm-dcl@0.0.1-rc",
+    installCode: "dcl install vlm-dcl",
     mainSceneCode: `import VLM from "vlm-dcl";
 VLM.init();`,
   }),
