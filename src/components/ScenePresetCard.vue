@@ -2,7 +2,7 @@
   <div>
     <div class="d-flex pa-4 justify-space-between">
       <div class="info-section d-flex flex-column justify-start align-start">
-        <div class="text-h5 white--text">{{ preset.name }}</div>
+        <div class="text-h5 white--text">{{ preset?.name }}</div>
         <div v-if="preset?.createdAt">Created {{ createdDate(preset.createdAt) }}</div>
         <div class="scene-element-tiles">
           <v-btn text class="d-inline" v-if="preset.videos"><v-icon class="mr-2">mdi-television</v-icon> {{ preset.videos.length }}</v-btn>
@@ -66,7 +66,6 @@ export default {
     nameDialog: false,
     dialogCallback: () => {},
   }),
-
   computed: {
     ...mapGetters({ scene: "scene/activeScene" }),
   },
@@ -81,7 +80,7 @@ export default {
       this.$emit("handleDialog", { show: true, title: "Rename Preset", preset: this.preset, callback: () => this.updatePresetProperty({ preset: this.preset, prop: "name" }) });
     },
     showCloneDialog() {
-      this.$emit("handleDialog", { show: true, title: "New Preset Name", preset: this.preset, callback: this.clonePreset });
+      this.$emit("handleDialog", { show: true, title: "New Preset Name", preset: {...this.preset}, callback: this.clonePreset });
     },
   },
 };

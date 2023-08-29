@@ -18,7 +18,7 @@ export const connectToEvent = async () => {
 export const createEvent = async () => {
   try {
     const { sessionToken } = store.state.auth;
-    return await new AuthenticatedFetch(sessionToken).get(`/event/create`);
+    return await new AuthenticatedFetch(sessionToken).post(`/event/create`);
   } catch (error) {
     return error;
   }

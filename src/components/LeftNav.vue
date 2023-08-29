@@ -65,7 +65,7 @@
 
       <v-list-item link to="/events" disabled>
         <v-list-item-icon>
-          <v-icon disabled>mdi-calendar-star</v-icon>
+          <v-icon>mdi-calendar-star</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Events</v-list-item-title>
       </v-list-item>
@@ -75,7 +75,7 @@
         </v-list-item-icon>
         <v-list-item-title>Media Library</v-list-item-title>
       </v-list-item>
-      <v-list-item link :href="process.env.VUE_APP_DOCS_URL">
+      <v-list-item link :href="docsUrl">
         <v-list-item-icon>
           <v-icon >mdi-book</v-icon>
         </v-list-item-icon>
@@ -139,6 +139,9 @@ export default {
     },
     showBackArrow() {
       return this.activeScene || this.activeEvent;
+    },
+    docsUrl() {
+      return process.env.VUE_APP_DOCS_URL;
     },
     ...mapGetters({
       demoMode: "app/demoMode",
