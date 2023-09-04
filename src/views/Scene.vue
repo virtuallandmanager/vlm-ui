@@ -7,7 +7,9 @@
     <properties-dialog />
     <template v-slot:header>{{ scene?.name }}</template>
     <template v-slot:header-actions>
-      <div class="d-flex align-center flex-center" style="position: absolute">
+      <div class="d-flex align-center" style="position: absolute">
+        <v-btn v-if="isDemoScene" color="primary" @click="viewDemoScene" class="mr-2">VIEW DEMO SCENE</v-btn>
+        <v-spacer></v-spacer>
         <v-fade-transition>
           <v-chip v-if="connected" :color="connectedColor" :border-color="connectedColor">Connected To Scene </v-chip>
         </v-fade-transition>
@@ -190,7 +192,16 @@ export default {
       }
       return worldNames.join(", ") || "None";
     },
-    ...mapGetters({ user: "user/userInfo", isAdvancedUser: "user/isAdvancedUser", connected: "scene/connected", inBlink: "scene/inBlink", outBlink: "scene/outBlink", processing: "scene/processing", loadingPreset: "scene/loadingPreset" }),
+    ...mapGetters({
+      user: "user/userInfo",
+      isAdvancedUser: "user/isAdvancedUser",
+      connected: "scene/connected",
+      isDemoScene: "scene/isDemoScene",
+      inBlink: "scene/inBlink",
+      outBlink: "scene/outBlink",
+      processing: "scene/processing",
+      loadingPreset: "scene/loadingPreset"
+    }),
   },
   methods: {
     ...mapActions({
@@ -207,6 +218,9 @@ export default {
     },
     relDateTime(timestamp) {
       return DateTime.fromSeconds(timestamp).toRelative();
+    },
+    viewDemoScene() {
+      return window.open("https://play.decentraland.org/?position=104%2C60")
     }
   },
 };
@@ -229,4 +243,5 @@ export default {
 
 .cyberpunk-border {
   border: 1px solid rgb(128, 0, 255);
-}</style>
+}
+</style>
