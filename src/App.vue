@@ -1,35 +1,43 @@
 <template>
   <v-app>
     <v-app-bar app clipped-left color="production" class="d-flex align-center" v-if="$vuetify.breakpoint.mdAndDown">
-      <v-app-bar-nav-icon @click.stop="toggleNavDrawer" v-if="$vuetify.breakpoint.mdAndDown && showNav"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click.stop="toggleNavDrawer"
+        v-if="$vuetify.breakpoint.mdAndDown && showNav"></v-app-bar-nav-icon>
       <v-img src="@/assets/VLM-Logo.svg" max-width="80" class="ml-2"></v-img>
-      <v-btn v-if="!connected && !signing" color="primary" @click.stop="connectButton()" :loading="processing" :disabled="processing" fixed right>
+      <v-btn v-if="!connected && !signing" color="primary" @click.stop="connectButton()" :loading="processing"
+        :disabled="processing" fixed right>
         <v-icon class="mr-2">mdi-wallet</v-icon>
         Connect Wallet
         <template v-slot:loading><v-progress-circular indeterminate :size="15" class="mr-2" /> Connecting</template>
       </v-btn>
-      <v-btn v-else-if="signing && signature" color="primary" @click.stop="connectButton()" :disabled="processing" fixed right>
+      <v-btn v-else-if="signing && signature" color="primary" @click.stop="connectButton()" :disabled="processing" fixed
+        right>
         <v-progress-circular indeterminate :size="15" class="mr-2" />
         Validating
       </v-btn>
-      <v-btn v-else-if="signing && !signature" color="primary" @click.stop="connectButton()" :disabled="processing" fixed right> <v-progress-circular indeterminate :size="15" class="mr-2" /> Please Sign </v-btn>
+      <v-btn v-else-if="signing && !signature" color="primary" @click.stop="connectButton()" :disabled="processing" fixed
+        right> <v-progress-circular indeterminate :size="15" class="mr-2" /> Please Sign </v-btn>
     </v-app-bar>
     <v-main>
       <web-3-signing-dialog :value="signing" />
       <left-nav v-if="connected && showNav" />
       <div class="bg">
         <router-view />
-        <v-app-bar fixed right color="transparent" align-right elevation="0" v-if="!connected && !$vuetify.breakpoint.mdAndDown">
-          <v-btn v-if="!connected && !signing" color="primary" @click.stop="connectButton()" :loading="processing" :disabled="processing" fixed right>
+        <v-app-bar fixed right color="transparent" align-right elevation="0"
+          v-if="!connected && !$vuetify.breakpoint.mdAndDown">
+          <v-btn v-if="!connected && !signing" color="primary" @click.stop="connectButton()" :loading="processing"
+            :disabled="processing" fixed right>
             <v-icon class="mr-2">mdi-wallet</v-icon>
             Connect Wallet
             <template v-slot:loading><v-progress-circular indeterminate :size="15" class="mr-2" /> Connecting</template>
           </v-btn>
-          <v-btn v-else-if="signing && signature" color="primary" @click.stop="connectButton()" :disabled="processing" fixed right>
+          <v-btn v-else-if="signing && signature" color="primary" @click.stop="connectButton()" :disabled="processing"
+            fixed right>
             <v-progress-circular indeterminate :size="15" class="mr-2" />
             Validating
           </v-btn>
-          <v-btn v-else-if="signing && !signature" color="primary" @click.stop="connectButton()" :disabled="processing" fixed right> <v-progress-circular indeterminate :size="15" class="mr-2" /> Please Sign </v-btn>
+          <v-btn v-else-if="signing && !signature" color="primary" @click.stop="connectButton()" :disabled="processing"
+            fixed right> <v-progress-circular indeterminate :size="15" class="mr-2" /> Please Sign </v-btn>
         </v-app-bar>
       </div>
     </v-main>
@@ -136,9 +144,14 @@ export default {
   background-size: cover;
   transform: scale(1);
 }
+
 .translucent {
   background-color: rgba(0, 0, 0, 0);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
+}
+
+.v-tab {
+  text-transform: uppercase !important;
 }
 </style>
