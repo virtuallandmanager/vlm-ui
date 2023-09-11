@@ -61,7 +61,7 @@ import GdprNotice from "../components/dialogs/GDPRNotice";
 
 export default {
   components: { GdprNotice },
-  name: "Registration",
+  name: "UserProfile",
   data: () => ({
     newUserInfo: { roles: [0, 1] },
     newOrg: { displayName: "AnonCo" },
