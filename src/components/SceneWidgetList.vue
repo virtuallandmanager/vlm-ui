@@ -127,7 +127,6 @@ export default {
 
       const index = parseInt(event.key, 10) == 0 ? 9 : parseInt(event.key, 10) - 1;
       const widget = this.filteredWidgets[index];
-      console.log(index, widget.name)
 
       if (!widget) return;
 
@@ -146,8 +145,6 @@ export default {
           this.lightStatuses.splice(index, 1, 'transparent');
         }, 250);
       }
-
-      console.log(this.lightStatuses)
 
       this.updateSceneElement({ element: "widget", elementData: widget, id: widget.id });
 

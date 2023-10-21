@@ -83,6 +83,9 @@ export default {
       next(); // Continue rendering the component
     }
   },
+  async mounted() {
+    await this.getSceneCards();
+  },
   computed: {
     ...mapGetters({
       scenes: "scene/sceneList",
@@ -133,6 +136,8 @@ export default {
 };
 </script>
 
-<style scoped>.scene-card-link {
+<style scoped>
+.scene-card-link {
   text-decoration: none;
-}</style>
+}
+</style>

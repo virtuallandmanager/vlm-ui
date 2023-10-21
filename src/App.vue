@@ -4,18 +4,18 @@
       <v-app-bar-nav-icon @click.stop="toggleNavDrawer"
         v-if="$vuetify.breakpoint.mdAndDown && showNav"></v-app-bar-nav-icon>
       <v-img src="@/assets/VLM-Logo.svg" max-width="80" class="ml-2"></v-img>
-      <v-btn v-if="!connected && !signing" color="primary" @click.stop="connectButton()" :loading="processing"
-        :disabled="processing" fixed right>
+      <v-btn v-if="!connected && !signing" color="primary" @click.stop="connectButton()" :loading="loadingAuth"
+        :disabled="loadingAuth" fixed right>
         <v-icon class="mr-2">mdi-wallet</v-icon>
         Connect Wallet
         <template v-slot:loading><v-progress-circular indeterminate :size="15" class="mr-2" /> Connecting</template>
       </v-btn>
-      <v-btn v-else-if="signing && signature" color="primary" @click.stop="connectButton()" :disabled="processing" fixed
+      <v-btn v-else-if="signing && signature" color="primary" @click.stop="connectButton()" :disabled="loadingAuth" fixed
         right>
         <v-progress-circular indeterminate :size="15" class="mr-2" />
         Validating
       </v-btn>
-      <v-btn v-else-if="signing && !signature" color="primary" @click.stop="connectButton()" :disabled="processing" fixed
+      <v-btn v-else-if="signing && !signature" color="primary" @click.stop="connectButton()" :disabled="loadingAuth" fixed
         right> <v-progress-circular indeterminate :size="15" class="mr-2" /> Please Sign </v-btn>
     </v-app-bar>
     <v-main>
@@ -25,18 +25,18 @@
         <router-view />
         <v-app-bar fixed right color="transparent" align-right elevation="0"
           v-if="!connected && !$vuetify.breakpoint.mdAndDown">
-          <v-btn v-if="!connected && !signing" color="primary" @click.stop="connectButton()" :loading="processing"
-            :disabled="processing" fixed right>
+          <v-btn v-if="!connected && !signing" color="primary" @click.stop="connectButton()" :loading="loadingAuth"
+            :disabled="loadingAuth" fixed right>
             <v-icon class="mr-2">mdi-wallet</v-icon>
             Connect Wallet
             <template v-slot:loading><v-progress-circular indeterminate :size="15" class="mr-2" /> Connecting</template>
           </v-btn>
-          <v-btn v-else-if="signing && signature" color="primary" @click.stop="connectButton()" :disabled="processing"
+          <v-btn v-else-if="signing && signature" color="primary" @click.stop="connectButton()" :disabled="loadingAuth"
             fixed right>
             <v-progress-circular indeterminate :size="15" class="mr-2" />
             Validating
           </v-btn>
-          <v-btn v-else-if="signing && !signature" color="primary" @click.stop="connectButton()" :disabled="processing"
+          <v-btn v-else-if="signing && !signature" color="primary" @click.stop="connectButton()" :disabled="loadingAuth"
             fixed right> <v-progress-circular indeterminate :size="15" class="mr-2" /> Please Sign </v-btn>
         </v-app-bar>
       </div>
@@ -85,7 +85,7 @@ export default {
     ...mapGetters({
       connected: "auth/authenticated",
       showNav: "app/showNav",
-      processing: "auth/processing",
+      loadingAuth: "auth/loadingAuth",
       signing: "auth/signing",
       sigTokenExpires: "auth/sigTokenExpires",
       signature: "auth/signature",

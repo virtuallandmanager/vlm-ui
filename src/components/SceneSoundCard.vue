@@ -301,9 +301,6 @@ export default {
         });
       }
     },
-    async replaceSound(sound, i) {
-      console.log(sound, i);
-    },
     updateSoundClickEvent() {
       this.updateSceneElement({
         element: "sound",

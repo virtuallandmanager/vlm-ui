@@ -28,6 +28,10 @@ export default {
     sceneSettings: (state) => {
       return state.activeScene?.settings;
     },
+    sceneModerationSettings: (state) => {
+      const setting = state.activeScene?.settings.find((setting) => setting.settingName === "Moderation Settings");
+      return { sk: setting.sk, ...setting.settingValue };
+    },
     sceneVideos: (state) => {
       const activePresetId = state.activeScene?.scenePreset,
         activePreset = state.activeScene?.presets?.find((preset) => preset.sk == activePresetId);
@@ -117,6 +121,15 @@ export default {
         state.activeScene = scene;
       }
     },
+    STORE_SCENE_SETTING(state, { sceneId, settingData }) {
+      const sceneData = state.userSceneCache[sceneId];
+      const settingIndex = sceneData.settings.findIndex((setting) => setting.sk == settingData.sk);
+      if (settingIndex > -1) {
+        sceneData.settings.splice(settingIndex, 1, settingData);
+      } else {
+        sceneData.settings.push(settingData);
+      }
+    },
     SET_ACTIVE_SCENE(state, sceneId) {
       state.activeScene = state.userSceneCache[sceneId];
       if (state.activeScene) {
@@ -197,6 +210,9 @@ export default {
     updateSceneSetting: async ({ commit, state }, { setting, settingName, settingValue }) => {
       commit("UPDATE_SCENE_SETTING", { settingName, settingValue });
       const settingData = state.activeScene.settings.find((setting) => setting.settingName === settingName);
+      if (settingData?.settingValue?.sk) {
+        delete settingData.settingValue.sk;
+      }
       await state.room.send("scene_setting_update", { action: "update", id: settingData.sk, setting, settingData, sceneData: state.activeScene });
     },
     sendModMessage: async ({ rootGetters, state, dispatch }, { message, color, fontSize, delay }) => {
@@ -204,8 +220,8 @@ export default {
       await state.room.send("scene_moderator_message", { message, color, fontSize, delay, userInfo });
       dispatch("banner/showSuccess", { message: `Message sent successfully: ${message}` }, { root: true });
     },
-    crashSceneUser: async ({ state }, { walletAddress, displayName }) => {
-      await state.room.send("scene_moderator_crash", { walletAddress, displayName });
+    crashSceneUser: async ({ state }, { connectedWallet, displayName }) => {
+      await state.room.send("scene_moderator_crash", { connectedWallet, displayName });
     },
     // END SCENE ELEMENT ACTIONS //
 
@@ -369,7 +385,11 @@ export default {
           dispatch("banner/showSuccess", { message: `${user.displayName} renamed the "${original.name}" preset to "${preset.name}"` }, { root: true });
           commit("PRESET_LOAD_STOP");
         });
-        sendSceneMessage("scene_load_request", { sceneId });
+        room.onMessage("scene_setting_update", ({ user, sceneData, settingData }) => {
+          commit("STORE_SCENE_SETTING", { sceneId: sceneData.sk, settingData });
+          dispatch("banner/showSuccess", { message: `${user.displayName} updated ${settingData.settingName}` }, { root: true });
+        }),
+          sendSceneMessage("scene_load_request", { sceneId });
         return room;
       } catch (error) {
         console.error(error);

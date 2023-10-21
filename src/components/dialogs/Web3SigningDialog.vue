@@ -53,7 +53,7 @@ export default {
   computed: {
     ...mapGetters({
       connected: "auth/connected",
-      processing: "auth/processing",
+      loadingAuth: "auth/loadingAuth",
       signing: "auth/signing",
       signatureMessage: "auth/signatureMessage",
     }),

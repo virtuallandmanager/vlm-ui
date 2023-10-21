@@ -140,6 +140,7 @@ export default {
     tab: "tab-2",
   }),
   beforeRouteEnter(to, from, next) {
+
     const isAuthenticated = store.getters["auth/authenticated"];
     const hasSceneCache = store.getters["scene/sceneList"].length;
 

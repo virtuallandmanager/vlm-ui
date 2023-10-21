@@ -26,7 +26,7 @@ export default {
   getters: {
     attemptedRestore: (state) => !!state.attemptedRestore,
     signing: (state) => !!state.signing,
-    processing: (state) => !!state.processing,
+    loadingAuth: (state) => !!state.processing,
     sigTokenExpires: (state) => state.sigTokenExpires,
     signature: (state) => state.signature,
     signatureMessage: (state) => state.signatureMessage,
@@ -108,7 +108,7 @@ export default {
       state.signatureToken = false;
       localStorage.removeItem("sessionToken");
       localStorage.removeItem("connectedWallet");
-      router.push("/");
+      // router.push("/");
     },
   },
   actions: {

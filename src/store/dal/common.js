@@ -120,8 +120,6 @@ export class ExternalFetch {
     const response = await fetch(endpoint),
       responseJson = await response.json();
 
-    console.log(response, responseJson);
-
     return { status: response.status, ...responseJson };
   };
 

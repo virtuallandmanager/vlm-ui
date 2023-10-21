@@ -29,7 +29,6 @@ export default {
     },
     scenesForEvent: (state, getters, rootState) => (eventId) => {
       const scenes = state.sceneLinks.filter((link) => link.eventId === eventId);
-      console.log(scenes)
       return scenes.map((link) => rootState.scene?.userSceneCache[link.sceneId]);
     },
     eventsForGiveaway: (state, getters, rootState) => (giveawayId) => {

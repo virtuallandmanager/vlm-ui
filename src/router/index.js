@@ -2,6 +2,8 @@ import Vue from "vue";
 import Router from "vue-router";
 import store from "../store";
 import Home from "../views/Home.vue";
+import Scenes from "../views/Scenes.vue";
+import Scene from "../views/Scene.vue";
 
 Vue.use(Router);
 const router = new Router({
@@ -106,7 +108,7 @@ const router = new Router({
     {
       path: "/scenes",
       name: "Scenes",
-      component: () => import(/* webpackChunkName: "scenes" */ "../views/Scenes.vue"),
+      component: Scenes,
       meta: {
         requiresAuth: true,
       },
@@ -119,7 +121,7 @@ const router = new Router({
     {
       path: "/scene/:sceneId",
       name: "Scene",
-      component: () => import(/* webpackChunkName: "scene" */ "../views/Scene.vue"),
+      component: Scene,
       meta: {
         requiresAuth: true,
       },
@@ -167,18 +169,20 @@ router.beforeEach(async (to, from, next) => {
   try {
     const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
     const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin);
+    const isLoadingAuth = store.getters["auth/loadingAuth"];
     const isAuthenticated = store.getters["auth/authenticated"];
-    const attemptedRestore = store.getters["auth/attemptedRestore"];
     const isAdmin = store.getters["user/isVLMAdmin"];
 
-    if (requiresAuth && !isAuthenticated && !attemptedRestore) {
+    if (requiresAuth && !isAuthenticated && !isLoadingAuth) {
       await store.dispatch("auth/attemptRestoreSession");
     }
 
     if (requiresAuth && !isAuthenticated) {
       next("/"); // Redirect to the login page if the route requires authentication and the user is not authenticated
+      return;
     } else if (requiresAdmin && !isAdmin) {
       next("/"); // Redirect to the login page if the route requires admin authentication and the user is not an admin
+      return;
     } else {
       next(); // Continue to the next route
     }

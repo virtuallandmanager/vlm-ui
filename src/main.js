@@ -13,6 +13,9 @@ Vue.use(VueTelInputVuetify, {
 });
 
 new Vue({
+  created() {
+    this.$store.dispatch("auth/attemptRestoreSession");
+  },
   router,
   vuetify,
   store,
