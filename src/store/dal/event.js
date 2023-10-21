@@ -1,30 +1,7 @@
 import store from "..";
 import { AuthenticatedFetch } from "./common";
-import * as Colyseus from "colyseus.js";
 
-const client = new Colyseus.Client(process.env.VUE_APP_WSS_URL);
-let room;
-
-export const connectToEvent = async () => {
-  try {
-    const { sessionToken } = store.state.auth,
-      { activeEvent } = store.state.event;
-    room = await client.joinOrCreate("vlm_event", { sessionToken, eventId: activeEvent.sk });
-  } catch (error) {
-    return error;
-  }
-};
-
-export const createEvent = async () => {
-  try {
-    const { sessionToken } = store.state.auth;
-    return await new AuthenticatedFetch(sessionToken).post(`/event/create`);
-  } catch (error) {
-    return error;
-  }
-};
-
-export const getEvent = async (eventId) => {
+export const get = async (eventId) => {
   try {
     const { sessionToken } = store.state.auth;
     return await new AuthenticatedFetch(sessionToken).get(`/event/${eventId}`);
@@ -33,16 +10,25 @@ export const getEvent = async (eventId) => {
   }
 };
 
-export const getEventCards = async () => {
+export const getAll = async () => {
   try {
     const { sessionToken } = store.state.auth;
-    return await new AuthenticatedFetch(sessionToken).get(`/event/cards`);
+    return await new AuthenticatedFetch(sessionToken).get(`/event/all`);
   } catch (error) {
     return error;
   }
 };
 
-export const adminGetEvents = async () => {
+export const create = async (event) => {
+  try {
+    const { sessionToken } = store.state.auth;
+    return await new AuthenticatedFetch(sessionToken).post(`/event/create`, { event });
+  } catch (error) {
+    return error;
+  }
+};
+
+export const adminGetAll = async () => {
   try {
     const { sessionToken } = store.state.auth;
     return await new AuthenticatedFetch(sessionToken).get(`/admin/events`);
@@ -51,26 +37,71 @@ export const adminGetEvents = async () => {
   }
 };
 
-export const updateEvent = async (event) => {
+export const update = async (event) => {
   try {
     const { sessionToken } = store.state.auth;
     const payload = { event };
+    console.log(payload)
     return await new AuthenticatedFetch(sessionToken).post("/event/update", payload);
   } catch (error) {
     return error;
   }
 };
 
-export const liveUpdateEvent = async (message) => {
+export const updateSceneLinks = async ({ eventId, sceneLinkIds }) => {
   try {
     const { sessionToken } = store.state.auth;
-
-    if (!room) {
-      throw new Error("Not connected to the web socket.");
-    }
-
-    return await room.send("update_event", { sessionToken, message });
+    const payload = { eventId, sceneLinkIds };
+    return await new AuthenticatedFetch(sessionToken).post("/event/link/scenes", payload);
   } catch (error) {
     return error;
   }
-};
+}
+
+export const updateGiveawayLinks = async ({ eventId, giveawayLinkIds }) => {
+  try {
+    const { sessionToken } = store.state.auth;
+    const payload = { eventId, giveawayLinkIds };
+    return await new AuthenticatedFetch(sessionToken).post("/event/link/giveaways", payload);
+  } catch (error) {
+    return error;
+  }
+}
+
+export const linkScene = async ({ eventId, sceneId }) => {
+  try {
+    const { sessionToken } = store.state.auth;
+    return await new AuthenticatedFetch(sessionToken).post("/event/link/scene", { eventId, sceneId });
+  } catch (error) {
+    return error;
+  }
+}
+
+export const linkGiveaway = async ({ eventId, giveawayId }) => {
+  try {
+    const { sessionToken } = store.state.auth;
+    return await new AuthenticatedFetch(sessionToken).post("/event/link/giveaway", { eventId, giveawayId });
+  } catch (error) {
+    return error;
+  }
+}
+
+export const unlinkScene = async ({ eventId, sceneId }) => {
+  try {
+    const { sessionToken } = store.state.auth;
+    return await new AuthenticatedFetch(sessionToken).post("/event/unlink/scene", { eventId, sceneId });
+  } catch (error) {
+    return error;
+  }
+}
+
+export const unlinkGiveaway = async ({ eventId, giveawayId }) => {
+  try {
+    const { sessionToken } = store.state.auth;
+    return await new AuthenticatedFetch(sessionToken).post("/event/unlink/giveaway", { eventId, giveawayId });
+  } catch (error) {
+    return error;
+  }
+}
+
+export default { create, get, getAll, adminGetAll, update, linkScene, linkGiveaway, unlinkScene, unlinkGiveaway, updateSceneLinks, updateGiveawayLinks };

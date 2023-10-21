@@ -1,7 +1,7 @@
 export default {
   namespaced: true,
   state: () => ({
-    transform: { open: false, props: { instanceData: {}, title: "" } },
+    transform: { open: false, props: { elementData: {}, instanceData: {}, title: "" } },
     properties: { open: false, props: { element: "", elementData: {}, instanceData: {}, instance: false, title: "" } },
     clickEvent: { open: false, props: { element: "", elementData: {}, instanceData: {}, instance: false, title: "" } },
     delete: { open: false, props: { element: "", elementData: {}, instanceData: {}, instance: false, title: "", property: "" } },

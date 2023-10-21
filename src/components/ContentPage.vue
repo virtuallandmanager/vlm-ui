@@ -2,21 +2,28 @@
   <v-sheet color="rgba(50, 50, 80, 0.5)" elevation="3" class="pa-2 blur flex-grow-1 fill-height">
     <v-container fluid>
       <v-row>
-        <v-col class="d-flex align-center" :class="centerContent ? 'justify-center' : 'justify-space-between'" >
+        <v-col class="d-flex align-center" :class="centerContent ? 'justify-center' : 'justify-space-between'">
           <div class=" text-h2 font-weight-light mb-3">
-          <slot name="header"></slot>
+            <slot name="header"></slot>
           </div>
           <div class="mb-3">
             <slot name="header-actions"></slot>
           </div>
         </v-col>
       </v-row>
-      <v-row class="text-center mb-12" v-if=" contentLoading ">
+      <template v-if="!contentLoading && $slots['contextual-content']">
+        <v-row class="text-center">
+          <v-col>
+            <slot name="contextual-content"></slot>
+          </v-col>
+        </v-row>
+      </template>
+      <v-row class="text-center mb-12" v-if="contentLoading">
         <v-col>
-          <loader :message=" loadingMessage || 'Loading...' " :loading=" loading " :grid=" true " />
+          <loader :message="loadingMessage || 'Loading...'" :loading="loading" :grid="true" />
         </v-col>
       </v-row>
-      <v-row class="text-center" v-if=" noContentLoaded ">
+      <v-row class="text-center" v-if="noContentLoaded">
         <v-col>
           <div class="pa-4">
             <div class="text-h6">
@@ -30,7 +37,7 @@
         </v-col>
       </v-row>
     </v-container>
-    <slot v-if=" hasContent "></slot>
+    <slot v-if="hasContent"></slot>
   </v-sheet>
 </template>
 

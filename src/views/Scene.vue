@@ -1,5 +1,5 @@
 <template>
-  <focus-page :loadingMessage="`Connecting To ${scene.name || 'Scene'}...`" :loading="processing || loadingPreset"
+  <focus-page :loadingMessage="`Connecting To ${scene.name || 'Scene'}...`" :loading="loadingScene || loadingPreset"
     :noContent="!scene" :imageLink="scene?.imageLink || placeholder">
     <transform-dialog />
     <delete-dialog />
@@ -20,66 +20,72 @@
     <v-card class="cyberpunk-border py-4">
       <v-tabs v-model="tab" centered icons-and-text center-active grow color="nav" :show-arrows="true">
         <v-tabs-slider />
-        <v-tab href="#tab-1" disabled>
-          Analytics (Coming Soon)
-          <v-icon>mdi-chart-timeline-variant</v-icon>
+        <v-tab href="#tab-1" disabled class="text-overline">
+          Analytics
+          <v-icon small>mdi-chart-timeline-variant</v-icon>
         </v-tab>
-        <v-tab href="#tab-2">
+        <v-tab href="#tab-2" class="text-overline">
           Video Screens
-          <v-icon>mdi-television</v-icon>
+          <v-icon small>mdi-television</v-icon>
         </v-tab>
-        <v-tab href="#tab-3">
+        <v-tab href="#tab-3" class="text-overline">
           Art
-          <v-icon>mdi-image-frame</v-icon>
+          <v-icon small>mdi-image-frame</v-icon>
         </v-tab>
-        <!--<v-tab href="#tab-4">
+        <v-tab href="#tab-4" class="text-overline">
+          3D Models
+          <v-icon small>mdi-cube-outline</v-icon>
+        </v-tab>
+        <v-tab href="#tab-5" class="text-overline">
           Sounds
-          <v-icon>mdi-speaker</v-icon>
+          <v-icon small>mdi-speaker</v-icon>
         </v-tab>
-        -->
-        <!-- <v-tab href="#tab-5">
-              Events
-              <v-icon>mdi-balloon</v-icon>
-            </v-tab> -->
-        <v-tab href="#tab-6" v-if="isAdvancedUser">
+        <v-tab href="#tab-6" class="text-overline">
+          Giveaways
+          <v-icon small>mdi-gift</v-icon>
+        </v-tab>
+        <v-tab href="#tab-7" v-if="isAdvancedUser" class="text-overline">
           Widgets
-          <v-icon>mdi-palette</v-icon>
+          <v-icon small>mdi-palette</v-icon>
         </v-tab>
-        <v-tab href="#tab-7">
+        <v-tab href="#tab-8" class="text-overline">
           Presets
-          <v-icon>mdi-folder</v-icon>
+          <v-icon small>mdi-folder</v-icon>
         </v-tab>
-        <v-tab href="#tab-8">
+        <v-tab href="#tab-9" class="text-overline">
           Settings
-          <v-icon>mdi-cog</v-icon>
+          <v-icon small>mdi-cog</v-icon>
         </v-tab>
       </v-tabs>
     </v-card>
     <v-spacer class="p"></v-spacer>
     <v-card class="cyberpunk-border pa-6 mt-4">
       <v-tabs-items v-model="tab">
-        <!-- <v-tab-item value="tab-1"> -->
-        <!-- <scene-analytics /> -->
-        <!-- </v-tab-item> -->
+        <v-tab-item value="tab-1">
+          <scene-analytics />
+        </v-tab-item>
         <v-tab-item value="tab-2">
           <scene-video-list />
         </v-tab-item>
         <v-tab-item value="tab-3">
           <scene-art-list />
         </v-tab-item>
-        <!-- <v-tab-item value="tab-4">
-          <scene-sound-list />
-        </v-tab-item> -->
-        <v-tab-item value="tab-5">
-          <scene-event-list />
+        <v-tab-item value="tab-4">
+          <scene-model-list />
         </v-tab-item>
-        <v-tab-item value="tab-6" v-if="isAdvancedUser">
+        <v-tab-item value="tab-5">
+          <scene-sound-list />
+        </v-tab-item>
+        <v-tab-item value="tab-6">
+          <scene-giveaway-list />
+        </v-tab-item>
+        <v-tab-item value="tab-7" v-if="isAdvancedUser">
           <scene-widget-list />
         </v-tab-item>
-        <v-tab-item value="tab-7">
+        <v-tab-item value="tab-8">
           <scene-preset-list />
         </v-tab-item>
-        <v-tab-item value="tab-8">
+        <v-tab-item value="tab-9">
           <scene-settings />
         </v-tab-item>
       </v-tabs-items>
@@ -88,18 +94,17 @@
 </template>
 
 <script>
-// import SceneAnalytics from "../components/SceneAnalytics";
-import SceneArtList from "../components/SceneArtList";
-import SceneVideoList from "../components/SceneVideoList";
-import SceneEventList from "../components/SceneEventList";
-// import SceneSoundList from "../components/SceneSoundList";
-import SceneWidgetList from "../components/SceneWidgetList";
-import ScenePresetList from "../components/ScenePresetList";
-// import SceneModeration from "../components/SceneModeration";
-import SceneSettings from "../components/SceneSettings";
-// import ImageLibrary from "../components/ImageLibrary";
 import { mapActions, mapGetters } from "vuex";
 import { DateTime } from "luxon";
+import SceneAnalytics from "../components/SceneAnalytics";
+import SceneArtList from "../components/SceneArtList";
+import SceneVideoList from "../components/SceneVideoList";
+import SceneGiveawayList from "../components/SceneGiveawayList";
+import SceneSoundList from "../components/SceneSoundList";
+import SceneModelList from "../components/SceneModelList";
+import SceneWidgetList from "../components/SceneWidgetList";
+import ScenePresetList from "../components/ScenePresetList";
+import SceneSettings from "../components/SceneSettings";
 import placeholderImg from "@/assets/placeholder.png";
 import FocusPage from "../components/FocusPage";
 import TransformDialog from "../components/dialogs/TransformDialog";
@@ -111,12 +116,15 @@ import store from "../store";
 export default {
   name: "Scene",
   components: {
+    SceneAnalytics,
     SceneArtList,
     SceneVideoList,
-    SceneEventList,
+    SceneGiveawayList,
     SceneSettings,
     SceneWidgetList,
     ScenePresetList,
+    SceneModelList,
+    SceneSoundList,
     FocusPage,
     TransformDialog,
     PropertiesDialog,
@@ -133,9 +141,12 @@ export default {
   }),
   beforeRouteEnter(to, from, next) {
     const isAuthenticated = store.getters["auth/authenticated"];
+    const hasSceneCache = store.getters["scene/sceneList"].length;
 
     if (!isAuthenticated) {
       next("/"); // Redirect to the login page if the user is not authenticated
+    } else if (!hasSceneCache) {
+      next("/scenes"); // Redirect to the scenes page if the user has no scenes
     } else {
       next(); // Continue rendering the component
     }
@@ -143,7 +154,9 @@ export default {
   async mounted() {
     await this.connectToScene(this.$route.params.sceneId);
   },
-  beforeDestroy() { },
+  beforeDestroy() {
+    this.clearActiveScene();
+  },
   computed: {
     scene() {
       return this.$store.state.scene.activeScene || {};
@@ -200,7 +213,8 @@ export default {
       inBlink: "scene/inBlink",
       outBlink: "scene/outBlink",
       processing: "scene/processing",
-      loadingPreset: "scene/loadingPreset"
+      loadingPreset: "scene/loadingPreset",
+      loadingScene: "scene/loadingScene"
     }),
   },
   methods: {

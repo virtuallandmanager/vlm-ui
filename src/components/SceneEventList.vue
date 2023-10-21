@@ -2,23 +2,19 @@
   <div>
     <div class="d-flex mx-auto align-baseline justify-start">
       <div class="text-h5 flex-grow-1">Events</div>
-      <v-btn small @click="$refs.fileInput.click()">
-        <v-icon small class="mr-1">mdi-plus</v-icon>
-        Link Event
-      </v-btn>
     </div>
 
-    <input style="display: none" ref="fileInput" type="file" accept=".png,.jpg,.jpeg" @change="addImage" />
-    <div v-if="images.length < 1" class="mt-6">
+    <input style="display: none" ref="fileInput" type="file" accept=".png,.jpg,.jpeg" @change="linkEvent" />
+    <div v-if="linkedEvents.length < 1" class="mt-6">
       <div class="text-body-1 text-center">There are no events linked to this this scene</div>
     </div>
-    <div v-if="images.length > 0">
+    <div v-if="linkedEvents.length > 0">
       <v-container>
         <v-row>
-          <v-col md="4" sm="12" v-for="(image, i) in images" :key="image.id">
-            <v-card>
-              <event-card v-if="images.length > 0" :image="image" :i="i" :property="property" @updateProperties="updateProperties" @onReplace="replaceImage" @onRemove="removeImage(i)" />
-            </v-card>
+          <v-col md="4" sm="12" v-for="(event, i) in linkedEvents" :key="i">
+            <router-link :to="`event/${event.sk}`" class="event-card-link">
+            <event-card :event="event" @updateProperties="updateProperties" />
+            </router-link>
           </v-col>
         </v-row>
       </v-container>
@@ -27,6 +23,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import EventCard from "./EventCard";
 
 export default {
@@ -41,18 +38,21 @@ export default {
     deleteDialog: false,
     detailedMode: true,
     selectedImage: "",
-    dialogCallback: () => {},
+    dialogCallback: () => { },
   }),
-  props: {
-    images: {
-      type: Array,
-      default: function () {
-        return [];
-      },
+  computed: {
+    ...mapGetters({
+      activeScene: "scene/activeScene",
+      eventsForScene: "event/eventsForScene",
+    }),
+    linkedEvents() {
+      return this.eventsForScene(this.activeScene?.sk);
     },
-    property: Object,
   },
   methods: {
+    linkEvent() {
+      this.$refs.fileInput.click();
+    },
     updateProperties(wssMessages) {
       this.$emit("updateProperties", { wssMessages });
     },

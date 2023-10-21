@@ -6,7 +6,8 @@
         {{ subtitle }}
       </v-card-subtitle>
       <v-card-text>
-        <move-scale-rotate :instanceData="instanceData" @onChange="onChange" :isPlane="element == 'image' || element == 'video'" />
+        <move-scale-rotate :instanceData="instanceData || elementData" @onChange="onChange"
+          :isPlane="element == 'image' || element == 'video'" />
       </v-card-text>
       <v-divider></v-divider>
       <v-card-actions>
@@ -29,6 +30,7 @@ export default {
   data: () => ({
     dirty: false,
     originalInstance: null,
+    originalElement: null,
   }),
   props: {
     value: Boolean,
@@ -41,6 +43,11 @@ export default {
     instanceData() {
       if (!this.originalInstance && !this.dirty) {
         this.originalInstance = this.dialogProps?.instanceData;
+      }
+    },
+    elementData() {
+      if (!this.originalElement && !this.dirty) {
+        this.originalElement = this.dialogProps?.elementData;
       }
     },
   },
@@ -58,6 +65,9 @@ export default {
     element() {
       return this.dialogProps?.element;
     },
+    id() {
+      return this.instanceData ? this.instanceData.id : this.elementData?.sk;
+    },
   },
   methods: {
     ...mapActions({ updateSceneElement: "scene/updateSceneElement", showTransformDialog: "dialog/showTransformDialog", hideTransformDialog: "dialog/hideTransformDialog" }),
@@ -67,8 +77,8 @@ export default {
         property: "transform",
         element: this.element,
         elementData: this.elementData,
-        instance: true,
-        id: this.instanceData.sk,
+        instance: this.instanceData ? true : false,
+        id: this.id,
         instanceData: this.instanceData,
       });
     },
@@ -77,9 +87,18 @@ export default {
       this.hideTransformDialog();
     },
     revert() {
-      if (this.dirty) {
+      if (this.dirty && this.elementData && !this.instanceData) {
         this.dirty = false;
-        Vue.set(this.dialogProps.instanceData, "instanceData", this.originalInstance);
+        Vue.set(this.dialogProps, "elementData", this.originalElement);
+        this.updateSceneElement({
+          property: "transform",
+          element: this.element,
+          elementData: this.originalElement,
+          id: this.instanceData?.sk,
+        });
+      } else if (this.dirty && this.elementData && this.instanceData) {
+        this.dirty = false;
+        Vue.set(this.dialogProps, "instanceData", this.originalInstance);
         this.updateSceneElement({
           property: "transform",
           element: this.element,

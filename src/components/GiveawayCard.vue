@@ -1,47 +1,87 @@
 <template>
-  <v-card class="grey darken-3 pa-2 text-center" max-width="25vh">
-    <v-card-text>
-      <div class="text-truncate">{{ giveaway?.name }}</div>
-      <div class="text-caption text-center">{{ giveaway?.items.length }} Item</div>
-      <giveaway-item-card v-for="(item, i) in giveaway.items" :key="i" :item="item" />
-      <div v-if="finished" class="text-caption text-center">Ended {{ endTimeRelative }}</div>
+  <v-card class="grey darken-3" elevation="2">
+    <v-img :src="giveaway?.imageSrc || giveawayImgPlaceholder" lazy-src="@/assets/placeholder.png" max-height="250"
+      class="text-right">
+      <div class="d-flex">
+        <v-chip class="orange ma-4 black--text" v-if="paused"><span><v-icon class="black--text">mdi-pause</v-icon>
+            Paused</span></v-chip>
+        <v-spacer></v-spacer>
+        <v-chip v-if="giveaway?.allocatedCredits" class="grey ma-4 black--text"><span>{{ giveaway?.allocatedCredits }}
+            Credits</span></v-chip>
+      </div>
+      <template v-slot:placeholder>
+        <v-row class="d-flex fill-height ma-0 align-center justify-center">
+          <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+        </v-row>
+      </template>
+    </v-img>
+    <v-card-text class="pa-2">
+      <v-container>
+        <v-row>
+          <v-col>
+            <div class="text-h5 text-left text-truncate">
+              {{ giveaway?.name || "Loading..." }}
+            </div>
+            <div class="text-subtitle-2 font-weight-medium text-right mb-2"></div>
+            <div class="text-subtitle-2 font-weight-light text-left">
+              <span v-if="giveaway?.items?.length">Sends {{ giveaway.items.length }} Item{{ giveaway.items.length !== 1 ? 's' : '' }}</span>
+              <span v-else>No Giveaway Items Configured</span>
+            </div>
+          </v-col>
+        </v-row>
+      </v-container>
     </v-card-text>
-    <v-card-actions class="d-flex justify-space-around">
-      <v-btn @click="router.push(`/giveaway/${giveaway.sk}`)">Edit</v-btn>
-      <v-btn v-if="ongoing && !paused" @click="pauseGiveaway" color="yellow darken-4">Pause</v-btn>
-      <v-btn v-if="!finished && paused" @click="resumeGiveaway" color="green darken-4">Resume</v-btn>
-    </v-card-actions>
   </v-card>
 </template>
 
 <script>
-import GiveawayItemCard from "./GiveawayItemCard";
+import imgPlaceholder from "@/assets/placeholder.png";
 import { DateTime } from "luxon";
+
 export default {
   name: "GiveawayCard",
-  components: { GiveawayItemCard },
+
   data: () => ({ imagePath: "../assets/" }),
   props: {
-    event: Object,
     giveaway: Object,
   },
   computed: {
-    ongoing() {
-      return !this.finshed && this.event.startTime < Date.now() && this.event.endTime > Date.now();
+    giveawayImgPlaceholder() {
+      return imgPlaceholder;
+    },
+    startTime() {
+      if (!this.giveaway?.startTime) {
+        return "";
+      }
+      return DateTime.fromMillis(this.giveaway.startTime).toLocaleString();
+    },
+    startTimeString() {
+      if (!this.giveaway?.startTime) {
+        return "";
+      }
+      return DateTime.fromMillis(this.giveaway.startTime).toRelative();
+    },
+    endTime() {
+      if (!this.giveaway?.endTime) {
+        return "";
+      }
+      return DateTime.fromMillis(this.giveaway.endTime).toLocaleString();
+    },
+    endTimeString() {
+      if (!this.giveaway?.endTime) {
+        return "";
+      }
+      return DateTime.fromMillis(this.giveaway.endTime).toRelative();
     },
     paused() {
-      return this.giveaway.paused;
+      return this.giveaway?.paused;
     },
-    finished() {
-      return this.event.startTime < Date.now() && this.event.endTime && this.event.endTime < Date.now();
+    future() {
+      return DateTime.now().toMillis() < this.giveaway.startTime;
     },
-    endTimeRelative() {
-      return this.event.endTime ? DateTime.fromMillis(this.event.endTime + this.giveaway.endBuffer).toRelative() : "";
+    past() {
+      return DateTime.now().toMillis() > this.giveaway.endTime;
     },
-  },
-  methods: {
-    pauseGiveaway() {},
-    resumeGiveaway() {},
   },
 };
 </script>

@@ -18,7 +18,8 @@
       <v-list-item>
         <v-list-item-content>
           <v-btn color="red" @click="jumpIn">Jump In</v-btn>
-          <div class="text-caption text-center mt-2 grey--text text--lighten-1" style="font-size: 8px">SEE YOUR CHANGES IN REAL TIME</div>
+          <div class="text-caption text-center mt-2 grey--text text--lighten-1" style="font-size: 8px">SEE YOUR CHANGES IN
+            REAL TIME</div>
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -32,29 +33,6 @@
     </v-list>
     <v-divider v-if="showBackArrow"></v-divider>
 
-    <v-list nav dense v-if="activeEvent" class="cyberpunk-border">
-      <v-list-item link @click="tab = 0" disabled :to="`${activeEvent.sk}/analytics`">
-        <v-list-item-icon>
-          <v-icon>mdi-chart-line</v-icon>
-        </v-list-item-icon>
-        <v-list-item-title>Analytics (Coming Soon!)</v-list-item-title>
-      </v-list-item>
-      <v-list-item link @click="tab = 1" :to="`${activeEvent.sk}/giveaways`">
-        <v-list-item-icon>
-          <v-icon>mdi-gift</v-icon>
-        </v-list-item-icon>
-        <v-list-item-title>Giveaways</v-list-item-title>
-      </v-list-item>
-      <v-list-item link @click="tab = 6" :to="`${activeEvent.sk}/settings`">
-        <v-list-item-icon>
-          <v-icon>mdi-cog</v-icon>
-        </v-list-item-icon>
-        <v-list-item-title>Settings</v-list-item-title>
-      </v-list-item>
-    </v-list>
-
-    <v-divider v-if="activeEvent"></v-divider>
-
     <v-list nav dense>
       <v-list-item link to="/scenes">
         <v-list-item-icon>
@@ -63,11 +41,17 @@
         <v-list-item-title>Scenes</v-list-item-title>
       </v-list-item>
 
-      <v-list-item link to="/events" disabled>
+      <v-list-item link to="/events">
         <v-list-item-icon>
           <v-icon>mdi-calendar-star</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Events</v-list-item-title>
+      </v-list-item>
+      <v-list-item link to="/giveaways">
+        <v-list-item-icon>
+          <v-icon>mdi-gift</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title>Giveaways</v-list-item-title>
       </v-list-item>
       <v-list-item link to="/media" disabled>
         <v-list-item-icon>
@@ -77,7 +61,7 @@
       </v-list-item>
       <v-list-item link :href="docsUrl">
         <v-list-item-icon>
-          <v-icon >mdi-book</v-icon>
+          <v-icon>mdi-book</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Docs</v-list-item-title>
       </v-list-item>
@@ -101,7 +85,10 @@
         <v-btn text block><v-icon class="pr-2">mdi-wallet</v-icon> {{ walletAddress(8, 4) }}</v-btn>
       </div>
       <div class="pa-2">
-        <v-btn block @click="logout"> Logout </v-btn>
+        <v-btn block @click="loadUserProfile">User Profile</v-btn>
+      </div>
+      <div class="pa-2">
+        <v-btn block @click="logout">Logout</v-btn>
       </div>
     </template>
   </v-navigation-drawer>
@@ -177,6 +164,9 @@ export default {
       setNavDrawerState: "app/setNavDrawerState",
       toggleNavDrawer: "app/toggleNavDrawer",
     }),
+    loadUserProfile() {
+      this.$router.push("/profile");
+    },
   },
 };
 </script>
@@ -184,6 +174,7 @@ export default {
 .cyberpunk-border {
   border: 1px solid rgb(128, 0, 255);
 }
+
 .subpanel-header {
   border: 1px solid rgb(128, 0, 255);
   background-color: rgb(128, 0, 255);

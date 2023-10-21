@@ -3,7 +3,7 @@
     <template v-slot:header>
       <div class="h4">Sounds</div>
       <v-spacer />
-      <v-btn @click="addSoundScreen()" v-if="sounds?.length">
+      <v-btn @click="addSoundConfig()" v-if="sounds?.length">
         <v-icon class="mr-2">mdi-speaker</v-icon>
         New Sound
       </v-btn>
@@ -12,16 +12,15 @@
     <template v-slot:no-content-header>No Sounds Have Been Added</template>
     <template v-slot:no-content-text>Would you like to add one?</template>
     <template v-slot:no-content-cta>
-      <v-btn @click="addSoundScreen()">
+      <v-btn @click="addSoundConfig()">
         <v-icon class="mr-2">mdi-speaker</v-icon>
         New Sound
       </v-btn>
     </template>
-
     <v-container fluid class="pa-0">
       <v-row>
         <v-col md="4" sm="6" xs="12" v-for="(sound, i) in sounds" :key="sound.id">
-          <scene-sound-card :sound="sound" :i="i" @onRemove="removeSoundScreen(i)" />
+          <scene-sound-card :sound="sound" :i="i" />
         </v-col>
       </v-row>
     </v-container>
@@ -52,13 +51,9 @@ export default {
       updateSceneElement: "scene/updateSceneElement",
       deleteSceneElement: "scene/deleteSceneElement",
     }),
-    addSoundScreen() {
+    addSoundConfig() {
       const elementData = new SceneSound({ name: `Sound Source ${this.sounds.length + 1}` });
       this.createSceneElement({ element: "sound", elementData });
-    },
-    removeSoundScreen(i) {
-      const elementData = this.sounds[i];
-      this.deleteSceneElement({ element: "sound", elementData, id: elementData.sk });
     },
   },
 };

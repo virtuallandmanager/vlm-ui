@@ -216,11 +216,15 @@ export default {
 
       if (status == 200) {
         dispatch("banner/showInfo", { message: `Welcome back, ${user.displayName}!` }, { root: true });
-        router.push("/scenes");
       } else if (status == 201) {
         dispatch("banner/showInfo", { message: `Welcome to VLM!` }, { root: true });
         router.push("/join");
       }
+
+      dispatch("scene/getSceneCards", null, { root: true });
+      dispatch("balances/getUserBalances", user, { root: true });
+      dispatch("event/getEvents", user, { root: true });
+      dispatch("giveaway/getGiveaways", user, { root: true });
 
       commit("STOP");
       return true;

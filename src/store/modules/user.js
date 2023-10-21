@@ -1,5 +1,4 @@
 import { updateUserInfo, setupUserInfo } from "../dal/user";
-import router from "../../router";
 import store from "..";
 
 export default {
@@ -53,7 +52,6 @@ export default {
         commit("updateUserInfo", userInfo);
         commit("organization/updateUserOrgs", userOrgs, { root: true });
         commit("stop");
-        router.push("/scenes");
       } catch (error) {
         console.log(error);
       }

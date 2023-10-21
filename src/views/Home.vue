@@ -95,7 +95,6 @@
                     </v-list-item-content>
                   </v-list-item>
                 </div>
-                <div class="text-overline text-center purple--text text--lighten-2">COMING SOON!</div>
               </v-card>
             </v-col>
           </v-row>
@@ -119,9 +118,9 @@ export default {
   name: "Home",
   beforeRouteEnter(to, from, next) {
     const isAuthenticated = store.getters["auth/authenticated"];
-    const isAdmin = store.getters["user/isVLMAdmin"];
-    if (isAuthenticated && isAdmin) {
-      next("/scenes"); // Redirect to the scenes page if the user is authenticated
+    // const isAdmin = store.getters["user/isVLMAdmin"];
+    if (isAuthenticated) {
+      // next("/scenes"); // Redirect to the scenes page if the user is authenticated
     } else {
       next(); // Continue rendering the component
     }

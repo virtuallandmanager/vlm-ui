@@ -29,7 +29,7 @@ export const EAllowActions = {
   MOVE: 0
 };
 
-export const ESceneSettingType = {
+export const ESettingType = {
   LOCALIZATION: 0,
   MODERATION: 1,
   INTEROPERABILITY: 2

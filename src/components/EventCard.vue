@@ -61,40 +61,40 @@ export default {
       return imgPlaceholder;
     },
     startTime() {
-      if (!this.event?.startTime) {
+      if (!this.event?.eventStart) {
         return "";
       }
-      return DateTime.fromMillis(this.event.startTime).toLocaleString();
+      return DateTime.fromSeconds(this.event.eventStart).toLocaleString();
     },
     startTimeString() {
-      if (!this.event?.startTime) {
+      if (!this.event?.eventStart) {
         return "";
       }
-      return DateTime.fromMillis(this.event.startTime).toRelative();
+      return DateTime.fromSeconds(this.event.eventStart).toRelative();
     },
     endTime() {
-      if (!this.event?.endTime) {
+      if (!this.event?.eventEnd) {
         return "";
       }
-      return DateTime.fromMillis(this.event.endTime).toLocaleString();
+      return DateTime.fromSeconds(this.event.eventEnd).toLocaleString();
     },
     endTimeString() {
-      if (!this.event?.endTime) {
+      if (!this.event?.eventEnd) {
         return "";
       }
-      return DateTime.fromMillis(this.event.endTime).toRelative();
+      return DateTime.fromSeconds(this.event.eventEnd).toRelative();
     },
     ongoing() {
       return (
-        DateTime.now().toMillis() >= this.event.startTime &&
-        (!this.event.endTime || DateTime.now().toMillis() <= this.event.endTime)
+        DateTime.now().toSeconds() >= this.event.eventStart &&
+        (!this.event.eventEnd || DateTime.now().toSeconds() <= this.event.eventEnd)
       );
     },
     future() {
-      return DateTime.now().toMillis() < this.event.startTime;
+      return DateTime.now().toSeconds() < this.event.startTime;
     },
     past() {
-      return DateTime.now().toMillis() > this.event.endTime;
+      return DateTime.now().toSeconds() > this.event.endTime;
     },
   },
 };

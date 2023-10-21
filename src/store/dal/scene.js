@@ -1,18 +1,18 @@
 import store from "..";
 import { AuthenticatedFetch } from "./common";
-import * as Colyseus from "colyseus.js";
+import { Client } from "colyseus.js";
 
-const client = new Colyseus.Client(process.env.VUE_APP_WSS_URL);
+const client = new Client(process.env.VUE_APP_WSS_URL);
 let room;
 
-export const connectToScene = async (sceneId) => {
+export const connectToScene = async () => {
   try {
     const { sessionToken } = store.state.auth,
       { activeScene } = store.state.scene;
-    room = await client.joinOrCreate("vlm_scene", { sessionToken, sceneId: sceneId || activeScene.sk, host: true });
+    room = await client.joinOrCreate("vlm_scene", { sessionToken, sceneId: activeScene.sk, host: true });
     return room;
   } catch (error) {
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -23,7 +23,7 @@ export const sendSceneMessage = async (messageType, payload) => {
     room.send(messageType, { sessionToken, userInfo, ...payload });
     return room;
   } catch (error) {
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -31,7 +31,7 @@ export const disconnectFromScene = async () => {
   try {
     await room.leave();
   } catch (error) {
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -40,7 +40,7 @@ export const createScene = async (scene) => {
     const { sessionToken } = store.state.auth;
     return await new AuthenticatedFetch(sessionToken).post(`/scene/create`, scene);
   } catch (error) {
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -49,7 +49,7 @@ export const getScene = async (sceneId) => {
     const { sessionToken } = store.state.auth;
     return await new AuthenticatedFetch(sessionToken).get(`/scene/${sceneId}`);
   } catch (error) {
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -58,7 +58,7 @@ export const getDemoScene = async () => {
     const { sessionToken } = store.state.auth;
     return await new AuthenticatedFetch(sessionToken).get(`/scene/demo`);
   } catch (error) {
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -67,7 +67,7 @@ export const getSceneCards = async () => {
     const { sessionToken } = store.state.auth;
     return await new AuthenticatedFetch(sessionToken).get(`/scene/cards`);
   } catch (error) {
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -77,7 +77,7 @@ export const updateScene = async (scene) => {
     const payload = { scene };
     return await new AuthenticatedFetch(sessionToken).post("/scene/update", payload);
   } catch (error) {
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -91,6 +91,6 @@ export const liveUpdateScene = async (message) => {
 
     return await room.send("update_scene", { sessionToken, message });
   } catch (error) {
-    return error;
+    throw new Error(error);
   }
 };

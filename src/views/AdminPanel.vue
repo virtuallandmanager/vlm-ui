@@ -110,8 +110,6 @@ export default {
       userSessions: "admin/userSessions",
       adminLogs: "admin/adminLogs",
       analyticsSessions: "admin/analyticsSessions",
-      getAdminPanelKeys: "admin/getAdminPanelKeys",
-      getAdminLogs: "admin/getAdminPanelKeys"
     }),
     composite() {
       const users = this.adminUsers?.map((user) => ({
@@ -154,6 +152,7 @@ export default {
     },
     ...mapActions({
       getAdminPanelKeys: "admin/getAdminPanelKeys",
+      getAdminLogs: "admin/getAdminPanelKeys",
       showError: "banner/showError",
     }),
   },

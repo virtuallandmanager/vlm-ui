@@ -6,7 +6,8 @@
       </div>
       <v-tooltip v-if="!editingName" top>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn v-bind="attrs" v-on="on" class="d-flex-grow-0" icon small dark @click="toggleEditMode()" v-if="!editingName">
+          <v-btn v-bind="attrs" v-on="on" class="d-flex-grow-0" icon small dark @click="toggleEditMode()"
+            v-if="!editingName">
             <v-icon small>mdi-rename</v-icon>
           </v-btn>
         </template>
@@ -14,10 +15,14 @@
       </v-tooltip>
 
       <div class="text-h5 flex-grow-1" v-if="editingName">
-        <v-text-field autofocus outlined color="white" label="Sound Name" v-model="sound.name" hide-details="auto" append-outer-icon="mdi-content-save" @click:append-outer="toggleEditMode()" @blur="toggleEditMode()" dense @change="editSoundName()" />
+        <v-text-field autofocus outlined color="white" label="Sound Name" v-model="sound.name" hide-details="auto"
+          append-outer-icon="mdi-content-save" @click:append-outer="toggleEditMode()" @blur="toggleEditMode()" dense
+          @change="editSoundName()" />
       </div>
     </div>
     <div class="d-flex justify-end align-center black dark pa-2">
+      <v-slider color="white" v-model="sound.volume" @change="updateVolume" max="1" min="0" step=".1" class="ma-0" dense
+        hide-details="auto"></v-slider>
       <v-btn icon dark @click="toggleVisibility()" :disabled="sound.customRendering">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
@@ -28,8 +33,9 @@
           <span>Mute/Unmute All</span>
         </v-tooltip>
       </v-btn>
-      <input style="display: none" ref="replaceFileInput" type="file" accept=".png,.jpg,.jpeg" @change="replaceSound(sound, i)" />
-      <v-btn icon dark @click.stop="openSoundPropertiesDialog()">
+      <input style="display: none" ref="replaceFileInput" type="file" accept=".png,.jpg,.jpeg"
+        @change="replaceSound(sound, i)" />
+      <v-btn icon dark @click.stop="showPropertiesDialog({ element: 'sound', elementData: sound })">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
@@ -37,7 +43,7 @@
           <span>Sound Properties</span>
         </v-tooltip>
       </v-btn>
-      <v-btn icon dark @click.stop="openSoundDeleteDialog()">
+      <v-btn icon dark @click.stop="showDeleteDialog({ element: 'sound', elementData: sound })">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
@@ -47,14 +53,14 @@
       </v-btn>
     </div>
     <div class="d-block text-center pt-2">
-      <v-btn-toggle v-model="sound.sourceType" @change="updateSourceType()" class="mb-4 flex-grow-1 text-center">
-        <v-btn><v-icon small class="mr-2">mdi-music-box</v-icon> Clip</v-btn>
-        <v-btn><v-icon small class="mr-2">mdi-repeat</v-icon> Loop</v-btn>
-        <v-btn><v-icon small class="mr-2">mdi-broadcast</v-icon> Stream</v-btn>
-      </v-btn-toggle>
+      <v-select :items="soundTypes" v-model="sound.sourceType" @change="updateSourceType()" outlined
+        class="ma-2 flex-grow-1 text-center" hide-details>
+      </v-select>
     </div>
-    <div class="pt-2">
-      <v-text-field outlined dark label="File Path" v-model="sound.audioPath" :error-messages="errors" @input="validateInput" @change="updateAudioPath()"></v-text-field>
+    <div class="px-2 pt-2">
+      <v-text-field outlined dark label="Sound File" v-model="sound.audioSrc" :error-messages="errors"
+        @input="validateInput" @change="updateAudioSrc()" :persistent-hint="sound.sourceType !== 3"
+        hint="Sound files must exist in your project."></v-text-field>
     </div>
     <div>
       <div class="d-flex justify-start align-center grey darken-2 pa-4">
@@ -64,7 +70,8 @@
       <div class="d-flex justify-space-between align-center px-3" v-if="sound.instances.length">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn v-bind="attrs" v-on="on" icon class="flex-shrink-1 pa-0" @click="toggleLocators()"><v-icon>mdi-map-marker</v-icon></v-btn>
+            <v-btn v-bind="attrs" v-on="on" icon class="flex-shrink-1 pa-0"
+              @click="toggleLocators()"><v-icon>mdi-map-marker</v-icon></v-btn>
           </template>
           <span>Show Locators</span>
         </v-tooltip>
@@ -82,7 +89,8 @@
       </div>
       <div class="d-flex flex-column my-0" v-if="sound.instances.length">
         <div v-for="(instance, ii) in sound.instances" :key="ii">
-          <sound-instance-card :instance="instance" :sound="sound" :i="ii" @updateSceneElement="updateSceneElement" @addInstance="addInstance" />
+          <sound-instance-card :instance="instance" :sound="sound" :i="ii" @updateSceneElement="updateSceneElement"
+            @addInstance="addInstance" />
         </div>
       </div>
     </div>
@@ -102,8 +110,6 @@ export default {
   },
   name: "SceneSoundCard",
   props: {
-    property: Object,
-    i: Number,
     sound: {
       type: Object,
       default: function () {
@@ -112,16 +118,15 @@ export default {
     },
   },
   data: () => ({
-    dialogCallback: () => {},
+    dialogCallback: () => { },
     selectedSound: null,
     selectedInstance: null,
     editingName: false,
-    clickEvents: [
-      { text: "None", value: 0, default: true },
-      { text: "Website Link", value: 1 },
-      { text: "Play Sound (Coming Soon)", value: 2, disabled: true },
-      { text: "Move Player in Scene (Coming Soon)", value: 3, disabled: true },
-      { text: "Teleport Player (Coming Soon)", value: 4, disabled: true },
+    soundTypes: [
+      { text: "Clip", value: 0 },
+      { text: "Loop", value: 1 },
+      // {text: "Playlist",  value:3},
+      // { text: "Stream", value: 4 },
     ],
     errors: [],
   }),
@@ -158,6 +163,8 @@ export default {
   },
   methods: {
     ...mapActions({
+      showPropertiesDialog: "dialog/showPropertiesDialog",
+      showDeleteDialog: "dialog/showDeleteDialog",
       createSceneElement: "scene/createSceneElement",
       updateSceneElement: "scene/updateSceneElement",
       removeSceneElement: "scene/removeSceneElement",
@@ -169,13 +176,14 @@ export default {
 
     validateInput() {
       this.errors = [];
-      const forbiddenSubstrings = ["http://", "https://", "www."];
-
-      forbiddenSubstrings.forEach((substring) => {
-        if (this.sound.audioPath.includes(substring)) {
-          this.errors.push("Unfortunately Decentraland does not support externally hosted files.");
-        }
-      });
+      if (this.sound.sourceType == 0 || this.sound.sourceType == 1) {
+        const forbiddenSubstrings = ["http://", "https://", "www."];
+        forbiddenSubstrings.forEach((substring) => {
+          if (this.sound.audioSrc.includes(substring)) {
+            this.errors.push("Unfortunately Decentraland does not support externally hosted files.");
+          }
+        });
+      }
     },
 
     toggleDetails() {
@@ -245,10 +253,10 @@ export default {
         elementData: this.sound,
       });
     },
-    updateAudioPath() {
+    updateAudioSrc() {
       this.updateSceneElement({
         element: "sound",
-        property: "audioPath",
+        property: "audioSrc",
         id: this.sound.sk,
         elementData: this.sound,
       });
@@ -263,6 +271,14 @@ export default {
     },
     saveSoundProperties() {
       this.closePropertiesDialog();
+    },
+    updateVolume() {
+      this.updateSceneElement({
+        element: "sound",
+        property: "volume",
+        id: this.sound.sk,
+        elementData: this.sound,
+      });
     },
     toggleVisibility(instance) {
       if (instance) {

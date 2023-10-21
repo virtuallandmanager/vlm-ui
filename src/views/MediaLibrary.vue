@@ -1,9 +1,5 @@
 <template>
-  <content-page
-    loadingMessage="Loading media library..."
-    :loading="loading"
-    :noContent="!mediaLibrary.length"
-  >
+  <content-page loadingMessage="Loading media library..." :loading="loading" :noContent="!mediaLibrary.length">
     <template v-slot:header>Scenes</template>
     <template v-slot:no-content-header>No Scenes Found</template>
     <template v-slot:no-content-text>
@@ -41,9 +37,10 @@
 import { mapActions } from "vuex";
 import ImageLibrary from "../components/ImageLibrary.vue";
 import VideoLibrary from "../components/VideoLibrary.vue";
+import ContentPage from "../components/ContentPage.vue";
 
 export default {
-  components: { VideoLibrary, ImageLibrary },
+  components: { VideoLibrary, ImageLibrary, ContentPage },
   name: "MediaLibrary",
   props: {
     folderPath: String,

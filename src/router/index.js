@@ -43,17 +43,6 @@ const router = new Router({
         requiresAuth: true,
       },
     },
-    {
-      path: "/welcome",
-      name: "Welcome",
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "triage" */ "../views/Welcome.vue"),
-      meta: {
-        requiresAuth: true,
-      },
-    },
     // {
     //   path: "/events",
     //   name: "Events",
@@ -123,6 +112,11 @@ const router = new Router({
       },
     },
     {
+      path: "/status",
+      name: "Status",
+      component: () => import(/* webpackChunkName: "scenes" */ "../views/Status.vue")
+    },
+    {
       path: "/scene/:sceneId",
       name: "Scene",
       component: () => import(/* webpackChunkName: "scene" */ "../views/Scene.vue"),
@@ -154,6 +148,17 @@ const router = new Router({
       // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "docshome" */ "../docs/GettingStarted.vue"),
       props: route => ({ sceneId: route.query.sceneId, world: route.query.world })
+    },
+    {
+      path: "/profile",
+      name: "UserProfile",
+      // route level code-splitting
+      // this generates a separate chunk (about.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import(/* webpackChunkName: "docshome" */ "../views/UserProfile.vue"),
+      meta: {
+        requiresAuth: true,
+      },
     },
   ],
 });

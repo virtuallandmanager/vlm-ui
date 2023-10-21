@@ -1,5 +1,5 @@
 <template>
-  <content-page loadingMessage="Loading your scenes..." :loading="loading" :noContent="!scenes.length">
+  <content-page loadingMessage="Loading your scenes..." :loading="loadingScene" :noContent="!scenes.length">
     <v-dialog v-model="newSceneDialog" width="400" persistent>
       <v-card>
         <v-card-title class="text-h5"> Create New Scene </v-card-title>
@@ -45,7 +45,7 @@
       <v-btn @click="createNewScene(newSceneName)">Create New Scene</v-btn>
     </template>
     <v-container fluid>
-      <v-row class="text-center" v-if="!loading">
+      <v-row class="text-center" v-if="!loadingScene">
         <v-col lg="3" md="4" sm="6" xs="12" v-for="(scene, i) in scenes" :key="i">
           <router-link :to="`scene/${scene.sk}`" class="scene-card-link">
             <scene-card :scene="scene" />
@@ -84,20 +84,18 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      scenes: "scene/sceneList",
+      loadingScene: "scene/loadingScene",
+    }),
     userInfo() {
       return store.state.user.userInfo;
     },
     userOrgs() {
       return store.state.organization.userOrgs;
     },
-    ...mapGetters({
-      scenes: "scene/sceneList",
-    }),
     memberSince() {
       return DateTime.fromSeconds(this.userInfo.registeredAt).toLocaleString();
-    },
-    loading() {
-      return store.state.scene.processing;
     },
   },
   methods: {

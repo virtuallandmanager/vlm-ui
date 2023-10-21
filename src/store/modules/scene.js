@@ -7,7 +7,7 @@ export default {
   state: () => ({
     activeScene: {},
     userSceneCache: {},
-    processing: false,
+    loadingScene: false,
     loadingPreset: false,
     room: null,
     inBlink: 0,
@@ -18,7 +18,7 @@ export default {
       return state.activeScene;
     },
     isDemoScene: (state) => {
-      return state.activeScene.sk == "00000000-0000-0000-0000-000000000000";
+      return state.activeScene?.sk == "00000000-0000-0000-0000-000000000000";
     },
     activePreset: (state) => {
       const activePresetId = state.activeScene?.scenePreset,
@@ -48,12 +48,23 @@ export default {
         activePreset = state.activeScene?.presets?.find((preset) => preset.sk == activePresetId);
       return activePreset?.sounds || [];
     },
+    sceneModels: (state) => {
+      const activePresetId = state.activeScene?.scenePreset,
+        activePreset = state.activeScene?.presets?.find((preset) => preset.sk == activePresetId);
+      return activePreset?.models || [];
+    },
     sceneWidgets: (state) => {
       const activePresetId = state.activeScene?.scenePreset,
         activePreset = state.activeScene?.presets?.find((preset) => preset.sk == activePresetId);
       return activePreset?.widgets || [];
     },
+    sceneClaimPoints: (state) => {
+      const activePresetId = state.activeScene?.scenePreset,
+        activePreset = state.activeScene?.presets?.find((preset) => preset.sk == activePresetId);
+      return activePreset?.claimPoints || [];
+    },
     sceneList: (state) => Object.values(state.userSceneCache),
+    sceneListSelect: (state) => Object.values(state.userSceneCache).map((scene) => ({ text: scene.name, value: scene.sk })),
     connected: (state) => {
       return state.room?.state;
     },
@@ -69,13 +80,28 @@ export default {
     loadingPreset: (state) => {
       return state.loadingPreset;
     },
+    loadingScene: (state) => {
+      return state.loadingScene;
+    },
+    hasDeployedDCLScene: (state) => {
+      const findDCLLocation = (scene) => scene.locations.length && scene.locations.find((location) => location.world == "decentraland");
+      return !!Object.keys(state.userSceneCache).find(sceneKey => findDCLLocation(state.userSceneCache[sceneKey]));
+    },
+    hasV1DclFeatures: (state, getters) => {
+      const locationsWithDclIntegrationData = getters.activeScene?.locations?.filter((location) => location.world == "decentraland" && location.integrationData);
+      // all locations have integration data and locations.integrationData.packageVersion >= 0.1.0
+      return locationsWithDclIntegrationData?.every((location) => {
+        const packageVersion = location.integrationData.packageVersion.split(".");
+        return packageVersion[0] >= 0 && packageVersion[1] >= 1;
+      });
+    }
   },
   mutations: {
-    START(state) {
-      state.processing = true;
+    SCENE_LOAD_START(state) {
+      state.loadingScene = true;
     },
-    STOP(state) {
-      state.processing = false;
+    SCENE_LOAD_STOP(state) {
+      state.loadingScene = false;
     },
     PRESET_LOAD_START(state) {
       state.loadingPreset = true;
@@ -165,6 +191,7 @@ export default {
       const scenePreset = state.activeScene.presets.find((preset) => preset.sk == state.activeScene.scenePreset);
       const userInfo = rootGetters["user/userInfo"];
       const userId = userInfo.sk;
+      console.log(userInfo, userId);
       await state.room.send("scene_sound_locator", { action: "scene_sound_locator", userId, property, id, element, instance, setting, elementData, instanceData, settingData, scenePreset, stage: "pre" });
     },
     updateSceneSetting: async ({ commit, state }, { setting, settingName, settingValue }) => {
@@ -183,19 +210,24 @@ export default {
     // END SCENE ELEMENT ACTIONS //
 
     // SCENE C/U/D //
-    getSceneCards: async ({ commit }) => {
-      commit("START");
-      const { scenes } = await getSceneCards();
-      scenes.forEach((scene) => {
-        commit("STORE_SCENE", scene);
-      });
-      commit("STOP");
+    getSceneCards: async ({ commit, dispatch }) => {
+      commit("SCENE_LOAD_START");
+      try {
+        const { scenes } = await getSceneCards();
+        scenes.forEach((scene) => {
+          commit("STORE_SCENE", scene);
+          commit("SCENE_LOAD_STOP");
+        });
+      } catch (error) {
+        dispatch("banner/showError", { message: `Could not connect to the server.` }, { root: true });
+        commit("SCENE_LOAD_STOP");
+      }
     },
     createScene: async ({ commit }, sceneConfig) => {
-      commit("START");
+      commit("SCENE_LOAD_START");
       const { scene } = await createScene(sceneConfig);
       commit("STORE_SCENE", scene);
-      commit("STOP");
+      commit("SCENE_LOAD_STOP");
       return scene;
     },
     updateScene({ commit, dispatch }, scene, prop, val) {
@@ -232,6 +264,7 @@ export default {
     changeScenePreset: async ({ state, commit }, presetId) => {
       commit("PRESET_LOAD_START");
       const sceneData = state.activeScene;
+      sceneData.scenePreset = presetId;
       sendSceneMessage("scene_change_preset", { sceneData, id: presetId });
     },
     clonePreset: async ({ state, commit }, presetId) => {
@@ -243,96 +276,107 @@ export default {
 
     // SCENE CONNECTION ACTIONS //
     connectToScene: async ({ rootGetters, state, commit, dispatch }, sceneId) => {
-      commit("START");
-      const room = await connectToScene(sceneId);
-      if (!room) {
+      commit("SET_ACTIVE_SCENE", sceneId);
+      commit("SCENE_LOAD_START");
+      try {
+        const room = await connectToScene();
+
+
+        if (!room || room.statusCode >= 400) {
+          dispatch("banner/showError", { message: `Could not connect to the scene.` }, { root: true });
+          router.push("/scenes");
+          commit("SCENE_LOAD_STOP");
+          return;
+        } else {
+          commit("SET_ROOM", room);
+        }
+
+        room.onLeave((code) => {
+          console.log("Room left, with code: ", code);
+          router.push("/scenes");
+        });
+        room.onMessage("*", () => {
+          dispatch("fadeBlink", "out");
+        });
+        room.onMessage("scene_load_response", (scene) => {
+          commit("STORE_SCENE", scene);
+          commit("SET_ACTIVE_SCENE", scene.sk);
+          commit("SCENE_LOAD_STOP");
+        });
+        room.onMessage("scene_update", ({ scene, user }) => {
+          dispatch("banner/showSuccess", { message: `${user.displayName} made an edit to the scene.` }, { root: true });
+          commit("STORE_SCENE", scene);
+          commit("SCENE_LOAD_STOP");
+        });
+        room.onMessage("scene_preset_update", (message) => {
+          commit("UPDATE_PRESET", message.scenePreset);
+          commit("SCENE_LOAD_STOP");
+          if (message.user.sk == rootGetters["user/userInfo"].sk) {
+            return;
+          }
+          switch (message.action) {
+            case "created":
+              dispatch("banner/showSuccess", { message: `${message.user.displayName} created a new ${message.element}` }, { root: true });
+              break;
+            case "update":
+              dispatch(
+                "banner/showSuccess",
+                {
+                  message: `${message.user.displayName} made an update to the scene.`,
+                },
+                { root: true }
+              );
+              break;
+            case "delete":
+              dispatch(
+                "banner/showSuccess",
+                { message: `${message.user.displayName} deleted ${message.instance ? "an instance of" : ""}  ${message.elementData ? "the " + message.elementData.name + " " + message.element : "a " + message.element}` },
+                { root: true }
+              );
+              break;
+          }
+        });
+        room.onMessage("started_editing", ({ user }) => {
+          if (user.sk !== store.state.user.userInfo.sk) {
+            dispatch("banner/showSuccess", { message: `${user.displayName} has started making edits with you.` }, { root: true });
+          }
+          commit("SCENE_LOAD_STOP");
+        });
+        room.onMessage("scene_change_preset", ({ user, scene, preset }) => {
+          commit("STORE_SCENE", scene);
+          dispatch("banner/showSuccess", { message: `${user.displayName} changed the scene preset to "${preset.name}"` }, { root: true });
+          commit("PRESET_LOAD_STOP");
+        });
+        room.onMessage("scene_add_preset_response", ({ user, preset }) => {
+          commit("ADD_PRESET", preset);
+          dispatch("banner/showSuccess", { message: `${user.displayName} changed the scene preset to "${preset.name}"` }, { root: true });
+          commit("PRESET_LOAD_STOP");
+        });
+        room.onMessage("scene_clone_preset_response", ({ user, preset, presetId }) => {
+          const clonedPreset = state.activeScene.presets.find((preset) => preset.sk == presetId);
+          commit("ADD_PRESET", preset);
+          dispatch("banner/showSuccess", { message: `${user.displayName} created a new preset from "${clonedPreset.name}"` }, { root: true });
+          commit("PRESET_LOAD_STOP");
+        });
+        room.onMessage("scene_delete_preset_response", ({ user, presetId }) => {
+          const deletedPreset = state.activeScene.presets.find((preset) => preset.sk == presetId);
+          commit("REMOVE_PRESET", presetId);
+          dispatch("banner/showSuccess", { message: `${user.displayName} deleted the "${deletedPreset.name}" preset` }, { root: true });
+          commit("PRESET_LOAD_STOP");
+        });
+        room.onMessage("update_preset_property_response", ({ user, preset, original }) => {
+          commit("UPDATE_PRESET", preset);
+          dispatch("banner/showSuccess", { message: `${user.displayName} renamed the "${original.name}" preset to "${preset.name}"` }, { root: true });
+          commit("PRESET_LOAD_STOP");
+        });
+        sendSceneMessage("scene_load_request", { sceneId });
+        return room;
+      } catch (error) {
+        console.error(error);
         dispatch("banner/showError", { message: `Could not connect to the scene.` }, { root: true });
         router.push("/scenes");
-        commit("STOP");
-        return;
-      } else {
-        commit("SET_ROOM", room);
+        commit("SCENE_LOAD_STOP");
       }
-      room.onLeave((code) => {
-        console.log("Room left, with code: ", code);
-        router.push("/scenes");
-      });
-      room.onMessage("*", () => {
-        dispatch("fadeBlink", "out");
-      });
-      room.onMessage("scene_load_response", (scene) => {
-        commit("STORE_SCENE", scene);
-        commit("SET_ACTIVE_SCENE", scene.sk);
-        commit("STOP");
-      });
-      room.onMessage("scene_update", ({ scene, user }) => {
-        dispatch("banner/showSuccess", { message: `${user.displayName} made an edit to the scene.` }, { root: true });
-        commit("STORE_SCENE", scene);
-        commit("STOP");
-      });
-      room.onMessage("scene_preset_update", (message) => {
-        commit("UPDATE_PRESET", message.scenePreset);
-        commit("STOP");
-        if (message.user.sk == rootGetters["user/userInfo"].sk) {
-          return;
-        }
-        switch (message.action) {
-          case "created":
-            dispatch("banner/showSuccess", { message: `${message.user.displayName} created a new ${message.element}` }, { root: true });
-            break;
-          case "update":
-            dispatch(
-              "banner/showSuccess",
-              {
-                message: `${message.user.displayName} made an update to the scene.`,
-              },
-              { root: true }
-            );
-            break;
-          case "delete":
-            dispatch(
-              "banner/showSuccess",
-              { message: `${message.user.displayName} deleted ${message.instance ? "an instance of" : ""}  ${message.elementData ? "the " + message.elementData.name + " " + message.element : "a " + message.element}` },
-              { root: true }
-            );
-            break;
-        }
-      });
-      room.onMessage("started_editing", ({ user }) => {
-        if (user.sk !== store.state.user.userInfo.sk) {
-          dispatch("banner/showSuccess", { message: `${user.displayName} has started making edits with you.` }, { root: true });
-        }
-        commit("STOP");
-      });
-      room.onMessage("scene_change_preset", ({ user, scene, preset }) => {
-        commit("STORE_SCENE", scene);
-        dispatch("banner/showSuccess", { message: `${user.displayName} changed the scene preset to "${preset.name}"` }, { root: true });
-        commit("PRESET_LOAD_STOP");
-      });
-      room.onMessage("scene_add_preset_response", ({ user, preset }) => {
-        commit("ADD_PRESET", preset);
-        dispatch("banner/showSuccess", { message: `${user.displayName} changed the scene preset to "${preset.name}"` }, { root: true });
-        commit("PRESET_LOAD_STOP");
-      });
-      room.onMessage("scene_clone_preset_response", ({ user, preset, presetId }) => {
-        const clonedPreset = state.activeScene.presets.find((preset) => preset.sk == presetId);
-        commit("ADD_PRESET", preset);
-        dispatch("banner/showSuccess", { message: `${user.displayName} created a new preset from "${clonedPreset.name}"` }, { root: true });
-        commit("PRESET_LOAD_STOP");
-      });
-      room.onMessage("scene_delete_preset_response", ({ user, presetId }) => {
-        const deletedPreset = state.activeScene.presets.find((preset) => preset.sk == presetId);
-        commit("REMOVE_PRESET", presetId);
-        dispatch("banner/showSuccess", { message: `${user.displayName} deleted the "${deletedPreset.name}" preset` }, { root: true });
-        commit("PRESET_LOAD_STOP");
-      });
-      room.onMessage("update_preset_property_response", ({ user, preset, original }) => {
-        commit("UPDATE_PRESET", preset);
-        dispatch("banner/showSuccess", { message: `${user.displayName} renamed the "${original.name}" preset to "${preset.name}"` }, { root: true });
-        commit("PRESET_LOAD_STOP");
-      });
-      sendSceneMessage("scene_load_request", { sceneId });
-      return room;
     },
     disconnectFromScene: async ({ commit }) => {
       commit("CLEAR_ACTIVE_SCENE");

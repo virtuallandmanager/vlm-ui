@@ -106,3 +106,37 @@ export class UnauthenticatedFetch {
     return { status: response.status, ...responseJson };
   };
 }
+
+export class ExternalFetch {
+  authString = store.state.auth.connectedWallet;
+
+  constructor(authString) {
+    if (authString) {
+      this.authString = authString;
+    }
+  }
+
+  get = async (endpoint) => {
+    const response = await fetch(endpoint),
+      responseJson = await response.json();
+
+    console.log(response, responseJson);
+
+    return { status: response.status, ...responseJson };
+  };
+
+  post = async (endpoint, payloadBody) => {
+    const payload = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + this.authString,
+      },
+      body: JSON.stringify(payloadBody),
+    };
+    const response = await fetch(endpoint, payload),
+      responseJson = await response.json();
+
+    return { status: response.status, ...responseJson };
+  };
+}

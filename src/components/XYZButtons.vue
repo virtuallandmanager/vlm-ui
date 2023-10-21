@@ -9,11 +9,13 @@
                 <v-icon>mdi-chevron-left</v-icon>
               </v-btn>
             </template>
-            <span>{{ value !== "scale" ? `${xyz[key] - multipliers[multiplierIndex]}` : `${xyz[key] / multipliers[multiplierIndex]}` }}</span>
+            <span>{{ value !== "scale" ? `${xyz[key] - multipliers[multiplierIndex]}` : `${xyz[key] /
+              multipliers[multiplierIndex]}` }}</span>
           </v-tooltip>
         </v-col>
         <v-col class="px-0">
-          <v-text-field type="number" :value="xyz[key]" :label="getLabel(key)" outlined dense hide-details="true" width="100px" class="axis" hide-spin-buttons @change="(value) => directUpdate(key, value)"></v-text-field>
+          <v-text-field type="number" :value="xyz[key]" :label="getLabel(key)" outlined dense hide-details="true"
+            width="100px" class="axis" hide-spin-buttons @change="(value) => directUpdate(key, value)"></v-text-field>
         </v-col>
         <v-col class="px-0 text-left">
           <v-tooltip right>
@@ -22,21 +24,30 @@
                 <v-icon>mdi-chevron-right</v-icon>
               </v-btn>
             </template>
-            <span>{{ value !== "scale" ? `${xyz[key] + multipliers[multiplierIndex]}` : `${xyz[key] * multipliers[multiplierIndex]}` }}</span>
+            <span>{{ value !== "scale" ? `${xyz[key] + multipliers[multiplierIndex]}` : `${xyz[key] *
+              multipliers[multiplierIndex]}` }}</span>
           </v-tooltip>
         </v-col>
-        <v-col class="text-center pa-2 col-6" v-if="value == 'scale' && key == 'y'">n * 1/{{ multipliers[multiplierIndex] }} </v-col>
-        <v-col class="text-center pa-2 col-6" v-if="value == 'scale' && key == 'y'">n * {{ multipliers[multiplierIndex] }} </v-col>
+        <v-col class="text-center pa-2 col-6" v-if="value == 'scale' && key == 'y'">n * 1/{{ multipliers[multiplierIndex]
+        }} </v-col>
+        <v-col class="text-center pa-2 col-6" v-if="value == 'scale' && key == 'y'">n * {{ multipliers[multiplierIndex] }}
+        </v-col>
       </v-row>
     </div>
     <v-row>
       <v-col>
-        <v-btn v-if="value == 'scale'" :outlined="!lockWidthAndDepth" :color="lockWidthAndDepth ? 'primary' : 'grey'" class="mt-2" max-width="250" @click="lockWidthAndDepth = !lockWidthAndDepth"
-          ><v-icon small class="mr-2">mdi-lock</v-icon> Aspect Ratio</v-btn
-        >
-        <v-btn v-if="value == 'position'" :outlined="!lockWidthAndDepth" :color="lockWidthAndDepth ? 'primary' : 'grey'" class="mt-2" max-width="250" @click="lockWidthAndDepth = !lockWidthAndDepth"
-          ><v-icon small class="mr-2">mdi-lock</v-icon> Move Diagonally</v-btn
-        >
+        <v-btn v-if="value == 'scale'" :outlined="!maintainProportions" :color="maintainProportions ? 'primary' : 'grey'"
+          class="mt-2" max-width="250" @click="maintainProportions = !maintainProportions"><v-icon small class="mr-2">{{
+            maintainProportions ?
+            'mdi-lock' :
+            'mdi-lock-open-variant' }}</v-icon> Maintain Proportions</v-btn>
+
+        <v-btn-toggle v-if="value == 'position'" exclusive>
+          <v-btn :outlined="!moveDiagonalNESW" :color="moveDiagonalNESW ? 'primary' : 'grey'" max-width="250"
+            @click="selectDiagonalNESW"><v-icon small>mdi-arrow-top-right-bottom-left</v-icon></v-btn>
+          <v-btn v-if="value == 'position'" :outlined="!moveDiagonalNWSE" :color="moveDiagonalNWSE ? 'primary' : 'grey'"
+            max-width="250" @click="selectDiagonalNWSE"><v-icon small>mdi-arrow-top-left-bottom-right</v-icon></v-btn>
+        </v-btn-toggle>
       </v-col>
     </v-row>
     <v-row class="text-center">
@@ -63,8 +74,15 @@ export default {
       scale: 1,
       rotation: 1,
     },
-    lockWidthAndDepth: true,
+    maintainProportions: true,
+    moveDiagonalNESW: false,
+    moveDiagonalNWSE: false,
   }),
+  mounted() {
+    this.maintainProportions = false;
+    this.moveDiagonalNESW = false;
+    this.moveDiagonalNWSE = false;
+  },
   props: {
     value: {
       type: String,
@@ -144,9 +162,25 @@ export default {
       var inv = 1.0 / step;
       return Math.round(value * inv) / inv;
     },
+    selectDiagonalNESW() {
+      this.moveDiagonalNESW = !this.moveDiagonalNESW;
+      this.moveDiagonalNWSE = false;
+    },
+    selectDiagonalNWSE() {
+      this.moveDiagonalNESW = false;
+      this.moveDiagonalNWSE = !this.moveDiagonalNWSE;
+    },
     increment(key) {
       let newValue;
-      if (this.lockWidthAndDepth && this.value == "scale") {
+      if (this.value == "scale" && this.maintainProportions && this.isPlane) {
+        newValue = parseFloat(this.xyz.x) * this.multipliers[this.multiplierIndex];
+        Vue.set(this.xyz, "x", this.roundToStep(newValue, 0.001));
+        newValue = parseFloat(this.xyz.y) * this.multipliers[this.multiplierIndex];
+        Vue.set(this.xyz, "y", this.roundToStep(newValue, 0.001));
+
+        this.onChange();
+        return;
+      } else if (this.value == "scale" && this.maintainProportions && !this.isPlane) {
         newValue = parseFloat(this.xyz.x) * this.multipliers[this.multiplierIndex];
         Vue.set(this.xyz, "x", this.roundToStep(newValue, 0.001));
         newValue = parseFloat(this.xyz.y) * this.multipliers[this.multiplierIndex];
@@ -157,8 +191,22 @@ export default {
         return;
       } else if (this.value == "scale") {
         newValue = parseFloat(this.xyz[key]) * this.multipliers[this.multiplierIndex];
-      } else if (key !== "y" && this.value == "position" && this.lockWidthAndDepth) {
+      } else if (key !== "y" && this.value == "position" && this.moveDiagonalNESW) {
         newValue = parseFloat(this.xyz.x) + this.multipliers[this.multiplierIndex];
+        Vue.set(this.xyz, "x", this.roundToStep(newValue, 0.001));
+        newValue = parseFloat(this.xyz.z) + this.multipliers[this.multiplierIndex];
+        Vue.set(this.xyz, "z", this.roundToStep(newValue, 0.001));
+        this.onChange();
+        return;
+      } else if (key === "x" && this.value == "position" && this.moveDiagonalNWSE) {
+        newValue = parseFloat(this.xyz.x) + this.multipliers[this.multiplierIndex];
+        Vue.set(this.xyz, "x", this.roundToStep(newValue, 0.001));
+        newValue = parseFloat(this.xyz.z) - this.multipliers[this.multiplierIndex];
+        Vue.set(this.xyz, "z", this.roundToStep(newValue, 0.001));
+        this.onChange();
+        return;
+      } else if (key === "z" && this.value == "position" && this.moveDiagonalNWSE) {
+        newValue = parseFloat(this.xyz.x) - this.multipliers[this.multiplierIndex];
         Vue.set(this.xyz, "x", this.roundToStep(newValue, 0.001));
         newValue = parseFloat(this.xyz.z) + this.multipliers[this.multiplierIndex];
         Vue.set(this.xyz, "z", this.roundToStep(newValue, 0.001));
@@ -172,7 +220,14 @@ export default {
     },
     decrement(key) {
       let newValue;
-      if (this.lockAspectRatio && this.value == "scale") {
+      if (this.value == "scale" && this.maintainProportions && this.isPlane) {
+        newValue = parseFloat(this.xyz.x) / this.multipliers[this.multiplierIndex];
+        Vue.set(this.xyz, "x", this.roundToStep(newValue, 0.001));
+        newValue = parseFloat(this.xyz.y) / this.multipliers[this.multiplierIndex];
+        Vue.set(this.xyz, "y", this.roundToStep(newValue, 0.001));
+        this.onChange();
+        return;
+      } else if (this.value == "scale" && this.maintainProportions && !this.isPlane) {
         newValue = parseFloat(this.xyz.x) / this.multipliers[this.multiplierIndex];
         Vue.set(this.xyz, "x", this.roundToStep(newValue, 0.001));
         newValue = parseFloat(this.xyz.y) / this.multipliers[this.multiplierIndex];
@@ -183,8 +238,22 @@ export default {
         return;
       } else if (this.value == "scale") {
         newValue = parseFloat(this.xyz[key]) / this.multipliers[this.multiplierIndex];
-      } else if (key !== "y" && this.value == "position" && this.lockWidthAndDepth) {
+      } else if (key !== "y" && this.value == "position" && this.moveDiagonalNESW) {
         newValue = parseFloat(this.xyz.x) - this.multipliers[this.multiplierIndex];
+        Vue.set(this.xyz, "x", this.roundToStep(newValue, 0.001));
+        newValue = parseFloat(this.xyz.z) - this.multipliers[this.multiplierIndex];
+        Vue.set(this.xyz, "z", this.roundToStep(newValue, 0.001));
+        this.onChange();
+        return;
+      } else if (key === "x" && this.value == "position" && this.moveDiagonalNWSE) {
+        newValue = parseFloat(this.xyz.x) - this.multipliers[this.multiplierIndex];
+        Vue.set(this.xyz, "x", this.roundToStep(newValue, 0.001));
+        newValue = parseFloat(this.xyz.z) + this.multipliers[this.multiplierIndex];
+        Vue.set(this.xyz, "z", this.roundToStep(newValue, 0.001));
+        this.onChange();
+        return;
+      } else if (key === "z" && this.value == "position" && this.moveDiagonalNWSE) {
+        newValue = parseFloat(this.xyz.x) + this.multipliers[this.multiplierIndex];
         Vue.set(this.xyz, "x", this.roundToStep(newValue, 0.001));
         newValue = parseFloat(this.xyz.z) - this.multipliers[this.multiplierIndex];
         Vue.set(this.xyz, "z", this.roundToStep(newValue, 0.001));

@@ -27,7 +27,7 @@
         <scene-preset-card :preset="preset" v-if="preset" @handleDialog="handleDialog" />
       </div>
 
-      <div :class="presets.length % 2 ? 'grey darken-4' : 'grey darken-3'" class="text-center pa-4">
+      <div :class="presets?.length % 2 ? 'grey darken-4' : 'grey darken-3'" class="text-center pa-4">
         <v-btn class="mx-2" @click="showAddPresetDialog"><v-icon small class="mr-1">mdi-archive-plus</v-icon> Create Empty
           Preset</v-btn>
       </div>
@@ -58,7 +58,7 @@ export default {
   computed: {
     ...mapGetters({ processing: "scene/processing", scene: "scene/activeScene", updatePresetProperty: "scene/updatePresetProperty" }),
     presets() {
-      return this.scene.presets;
+      return this.scene?.presets;
     },
   },
   methods: {

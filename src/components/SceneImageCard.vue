@@ -283,7 +283,6 @@ export default {
       newInstance.name = `Instance ${this.image.instances.length + 1}`;
       newInstance.clickEvent = { ...this.image.clickEvent, synced: true };
       newInstance.scale.x = this.image.width / 1000;
-      newInstance.scale.x = this.image.width / 1000;
       newInstance.scale.y = this.image.height / 1000;
 
       if (duplicate) {
@@ -352,8 +351,9 @@ export default {
     },
     updateInstanceProperties(instance) {
       this.updateSceneElement({
-        element: "imageInstance",
+        element: "image",
         property: "properties",
+        instance: true,
         id: instance.id,
         elementData: this.image,
         instanceData: instance,

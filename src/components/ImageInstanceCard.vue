@@ -149,7 +149,6 @@ export default {
   components: { QuickView },
   name: "ImageInstanceCard",
   props: {
-    property: Object,
     i: Number,
     instance: {
       type: Object,

@@ -3,24 +3,16 @@
     <div class="d-flex">
       <div class="flex-row justify-space-between flex-grow-1">
         <mini-stat icon="mdi-axis-arrow" :stats="instance.position" />
-        <mini-stat
-          icon="mdi-resize"
-          :stats="{ w: instance.scale.x, h: instance.scale.y }"
-        />
+        <mini-stat icon="mdi-resize" :stats="{ w: instance.scale.x, h: instance.scale.y }" />
         <mini-stat icon="mdi-rotate-360" :stats="instance.rotation" />
       </div>
     </div>
     <div class="d-flex">
       <div class="flex-row justify-space-between flex-grow-1">
-        <mini-dash
-          icon="mdi-mouse"
-          v-if="
-            instance.clickEvent &&
-            (instance.clickEvent.type > 0 ||
-              (!instance.clickEvent.synced && image.clickEvent.type > 0))
-          "
-          :stats="clickEventStats"
-        />
+        <mini-dash icon="mdi-mouse" v-if="instance.clickEvent &&
+          (instance.clickEvent.type > 0 ||
+            (!instance.clickEvent.synced && image.clickEvent.type > 0))
+          " :stats="clickEventStats" />
         <mini-dash icon="mdi-tune" :stats="propertiesStats" />
       </div>
     </div>
@@ -28,8 +20,6 @@
 </template>
 
 <script>
-import { SceneImage } from '../models/SceneImage'
-import { SceneImageInstance } from '../models/SceneImageInstance'
 import MiniStat from './MiniStat'
 import MiniDash from './MiniDash'
 import { EClickEventDashText, EClickEventType } from '../models/ClickEvent'
@@ -40,24 +30,14 @@ export default {
   props: {
     property: Object,
     i: Number,
-    instance: {
-      type: Object,
-      default: function () {
-        return new SceneImageInstance()
-      }
-    },
-    image: {
-      type: Object,
-      default: function () {
-        return new SceneImage()
-      }
-    }
+    instance: Object,
+    element: Object,
   },
   data: () => ({
     editingName: false
   }),
   computed: {
-    clickEventStats () {
+    clickEventStats() {
       const clickEvent = this.instance.clickEvent,
         icons = []
 
@@ -85,7 +65,7 @@ export default {
 
       return icons
     },
-    propertiesStats () {
+    propertiesStats() {
       const icons = []
       if (this.instance.withCollisions) {
         icons.push({ icon: 'mdi-grid', tooltip: 'Collider Enabled' })

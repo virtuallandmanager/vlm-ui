@@ -119,7 +119,7 @@
     <div v-if="reconfiguring" class="pa-6">
       <div class="d-flex align-center">
         <v-select outlined label="Widget Type" :items="widgetTypes" hide-details="auto" v-model="widget.type"
-          @change="changeWidgetType()"> </v-select>
+          @change="changeWidgetType"> </v-select>
         <v-btn outlined v-if="widget.type == 3" class="ml-4" @click.stop="openEditSelectDialog"> Edit Selections </v-btn>
       </div>
       <div class="d-flex" v-if="widget.type === 6">
@@ -278,7 +278,7 @@ export default {
         this.widget.value = "";
       } else if (this.widget.type == 4) {
         this.widget.value = Date.now().toISOString();
-      } else if ((this.widget.type == 6 && !this.widget.range) || !this.widget.range.length) {
+      } else if ((this.widget.type == 6 && !this.widget.range) || !this.widget?.range?.length) {
         this.widget.range = [0, 100];
       }
 
