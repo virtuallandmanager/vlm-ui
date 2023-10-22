@@ -27,7 +27,6 @@ export default {
     return {
       servers: [
         { name: "API Server", url: "https://api.vlm.gg/_health", status: "Unknown" },
-        { name: "API Server 2", url: "https://api2.vlm.gg/_health", status: "Unknown" },
         // Add more servers as needed
       ],
     };
