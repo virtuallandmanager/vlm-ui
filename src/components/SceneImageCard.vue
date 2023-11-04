@@ -119,6 +119,7 @@
             showDeleteDialog({
               element: 'image',
               elementData: image,
+              removeAll: true
             })
           ">
           <v-tooltip bottom>

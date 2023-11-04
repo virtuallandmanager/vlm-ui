@@ -1,5 +1,5 @@
 import store from "..";
-import { AuthenticatedFetch, UnauthenticatedFetch } from "./common";
+import { UnauthenticatedFetch } from "./common";
 
 export const web3Authenticate = async () => {
   try {
@@ -20,10 +20,9 @@ export const sendSignature = async () => {
   }
 };
 
-export const restoreSession = async () => {
+export const refreshSession = async (refreshToken) => {
   try {
-    const { sessionToken } = store.state.auth;
-    return await new AuthenticatedFetch(sessionToken).get("/auth/restore");
+    return await new UnauthenticatedFetch(refreshToken).get("/auth/refresh");
   } catch (error) {
     return error;
   }

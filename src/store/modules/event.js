@@ -1,5 +1,4 @@
 import eventDal from "../dal/event";
-import store from "../../store/index";
 
 export default {
   namespaced: true,
@@ -60,11 +59,11 @@ export default {
     LOAD_EVENT_STOP(state) {
       state.loadingEvent = false;
     },
-    STORE_EVENT(state, event) {
+    STORE_EVENT(state, event, rootState) {
       if (!event) {
         return;
       }
-      if (event.userId !== store.state.user.userInfo.sk) {
+      if (event.userId !== rootState?.user?.userInfo?.sk) {
         state.adminEventCache = { ...state.adminEventCache, [event.sk]: event };
       }
       state.userEventCache = { ...state.userEventCache, [event.sk]: event };

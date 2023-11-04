@@ -1,5 +1,5 @@
 <template>
-  <focus-page :loadingMessage="`Connecting To ${scene.name || 'Scene'}...`" :loading="loadingScene || loadingPreset"
+  <focus-page :loadingMessage="`Connecting To ${scene?.name || 'Scene'}...`" :loading="loadingScene || loadingPreset"
     :noContent="!scene" :imageLink="scene?.imageLink || placeholder">
     <transform-dialog />
     <delete-dialog />
@@ -159,9 +159,6 @@ export default {
     this.clearActiveScene();
   },
   computed: {
-    scene() {
-      return this.$store.state.scene.activeScene || {};
-    },
     scenePreset() {
       if (!this.$store.state.scene.activeScene) {
         return {};
@@ -176,6 +173,9 @@ export default {
         scenePresets = activeScene.presets || [];
 
       return preset || scenePresets[0] || {};
+    },
+    hasGiveaways() {
+      return this.giveawaysForScene(this.scene.sk)?.length;
     },
     placeholder() {
       return placeholderImg;
@@ -207,6 +207,7 @@ export default {
       return worldNames.join(", ") || "None";
     },
     ...mapGetters({
+      scene: "scene/activeScene",
       user: "user/userInfo",
       isAdvancedUser: "user/isAdvancedUser",
       connected: "scene/connected",
@@ -215,7 +216,8 @@ export default {
       outBlink: "scene/outBlink",
       processing: "scene/processing",
       loadingPreset: "scene/loadingPreset",
-      loadingScene: "scene/loadingScene"
+      loadingScene: "scene/loadingScene",
+      giveawaysForScene: "event/giveawaysForScene",
     }),
   },
   methods: {

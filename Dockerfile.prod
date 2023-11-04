@@ -1,5 +1,4 @@
-FROM node:14 as build-stage
-RUN apk --no-cache add openssl
+FROM node:16 as build-stage
 RUN apk --no-cache add python3 make g++ \
     && ln -sf python3 /usr/bin/python
 WORKDIR /app

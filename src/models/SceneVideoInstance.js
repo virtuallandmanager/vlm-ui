@@ -6,7 +6,7 @@ export class SceneVideoInstance {
   customId = null;
   name = "";
   enabled = true;
-  position = { x: 8, y: 5, z: 0 };
+  position = { x: 8, y: 9 / 2, z: 8 };
   scale = { x: 16 / 2, y: 9 / 2, z: 1 };
   rotation = { x: 0, y: 0, z: 0 };
   withCollisions = false;

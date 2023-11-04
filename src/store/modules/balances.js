@@ -66,8 +66,12 @@ export default {
       try {
         commit("LOAD_USER_BALANCES_START");
         const { balances, promotions } = await getUserBalances();
-        commit("STORE_USER_BALANCES", balances);
-        commit("STORE_PROMO_BALANCES", promotions);
+        if (balances) {
+          commit("STORE_USER_BALANCES", balances);
+        }
+        if (promotions) {
+          commit("STORE_PROMO_BALANCES", promotions);
+        }
         commit("LOAD_USER_BALANCES_STOP");
 
       } catch (error) {

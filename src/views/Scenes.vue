@@ -74,15 +74,6 @@ export default {
       hyperfy: false,
     },
   }),
-  beforeRouteEnter(to, from, next) {
-    const isAuthenticated = store.getters["auth/authenticated"];
-    if (!isAuthenticated) {
-      next("/"); // Redirect to the login page if the user is not authenticated
-    } else {
-      store.dispatch("scene/getSceneCards");
-      next(); // Continue rendering the component
-    }
-  },
   async mounted() {
     await this.getSceneCards();
   },

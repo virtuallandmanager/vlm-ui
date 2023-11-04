@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Router from "vue-router";
-import store from "../store";
+import store from '@/store'; // Make sure this import path is correct
 import Home from "../views/Home.vue";
 import Scenes from "../views/Scenes.vue";
 import Scene from "../views/Scene.vue";
@@ -169,15 +169,17 @@ router.beforeEach(async (to, from, next) => {
   try {
     const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
     const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin);
-    const isLoadingAuth = store.getters["auth/loadingAuth"];
-    const isAuthenticated = store.getters["auth/authenticated"];
+    const isAuthenticated = () => { return store.getters["auth/authenticated"] };
     const isAdmin = store.getters["user/isVLMAdmin"];
 
-    if (requiresAuth && !isAuthenticated && !isLoadingAuth) {
-      await store.dispatch("auth/attemptRestoreSession");
+    console.log("Hit router")
+    console.log("requiresAuth", isAuthenticated())
+    if (requiresAuth && !isAuthenticated()) {
+      await store.dispatch("auth/refreshSession");
     }
 
-    if (requiresAuth && !isAuthenticated) {
+    console.log("Hit router end")
+    if (requiresAuth && !isAuthenticated()) {
       next("/"); // Redirect to the login page if the route requires authentication and the user is not authenticated
       return;
     } else if (requiresAdmin && !isAdmin) {

@@ -2,6 +2,57 @@ import { createScene, sendSceneMessage, getSceneCards, connectToScene, disconnec
 import store from "../../store";
 import router from "../../router";
 
+export const callbacks = {}
+const placeInstanceNearPlayer = (message, instanceData) => {
+  const positionData = message.positionData,
+    xRotation = positionData[5],
+    yRotation = positionData[4],
+    yRotationOffset = yRotation / 12;
+
+  let direction, height;
+  if (xRotation > 45 && xRotation < 135) {
+    direction = "east";
+  } else if (xRotation > 135 && xRotation < 225) {
+    direction = "south";
+  } else if (xRotation > 225 && xRotation < 315) {
+    direction = "west";
+  } else {
+    direction = "north";
+  }
+  if (yRotation < 12 && positionData[2] - yRotationOffset > 0) {
+    height = positionData[2] - yRotationOffset
+  } else if (yRotation > 12 && positionData[2] + yRotationOffset < 10) {
+    height = positionData[2] + yRotationOffset
+  } else {
+    height = positionData[2] + 1;
+  }
+  console.log(message);
+  instanceData.position.x = positionData[1];
+  instanceData.position.y = height;
+  instanceData.position.z = positionData[3];
+
+  if (direction == "north") {
+    instanceData.position.z += 1;
+  } else if (direction == "east") {
+    instanceData.position.x += 1;
+    instanceData.rotation.y = 90;
+  } else if (direction == "south") {
+    instanceData.position.z -= 1;
+  } else if (direction == "west") {
+    instanceData.position.x -= 1;
+    instanceData.rotation.y = 90;
+  }
+  if (!instanceData.position.x) {
+    instanceData.position.x = 8;
+  }
+  if (!instanceData.position.y) {
+    instanceData.position.y = 1;
+  }
+  if (!instanceData.position.z) {
+    instanceData.position.z = 8;
+  }
+  return message;
+}
 export default {
   namespaced: true,
   state: () => ({
@@ -188,8 +239,13 @@ export default {
   },
   actions: {
     // SCENE ELEMENTS ARE THINGS SHOWN IN THE SCENE, BUT THEY ARE STORED IN SCENE PRESETS //
-    createSceneElement: async ({ state }, { property, element, instance, id, setting, elementData, instanceData, settingData }) => {
+    createSceneElement: async ({ state, dispatch }, { property, element, instance, id, setting, elementData, instanceData, settingData }) => {
       const scenePreset = state.activeScene.presets.find((preset) => preset.sk == state.activeScene.scenePreset);
+      let playerPosition;
+      if (instance) {
+        playerPosition = await dispatch('requestPlayerPosition', instanceData);
+        console.log(playerPosition);
+      }
       await state.room.send("scene_preset_update", { action: "create", property, id, element, instance, setting, elementData, instanceData, settingData, scenePreset, stage: "pre" });
     },
     updateSceneElement: async ({ state }, { property, element, instance, id, setting, elementData, instanceData, settingData }) => {
@@ -199,6 +255,27 @@ export default {
     deleteSceneElement: async ({ state }, { property, element, instance, id, setting, elementData, instanceData, settingData }) => {
       const scenePreset = state.activeScene.presets.find((preset) => preset.sk == state.activeScene.scenePreset);
       await state.room.send("scene_preset_update", { action: "delete", property, id, element, instance, setting, elementData, instanceData, settingData, scenePreset, stage: "pre" });
+    },
+    requestPlayerPosition: async ({ state, rootGetters }, instanceData) => {
+      const userInfo = rootGetters["user/userInfo"];
+      return new Promise((resolve, reject) => {
+        // Set up callback
+        callbacks["requestPlayerPosition"] = (message) => {
+          const processedMessage = placeInstanceNearPlayer(message, instanceData);
+          resolve(processedMessage);
+        }
+
+        // Request player position
+        state.room.send("request_player_position", { userId: userInfo.sk, connectedWallet: userInfo.connectedWallet });
+
+        // handle timeout
+        setTimeout(() => {
+          if (callbacks["requestPlayerPosition"]) {
+            delete callbacks["requestPlayerPosition"];
+            reject(new Error('Timed out while requesting player position.'));
+          }
+        }, 5000); // 5 seconds timeout
+      })
     },
     toggleSoundLocators: async ({ rootGetters, state }, { property, element, instance, id, setting, elementData, instanceData, settingData }) => {
       const scenePreset = state.activeScene.presets.find((preset) => preset.sk == state.activeScene.scenePreset);
@@ -389,6 +466,12 @@ export default {
           commit("STORE_SCENE_SETTING", { sceneId: sceneData.sk, settingData });
           dispatch("banner/showSuccess", { message: `${user.displayName} updated ${settingData.settingName}` }, { root: true });
         }),
+          room.onMessage("send_player_position", (message) => {
+            if (callbacks["requestPlayerPosition"]) {
+              callbacks["requestPlayerPosition"](message);
+              delete callbacks["requestPlayerPosition"];
+            }
+          }),
           sendSceneMessage("scene_load_request", { sceneId });
         return room;
       } catch (error) {

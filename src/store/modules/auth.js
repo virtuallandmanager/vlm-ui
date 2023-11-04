@@ -1,7 +1,6 @@
 import Web3 from "web3";
 import { DateTime } from "luxon";
-import { web3Authenticate, sendSignature, restoreSession } from "../dal/auth";
-import router from "../../router";
+import { web3Authenticate, sendSignature, refreshSession } from "../dal/auth";
 
 const web3 = new Web3(window.ethereum || (window.web3 && window.web3.currentProvider));
 
@@ -21,10 +20,8 @@ export default {
     sigTokenExpires: "",
     signing: false,
     signingTimerInterval: null,
-    attemptedRestore: null,
   }),
   getters: {
-    attemptedRestore: (state) => !!state.attemptedRestore,
     signing: (state) => !!state.signing,
     loadingAuth: (state) => !!state.processing,
     sigTokenExpires: (state) => state.sigTokenExpires,
@@ -64,15 +61,13 @@ export default {
       state.processing = false;
       state.retries = 0;
     },
-    RESTORE_SESSION_TOKEN: (state, sessionToken) => {
-      state.sessionToken = sessionToken;
-    },
     STORE_SESSION: (state, session) => {
       state.connectedWallet = session.connectedWallet;
       state.sessionExpires = session.expires;
       state.sessionToken = session.sessionToken;
+      state.refreshToken = session.refreshToken;
       state.sessionIpData = session.ipData;
-      localStorage.setItem("sessionToken", session.sessionToken);
+      localStorage.setItem("refreshToken", session.refreshToken);
     },
     CONNECT(state, connectedWallet) {
       state.connectedWallet = connectedWallet;
@@ -80,12 +75,6 @@ export default {
     },
     AUTHENTICATE(state) {
       state.authenticated = true;
-    },
-    ATTEMPT_SESSION_RESTORE(state) {
-      state.attemptedRestore = true;
-    },
-    RESET_SESSION_RESTORE(state) {
-      state.attemptedRestore = false;
     },
     SAVE_SIGNATURE_MESSAGE(state, { signatureMessage, signatureToken }) {
       state.signatureMessage = signatureMessage;
@@ -106,27 +95,18 @@ export default {
       state.signing = false;
       state.sessionToken = false;
       state.signatureToken = false;
-      localStorage.removeItem("sessionToken");
-      localStorage.removeItem("connectedWallet");
-      // router.push("/");
     },
   },
   actions: {
-    async attemptRestoreSession({ commit, dispatch }) {
-      const token = localStorage.getItem("sessionToken");
-      if (token) {
-        commit("START");
-        commit("ATTEMPT_SESSION_RESTORE");
-        commit("RESTORE_SESSION_TOKEN", token);
-        return await dispatch("sendTokenToServer");
-      } else {
+    async refreshSession({ commit, dispatch }) {
+      const token = localStorage.getItem("refreshToken");
+      if (!token) {
         return false;
       }
-    },
 
-    async sendTokenToServer({ dispatch }) {
+      commit("START");
       // Send token to server and handle response
-      const response = await restoreSession();
+      const response = await refreshSession(token);
 
       //If active session
       if (response?.status < 400) {
@@ -157,15 +137,17 @@ export default {
     async sendWalletAddress({ commit, dispatch }) {
 
       // Send walletAddress to server and handle response
-      const response = await web3Authenticate();
+      try {
+        const response = await web3Authenticate();
 
-      if (response.activeSession) {
-        commit("RESTORE_SESSION_TOKEN", response.sessionToken);
-      }
-
-      if (response.signatureToken) {
-        commit("SAVE_SIGNATURE_MESSAGE", response);
-        await dispatch("signMessage", response.signatureMessage);
+        if (response.signatureToken) {
+          commit("SAVE_SIGNATURE_MESSAGE", response);
+          await dispatch("signMessage", response.signatureMessage);
+        }
+      } catch (error) {
+        commit("STOP", error);
+        dispatch("banner/showError", { message: "Could not reach the authentication server." }, { root: true });
+        return;
       }
     },
 
@@ -210,6 +192,7 @@ export default {
         commit("STORE_SESSION", session);
       } else {
         dispatch("handleFailedLogin");
+        return;
       }
 
       commit("AUTHENTICATE");
@@ -218,13 +201,20 @@ export default {
         dispatch("banner/showInfo", { message: `Welcome back, ${user.displayName}!` }, { root: true });
       } else if (status == 201) {
         dispatch("banner/showInfo", { message: `Welcome to VLM!` }, { root: true });
-        router.push("/join");
       }
 
-      dispatch("scene/getSceneCards", null, { root: true });
-      dispatch("balances/getUserBalances", user, { root: true });
-      dispatch("event/getEvents", user, { root: true });
-      dispatch("giveaway/getGiveaways", user, { root: true });
+      console.log("Login successful. Getting data.")
+
+      await Promise.all([
+        dispatch("scene/getSceneCards", null, { root: true }),
+        dispatch("balances/getUserBalances", user, { root: true }),
+        dispatch("event/getEvents", user, { root: true }),
+        dispatch("giveaway/getGiveaways", user, { root: true })
+      ]);
+
+      console.log("Data loaded.")
+
+      dispatch("autoRefreshToken");
 
       commit("STOP");
       return true;
@@ -237,8 +227,17 @@ export default {
     },
 
     handleFailedRestore({ dispatch }) {
+      localStorage.removeItem("refreshToken");
       dispatch("disconnect");
       return false;
+    },
+
+    autoRefreshToken({ state }) {
+      const timeToExpiry = state.sessionExpires - DateTime.now().toSeconds();
+
+      setTimeout(() => {
+        this.dispatch("refreshSession");
+      }, (timeToExpiry * 1000) - 5000);
     },
 
     disconnect({ commit }) {

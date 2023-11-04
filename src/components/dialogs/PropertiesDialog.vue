@@ -7,7 +7,7 @@
         <v-switch v-if="element == 'image'" v-model="elementData.isTransparent" label="Enable Transparency" :disabled="instance" @change="changeTransparency"></v-switch>
         <div v-if="instance" class="text-body-1 font-weight-bold">Interactions</div>
         <v-switch v-if="instance" v-model="refObj.withCollisions" label="Enable Collider" @change="changeCollisions"></v-switch>
-        <div v-if="advancedUser">
+        <div v-if="isAdvancedUser">
           <div class="text-body-1 font-weight-bold">Advanced Features</div>
           <v-text-field v-model="refObj.customId" label="Custom ID" @change="changeId" placeholder="Custom ID"></v-text-field>
           <v-text-field v-model="refObj.parent" label="Parent Entity" dense @change="changeParent" hide-details="true" placeholder="Parent Entity"></v-text-field>
@@ -40,7 +40,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ show: "dialog/propertiesDialogOpen", dialogProps: "dialog/propertiesDialogProps", advancedUser: "user/advancedUser" }),
+    ...mapGetters({ show: "dialog/propertiesDialogOpen", dialogProps: "dialog/propertiesDialogProps", isAdvancedUser: "user/isAdvancedUser" }),
     instance() {
       return this.dialogProps?.instance;
     },

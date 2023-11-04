@@ -1,4 +1,5 @@
 import store from "../../store";
+// import router from "../../router";
 /*/
 These data access methods are used by the Vuex Auth Module to make HTTP requests to the server. There are two classes defined in store/dal/auth.js: AuthenticatedFetch and UnauthenticatedFetch.
 
@@ -14,58 +15,84 @@ The login method first checks if a sessionToken exists in the Vuex store. If it 
 
 The restoreSession method uses an instance of AuthenticatedFetch to make an authenticated POST request to the /auth/vlm/restore endpoint with a payload containing the connectedWallet stored in the Vuex store.
 /*/
+
 export class AuthenticatedFetch {
   sessionToken = store.state.auth.sessionToken;
+  refreshToken = store.state.auth.refreshToken;
 
   get = async (endpoint) => {
-    const payload = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + this.sessionToken,
-      },
-    };
-    const response = await fetch(process.env.VUE_APP_API_URL + endpoint, payload),
-      responseJson = await response.json();
+    try {
+      const payload = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + this.sessionToken,
+        },
+      };
+      const response = await fetch(process.env.VUE_APP_API_URL + endpoint, payload),
+        responseJson = await response.json();
 
-    // if (response.status == 401) {
-    //   store.dispatch("auth/connect");
-    //   return;
-    // }
-
-    return { status: response.status, ...responseJson };
+      return { status: response.status, ...responseJson };
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   post = async (endpoint, payloadBody, file) => {
     let body;
     let headers;
 
-    if (file) {
-      body = payloadBody;
+    try {
 
-      // Headers for multipart/form-data request
-      headers = {
-        Authorization: "Bearer " + this.sessionToken,
-      };
-    } else {
-      body = JSON.stringify(payloadBody);
+      if (file) {
+        body = payloadBody;
 
-      // Headers for application/json request
-      headers = {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + this.sessionToken,
+        // Headers for multipart/form-data request
+        headers = {
+          Authorization: "Bearer " + this.sessionToken,
+        };
+      } else {
+        body = JSON.stringify(payloadBody);
+
+        // Headers for application/json request
+        headers = {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + this.sessionToken,
+        };
+      }
+
+      const payload = {
+        method: "POST",
+        headers,
+        body,
       };
+
+      const response = await fetch(process.env.VUE_APP_API_URL + endpoint, payload);
+      const responseJson = await response.json();
+
+      return { status: response.status, ...responseJson };
+    } catch (error) {
+      console.log(error)
     }
+  };
 
-    const payload = {
-      method: "POST",
-      headers,
-      body,
-    };
+  refresh = async () => {
+    try {
+      const payload = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + this.refreshToken,
+        },
+      };
+      const response = await fetch(process.env.VUE_APP_API_URL + '/auth/refresh', payload),
+        responseJson = await response.json();
 
-    const response = await fetch(process.env.VUE_APP_API_URL + endpoint, payload);
-    const responseJson = await response.json();
-    return { status: response.status, ...responseJson };
+      await store.dispatch("auth/handleSuccessfulLogin", responseJson);
+      return { status: response.status, ...responseJson };
+    } catch (error) {
+      console.log(error)
+    }
   };
 }
 
