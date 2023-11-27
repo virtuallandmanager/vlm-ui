@@ -125,7 +125,7 @@ export default {
       return !!this.user?.roles?.filter((role) => role >= 7).length;
     },
     showBackArrow() {
-      return this.activeScene || this.activeEvent;
+      return this.previousRoute && this.activeScene || this.activeEvent;
     },
     docsUrl() {
       return process.env.VUE_APP_DOCS_URL;

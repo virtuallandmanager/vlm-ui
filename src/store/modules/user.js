@@ -54,6 +54,7 @@ export default {
         commit("organization/updateUserOrgs", userOrgs, { root: true });
         commit("stop");
       } catch (error) {
+        store.dispatch("banner/showError", { message: "Server Error - Could not save user info. Please contact support." }, { root: true })
         console.log(error);
       }
     },

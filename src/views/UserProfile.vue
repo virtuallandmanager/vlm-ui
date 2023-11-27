@@ -140,7 +140,7 @@ export default {
           .map((role, i) => (role ? i : -1))
           .filter((x) => x > -1);
 
-        await this.setupUserInfo({
+        await this.updateUserInfo({
           userInfo: this.userInfo,
           userOrgInfo: this.orgAdmin ? this.newOrg : null,
         });
@@ -243,7 +243,7 @@ export default {
       this.$emit("handleDialog", { show: true, ...dialogOptions });
     },
     ...mapActions({
-      setupUserInfo: "user/setupUserInfo",
+      updateUserInfo: "user/updateUserInfo",
       showError: "banner/showError",
     }),
   },

@@ -1,6 +1,9 @@
 <template>
   <v-card elevation="2" class="mx-auto pb-4" max-width="960">
-    <gdpr-notice :value="showPrivacyPolicy" @input="togglePrivacyPolicy"></gdpr-notice>
+    <gdpr-notice
+      :value="showPrivacyPolicy"
+      @input="togglePrivacyPolicy"
+    ></gdpr-notice>
     <v-card-title>
       <div class="text-h3">Welcome to Virtual Land Manager</div>
     </v-card-title>
@@ -14,18 +17,38 @@
           up your account. (You'll be able to make changes later.)
         </v-card-subtitle>
         <v-card-text>
-          <v-text-field label="Primary Wallet Address" v-model="newUserInfo.connectedWallet" disabled></v-text-field>
-          <v-text-field label="Display Name" v-model="newUserInfo.displayName"
-            :rules="[validateDisplayName]"></v-text-field>
+          <v-text-field
+            label="Primary Wallet Address"
+            v-model="newUserInfo.connectedWallet"
+            disabled
+          ></v-text-field>
+          <v-text-field
+            label="Display Name"
+            v-model="newUserInfo.displayName"
+            :rules="[validateDisplayName]"
+          ></v-text-field>
           <div class="d-flex justify-space-between">
-            <v-text-field label="Email Address" hint="Optional - For future notifications and multi-factor authentication"
-              persistent-hint validate-on-blur :rules="[validateEmailAddress]" v-model="newUserInfo.emailAddress"
-              class="mr-2"></v-text-field>
-            <vue-tel-input-vuetify class="ml-2 flex-grow-1" :preferred-countries="['us', 'ca', 'ar', 'gb', 'fr', 'de']"
-              v-model="phone" label="Mobile Phone"
-              hint="Optional - For future notifications and multi-factor authentication" :rules="[validatePhoneNumber]"
-              disabledFetchingCountry persistent-hint :defaultCountry="newUserInfo.location?.country_code || 'us'"
-              @input="onInput" />
+            <v-text-field
+              label="Email Address"
+              hint="Optional - For future notifications and multi-factor authentication"
+              persistent-hint
+              validate-on-blur
+              :rules="[validateEmailAddress]"
+              v-model="newUserInfo.emailAddress"
+              class="mr-2"
+            ></v-text-field>
+            <vue-tel-input-vuetify
+              class="ml-2 flex-grow-1"
+              :preferred-countries="['us', 'ca', 'ar', 'gb', 'fr', 'de']"
+              v-model="phone"
+              label="Mobile Phone"
+              hint="Optional - For future notifications and multi-factor authentication"
+              :rules="[validatePhoneNumber]"
+              disabledFetchingCountry
+              persistent-hint
+              :defaultCountry="newUserInfo.location?.country_code || 'us'"
+              @input="onInput"
+            />
           </div>
         </v-card-text>
       </v-card>
@@ -37,13 +60,20 @@
         </v-card-subtitle>
         <v-card-text>
           <div class="d-flex">
-            <v-switch label="Advanced User"
-              hint="Enables use of advanced developer features and custom SDK implementation" persistent-hint
-              v-model="newUserRoles[2]"></v-switch>
+            <v-switch
+              label="Advanced User"
+              hint="Enables use of advanced developer features and custom SDK implementation"
+              persistent-hint
+              v-model="newUserRoles[2]"
+            ></v-switch>
           </div>
           <div class="d-flex">
-            <v-switch label="Organization Admin" hint="Enables team administration features" persistent-hint
-              v-model="newUserRoles[4]"></v-switch>
+            <v-switch
+              label="Organization Admin"
+              hint="Enables team administration features"
+              persistent-hint
+              v-model="newUserRoles[4]"
+            ></v-switch>
           </div>
         </v-card-text>
       </v-card>
@@ -54,8 +84,12 @@
           later.
         </v-card-subtitle>
         <v-card-text>
-          <v-text-field label="Organization Display Name" v-model="newOrg.displayName" class="mr-2"
-            :rules="[validateOrgDisplayName]"></v-text-field>
+          <v-text-field
+            label="Organization Display Name"
+            v-model="newOrg.displayName"
+            class="mr-2"
+            :rules="[validateOrgDisplayName]"
+          ></v-text-field>
         </v-card-text>
       </v-card>
     </v-card-text>
@@ -64,7 +98,13 @@
         <v-btn @click="showPrivacyPolicy = true">Privacy Policy</v-btn>
       </div>
       <div class="flex-shrink-0 justify-space-around">
-        <v-btn @click="saveAndContinue" :loading="saving" :disabled="saving" color="primary">Save And Continue</v-btn>
+        <v-btn
+          @click="saveAndContinue"
+          :loading="saving"
+          :disabled="saving"
+          color="primary"
+          >Save And Continue</v-btn
+        >
       </div>
     </v-card-actions>
   </v-card>
@@ -122,6 +162,7 @@ export default {
           newUserInfo: this.newUserInfo,
           userOrgInfo: this.orgAdmin ? this.newOrg : null,
         });
+        this.$router.push("/scenes");
       } catch (error) {
         console.log(error);
         this.showError({ message: error, timeout: 4000 });

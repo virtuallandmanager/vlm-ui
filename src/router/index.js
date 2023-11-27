@@ -180,7 +180,14 @@ router.beforeEach(async (to, from, next) => {
     if (isAuthenticated() && unregistered() && to.path !== "/join") {
       next("/join");
       return;
+    } else if (isAuthenticated() && !unregistered() && to.path === "/join") {
+      next("/scenes");
+      return;
+    } else if (!isAuthenticated() && to.path === "/join") {
+      next("/");
+      return;
     }
+
     if (requiresAuth && !isAuthenticated()) {
       next("/"); // Redirect to the login page if the route requires authentication and the user is not authenticated
       return;

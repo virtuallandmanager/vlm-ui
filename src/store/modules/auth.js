@@ -94,8 +94,11 @@ export default {
       state.connectedWallet = null;
       state.processing = false;
       state.signing = false;
+      state.refreshToken = false;
       state.sessionToken = false;
       state.signatureToken = false;
+      localStorage.removeItem("connectedWallet");
+      localStorage.removeItem("refreshToken");
     },
   },
   actions: {
@@ -240,6 +243,7 @@ export default {
 
     disconnect({ commit }) {
       commit("DISCONNECT");
+      router.push("/");
       commit("STOP");
     },
   },
