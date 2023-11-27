@@ -1,8 +1,18 @@
 <template>
   <v-dialog v-model="show" max-width="400" persistent>
-    <instance-click-event v-if="instance" :element="element" :instanceData="instanceData" :elementData="elementData"
-      @onUpdate="updateInstance" />
-    <default-click-event v-else :element="element" :elementData="elementData" @onUpdate="updateElement" />
+    <instance-click-event
+      v-if="instance"
+      :element="element"
+      :instanceData="instanceData"
+      :elementData="elementData"
+      @onUpdate="updateInstance"
+    />
+    <default-click-event
+      v-else
+      :element="element"
+      :elementData="elementData"
+      @onUpdate="updateElement"
+    />
   </v-dialog>
 </template>
 
@@ -41,7 +51,10 @@ export default {
     ],
   }),
   computed: {
-    ...mapGetters({ show: "dialog/clickEventDialogOpen", dialogProps: "dialog/clickEventDialogProps" }),
+    ...mapGetters({
+      show: "dialog/clickEventDialogOpen",
+      dialogProps: "dialog/clickEventDialogProps",
+    }),
     element() {
       return this.dialogProps.element;
     },
@@ -56,18 +69,33 @@ export default {
     },
   },
   methods: {
-    ...mapActions({ updateSceneElement: "scene/updateSceneElement", showClickEventDialog: "dialog/showClickEventDialog", hideClickEventDialog: "dialog/hideClickEventDialog" }),
+    ...mapActions({
+      updateSceneElement: "scene/updateSceneElement",
+      showClickEventDialog: "dialog/showClickEventDialog",
+      hideClickEventDialog: "dialog/hideClickEventDialog",
+    }),
     updateInstance(clickEvent, done) {
+      this.updateSceneElement({
+        element: this.element,
+        property: "clickEvent",
+        elementData: this.elementData,
+        instance: true,
+        id: this.instanceData?.sk,
+        instanceData: { ...this.instanceData, clickEvent },
+      });
       if (done) {
         this.hideClickEventDialog();
       }
-      this.updateSceneElement({ element: this.element, property: "clickEvent", elementData: this.elementData, instance: true, id: this.instanceData?.sk, instanceData: { ...this.instanceData, clickEvent } });
     },
     updateElement(clickEvent, done) {
+      this.updateSceneElement({
+        element: this.element,
+        property: "clickEvent",
+        elementData: { ...this.elementData, clickEvent },
+      });
       if (done) {
         this.hideClickEventDialog();
       }
-      this.updateSceneElement({ element: this.element, property: "clickEvent", elementData: { ...this.elementData, clickEvent } });
     },
   },
 };
@@ -89,4 +117,5 @@ export default {
       padding-left: 4px;
     }
   }
-}</style>
+}
+</style>

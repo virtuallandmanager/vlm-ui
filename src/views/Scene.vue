@@ -20,7 +20,7 @@
     <v-card class="cyberpunk-border py-4">
       <v-tabs v-model="tab" centered icons-and-text center-active grow color="nav" :show-arrows="true">
         <v-tabs-slider />
-        <v-tab href="#tab-1" disabled class="text-overline">
+        <v-tab href="#tab-1" class="text-overline">
           Analytics
           <v-icon small>mdi-chart-timeline-variant</v-icon>
         </v-tab>
@@ -49,10 +49,14 @@
           <v-icon small>mdi-palette</v-icon>
         </v-tab>
         <v-tab href="#tab-8" class="text-overline">
+          Moderation
+          <v-icon small>mdi-gavel</v-icon>
+        </v-tab>
+        <v-tab href="#tab-9" class="text-overline">
           Presets
           <v-icon small>mdi-folder</v-icon>
         </v-tab>
-        <v-tab href="#tab-9" class="text-overline">
+        <v-tab href="#tab-10" class="text-overline">
           Settings
           <v-icon small>mdi-cog</v-icon>
         </v-tab>
@@ -83,9 +87,12 @@
           <scene-widget-list />
         </v-tab-item>
         <v-tab-item value="tab-8">
-          <scene-preset-list />
+          <scene-moderation />
         </v-tab-item>
         <v-tab-item value="tab-9">
+          <scene-preset-list />
+        </v-tab-item>
+        <v-tab-item value="tab-10">
           <scene-settings />
         </v-tab-item>
       </v-tabs-items>
@@ -101,6 +108,7 @@ import SceneArtList from "../components/SceneArtList";
 import SceneVideoList from "../components/SceneVideoList";
 import SceneGiveawayList from "../components/SceneGiveawayList";
 import SceneSoundList from "../components/SceneSoundList";
+import SceneModeration from "../components/SceneModeration";
 import SceneModelList from "../components/SceneModelList";
 import SceneWidgetList from "../components/SceneWidgetList";
 import ScenePresetList from "../components/ScenePresetList";
@@ -125,6 +133,7 @@ export default {
     ScenePresetList,
     SceneModelList,
     SceneSoundList,
+    SceneModeration,
     FocusPage,
     TransformDialog,
     PropertiesDialog,

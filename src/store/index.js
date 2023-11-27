@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import app from "./modules/app";
 import admin from "./modules/admin";
+import analytics from "./modules/analytics";
 import auth from "./modules/auth";
 import balances from "./modules/balances";
 import banner from "./modules/banner";
@@ -21,5 +22,5 @@ import video from "./modules/video";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  modules: { app, admin, auth, balances, banner, collectables, dialog, event, feature, giveaway, media, logs, scene, moderation, organization, user, video },
+  modules: { app, admin, analytics, auth, balances, banner, collectables, dialog, event, feature, giveaway, media, logs, scene, moderation, organization, user, video },
 });

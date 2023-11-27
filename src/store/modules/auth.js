@@ -203,16 +203,12 @@ export default {
         dispatch("banner/showInfo", { message: `Welcome to VLM!` }, { root: true });
       }
 
-      console.log("Login successful. Getting data.")
-
       await Promise.all([
         dispatch("scene/getSceneCards", null, { root: true }),
         dispatch("balances/getUserBalances", user, { root: true }),
         dispatch("event/getEvents", user, { root: true }),
         dispatch("giveaway/getGiveaways", user, { root: true })
       ]);
-
-      console.log("Data loaded.")
 
       dispatch("autoRefreshToken");
 

@@ -172,13 +172,10 @@ router.beforeEach(async (to, from, next) => {
     const isAuthenticated = () => { return store.getters["auth/authenticated"] };
     const isAdmin = store.getters["user/isVLMAdmin"];
 
-    console.log("Hit router")
-    console.log("requiresAuth", isAuthenticated())
     if (requiresAuth && !isAuthenticated()) {
       await store.dispatch("auth/refreshSession");
     }
 
-    console.log("Hit router end")
     if (requiresAuth && !isAuthenticated()) {
       next("/"); // Redirect to the login page if the route requires authentication and the user is not authenticated
       return;

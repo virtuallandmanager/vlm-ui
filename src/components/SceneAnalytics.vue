@@ -1,5 +1,7 @@
 <template>
-  <content-sub-panel :loading="loadingAnalytics" :hasContent="!lineChartData.length && !donutChartData.length && !loadingAnalytics" loadingMessage="Loading analytics data...">
+  <content-sub-panel :loading="loadingAnalytics"
+    :hasContent="!lineChartData.length && !donutChartData.length && !loadingAnalytics"
+    loadingMessage="Loading analytics data...">
     <template v-slot:header>
       <v-tabs v-model="tab" centered dark grow icons-and-text>
         <v-tabs-slider></v-tabs-slider>
@@ -7,35 +9,74 @@
           Live Status
           <v-icon>mdi-sync</v-icon>
         </v-tab>
-        <v-tab href="#tab-2">
+        <!-- <v-tab href="#tab-2" @click="getRecentSceneMetrics">
           Recent Metrics
           <v-icon>mdi-history</v-icon>
-        </v-tab>
-        <v-tab href="#tab-3">
+        </v-tab> -->
+        <!-- <v-tab href="#tab-3">
           Historical Graphs
           <v-icon>mdi-chart-line</v-icon>
-        </v-tab>
+        </v-tab> -->
       </v-tabs>
     </template>
     <v-tabs-items v-model="tab">
       <v-tab-item value="tab-1">
         <v-container>
           <v-card>
-            <v-card-title>Currently In Scene</v-card-title>
-            <v-card-content>
-              <v-card tile color="black" class="pa-2" min-height="420">Stuff</v-card>
-            </v-card-content>
+            <v-card-title>Active Connections</v-card-title>
+            <v-card-text>
+              <div class="h4">Scene Admins</div>
+              <v-data-table :headers="userHeaders" :items="activeSceneHosts" :items-per-page="10" class="elevation-1">
+                <template v-slot:item.country="{ item }">
+                  <v-flag :country="item.country" />
+                </template>
+              </v-data-table>
+            </v-card-text>
+            <v-card-text>
+              <div class="h4">Scene Visitors</div>
+              <v-data-table :headers="userHeaders" :items="activeSceneVisitors" :items-per-page="10" class="elevation-1">
+                <template v-slot:item.country="{ item }">
+                  <v-flag :country="item.country" />
+                </template>
+              </v-data-table>
+            </v-card-text>
+            <v-card-actions class="justify-space-between">
+              <v-spacer />
+              <v-btn color="primary" @click="downloadSnapshotCSV">Guestlist Snapshot</v-btn>
+            </v-card-actions>
           </v-card>
           <v-card>
-            <v-card-title>Live Actions</v-card-title>
-            <v-card-content>
-              <v-card tile color="black" class="pa-2" min-height="420">Stuff</v-card>
-            </v-card-content>
+            <v-card-title>Live Actions <v-spacer />
+              <v-layout align-center>
+                <v-flex xs12 sm6 offset-sm3>
+                  <v-select v-model="duration" :items="durations" label="Hide After" single-line bottom></v-select>
+                </v-flex>
+              </v-layout>
+            </v-card-title>
+            <v-card-text>
+              <v-card tile color="black" class="pa-2" min-height="420" max-height="420" style="overflow-y:auto">
+                <v-container>
+                  <v-layout>
+                    <v-flex xs12>
+                      <transition-group name="fade" tag="div">
+                        <div v-for="(message, index) in sessionActions" :key="index" class="message-item">
+                          <v-card color="grey darken-2" dark class="my-2 pa-2">
+                            <div class="d-flex justify-space-between">
+                              <div><strong>{{ message.displayName }}</strong> {{ message.action }}</div>
+                              <div>{{ getLocalDateTime(message.timestamp) }}</div>
+                            </div>
+                            <div v-if="message.metadata">
+                              {{ renderMetadata(message.metadata) }}
+                            </div>
+                          </v-card>
+                        </div>
+                      </transition-group>
+                    </v-flex>
+                  </v-layout>
+                </v-container>
+              </v-card>
+            </v-card-text>
           </v-card>
-          <v-card-actions class="justify-space-between">
-            <v-btn color="primary">Guestlist Snapshot</v-btn>
-            <v-btn color="primary">Send Message</v-btn>
-          </v-card-actions>
         </v-container>
       </v-tab-item>
 
@@ -43,20 +84,18 @@
         <v-container>
           <v-card>
             <v-card-title>Currently In Scene</v-card-title>
-            <v-card-content>
-              <v-card tile color="black" class="pa-2" min-height="420">Stuff</v-card>
-            </v-card-content>
+            <v-card-text>
+              <v-card tile color="black" class="pa-2" min-height="420">
+
+              </v-card>
+            </v-card-text>
           </v-card>
           <v-card>
             <v-card-title>Live Actions</v-card-title>
-            <v-card-content>
+            <v-card-text>
               <v-card tile color="black" class="pa-2" min-height="420">Stuff</v-card>
-            </v-card-content>
+            </v-card-text>
           </v-card>
-          <v-card-actions class="justify-space-between">
-            <v-btn color="primary">Guestlist Snapshot</v-btn>
-            <v-btn color="primary">Send Message</v-btn>
-          </v-card-actions>
         </v-container>
       </v-tab-item>
       <v-tab-item value="tab-3">
@@ -64,18 +103,17 @@
         <v-container>
           <v-card>
             <v-card-title>Interactions Chart</v-card-title>
-            <v-card-content>
+            <v-card-text>
               <v-card tile color="black" class="pa-2" min-height="420">Graph</v-card>
-            </v-card-content>
+            </v-card-text>
           </v-card>
           <v-card>
             <v-card-title>Interactions Breakdown</v-card-title>
-            <v-card-content>
+            <v-card-text>
               <v-card tile color="black" class="pa-2" min-height="420">Graph</v-card>
-            </v-card-content>
+            </v-card-text>
           </v-card>
           <v-card-actions class="justify-space-between">
-            <v-btn color="primary">Guestlist Snapshot</v-btn>
             <v-btn color="primary">Send Message</v-btn>
           </v-card-actions>
         </v-container>
@@ -94,7 +132,7 @@ import timezones from "timezones-list";
 import ContentSubPanel from "./ContentSubPanel";
 import DateRangeBar from "./DateRangeBar";
 // import { downloadCsv } from "../helpers/download.js";
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import _ from "lodash";
 
 Vue.use(chartsVue);
@@ -125,6 +163,12 @@ export default {
       { value: "uniqueGuests", text: "Guest Visitors" },
       { value: "uniqueIps", text: "Unique IP Addresses" },
     ],
+    durations: [
+      { value: 5, text: "5 seconds" },
+      { value: 10, text: "10 seconds" },
+      { value: 15, text: "15 seconds" },
+      { value: 30, text: "30 seconds" },
+    ],
     selectedMetric: "uniqueVisitors",
     activeCountryHeaders: [
       {
@@ -133,6 +177,14 @@ export default {
         value: "country",
       },
       { text: "Active Connections", value: "users" },
+    ],
+    userHeaders: [
+      {
+        text: "Display Name",
+        align: "start",
+        value: "displayName",
+      },
+      { text: "Wallet Address", value: "connectedWallet" },
     ],
     analyticsByDate: {},
     analyticsByEventType: {},
@@ -234,6 +286,21 @@ export default {
     timescaleEnum: 1,
   }),
   computed: {
+    ...mapGetters({
+      activeScene: "scene/activeScene",
+      activeSceneHosts: "scene/activeSceneHosts",
+      activeSceneVisitors: "scene/activeSceneVisitors",
+      sessionActions: "scene/sessionActions",
+      sessionActionDuration: "scene/sessionActionDuration",
+    }),
+    duration: {
+      get() {
+        return this.sessionActionDuration;
+      },
+      set(value) {
+        this.setSessionActionDuration(value);
+      },
+    },
     startDateTime: {
       get() {
         return DateTime.fromFormat(this.startDate + this.startTime, "yyyy-MM-ddt");
@@ -311,7 +378,32 @@ export default {
   methods: {
     ...mapActions({
       setErrorMessage: "land/setErrorMessage",
+      setSessionActionDuration: "scene/setSessionActionDuration",
+      recentMetricsPromise: "analytics/getRecentSceneMetrics",
     }),
+    async getRecentSceneMetrics() {
+      await this.recentMetricsPromise(this.activeScene.sk);
+    },
+    downloadSnapshotCSV() {
+      const rows = [
+        ["Display Name", "Wallet Address"], // This is your header row
+        ...this.activeSceneVisitors.map(item => [item.displayName, item.connectedWallet])
+      ];
+
+      let csvContent = "data:text/csv;charset=utf-8,";
+      rows.forEach(function (rowArray) {
+        let row = rowArray.join(",");
+        csvContent += row + "\r\n";
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `${this.activeScene.name} Visitors @ ${DateTime.now().toFormat('yyyy-MM-dd_HH-mm-ss')}.csv`);
+      document.body.appendChild(link); // Required for FF
+
+      link.click();
+    },
     validateDateRange() {
       //todo
     },
@@ -419,6 +511,14 @@ export default {
         default:
           return "mdi-clock";
       }
+    },
+    getLocalDateTime(ts) {
+      return DateTime.fromSeconds(ts).toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS);
+    },
+    renderMetadata(metadata) {
+      return Object.entries(metadata).map(([key, value]) => {
+        return `${key.capitalize()}: ${value}`
+      }).join(", ")
     },
     formatDate(date) {
       const [dateStr] = new Date(date).toISOString().split("T");

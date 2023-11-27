@@ -57,16 +57,33 @@ export default {
   namespaced: true,
   state: () => ({
     activeScene: {},
+    activeSceneHosts: [],
+    activeSceneVisitors: [],
+    sessionActionList: [],
     userSceneCache: {},
     loadingScene: false,
     loadingPreset: false,
     room: null,
     inBlink: 0,
     outBlink: 0,
+    recentMetrics: [],
+    sessionActionDuration: 10
   }),
   getters: {
     activeScene: (state) => {
       return state.activeScene;
+    },
+    activeSceneHosts: (state) => {
+      return state.activeSceneHosts;
+    },
+    activeSceneVisitors: (state) => {
+      return state.activeSceneVisitors;
+    },
+    sessionActions: (state) => {
+      return state.sessionActionList;
+    },
+    sessionActionDuration: (state) => {
+      return state.sessionActionDuration;
     },
     isDemoScene: (state) => {
       return state.activeScene?.sk == "00000000-0000-0000-0000-000000000000";
@@ -211,6 +228,19 @@ export default {
       const presetIndex = state.activeScene.presets.findIndex((preset) => preset.sk == presetId);
       state.activeScene.presets.splice(presetIndex, 1);
     },
+    SET_ACTIVE_USERS(state, activeUsers) {
+      state.activeSceneHosts = activeUsers.filter(user => user.host);
+      state.activeSceneVisitors = activeUsers.filter(user => !user.host);
+    },
+    ADD_SESSION_ACTION(state, sessionAction) {
+      state.sessionActionList.unshift(sessionAction);
+    },
+    REMOVE_SESSION_ACTION(state) {
+      state.sessionActionList.pop();
+    },
+    SET_SESSION_ACTION_DURATION(state, duration) {
+      state.sessionActionDuration = duration;
+    },
     SET_ROOM(state, room) {
       if (room) {
         state.room = room;
@@ -234,6 +264,8 @@ export default {
     },
     CLEAR_ACTIVE_SCENE(state) {
       state.activeScene = {};
+      state.sessionActionList = [];
+      state.activeUserList = [];
       state.room = null;
     },
   },
@@ -241,10 +273,8 @@ export default {
     // SCENE ELEMENTS ARE THINGS SHOWN IN THE SCENE, BUT THEY ARE STORED IN SCENE PRESETS //
     createSceneElement: async ({ state, dispatch }, { property, element, instance, id, setting, elementData, instanceData, settingData }) => {
       const scenePreset = state.activeScene.presets.find((preset) => preset.sk == state.activeScene.scenePreset);
-      let playerPosition;
       if (instance) {
-        playerPosition = await dispatch('requestPlayerPosition', instanceData);
-        console.log(playerPosition);
+        await dispatch('requestPlayerPosition', instanceData);
       }
       await state.room.send("scene_preset_update", { action: "create", property, id, element, instance, setting, elementData, instanceData, settingData, scenePreset, stage: "pre" });
     },
@@ -277,11 +307,13 @@ export default {
         }, 5000); // 5 seconds timeout
       })
     },
+    getPlayersInScene: async ({ state }) => {
+      await state.room.send("scene_get_users");
+    },
     toggleSoundLocators: async ({ rootGetters, state }, { property, element, instance, id, setting, elementData, instanceData, settingData }) => {
       const scenePreset = state.activeScene.presets.find((preset) => preset.sk == state.activeScene.scenePreset);
       const userInfo = rootGetters["user/userInfo"];
       const userId = userInfo.sk;
-      console.log(userInfo, userId);
       await state.room.send("scene_sound_locator", { action: "scene_sound_locator", userId, property, id, element, instance, setting, elementData, instanceData, settingData, scenePreset, stage: "pre" });
     },
     updateSceneSetting: async ({ commit, state }, { setting, settingName, settingValue }) => {
@@ -368,7 +400,7 @@ export default {
     // END SCENE PRESET C/U/D //
 
     // SCENE CONNECTION ACTIONS //
-    connectToScene: async ({ rootGetters, state, commit, dispatch }, sceneId) => {
+    connectToScene: async ({ getters, rootGetters, state, commit, dispatch }, sceneId) => {
       commit("SET_ACTIVE_SCENE", sceneId);
       commit("SCENE_LOAD_START");
       try {
@@ -465,14 +497,25 @@ export default {
         room.onMessage("scene_setting_update", ({ user, sceneData, settingData }) => {
           commit("STORE_SCENE_SETTING", { sceneId: sceneData.sk, settingData });
           dispatch("banner/showSuccess", { message: `${user.displayName} updated ${settingData.settingName}` }, { root: true });
-        }),
-          room.onMessage("send_player_position", (message) => {
-            if (callbacks["requestPlayerPosition"]) {
-              callbacks["requestPlayerPosition"](message);
-              delete callbacks["requestPlayerPosition"];
-            }
-          }),
-          sendSceneMessage("scene_load_request", { sceneId });
+        });
+        room.onMessage("send_player_position", (message) => {
+          if (callbacks["requestPlayerPosition"]) {
+            callbacks["requestPlayerPosition"](message);
+            delete callbacks["requestPlayerPosition"];
+          }
+        });
+        room.onMessage("send_active_users", ({ activeUsers }) => {
+          console.log(activeUsers)
+          commit("SET_ACTIVE_USERS", activeUsers);
+        });
+        room.onMessage("add_session_action", ({ action, metadata, pathPoint, displayName, timestamp }) => {
+          const index = state.sessionActionList.length;
+          commit("ADD_SESSION_ACTION", { action, metadata, pathPoint, displayName, timestamp });
+          setTimeout(() => {
+            commit("REMOVE_SESSION_ACTION", index);
+          }, getters.sessionActionDuration * 1000);
+        });
+        sendSceneMessage("scene_load_request", { sceneId });
         return room;
       } catch (error) {
         console.error(error);
@@ -484,6 +527,9 @@ export default {
     disconnectFromScene: async ({ commit }) => {
       commit("CLEAR_ACTIVE_SCENE");
       await disconnectFromScene();
+    },
+    setSessionActionDuration: async ({ commit }, duration) => {
+      commit("SET_SESSION_ACTION_DURATION", duration);
     },
     fadeBlink({ commit, state }, direction) {
       let prop;
