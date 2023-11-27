@@ -9,6 +9,7 @@ export default {
   }),
   getters: {
     userInfo: (state) => ({ location: store?.state?.auth?.session?.ipData?.location, ...state.userInfo }),
+    unregistered: (state) => !state.userInfo.registeredAt,
     userDisplayName: (state) => state.userInfo.displayName,
     isEarlyAccess: (state) => state.userInfo?.roles?.includes(1),
     isAdvancedUser: (state) => state.userInfo?.roles?.includes(2),

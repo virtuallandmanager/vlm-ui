@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="enabled" max-width="900">
+  <v-dialog v-model="value" max-width="900">
     <v-card>
       <v-card-title>GDPR Notice</v-card-title>
       <v-card-text>
@@ -202,8 +202,8 @@ export default {
   },
   methods: {
     closeWindow() {
-      this.enabled = false;
-    }
+      this.show = false;
+    },
   },
 };
 </script>

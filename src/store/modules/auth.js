@@ -1,6 +1,7 @@
 import Web3 from "web3";
 import { DateTime } from "luxon";
 import { web3Authenticate, sendSignature, refreshSession } from "../dal/auth";
+import router from "../../router";
 
 const web3 = new Web3(window.ethereum || (window.web3 && window.web3.currentProvider));
 
@@ -200,6 +201,7 @@ export default {
       if (status == 200) {
         dispatch("banner/showInfo", { message: `Welcome back, ${user.displayName}!` }, { root: true });
       } else if (status == 201) {
+        router.push("/join");
         dispatch("banner/showInfo", { message: `Welcome to VLM!` }, { root: true });
       }
 

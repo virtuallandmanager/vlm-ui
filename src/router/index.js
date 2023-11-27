@@ -170,12 +170,17 @@ router.beforeEach(async (to, from, next) => {
     const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
     const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin);
     const isAuthenticated = () => { return store.getters["auth/authenticated"] };
+    const unregistered = () => { return store.getters["user/unregistered"] };
     const isAdmin = store.getters["user/isVLMAdmin"];
 
     if (requiresAuth && !isAuthenticated()) {
       await store.dispatch("auth/refreshSession");
     }
 
+    if (isAuthenticated() && unregistered() && to.path !== "/join") {
+      next("/join");
+      return;
+    }
     if (requiresAuth && !isAuthenticated()) {
       next("/"); // Redirect to the login page if the route requires authentication and the user is not authenticated
       return;
