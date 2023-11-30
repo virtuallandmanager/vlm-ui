@@ -161,10 +161,18 @@ export default {
       const response = await getAdminPanelKeys(page, pageSize);
       const { users, organizations, scenes, events } = response;
       commit("INITIALIZE");
-      commit("ADD_USERS", { users, page, pageSize });
-      commit("ADD_ORGS", { organizations, page, pageSize });
-      commit("ADD_SCENES", { scenes, page, pageSize });
-      commit("ADD_EVENTS", { events, page, pageSize });
+      if (users?.length) {
+        commit("ADD_USERS", { users, page, pageSize });
+      }
+      if (organizations?.length) {
+        commit("ADD_ORGS", { organizations, page, pageSize });
+      }
+      if (scenes?.length) {
+        commit("ADD_SCENES", { scenes, page, pageSize });
+      }
+      if (events?.length) {
+        commit("ADD_EVENTS", { events, page, pageSize });
+      }
       commit("STOP");
     },
     getUsers: async ({ commit }, page, pageSize, sort) => {

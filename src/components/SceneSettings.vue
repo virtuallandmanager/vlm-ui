@@ -1,5 +1,6 @@
 <template>
   <v-container class="py-6 mx-auto">
+    <user-invite-dialog :value="userInviteDialog" @input="toggleInviteDialog" />
     <v-row>
       <v-col no-gutters>
         <div class="text-h5 mb-4">Scene Settings</div>
@@ -36,13 +37,15 @@
         <div class="text-h6">Shared Access</div>
       </v-col>
       <v-col sm="12" v-if="!isDemoScene">
+        <v-switch v-if="!isDemoScene" v-model="adminAccess" label="Enable VLM Admin Access" @change="toggleAdminAccess" dense hide-details />
+      </v-col>
+      <v-col sm="12" v-if="!isDemoScene">
         <div class="text-body ml-2 mb-4 grey--text">No Other Users Have Access</div>
         <div class="text-body mb-4">Invite A User To Collaborate:</div>
         <div class="d-flex align-center">
-          <v-text-field label="User Wallet Address" outlined dense v-model="userInfo" hide-details />
-          <v-btn color="primary" @click="sendUserInvite" class="ml-4"><v-icon small
-              class="mr-2">mdi-paper-airplane</v-icon>Send
-            Invite</v-btn>
+          <v-btn color="primary" @click="userInviteDialog = true" class="ml-4"
+            ><v-icon small class="mr-2">mdi-paper-airplane</v-icon>Send Invite</v-btn
+          >
         </div>
       </v-col>
     </v-row>
@@ -50,39 +53,53 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters } from 'vuex'
+import UserInviteDialog from './dialogs/UserInviteDialog'
 
 export default {
-  name: "SceneSettings",
-
+  name: 'SceneSettings',
+  components: { UserInviteDialog },
   data: () => ({
+    adminAccess: false,
+    userInviteDialog: false,
   }),
+  mounted() {
+    this.adminAccess = this.vlmAdminAccess
+  },
   computed: {
     ...mapGetters({
-      scene: "scene/activeScene",
-      isDemoScene: "scene/isDemoScene",
-    })
+      scene: 'scene/activeScene',
+      vlmAdminAccess: 'scene/vlmAdminAccess',
+      isDemoScene: 'scene/isDemoScene',
+    }),
   },
   methods: {
     ...mapActions({
-      showTransformDialog: "dialog/showTransformDialog",
-      showPropertiesDialog: "dialog/showPropertiesDialog",
-      showClickEventDialog: "dialog/showClickEventDialog",
-      showDeleteDialog: "dialog/showDeleteDialog",
-      createSceneElement: "scene/createSceneElement",
-      updateSceneElement: "scene/updateSceneElement",
-      deleteSceneElement: "scene/deleteSceneElement",
-      uploadImage: "media/uploadSceneImage",
-      showSuccess: "banner/showSuccess",
-      updateSceneSetting: "scene/updateSceneSetting",
+      showTransformDialog: 'dialog/showTransformDialog',
+      showPropertiesDialog: 'dialog/showPropertiesDialog',
+      showClickEventDialog: 'dialog/showClickEventDialog',
+      showDeleteDialog: 'dialog/showDeleteDialog',
+      createSceneElement: 'scene/createSceneElement',
+      updateSceneElement: 'scene/updateSceneElement',
+      deleteSceneElement: 'scene/deleteSceneElement',
+      uploadImage: 'media/uploadSceneImage',
+      showSuccess: 'banner/showSuccess',
+      updateSceneSetting: 'scene/updateSceneSetting',
+      inviteUserToCollab: 'scene/inviteUserToCollab',
     }),
+    toggleAdminAccess() {
+      this.updateSceneSetting({ setting: 'access', settingName: 'VLM Admin Access', settingValue: this.adminAccess })
+    },
     copySceneId() {
-      navigator.clipboard.writeText(this.scene.sk);
-      this.showSuccess({ message: "Scene ID copied to clipboard" });
+      navigator.clipboard.writeText(this.scene.sk)
+      this.showSuccess({ message: 'Scene ID copied to clipboard' })
     },
     showSceneSetup() {
-      this.$router.push(`/docs/getting-started?sceneId=${this.scene.sk}`);
-    }
+      this.$router.push(`/docs/getting-started?sceneId=${this.scene.sk}`)
+    },
+    toggleInviteDialog(value) {
+      this.userInviteDialog = value
+    },
   },
-};
+}
 </script>

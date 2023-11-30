@@ -7,9 +7,7 @@
     </v-row>
     <v-row class="d-flex">
       <v-col no-gutters>
-        <h1 class="text-h6">
-          Moderator Message
-        </h1>
+        <h1 class="text-h6">Moderator Message</h1>
       </v-col>
     </v-row>
     <v-row>
@@ -22,7 +20,6 @@
       <v-col class="flex-grow-1">
         <v-text-field label="Display Time (Seconds)" v-model="messageDelay" type="number"></v-text-field>
       </v-col>
-
     </v-row>
     <v-row>
       <v-col class="flex-grow-1">
@@ -40,25 +37,24 @@
       </v-row>
       <v-row>
         <v-col>
-          <v-switch v-model="moderationSettings.banCertainWearables" @change="updateModerationSettings"
-            label="Ban Certain Wearables"></v-switch>
+          <v-switch v-model="moderationSettings.banCertainWearables" @change="updateModerationSettings" label="Ban Certain Wearables"></v-switch>
         </v-col>
         <v-col>
-          <v-switch v-model="moderationSettings.allowCertainWearables" @change="updateModerationSettings"
-            label="Only Allow Certain Wearables"></v-switch>
+          <v-switch
+            v-model="moderationSettings.allowCertainWearables"
+            @change="updateModerationSettings"
+            label="Only Allow Certain Wearables"
+          ></v-switch>
         </v-col>
       </v-row>
       <v-row v-if="moderationSettings.banCertainWearables" class="grey darken-5">
-        <v-col class="text-subtitle-1 white--text">
-          Wearables Banned From Scene
-        </v-col>
+        <v-col class="text-subtitle-1 white--text"> Wearables Banned From Scene </v-col>
       </v-row>
       <v-row v-if="moderationSettings.banCertainWearables">
         <v-col>
           <v-row v-for="(item, i) in moderationSettings.bannedWearables" :key="i" dense>
             <v-col cols="7" md="8" sm="9" xs="4">
-              <v-text-field label="Contract Address" dense v-model="item.contractAddress"
-                hide-details="auto"></v-text-field>
+              <v-text-field label="Contract Address" dense v-model="item.contractAddress" hide-details="auto"></v-text-field>
             </v-col>
             <v-col cols="4" md="3" sm="2" xs="6">
               <v-text-field label="Item ID" dense v-model="item.itemId" hide-details="auto"></v-text-field>
@@ -78,16 +74,13 @@
         </v-col>
       </v-row>
       <v-row v-if="moderationSettings.allowCertainWearables" class="grey darken-5">
-        <v-col class="text-subtitle-1 white--text">
-          Wearables Allowed In Scene
-        </v-col>
+        <v-col class="text-subtitle-1 white--text"> Wearables Allowed In Scene </v-col>
       </v-row>
       <v-row v-if="moderationSettings.allowCertainWearables">
         <v-col>
           <v-row v-for="(item, i) in moderationSettings.allowedWearables" :key="i" dense>
             <v-col cols="7" md="8" sm="9" xs="4">
-              <v-text-field label="Contract Address" dense v-model="item.contractAddress"
-                hide-details="auto"></v-text-field>
+              <v-text-field label="Contract Address" dense v-model="item.contractAddress" hide-details="auto"></v-text-field>
             </v-col>
             <v-col cols="4" md="3" sm="2" xs="6">
               <v-text-field label="Item ID" dense v-model="item.itemId" hide-details="auto"></v-text-field>
@@ -113,33 +106,38 @@
       </v-row>
       <v-row>
         <v-col>
-          <v-switch v-model="moderationSettings.banCertainUsers" @change="updateModerationSettings"
-            label="Ban Certain People"></v-switch>
+          <v-switch v-model="moderationSettings.banCertainUsers" @change="updateModerationSettings" label="Ban Certain People"></v-switch>
         </v-col>
         <v-col>
-          <v-switch v-model="moderationSettings.allowCertainUsers" @change="updateModerationSettings"
-            label="Only Allow Certain People"></v-switch>
+          <v-switch v-model="moderationSettings.allowCertainUsers" @change="updateModerationSettings" label="Only Allow Certain People"></v-switch>
         </v-col>
         <v-col>
-          <v-switch v-model="moderationSettings.allowWeb3Only" @change="updateModerationSettings"
-            label="Only Allow Web3 Accounts"></v-switch>
+          <v-switch v-model="moderationSettings.allowWeb3Only" @change="updateModerationSettings" label="Only Allow Web3 Accounts"></v-switch>
         </v-col>
       </v-row>
       <v-row v-if="moderationSettings.banCertainUsers" class="grey darken-5">
-        <v-col class="text-subtitle-1 white--text">
-          People Banned From Scene
-        </v-col>
+        <v-col class="text-subtitle-1 white--text"> People Banned From Scene </v-col>
       </v-row>
       <v-row v-if="moderationSettings.banCertainUsers">
         <v-col>
           <v-row v-for="(item, i) in moderationSettings.bannedUsers" :key="i" dense>
             <v-col cols="7" md="8" sm="9" xs="4">
-              <v-text-field label="Wallet Address" dense v-model="item.connectedWallet" hide-details="auto"
-                @change="updateModerationSettings"></v-text-field>
+              <v-text-field
+                label="Wallet Address"
+                dense
+                v-model="item.connectedWallet"
+                hide-details="auto"
+                @change="updateModerationSettings"
+              ></v-text-field>
             </v-col>
             <v-col cols="4" md="3" sm="2" xs="6">
-              <v-text-field label="Display Name" dense v-model="item.displayName" hide-details="auto"
-                @change="updateModerationSettings"></v-text-field>
+              <v-text-field
+                label="Display Name"
+                dense
+                v-model="item.displayName"
+                hide-details="auto"
+                @change="updateModerationSettings"
+              ></v-text-field>
             </v-col>
             <v-spacer></v-spacer>
             <v-col cols="1" sm="1" xs="2" class="d-flex flex-shrink-0">
@@ -159,16 +157,13 @@
         </v-col>
       </v-row>
       <v-row v-if="moderationSettings.allowCertainUsers" class="grey darken-5">
-        <v-col class="text-subtitle-1 white--text">
-          People Allowed In Scene
-        </v-col>
+        <v-col class="text-subtitle-1 white--text"> People Allowed In Scene </v-col>
       </v-row>
       <v-row v-if="moderationSettings.allowCertainUsers">
         <v-col>
           <v-row v-for="(item, i) in moderationSettings.allowedUsers" :key="i" dense>
             <v-col cols="7" md="8" sm="9" xs="4">
-              <v-text-field label="Wallet Address" dense v-model="item.connectedWallet"
-                hide-details="auto"></v-text-field>
+              <v-text-field label="Wallet Address" dense v-model="item.connectedWallet" hide-details="auto"></v-text-field>
             </v-col>
             <v-col cols="4" md="3" sm="2" xs="6">
               <v-text-field label="Display Name" dense v-model="item.displayName" hide-details="auto"></v-text-field>
@@ -194,13 +189,21 @@
       </v-row>
       <v-row>
         <v-col>
-          <div class="text-subtitle-1">
-            Actions taken when visitor is banned or restricted:
-          </div>
-          <v-select :items="banActions" v-model="moderationSettings.banActions" @change="updateModerationSettings"
-            label="Moderation Actions" multiple></v-select>
-          <v-select v-if="moderationSettings.banActions?.includes(0)" :items="banWallTypes"
-            v-model="moderationSettings.banWallType" @change="updateModerationSettings" label="Wall Type"></v-select>
+          <div class="text-subtitle-1">Actions taken when visitor is banned or restricted:</div>
+          <v-select
+            :items="banActions"
+            v-model="moderationSettings.banActions"
+            @change="updateModerationSettings"
+            label="Moderation Actions"
+            multiple
+          ></v-select>
+          <v-select
+            v-if="moderationSettings.banActions?.includes(0)"
+            :items="banWallTypes"
+            v-model="moderationSettings.banWallType"
+            @change="updateModerationSettings"
+            label="Wall Type"
+          ></v-select>
         </v-col>
         <v-col v-if="moderationSettings.allowCertainUsers">
           <div class="text-subtitle-1">Actions taken when user is allowed:</div>
@@ -213,58 +216,53 @@
 </template>
 
 <script>
-import Vue from "vue";
-import {
-  EAllowActions,
-  EBanActions,
-  EBanWallTypes,
-  ESettingType
-} from "../models/SceneSettings";
-import { mapActions, mapGetters } from "vuex";
+import Vue from 'vue'
+import { EAllowActions, EBanActions, EBanWallTypes, ESettingType } from '../models/SceneSettings'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
-  name: "SceneSettings",
+  name: 'SceneSettings',
 
   data: () => ({
     fontColors: [
-      { text: "Black", value: "black" },
-      { text: "Blue", value: "blue" },
-      { text: "Gray", value: "gray" },
-      { text: "Green", value: "green" },
-      { text: "Magenta", value: "magenta" },
-      { text: "Purple", value: "purple" },
-      { text: "Red", value: "red" },
-      { text: "Teal", value: "teal" },
-      { text: "Yellow", value: "yellow" },
-      { text: "White", value: "white", default: true },
+      { text: 'Black', value: 'black' },
+      { text: 'Blue', value: 'blue' },
+      { text: 'Gray', value: 'gray' },
+      { text: 'Green', value: 'green' },
+      { text: 'Magenta', value: 'magenta' },
+      { text: 'Purple', value: 'purple' },
+      { text: 'Red', value: 'red' },
+      { text: 'Teal', value: 'teal' },
+      { text: 'Yellow', value: 'yellow' },
+      { text: 'White', value: 'white', default: true },
     ],
     fontSizes: [8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 55, 60],
-    messageText: "",
-    messageColor: "white",
+    messageText: '',
+    messageColor: 'white',
     messageFontSize: 32,
     messageDelay: 5,
     banActions: [
       { text: "Blackout Visitor's Screen", value: EBanActions.BLACKOUT },
       {
-        text: "Remove User and Block From Scene (Beta)",
+        text: 'Remove User and Block From Scene (Beta)',
         value: EBanActions.WALL,
       },
     ],
     banWallTypes: [
-      { text: "Black Wall", value: EBanWallTypes.BLACK },
-      { text: "Invisible Wall", value: EBanWallTypes.INVISIBLE },
-      { text: "Mirage", value: EBanWallTypes.MIRROR },
+      { text: 'Black Wall', value: EBanWallTypes.BLACK },
+      { text: 'Invisible Wall', value: EBanWallTypes.INVISIBLE },
+      { text: 'Mirage', value: EBanWallTypes.MIRROR },
     ],
-    allowActions: [{ text: "Move User", value: EAllowActions.MOVE }],
+    allowActions: [{ text: 'Move User', value: EAllowActions.MOVE }],
     moderationSettings: {
       banCertainWearables: false,
       bannedWearables: [],
       allowCertainWearables: false,
       allowedWearables: [],
       banCertainUsers: false,
-      bannedUsers: [{ connectedWallet: "", displayName: "" }],
+      bannedUsers: [{ connectedWallet: '', displayName: '' }],
       allowCertainUsers: false,
-      allowedUsers: [{ connectedWallet: "", displayName: "" }],
+      allowedUsers: [{ connectedWallet: '', displayName: '' }],
       allowWeb3Only: false,
       banActions: [],
       banWallType: 0,
@@ -272,86 +270,91 @@ export default {
     },
   }),
   mounted() {
-    this.moderationSettings = this.sceneModerationSettings;
+    this.moderationSettings = this.sceneModerationSettings
   },
   computed: {
     ...mapGetters({
-      scene: "scene/activeScene",
-      isDemoScene: "scene/isDemoScene",
-      sceneModerationSettings: "scene/sceneModerationSettings",
-    })
+      scene: 'scene/activeScene',
+      isDemoScene: 'scene/isDemoScene',
+      sceneModerationSettings: 'scene/sceneModerationSettings',
+    }),
   },
   methods: {
     ...mapActions({
-      showTransformDialog: "dialog/showTransformDialog",
-      showPropertiesDialog: "dialog/showPropertiesDialog",
-      showClickEventDialog: "dialog/showClickEventDialog",
-      showDeleteDialog: "dialog/showDeleteDialog",
-      createSceneElement: "scene/createSceneElement",
-      updateSceneElement: "scene/updateSceneElement",
-      deleteSceneElement: "scene/deleteSceneElement",
-      uploadImage: "media/uploadSceneImage",
-      showSuccess: "banner/showSuccess",
-      sendModMessage: "scene/sendModMessage",
-      updateSceneSetting: "scene/updateSceneSetting",
-      crashSceneUser: "scene/crashSceneUser",
+      showTransformDialog: 'dialog/showTransformDialog',
+      showPropertiesDialog: 'dialog/showPropertiesDialog',
+      showClickEventDialog: 'dialog/showClickEventDialog',
+      showDeleteDialog: 'dialog/showDeleteDialog',
+      createSceneElement: 'scene/createSceneElement',
+      updateSceneElement: 'scene/updateSceneElement',
+      deleteSceneElement: 'scene/deleteSceneElement',
+      uploadImage: 'media/uploadSceneImage',
+      showSuccess: 'banner/showSuccess',
+      sendModMessage: 'scene/sendModMessage',
+      updateSceneSetting: 'scene/updateSceneSetting',
+      crashSceneUser: 'scene/crashSceneUser',
     }),
     updateModerationSettings() {
-      this.updateSceneSetting({ setting: "moderation", settingName: "Moderation Settings", settingValue: this.moderationSettings });
+      this.updateSceneSetting({ setting: 'moderation', settingName: 'Moderation Settings', settingValue: this.moderationSettings })
     },
     copySceneId() {
-      navigator.clipboard.writeText(this.scene.sk);
-      this.showSuccess({ message: "Scene ID copied to clipboard" });
+      navigator.clipboard.writeText(this.scene.sk)
+      this.showSuccess({ message: 'Scene ID copied to clipboard' })
     },
     addBannedItem() {
-      const nextItem = { contractId: "", tokenId: "" };
-      this.moderationSettings.bannedWearables.push(nextItem);
-      this.updateSceneSetting({ settingName: "Banned Wearables", value: this.settings.bannedWearables, type: ESettingType.ARRAY });
+      const nextItem = { contractId: '', tokenId: '' }
+      this.moderationSettings.bannedWearables.push(nextItem)
+      this.updateSceneSetting({
+        setting: 'moderation',
+        settingName: 'Banned Wearables',
+        value: this.settings.bannedWearables,
+        type: ESettingType.ARRAY,
+      })
     },
     addBannedUser() {
-      const nextItem = { connectedWallet: "", displayName: "" };
-      this.moderationSettings.bannedUsers.push(nextItem);
+      const nextItem = { connectedWallet: '', displayName: '' }
+      this.moderationSettings.bannedUsers.push(nextItem)
     },
     removeBannedItem(i) {
-      this.moderationSettings.bannedWearables.splice(i, 1);
+      this.moderationSettings.bannedWearables.splice(i, 1)
       Vue.nextTick(() => {
         if (this.moderationSettings.bannedWearables.length < 1) {
-          this.moderationSettings.banCertainWearables = false;
-          this.moderationSettings.bannedWearables = [];
+          this.moderationSettings.banCertainWearables = false
+          this.moderationSettings.bannedWearables = []
         }
-        this.updateModerationSettings();
-      });
+        this.updateModerationSettings()
+      })
     },
     crashUser(i) {
       const user = this.moderationSettings.bannedUsers[i]
-      this.crashSceneUser({ connectedWallet: user.connectedWallet, displayName: user.displayName });
+      this.crashSceneUser({ connectedWallet: user.connectedWallet, displayName: user.displayName })
     },
     removeBannedUser(i) {
-      this.moderationSettings.bannedUsers.splice(i, 1);
+      this.moderationSettings.bannedUsers.splice(i, 1)
       Vue.nextTick(() => {
         if (this.moderationSettings.bannedUsers.length < 1) {
-          this.moderationSettings.banCertainUsers = false;
-          this.moderationSettings.bannedUsers = [{ connectedWallet: "", displayName: "" }];
+          this.moderationSettings.banCertainUsers = false
+          this.moderationSettings.bannedUsers = [{ connectedWallet: '', displayName: '' }]
         }
-        this.updateModerationSettings();
-      });
+        this.updateModerationSettings()
+      })
     },
     addAllowedItem() {
-      const nextItem = { contractId: "", tokenId: "" };
-      this.moderationSettings.allowedWearables.push(nextItem);
+      const nextItem = { contractId: '', tokenId: '' }
+      this.moderationSettings.allowedWearables.push(nextItem)
     },
     removeAllowedItem(i) {
-      this.moderationSettings.allowedWearables.splice(i, 1);
+      this.moderationSettings.allowedWearables.splice(i, 1)
       Vue.nextTick(() => {
         if (this.moderationSettings.allowedWearables.length < 1) {
-          this.moderationSettings.allowCertainWearables = false;
-          this.moderationSettings.allowedWearables = [{ contractId: "", tokenId: "" }];
+          this.moderationSettings.allowCertainWearables = false
+          this.moderationSettings.allowedWearables = [{ contractId: '', tokenId: '' }]
         }
-        this.updateModerationSettings();
-      });
+        this.updateModerationSettings()
+      })
     },
     showSceneSetup() {
-      this.$router.push(`/docs/getting-started?sceneId=${this.scene.sk}`);
+      this.$router.push(`/docs/getting-started?sceneId=${this.scene.sk}`)
     },
     sendMessage() {
       this.sendModMessage({
@@ -359,8 +362,8 @@ export default {
         color: this.messageColor,
         fontSize: this.messageFontSize,
         delay: this.messageDelay,
-      });
+      })
     },
   },
-};
+}
 </script>

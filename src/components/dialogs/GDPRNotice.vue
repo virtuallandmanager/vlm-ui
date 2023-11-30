@@ -3,10 +3,10 @@
     <v-card>
       <v-card-title>GDPR Notice</v-card-title>
       <v-card-text>
-        <h1>Privacy Policy for Livication Creative Technology</h1>
+        <h1>Privacy Policy for Virtual Land Manager</h1>
 
         <p>
-          At Virtual Land Manager, accessible from dcl-vlm.io, one of our main
+          At Virtual Land Manager, accessible from vlm.gg, one of our main
           priorities is the privacy of our visitors. This Privacy Policy
           document contains types of information that is collected and recorded
           by Virtual Land Manager and how we use it.
@@ -25,27 +25,26 @@
         <p>We are a Data Controller of your information.</p>
 
         <p>
-          Livication Creative Technology legal basis for collecting and using
+          Virtual Land Manager's legal basis for collecting and using
           the personal information described in this Privacy Policy depends on
           the Personal Information we collect and the specific context in which
           we collect the information:
         </p>
         <ul>
           <li>
-            Livication Creative Technology needs to perform a contract with you
+            Virtual Land Manager needs to perform a contract with you
           </li>
           <li>
-            You have given Livication Creative Technology permission to do so
+            You have given Virtual Land Manager permission to do so
           </li>
           <li>
-            Processing your personal information is in Livication Creative
-            Technology legitimate interests
+            Processing your personal information is in Virtual Land Manager's legitimate interests
           </li>
-          <li>Livication Creative Technology needs to comply with the law</li>
+          <li>Virtual Land Manager needs to comply with the law</li>
         </ul>
 
         <p>
-          Livication Creative Technology will retain your personal information
+          Virtual Land Manager will retain your personal information
           only for as long as is necessary for the purposes set out in this
           Privacy Policy. We will retain and use your information to the extent
           necessary to comply with our legal obligations, resolve disputes, and

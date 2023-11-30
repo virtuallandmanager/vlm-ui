@@ -70,14 +70,16 @@ export default {
   name: "UserProfile",
   data: () => ({
     userInfo: {},
-    userRoles: [],
+    userRoles: Array(11).fill(false),
     phone: null,
     showPrivacyPolicy: false,
   }),
   mounted() {
     this.userInfo = this.user || {};
-    this.userRoles = this.user?.roles || [];
-    this.phone = this.userInfo.smsPhoneNumber.formattedNumber || '';
+    this.user?.roles.forEach((role) => {
+      this.userRoles[role] = true;
+    });
+    this.phone = this.userInfo?.smsPhoneNumber?.formattedNumber || '';
   },
   computed: {
     ...mapGetters({
