@@ -1,12 +1,6 @@
 <template>
   <v-dialog v-model="show" max-width="400" persistent>
-    <instance-click-event
-      v-if="show && instance"
-      :element="element"
-      :instanceData="instanceData"
-      :elementData="elementData"
-      @onUpdate="updateInstance"
-    />
+    <instance-click-event v-if="show && instance" :element="element" :instanceData="instanceData" :elementData="elementData" @onUpdate="updateInstance" />
     <default-click-event v-else-if="show && element" :element="element" :elementData="elementData" @onUpdate="updateElement" />
   </v-dialog>
 </template>
@@ -75,13 +69,15 @@ export default {
       hideClickEventDialog: 'dialog/hideClickEventDialog',
     }),
     updateInstance(clickEvent, done) {
+      const instanceData = this.elementData.instances.find((element) => element.sk == this.dialogProps.instanceData.sk)
+
       this.updateSceneElement({
         element: this.element,
         property: 'clickEvent',
         elementData: this.elementData,
         instance: true,
         id: this.instanceData?.sk,
-        instanceData: { ...this.instanceData, clickEvent },
+        instanceData: { ...instanceData, clickEvent },
       })
       if (done) {
         this.hideClickEventDialog()
