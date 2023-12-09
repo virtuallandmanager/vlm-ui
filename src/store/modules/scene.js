@@ -4,7 +4,7 @@ import router from '../../router'
 
 export const callbacks = {}
 const placeInstanceNearPlayer = (message, instanceData) => {
-  const positionData = message.positionData,
+  const positionData = message?.positionData,
     xRotation = positionData[5],
     yRotation = positionData[4],
     yRotationOffset = yRotation / 12
@@ -27,9 +27,9 @@ const placeInstanceNearPlayer = (message, instanceData) => {
     height = positionData[2] + 1
   }
   console.log(message)
-  instanceData.position.x = positionData[1]
-  instanceData.position.y = height
-  instanceData.position.z = positionData[3]
+  instanceData.position.x = positionData[1] || 8
+  instanceData.position.y = height || 1
+  instanceData.position.z = positionData[3] || 8
 
   if (direction == 'north') {
     instanceData.position.z += 1
@@ -92,6 +92,17 @@ export default {
       const activePresetId = state.activeScene?.scenePreset,
         activePreset = state.activeScene?.presets?.find((preset) => preset.sk == activePresetId)
       return activePreset
+    },
+    activeSceneElements: (state) => {
+      return [
+        ...state.activePreset.images,
+        ...state.activePreset.videos,
+        ...state.activePreset.sounds,
+        ...state.activePreset.models,
+        ...state.activePreset.widgets,
+        ...state.activePreset.claimPoints,
+        ...state.activePreset.nfts,
+      ]
     },
     sceneSettings: (state) => {
       return state.activeScene?.settings
@@ -340,24 +351,28 @@ export default {
     },
     requestPlayerPosition: async ({ state, rootGetters }, instanceData) => {
       const userInfo = rootGetters['user/userInfo']
-      return new Promise((resolve, reject) => {
-        // Set up callback
-        callbacks['requestPlayerPosition'] = (message) => {
-          const processedMessage = placeInstanceNearPlayer(message, instanceData)
-          resolve(processedMessage)
-        }
-
-        // Request player position
-        state.room.send('request_player_position', { userId: userInfo.sk, connectedWallet: userInfo.connectedWallet })
-
-        // handle timeout
-        setTimeout(() => {
-          if (callbacks['requestPlayerPosition']) {
-            delete callbacks['requestPlayerPosition']
-            reject(new Error('Timed out while requesting player position.'))
+      try {
+        return new Promise((resolve, reject) => {
+          // Set up callback
+          callbacks['requestPlayerPosition'] = (message) => {
+            const processedMessage = placeInstanceNearPlayer(message, instanceData)
+            resolve(processedMessage)
           }
-        }, 5000) // 5 seconds timeout
-      })
+
+          // Request player position
+          state.room.send('request_player_position', { userId: userInfo.sk, connectedWallet: userInfo.connectedWallet })
+
+          // handle timeout
+          setTimeout(() => {
+            if (callbacks['requestPlayerPosition']) {
+              delete callbacks['requestPlayerPosition']
+              reject(new Error('Timed out while requesting player position.'))
+            }
+          }, 5000) // 5 seconds timeout
+        })
+      } catch (error) {
+        return placeInstanceNearPlayer({ positionData: [null, null, null, 8, 1, 8, null, null, null] }, instanceData)
+      }
     },
     getPlayersInScene: async ({ state }) => {
       await state.room.send('scene_get_users')
