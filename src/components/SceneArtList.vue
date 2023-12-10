@@ -119,7 +119,7 @@ export default {
     ...mapGetters({ activePreset: "scene/activePreset", sceneImages: "scene/sceneImages", sceneNfts: "scene/sceneNfts" }),
     sometimesLlama() {
       const randomNumber = Math.floor(Math.random() * 100);
-      if (randomNumber > -10) {
+      if (randomNumber < 10) {
         return "But here's a Virtual Llama to keep you company.";
       } else {
         return "";
