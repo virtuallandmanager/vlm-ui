@@ -1,5 +1,5 @@
-import { updateUserInfo, setupUserInfo } from "../dal/user";
-import store from "..";
+import { updateUserInfo, setupUserInfo } from '../dal/user'
+import store from '..'
 
 export default {
   namespaced: true,
@@ -15,48 +15,48 @@ export default {
     isAdvancedUser: (state) => state.userInfo?.roles?.includes(2),
     isVLMAdmin: (state) => !!state.userInfo?.roles?.filter((role) => role >= 7).length,
     walletAddress: (state) => (before, after) => {
-      const full = state.userInfo.connectedWallet;
+      const full = state.userInfo.connectedWallet
       if (!full) {
-        return "Connection Error";
+        return 'Connection Error'
       }
-      const truncated = full && full.substring(0, before) + "..." + full.substring(full.length - after);
-      return truncated;
+      const truncated = full && full.substring(0, before) + '...' + full.substring(full.length - after)
+      return truncated
     },
     advancedUser: (state) => state.userInfo.roles.includes(2),
   },
   mutations: {
     start: (state) => (state.processing = true),
     stop: (state) => {
-      state.processing = false;
+      state.processing = false
     },
     updateUserInfo(state, userInfo) {
-      state.userInfo = { ...state.userInfo, ...userInfo };
+      state.userInfo = { ...state.userInfo, ...userInfo }
     },
   },
   actions: {
     async updateUserInfo({ commit }, userInfo) {
       try {
-        commit("start");
-        await updateUserInfo();
-        commit("updateUserInfo", userInfo);
-        commit("stop");
+        commit('start')
+        await updateUserInfo()
+        commit('updateUserInfo', userInfo)
+        commit('stop')
       } catch (error) {
-        console.log(error);
+        console.log(error)
       }
     },
     async setupUserInfo({ commit }, { newUserInfo, userOrgInfo }) {
       try {
-        commit("start");
-        commit("updateUserInfo", newUserInfo);
-        commit("organization/updateUserOrgs", [userOrgInfo], { root: true });
-        const { userInfo, userOrgs } = await setupUserInfo();
-        commit("updateUserInfo", userInfo);
-        commit("organization/updateUserOrgs", userOrgs, { root: true });
-        commit("stop");
+        commit('start')
+        commit('updateUserInfo', newUserInfo)
+        commit('organization/updateUserOrgs', [userOrgInfo], { root: true })
+        const { userInfo, userOrgs } = await setupUserInfo()
+        commit('updateUserInfo', userInfo)
+        commit('organization/updateUserOrgs', userOrgs, { root: true })
+        commit('stop')
       } catch (error) {
-        store.dispatch("banner/showError", { message: "Server Error - Could not save user info. Please contact support." }, { root: true })
-        console.log(error);
+        store.dispatch('banner/showError', { message: 'Server Error - Could not save user info. Please contact support.' }, { root: true })
+        console.log(error)
       }
     },
   },
-};
+}

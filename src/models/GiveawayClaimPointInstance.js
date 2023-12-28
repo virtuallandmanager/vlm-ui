@@ -12,24 +12,26 @@ export const MannequinType = {
   MATCH_PLAYER: 2,
 }
 
-export class GiveawayClaimPoint {
+export class GiveawayClaimPointInstance {
   sk = uuidv4()
   customId = null
-  customRendering = false
   name = ''
   enabled = true
-  giveawayId = null
   properties = null
-  instances = []
+  position = { x: 8, y: 0, z: 8 }
+  scale = { x: 1, y: 1, z: 1 }
+  rotation = { x: 0, y: 0, z: 0 }
+  giveawayId = null
 
   constructor(config = {}) {
     this.sk = config?.sk || this.sk
     this.customId = config?.customId || this.customId
-    this.customRendering = config?.customRendering || this.customRendering
     this.name = config?.name || this.name
     this.enabled = config?.enabled || this.enabled
-    this.giveawayId = config?.giveawayId || null
     this.properties = config?.properties || this.properties
-    this.instances = config?.instances || []
+    this.position = config?.position || this.position
+    this.scale = config?.scale || this.scale
+    this.rotation = config?.rotation || this.rotation
+    this.giveawayId = config?.giveawayId || null
   }
 }

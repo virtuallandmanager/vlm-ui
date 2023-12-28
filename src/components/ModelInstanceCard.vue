@@ -7,12 +7,13 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-icon v-bind="attrs" v-on="on" :class="model.enabled && instance.enabled ? '' : 'red--text'">
-                {{ model.enabled && instance.enabled ? "mdi-eye" : "mdi-eye-off" }}
+                {{ model.enabled && instance.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
               </v-icon>
             </template>
             <span>Show/Hide</span>
           </v-tooltip>
-        </v-btn></span>
+        </v-btn></span
+      >
       <div class="d-inline-flex align-center pa-0 ma-0" v-if="editingName">
         <v-text-field hide-details v-model="instance.name" label="Rename Instance"></v-text-field>
         <v-btn small icon @click="editInstanceName()">
@@ -56,15 +57,19 @@
           </v-btn>
         </div>
         <div>
-          <v-btn small icon @click.stop="
-            showDeleteDialog({
-              title: 'Model Instance',
-              element: 'model',
-              elementData: model,
-              instance: true,
-              instanceData: instance,
-            })
-            ">
+          <v-btn
+            small
+            icon
+            @click.stop="
+              showDeleteDialog({
+                title: 'Model Instance',
+                element: 'model',
+                elementData: model,
+                instance: true,
+                instanceData: instance,
+              })
+            "
+          >
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
@@ -75,17 +80,19 @@
         </div>
       </div>
     </div>
-    <quick-view v-if="model?.showDetails" :instance="instance" class="grey px-3"
-      :class="i % 2 ? 'darken-3' : 'darken-4'" />
+    <quick-view v-if="model?.showDetails" :instance="instance" class="grey px-3" :class="i % 2 ? 'darken-3' : 'darken-4'" />
     <div class="d-flex pb-3 flex-row justify-space-around grey" :class="i % 2 ? 'darken-3' : 'darken-4'">
-      <v-btn icon @click.stop="
-        showTransformDialog({
-          element: 'model',
-          elementData: model,
-          instance: true,
-          instanceData: instance,
-        })
-        ">
+      <v-btn
+        icon
+        @click.stop="
+          showTransformDialog({
+            element: 'model',
+            elementData: model,
+            instance: true,
+            instanceData: instance,
+          })
+        "
+      >
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-axis-arrow </v-icon>
@@ -93,15 +100,18 @@
           <span>Transform</span>
         </v-tooltip>
       </v-btn>
-      <v-btn icon @click="
-        showClickEventDialog({
-          title: 'Model Instance',
-          element: 'model',
-          elementData: model,
-          instance: true,
-          instanceData: instance,
-        })
-        ">
+      <v-btn
+        icon
+        @click="
+          showClickEventDialog({
+            title: 'Model Instance',
+            element: 'model',
+            elementData: model,
+            instance: true,
+            instanceData: instance,
+          })
+        "
+      >
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-mouse </v-icon>
@@ -109,15 +119,18 @@
           <span>Click Action</span>
         </v-tooltip>
       </v-btn>
-      <v-btn icon @click.stop="
-        showPropertiesDialog({
-          title: 'Model Instance',
-          element: 'model',
-          elementData: model,
-          instance: true,
-          instanceData: instance,
-        })
-        ">
+      <v-btn
+        icon
+        @click.stop="
+          showPropertiesDialog({
+            title: 'Model Instance',
+            element: 'model',
+            elementData: model,
+            instance: true,
+            instanceData: instance,
+          })
+        "
+      >
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
@@ -130,27 +143,27 @@
 </template>
 
 <script>
-import Vue from "vue";
-import { SceneModelInstance } from "../models/SceneModelInstance";
-import QuickView from "./QuickView.vue";
-import { mapActions } from "vuex";
-import { SceneModel } from "../models/SceneModel";
+import Vue from 'vue'
+import { SceneModelInstance } from '../models/SceneModelInstance'
+import QuickView from './QuickView.vue'
+import { mapActions } from 'vuex'
+import { SceneModel } from '../models/SceneModel'
 
 export default {
   components: { QuickView },
-  name: "ModelInstanceCard",
+  name: 'ModelInstanceCard',
   props: {
     i: Number,
     instance: {
       type: Object,
       default: function () {
-        return new SceneModelInstance();
+        return new SceneModelInstance()
       },
     },
     model: {
       type: Object,
       default: function () {
-        return new SceneModel();
+        return new SceneModel()
       },
     },
   },
@@ -159,120 +172,120 @@ export default {
   }),
   computed: {
     truncatedName() {
-      const modelNameArr = this.model && this.model.name.split("");
-      let noSpacesLength = 0;
-      let truncated = this.model.name;
+      const modelNameArr = this.model && this.model.name.split('')
+      let noSpacesLength = 0
+      let truncated = this.model.name
       modelNameArr.forEach((char) => {
-        if (char !== " ") {
-          noSpacesLength++;
+        if (char !== ' ') {
+          noSpacesLength++
         } else {
-          noSpacesLength = 0;
+          noSpacesLength = 0
         }
 
         if (noSpacesLength > 18) {
-          truncated = truncated.substr(truncated.length - 18);
-          noSpacesLength = 0;
+          truncated = truncated.substr(truncated.length - 18)
+          noSpacesLength = 0
         }
-      });
+      })
 
       if (truncated !== this.model.name) {
-        return `...${truncated}`;
+        return `...${truncated}`
       } else {
-        return this.model.name;
+        return this.model.name
       }
     },
   },
   methods: {
     ...mapActions({
-      updateSceneElement: "scene/updateSceneElement",
-      deleteSceneElement: "scene/deleteSceneElement",
-      showTransformDialog: "dialog/showTransformDialog",
-      showPropertiesDialog: "dialog/showPropertiesDialog",
-      showClickEventDialog: "dialog/showClickEventDialog",
-      showDeleteDialog: "dialog/showDeleteDialog",
+      updateSceneElement: 'scene/updateSceneElement',
+      deleteSceneElement: 'scene/deleteSceneElement',
+      showTransformDialog: 'dialog/showTransformDialog',
+      showPropertiesDialog: 'dialog/showPropertiesDialog',
+      showClickEventDialog: 'dialog/showClickEventDialog',
+      showDeleteDialog: 'dialog/showDeleteDialog',
     }),
     showRenameField() {
-      this.editingName = true;
-      this.originalName = this.instance.name;
+      this.editingName = true
+      this.originalName = this.instance.name
     },
     removeModelInstance() {
-      const instanceData = { ...this.model.instances[this.i] };
-      Vue.delete(this.model.instances, this.i);
+      const instanceData = { ...this.model.instances[this.i] }
+      Vue.delete(this.model.instances, this.i)
 
       this.deleteSceneElement({
-        element: "model",
+        element: 'model',
         instance: true,
         id: instanceData.id,
         materialId: this.model.id,
         elementData: this.model,
         instanceData,
-      });
+      })
     },
     cancelEditInstanceName() {
-      this.editingName = false;
-      this.instance.name = this.originalName;
+      this.editingName = false
+      this.instance.name = this.originalName
     },
     editInstanceName() {
       if (!this.instance.name) {
-        return this.cancelEditInstanceName();
+        return this.cancelEditInstanceName()
       }
-      this.editingName = false;
+      this.editingName = false
       this.updateSceneElement({
-        element: "model",
+        element: 'model',
         instance: true,
-        property: "name",
+        property: 'name',
         id: this.instance.sk,
         elementData: this.model,
         instanceData: this.instance,
-      });
+      })
     },
     toggleVisibility() {
-      Vue.set(this.instance, "enabled", !this.instance.enabled);
+      Vue.set(this.instance, 'enabled', !this.instance.enabled)
       this.updateSceneElement({
-        element: "model",
+        element: 'model',
         instance: true,
-        property: "enabled",
+        property: 'enabled',
         id: this.instance.sk,
         elementData: this.model,
         instanceData: this.instance,
-      });
+      })
     },
     updateInstanceClickEvent() {
       this.updateSceneElement({
-        element: "model",
+        element: 'model',
         instance: true,
-        property: "clickEvent",
+        property: 'clickEvent',
         id: this.instance.sk,
         elementData: this.model,
         instanceData: this.instance,
-      });
+      })
     },
     updateInstanceProperties() {
       this.updateSceneElement({
-        element: "model",
+        element: 'model',
         instance: true,
-        property: "properties",
+        property: 'properties',
         id: this.instance.sk,
         elementData: this.model,
         instanceData: this.instance,
-      });
+      })
     },
     updateInstanceTransform() {
       this.updateSceneElement({
-        element: "model",
+        element: 'model',
         instance: true,
-        property: "transform",
+        property: 'transform',
         custom: this.instance.customRendering,
         id: this.instance.sk,
         elementData: this.model,
         instanceData: this.instance,
-      });
+      })
     },
     addInstance(instance) {
-      this.$emit("addInstance", instance);
+      this.$emit('addInstance', instance)
     },
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>

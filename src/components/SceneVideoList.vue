@@ -29,33 +29,33 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import SceneVideoCard from "./SceneVideoCard";
-import ContentSubPanel from "./ContentSubPanel";
-import { SceneVideo } from "../models/SceneVideo";
+import { mapActions, mapGetters } from 'vuex'
+import SceneVideoCard from './SceneVideoCard'
+import ContentSubPanel from './ContentSubPanel'
+import { SceneVideo } from '../models/SceneVideo'
 
 export default {
   components: {
     ContentSubPanel,
     SceneVideoCard,
   },
-  name: "SceneVideoList",
+  name: 'SceneVideoList',
   computed: {
     ...mapGetters({
-      videos: "scene/sceneVideos",
-      processing: "scene/processing",
+      videos: 'scene/sceneVideos',
+      processing: 'scene/processing',
     }),
   },
   methods: {
     ...mapActions({
-      createSceneElement: "scene/createSceneElement",
-      updateSceneElement: "scene/updateSceneElement",
-      deleteSceneElement: "scene/deleteSceneElement",
+      createSceneElement: 'scene/createSceneElement',
+      updateSceneElement: 'scene/updateSceneElement',
+      deleteSceneElement: 'scene/deleteSceneElement',
     }),
     addVideoScreen() {
-      const elementData = new SceneVideo({ name: `Video Source ${this.videos.length + 1}` });
-      this.createSceneElement({ element: "video", elementData });
+      const elementData = new SceneVideo({ name: `Video Source ${this.videos.length + 1}` })
+      this.createSceneElement({ element: 'video', elementData })
     },
   },
-};
+}
 </script>

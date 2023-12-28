@@ -21,7 +21,14 @@
       <left-nav v-if="connected && showNav && !unregistered && $route.path !== '/'" />
       <div class="bg">
         <router-view />
-        <v-app-bar fixed right color="transparent" align-right elevation="0" v-if="!connected && !$vuetify.breakpoint.mdAndDown || $route.path === '/'">
+        <v-app-bar
+          fixed
+          right
+          color="transparent"
+          align-right
+          elevation="0"
+          v-if="(!connected && !$vuetify.breakpoint.mdAndDown) || $route.path === '/'"
+        >
           <v-btn
             v-if="!connected && !signing"
             color="primary"

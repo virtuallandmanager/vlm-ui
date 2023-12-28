@@ -3,7 +3,37 @@ import store from '../../store'
 import router from '../../router'
 
 export const callbacks = {}
-const placeInstanceNearPlayer = (message, instanceData) => {
+
+function preventEdgeOverflow(position, scale, rotation) {
+  const roundedUpX = Math.ceil(position.x / 16) * 16,
+    roundedDownX = Math.floor(position.x / 16) * 16,
+    roundedUpZ = Math.ceil(position.z / 16) * 16,
+    roundedDownZ = Math.floor(position.z / 16) * 16
+
+  if (position.x > roundedUpX) {
+    position.x = roundedUpX
+  } else if (position.x < roundedDownX) {
+    position.x = roundedDownX
+  }
+
+  if (position.z > roundedUpZ) {
+    position.z = roundedUpZ
+  } else if (position.z < roundedDownZ) {
+    position.z = roundedDownZ
+  }
+
+  if (rotation.y == 0 && position.x + scale.x / 2 > roundedUpX) {
+    position.x = roundedUpX - scale.x / 2
+  } else if (rotation.y == 90 && position.z + scale.x / 2 > roundedUpZ) {
+    position.z = roundedUpZ - scale.x / 2
+  } else if (rotation.y == 0 && position.x - scale.x / 2 < roundedDownX) {
+    position.x = roundedDownX + scale.x / 2
+  } else if (rotation.y == 90 && position.z - scale.x / 2 < roundedDownZ) {
+    position.z = roundedDownZ + scale.x / 2
+  }
+}
+
+const placeInstanceNearPlayer = (message, instanceData, element) => {
   const positionData = message?.positionData,
     xRotation = positionData[5],
     yRotation = positionData[4],
@@ -27,11 +57,12 @@ const placeInstanceNearPlayer = (message, instanceData) => {
     height = positionData[2] + 1
   }
   console.log(message)
+
   instanceData.position.x = positionData[1] || 8
   instanceData.position.y = height || 1
   instanceData.position.z = positionData[3] || 8
 
-  if (direction == 'north') {
+  if (direction == 'north' && instanceData.position.z + 1 > Math.ceil(positionData[3])) {
     instanceData.position.z += 1
   } else if (direction == 'east') {
     instanceData.position.x += 1
@@ -45,12 +76,17 @@ const placeInstanceNearPlayer = (message, instanceData) => {
   if (!instanceData.position.x) {
     instanceData.position.x = 8
   }
-  if (!instanceData.position.y) {
+  if (!instanceData.position.y && element != 'claimpoint') {
     instanceData.position.y = 1
+  } else if (instanceData.position.y < 1 && element == 'claimpoint') {
+    instanceData.position.y = 0
   }
   if (!instanceData.position.z) {
     instanceData.position.z = 8
   }
+
+  preventEdgeOverflow(instanceData.position, instanceData.scale, instanceData.rotation)
+
   return message
 }
 export default {
@@ -150,7 +186,10 @@ export default {
         activePreset = state.activeScene?.presets?.find((preset) => preset.sk == activePresetId)
       return activePreset?.claimPoints || []
     },
-    sceneList: (state) => Object.values(state.userSceneCache),
+    sceneList: (state, getters, rootState, rootGetters) =>
+      !rootGetters['user/userInfo']?.hideDemoScene
+        ? Object.values(state.userSceneCache)
+        : Object.values(state.userSceneCache).filter((scene) => scene.sk != '00000000-0000-0000-0000-000000000000'),
     sceneListSelect: (state) => Object.values(state.userSceneCache).map((scene) => ({ text: scene.name, value: scene.sk })),
     connected: (state) => {
       return state.room?.state
@@ -173,16 +212,6 @@ export default {
     hasDeployedDCLScene: (state) => {
       const findDCLLocation = (scene) => scene.locations.length && scene.locations.find((location) => location.world == 'decentraland')
       return !!Object.keys(state.userSceneCache).find((sceneKey) => findDCLLocation(state.userSceneCache[sceneKey]))
-    },
-    hasV1DclFeatures: (state, getters) => {
-      const locationsWithDclIntegrationData = getters.activeScene?.locations?.filter(
-        (location) => location.world == 'decentraland' && location.integrationData
-      )
-      // all locations have integration data and locations.integrationData.packageVersion >= 0.1.0
-      return locationsWithDclIntegrationData?.every((location) => {
-        const packageVersion = location.integrationData.packageVersion.split('.')
-        return packageVersion[0] >= 0 && packageVersion[1] >= 1
-      })
     },
   },
   mutations: {
@@ -300,8 +329,8 @@ export default {
     // SCENE ELEMENTS ARE THINGS SHOWN IN THE SCENE, BUT THEY ARE STORED IN SCENE PRESETS //
     createSceneElement: async ({ state, dispatch }, { property, element, instance, id, setting, elementData, instanceData, settingData }) => {
       const scenePreset = state.activeScene.presets.find((preset) => preset.sk == state.activeScene.scenePreset)
-      if (instance) {
-        await dispatch('requestPlayerPosition', instanceData)
+      if (instance || element == 'claimpoint') {
+        await dispatch('requestPlayerPosition', instanceData, element)
       }
       await state.room.send('scene_preset_update', {
         action: 'create',
@@ -330,6 +359,34 @@ export default {
         instanceData,
         settingData,
         scenePreset,
+      })
+    },
+    directUpdateSceneElement: async ({ state }, { property, element, instance, id, setting, elementData, instanceData, settingData }) => {
+      const scenePreset = state.activeScene.presets.find((preset) => preset.sk == state.activeScene.scenePreset)
+      await state.room.send('scene_preset_update', {
+        action: 'update',
+        property,
+        id,
+        element,
+        instance,
+        setting,
+        elementData,
+        instanceData,
+        settingData,
+        scenePreset,
+        skipDb: true,
+      })
+    },
+    updateAllWidgets: async ({ state }, { property, element, id, setting, allElementData }) => {
+      const scenePreset = state.activeScene.presets.find((preset) => preset.sk == state.activeScene.scenePreset)
+      await state.room.send('scene_preset_update', {
+        action: 'updateAll',
+        property,
+        id,
+        element,
+        setting,
+        allElementData,
+        scenePreset,
         stage: 'pre',
       })
     },
@@ -349,13 +406,13 @@ export default {
         stage: 'pre',
       })
     },
-    requestPlayerPosition: async ({ state, rootGetters }, instanceData) => {
+    requestPlayerPosition: async ({ state, rootGetters }, instanceData, element) => {
       const userInfo = rootGetters['user/userInfo']
       try {
         return new Promise((resolve, reject) => {
           // Set up callback
           callbacks['requestPlayerPosition'] = (message) => {
-            const processedMessage = placeInstanceNearPlayer(message, instanceData)
+            const processedMessage = placeInstanceNearPlayer(message, instanceData, element)
             resolve(processedMessage)
           }
 
@@ -367,11 +424,12 @@ export default {
             if (callbacks['requestPlayerPosition']) {
               delete callbacks['requestPlayerPosition']
               reject(new Error('Timed out while requesting player position.'))
+              return placeInstanceNearPlayer({ positionData: [null, 8, 1, 8, null, null, null, null, null, null, null] }, instanceData, element)
             }
           }, 5000) // 5 seconds timeout
         })
       } catch (error) {
-        return placeInstanceNearPlayer({ positionData: [null, null, null, 8, 1, 8, null, null, null] }, instanceData)
+        return placeInstanceNearPlayer({ positionData: [null, 8, 1, 8, null, null, null, null, null, null, null] }, instanceData, element)
       }
     },
     getPlayersInScene: async ({ state }) => {

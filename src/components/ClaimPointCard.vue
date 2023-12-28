@@ -7,8 +7,7 @@
         </div>
         <v-tooltip v-if="!editingName" top>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn v-bind="attrs" v-on="on" class="d-flex-grow-0" icon small dark @click="toggleEditMode"
-              v-if="!editingName">
+            <v-btn v-bind="attrs" v-on="on" class="d-flex-grow-0" icon small dark @click="toggleEditMode" v-if="!editingName">
               <v-icon small>mdi-rename</v-icon>
             </v-btn>
           </template>
@@ -16,9 +15,19 @@
         </v-tooltip>
 
         <div class="text-h5 flex-grow-1" v-if="editingName">
-          <v-text-field autofocus outlined color="white" label="Claim Point Name" v-model="claimPoint.name"
-            hide-details="auto" append-outer-icon="mdi-content-save" @click:append-outer="toggleEditMode"
-            @blur="toggleEditMode" dense @change="editClaimPointName()"></v-text-field>
+          <v-text-field
+            autofocus
+            outlined
+            color="white"
+            label="Claim Point Name"
+            v-model="claimPoint.name"
+            hide-details="auto"
+            append-outer-icon="mdi-content-save"
+            @click:append-outer="toggleEditMode"
+            @blur="toggleEditMode"
+            dense
+            @change="editClaimPointName()"
+          ></v-text-field>
         </div>
       </div>
       <div class="d-flex ma-0 pa-3 align-center black">
@@ -27,19 +36,25 @@
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-icon v-bind="attrs" v-on="on" :class="claimPoint.enabled ? '' : 'red--text'">
-                  {{ claimPoint.enabled || claimPoint.customRendering ? "mdi-eye" : "mdi-eye-off" }}
+                  {{ claimPoint.enabled || claimPoint.customRendering ? 'mdi-eye' : 'mdi-eye-off' }}
                 </v-icon>
               </template>
               <span>Show/Hide</span>
             </v-tooltip>
-          </v-btn></span>
+          </v-btn></span
+        >
         <span class="grey--text flex-shrink-1 flex-grow-0 pr-1">
-          <v-btn icon @click.stop="
-            showTransformDialog({
-              element: 'claimpoint',
-              elementData: claimPoint,
-            })
-            ">
+          <v-btn
+            icon
+            @click.stop="
+              showTransformDialog({
+                element: 'claimpoint',
+                elementData: claimPoint,
+                instance: true,
+                instanceData: instance,
+              })
+            "
+          >
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-icon v-bind="attrs" v-on="on"> mdi-axis-arrow </v-icon>
@@ -50,13 +65,16 @@
         </span>
         <v-spacer></v-spacer>
         <div>
-          <v-btn icon @click.stop="
-            showDeleteDialog({
-              title: 'giveaway claim point',
-              element: 'claimpoint',
-              elementData: claimPoint,
-            })
-            ">
+          <v-btn
+            icon
+            @click.stop="
+              showDeleteDialog({
+                title: 'giveaway claim point',
+                element: 'claimpoint',
+                elementData: claimPoint,
+              })
+            "
+          >
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-icon v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
@@ -67,26 +85,53 @@
         </div>
       </div>
       <div class="d-flex flex-column px-4 align-center">
-        <v-switch v-model="properties.enableKiosk" label="Show Kiosk" class="ml-4 flex-grow-1"
-          @change="updateClaimPointProperties"></v-switch>
-        <v-btn v-if="properties.enableKiosk" outlined color="secondary" @click="showColorPickerDialog">Edit Kiosk
-          Design</v-btn>
+        <v-switch v-model="properties.enableKiosk" label="Show Kiosk" class="ml-4 flex-grow-1" @change="updateClaimPointProperties"></v-switch>
+        <v-btn v-if="properties.enableKiosk" outlined color="secondary" @click="showColorPickerDialog">Edit Kiosk Design</v-btn>
       </div>
       <div class="d-flex px-4">
-        <v-select v-model="properties.type" :items="claimPointTypes" label="Claim Point Type" outlined hide-details
-          class="mt-4" @change="updateClaimPointProperties"></v-select>
+        <v-select
+          v-model="properties.type"
+          :items="claimPointTypes"
+          label="Claim Point Type"
+          outlined
+          hide-details
+          class="mt-4"
+          @change="updateClaimPointProperties"
+        ></v-select>
       </div>
       <div class="px-4">
-        <v-text-field v-if="properties.type == 1" v-model="properties.imgSrc" label="Image URL" outlined hide-details
-          class="mt-4" @change="updateClaimPointProperties"></v-text-field>
-        <v-text-field v-if="properties.type == 2" v-model="properties.modelSrc" label="Model File Path" outlined
-          hide-details class="mt-4" @change="updateClaimPointProperties"></v-text-field>
-        <v-select v-if="properties.type == 3" :items="mannequinTypes" v-model="properties.mannequinType"
-          label="Mannequin Body Type" outlined hide-details class="mt-4" @change="updateClaimPointProperties"></v-select>
+        <v-text-field
+          v-if="properties.type == 1"
+          v-model="properties.imgSrc"
+          label="Image URL"
+          outlined
+          hide-details
+          class="mt-4"
+          @change="updateClaimPointProperties"
+        ></v-text-field>
+        <v-text-field
+          v-if="properties.type == 2"
+          v-model="properties.modelSrc"
+          label="Model File Path"
+          outlined
+          hide-details
+          class="mt-4"
+          @change="updateClaimPointProperties"
+        ></v-text-field>
+        <v-select
+          v-if="properties.type == 3"
+          :items="mannequinTypes"
+          v-model="properties.mannequinType"
+          label="Mannequin Body Type"
+          outlined
+          hide-details
+          class="mt-4"
+          @change="updateClaimPointProperties"
+        ></v-select>
       </div>
       <v-container>
         <v-row>
-          <v-col :sm="itemColSize" v-for="(item) in giveaway?.items" :key="item.sk">
+          <v-col :sm="itemColSize" v-for="item in giveaway?.items" :key="item.sk">
             <v-img :src="item.imageSrc"></v-img>
             <v-card class="text-caption text-center black pa-1">
               <div class="text-caption">{{ item.name }}</div>
@@ -104,31 +149,66 @@
         <v-card-text scrollable>
           <v-container>
             <v-row>
-              <v-col sm="6" class="d-flex">
+              <v-col sm="12">
+                <div class="text-h6">Customizations</div>
+                <v-text-field
+                  v-model="properties.kioskImgSrc"
+                  label="Kiosk Image"
+                  placeholder="Image Path/URL"
+                  persistent-placeholder
+                  outlined
+                  hide-details
+                  class="mt-4"
+                ></v-text-field>
+                <v-slider
+                  v-model="properties.itemYOffset"
+                  label="Item Height Offset"
+                  min="-3"
+                  max="3"
+                  step="0.01"
+                  hide-details
+                  class="mt-4"
+                  @change="updateClaimPointProperties"
+                ></v-slider>
+                <v-slider
+                  v-model="properties.itemScale"
+                  label="Item Scale"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  hide-details
+                  class="mt-4"
+                  @change="updateClaimPointProperties"
+                ></v-slider>
+                <div class="d-flex justify-start">
+                  <v-switch v-model="properties.enableButton" label="Has A Button" @change="updateClaimPointProperties" class="pr-4"></v-switch>
+                  <v-switch v-model="properties.enableSpin" label="Spin Item" @change="updateClaimPointProperties"></v-switch>
+                </div>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col sm="6" class="d-flex justify-space-around">
                 <div>
-                  <div class="text-h6">Color 1</div>
+                  <div class="text-h6">Base Color</div>
                   <v-color-picker v-model="properties.color1" dot-size="25" hide-mode-switch mode="rgba"></v-color-picker>
                 </div>
               </v-col>
-              <v-col class="d-flex">
+              <v-col class="d-flex justify-space-around">
                 <div>
-                  <div class="text-h6">Color 2</div>
+                  <div class="text-h6">Trim Color</div>
                   <v-color-picker v-model="properties.color2" dot-size="25" hide-mode-switch mode="rgba"></v-color-picker>
                 </div>
               </v-col>
-              <v-col sm="6">
-                <div class="text-h6">Customizations</div>
-                <v-text-field v-model="properties.kioskImgSrc" label="Kiosk Image" placeholder="Image Path/URL"
-                  persistent-placeholder outlined hide-details class="mt-4"></v-text-field>
-                <v-slider v-model="properties.itemYOffset" label="Item Height Offset" min="-3" max="3" step="0.01"
-                  hide-details class="mt-4" @change="updateClaimPointProperties"></v-slider>
-                  <v-slider v-model="properties.itemScale" label="Item Scale" min="0" max="5" step="0.1"
-                  hide-details class="mt-4" @change="updateClaimPointProperties"></v-slider>
-              </v-col>
-              <v-col sm="6" class="d-flex">
+              <v-col sm="6" class="d-flex justify-space-around">
                 <div>
                   <div class="text-h6">Glass Color</div>
                   <v-color-picker v-model="properties.color3" dot-size="25" hide-mode-switch mode="rgba"></v-color-picker>
+                </div>
+              </v-col>
+              <v-col sm="6" class="d-flex justify-space-around" v-if="properties.enableButton">
+                <div>
+                  <div class="text-h6">Button Color</div>
+                  <v-color-picker v-model="properties.color4" dot-size="25" hide-mode-switch mode="rgba"></v-color-picker>
                 </div>
               </v-col>
             </v-row>
@@ -144,147 +224,153 @@
 </template>
 
 <script>
-import Vue from "vue";
-import { mapActions, mapGetters } from "vuex";
-
+import { mapActions, mapGetters } from 'vuex'
+import Vue from 'vue'
 export default {
-  name: "ClaimPointCard",
+  name: 'ClaimPointCard',
   props: {
-    claimPoint: Object
+    claimPoint: Object,
   },
   data: () => ({
     editingName: false,
     colorPickerDialog: false,
     claimPointTypes: [
       // { text: "Marketplace Image", value: 0 },
-      { text: "Image", value: 1 },
-      { text: "3D Model", value: 2 },
+      { text: 'Image', value: 1 },
+      { text: '3D Model', value: 2 },
       // { text: "Mannequin", value: 3 }
     ],
     mannequinTypes: [
-      { text: "Male", value: 0 },
-      { text: "Female", value: 1 },
-      { text: "Match Player", value: 2 },
+      { text: 'Male', value: 0 },
+      { text: 'Female', value: 1 },
+      { text: 'Match Player', value: 2 },
     ],
     color1: { r: 0, g: 0, b: 0, a: 1 },
     color2: { r: 0, g: 0, b: 0, a: 1 },
     color3: { r: 0, g: 0, b: 0, a: 1 },
+    color4: { r: 0, g: 0, b: 0, a: 1 },
   }),
   computed: {
     ...mapGetters({
-      activeScene: "scene/activeScene",
-      giveaways: "giveaway/giveawayList",
-      claimPoints: "scene/sceneClaimPoints",
+      activeScene: 'scene/activeScene',
+      giveaways: 'giveaway/giveawayList',
+      claimPoints: 'scene/sceneClaimPoints',
     }),
     giveaway() {
-      return this.giveaways.find((g) => g.sk === this.claimPoint.giveawayId);
+      return this.giveaways.find((g) => g.sk === this.claimPoint.giveawayId)
+    },
+    instance() {
+      return this.claimPoint.instances[0]
     },
     properties() {
-      return this.claimPoint?.properties;
+      return this.instance.properties
     },
     kioskItemPos() {
-      return { x: 0, y: this.properties.itemYOffset || 0, z: 0 };
+      return { x: 0, y: this.properties.itemYOffset || 0, z: 0 }
     },
     truncatedName() {
-      const claimPointNameArr = this.claimPoint && this.claimPoint?.name?.split("");
-      let noSpacesLength = 0;
-      let truncated = this.claimPoint?.name;
+      const claimPointNameArr = this.claimPoint && this.claimPoint?.name?.split('')
+      let noSpacesLength = 0
+      let truncated = this.claimPoint?.name
       claimPointNameArr.forEach((char) => {
-        if (char !== " ") {
-          noSpacesLength++;
+        if (char !== ' ') {
+          noSpacesLength++
         } else {
-          noSpacesLength = 0;
+          noSpacesLength = 0
         }
 
         if (noSpacesLength > 18) {
-          truncated = truncated.substr(truncated.length - 18);
-          noSpacesLength = 0;
+          truncated = truncated.substr(truncated.length - 18)
+          noSpacesLength = 0
         }
-      });
+      })
 
-      if (truncated !== this.claimPoint.name) {
-        return `...${truncated}`;
+      if (truncated !== this.instance.name) {
+        return `...${truncated}`
       } else {
-        return this.claimPoint.name;
+        return this.instance.name
       }
     },
     itemColSize() {
-      const numItems = this.giveaway?.items.length;
+      const numItems = this.giveaway?.items.length
       if (numItems <= 2) {
-        return 6;
+        return 6
       } else if (numItems <= 4) {
-        return 3;
+        return 3
       } else {
-        return 2;
+        return 2
       }
     },
   },
   methods: {
     ...mapActions({
-      updateSceneElement: "scene/updateSceneElement",
-      deleteSceneElement: "scene/deleteSceneElement",
-      showTransformDialog: "dialog/showTransformDialog",
-      showPropertiesDialog: "dialog/showPropertiesDialog",
-      showClickEventDialog: "dialog/showClickEventDialog",
-      showDeleteDialog: "dialog/showDeleteDialog",
+      updateSceneElement: 'scene/updateSceneElement',
+      deleteSceneElement: 'scene/deleteSceneElement',
+      showTransformDialog: 'dialog/showTransformDialog',
+      showPropertiesDialog: 'dialog/showPropertiesDialog',
+      showClickEventDialog: 'dialog/showClickEventDialog',
+      showDeleteDialog: 'dialog/showDeleteDialog',
     }),
     changeKioskItemPos() {
-      this.properties.itemYOffset = this.kioskItemPos.y;
-      this.updateClaimPointProperties();
+      this.properties.itemYOffset = this.kioskItemPos.y
+      this.updateClaimPointProperties()
     },
     toggleEditMode() {
-      this.editingName = true;
+      this.editingName = true
     },
     showColorPickerDialog() {
-      this.colorPickerDialog = true;
+      this.colorPickerDialog = true
     },
     showRenameField() {
-      this.editingName = true;
-      this.originalName = this.claimPoint.name;
+      this.editingName = true
+      this.originalName = this.claimPoint.name
     },
     cancelEditClaimPointName() {
-      this.editingName = false;
-      this.claimPoint.name = this.originalName;
+      this.editingName = false
+      this.claimPoint.name = this.originalName
     },
     editClaimPointName() {
       if (!this.claimPoint.name) {
-        return this.cancelEditClaimPointName();
+        return this.cancelEditClaimPointName()
       }
-      this.editingName = false;
+      this.editingName = false
       this.updateSceneElement({
-        element: "claimpoint",
-        property: "name",
+        element: 'claimpoint',
+        property: 'name',
         id: this.claimPoint.sk,
         elementData: this.claimPoint,
-      });
+      })
     },
     toggleVisibility() {
-      this.claimPoint.enabled = !this.claimPoint.enabled;
+      this.claimPoint.enabled = !this.claimPoint.enabled
       this.updateSceneElement({
-        element: "claimpoint",
-        property: "enabled",
+        element: 'claimpoint',
+        property: 'enabled',
         id: this.claimPoint.sk,
         elementData: this.claimPoint,
-      });
+      })
     },
     saveKiosk() {
-      this.updateClaimPointProperties();
-      this.colorPickerDialog = false;
+      this.updateClaimPointProperties()
+      this.colorPickerDialog = false
     },
     updateClaimPointProperties() {
-      Vue.set(this.claimPoint, "properties", this.properties);
+      Vue.set(this.claimPoint, 'properties', this.properties)
+      Vue.set(this.instance, 'properties', this.properties)
       this.updateSceneElement({
-        element: "claimpoint",
-        property: "properties",
+        element: 'claimpoint',
+        property: 'properties',
         id: this.claimPoint.sk,
         elementData: this.claimPoint,
-      });
+        instance: true,
+        instanceData: this.instance,
+      })
     },
     addClaimPoint(claimPoint) {
-      this.$emit("addClaimPoint", claimPoint);
+      this.$emit('addClaimPoint', claimPoint)
     },
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>

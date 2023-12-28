@@ -32,25 +32,25 @@
 
 <script>
 export default {
-  name: "EditSelectDialog",
+  name: 'EditSelectDialog',
   data: () => ({
     originalSelections: [],
   }),
   props: {
-    title: { type: String, default: "Edit Selections" },
+    title: { type: String, default: 'Edit Selections' },
     selections: Array,
     value: Boolean,
   },
   mounted() {
-    this.originalSelections = this.selections;
+    this.originalSelections = this.selections
   },
   computed: {
     show: {
       get() {
-        return this.value;
+        return this.value
       },
       set(value) {
-        this.$emit("input", value);
+        this.$emit('input', value)
       },
     },
   },
@@ -59,20 +59,20 @@ export default {
       this.selections.push({
         text: `Option ${this.selections.length}`,
         value: `option-${this.selections.length}`,
-      });
+      })
     },
     removeSelection(i) {
-      this.selections.splice(i, 1);
+      this.selections.splice(i, 1)
     },
     save() {
-      this.show = false;
-      this.$emit("onChange");
+      this.show = false
+      this.$emit('onChange')
     },
     revert() {
-      this.selections = this.originalSelections;
-      this.show = false;
-      this.$emit("onChange");
+      this.selections = this.originalSelections
+      this.show = false
+      this.$emit('onChange')
     },
   },
-};
+}
 </script>

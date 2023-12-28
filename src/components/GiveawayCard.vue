@@ -1,13 +1,14 @@
 <template>
   <v-card class="grey darken-3" elevation="2">
-    <v-img :src="giveaway?.imageSrc || giveawayImgPlaceholder" lazy-src="@/assets/placeholder.png" max-height="250"
-      class="text-right">
+    <v-img :src="giveaway?.imageSrc || giveawayImgPlaceholder" lazy-src="@/assets/placeholder.png" max-height="250" class="text-right">
       <div class="d-flex">
-        <v-chip class="orange ma-4 black--text" v-if="paused"><span><v-icon class="black--text">mdi-pause</v-icon>
-            Paused</span></v-chip>
+        <v-chip class="orange ma-4 black--text" v-if="paused"
+          ><span><v-icon class="black--text">mdi-pause</v-icon> Paused</span></v-chip
+        >
         <v-spacer></v-spacer>
-        <v-chip v-if="giveaway?.allocatedCredits" class="grey ma-4 black--text"><span>{{ giveaway?.allocatedCredits }}
-            Credits</span></v-chip>
+        <v-chip v-if="giveaway?.allocatedCredits" class="grey ma-4 black--text"
+          ><span>{{ giveaway?.allocatedCredits }} Credits</span></v-chip
+        >
       </div>
       <template v-slot:placeholder>
         <v-row class="d-flex fill-height ma-0 align-center justify-center">
@@ -20,7 +21,7 @@
         <v-row>
           <v-col>
             <div class="text-h5 text-left text-truncate">
-              {{ giveaway?.name || "Loading..." }}
+              {{ giveaway?.name || 'Loading...' }}
             </div>
             <div class="text-subtitle-2 font-weight-medium text-right mb-2"></div>
             <div class="text-subtitle-2 font-weight-light text-left">
@@ -35,53 +36,53 @@
 </template>
 
 <script>
-import imgPlaceholder from "@/assets/placeholder.png";
-import { DateTime } from "luxon";
+import imgPlaceholder from '@/assets/placeholder.png'
+import { DateTime } from 'luxon'
 
 export default {
-  name: "GiveawayCard",
+  name: 'GiveawayCard',
 
-  data: () => ({ imagePath: "../assets/" }),
+  data: () => ({ imagePath: '../assets/' }),
   props: {
     giveaway: Object,
   },
   computed: {
     giveawayImgPlaceholder() {
-      return imgPlaceholder;
+      return imgPlaceholder
     },
     startTime() {
       if (!this.giveaway?.startTime) {
-        return "";
+        return ''
       }
-      return DateTime.fromMillis(this.giveaway.startTime).toLocaleString();
+      return DateTime.fromMillis(this.giveaway.startTime).toLocaleString()
     },
     startTimeString() {
       if (!this.giveaway?.startTime) {
-        return "";
+        return ''
       }
-      return DateTime.fromMillis(this.giveaway.startTime).toRelative();
+      return DateTime.fromMillis(this.giveaway.startTime).toRelative()
     },
     endTime() {
       if (!this.giveaway?.endTime) {
-        return "";
+        return ''
       }
-      return DateTime.fromMillis(this.giveaway.endTime).toLocaleString();
+      return DateTime.fromMillis(this.giveaway.endTime).toLocaleString()
     },
     endTimeString() {
       if (!this.giveaway?.endTime) {
-        return "";
+        return ''
       }
-      return DateTime.fromMillis(this.giveaway.endTime).toRelative();
+      return DateTime.fromMillis(this.giveaway.endTime).toRelative()
     },
     paused() {
-      return this.giveaway?.paused;
+      return this.giveaway?.paused
     },
     future() {
-      return DateTime.now().toMillis() < this.giveaway.startTime;
+      return DateTime.now().toMillis() < this.giveaway.startTime
     },
     past() {
-      return DateTime.now().toMillis() > this.giveaway.endTime;
+      return DateTime.now().toMillis() > this.giveaway.endTime
     },
   },
-};
+}
 </script>

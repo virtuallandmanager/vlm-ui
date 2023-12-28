@@ -1,9 +1,9 @@
-import Vue from "vue";
-import Vuetify from "vuetify/lib/framework";
-import dark from "../../themes/vlm.js"
-Vue.use(Vuetify);
+import Vue from 'vue'
+import Vuetify from 'vuetify/lib/framework'
+import dark from '../../themes/vlm.js'
+Vue.use(Vuetify)
 
-import colors from "vuetify/lib/util/colors";
+import colors from 'vuetify/lib/util/colors'
 
 export default new Vuetify({
   theme: {
@@ -15,7 +15,7 @@ export default new Vuetify({
         accent: colors.shades.black,
         error: colors.red.accent3,
       },
-      dark
+      dark,
     },
   },
-});
+})

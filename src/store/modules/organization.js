@@ -12,17 +12,17 @@ export default {
   mutations: {
     start: (state) => (state.processing = true),
     retry: (state) => {
-      state.retries++;
+      state.retries++
     },
     stop: (state, errorMessage) => {
-      state.signing = false;
-      state.processing = false;
-      state.loginError = errorMessage;
-      state.retries = 0;
+      state.signing = false
+      state.processing = false
+      state.loginError = errorMessage
+      state.retries = 0
     },
     updateUserOrgs(state, userOrgs) {
-      state.userOrgs = userOrgs;
+      state.userOrgs = userOrgs
     },
   },
   actions: {},
-};
+}

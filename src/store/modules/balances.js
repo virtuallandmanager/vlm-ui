@@ -1,4 +1,4 @@
-import { getUserBalances, claimPromotion, getPromoBalances, allocateBalance, updateUserBalance } from "../dal/balances";
+import { getUserBalances, claimPromotion, getPromoBalances, allocateBalance, updateUserBalance } from '../dal/balances'
 
 export default {
   namespaced: true,
@@ -19,120 +19,115 @@ export default {
   },
   mutations: {
     LOAD_USER_BALANCES_START(state) {
-      state.loadingUserBalances = true;
+      state.loadingUserBalances = true
     },
     LOAD_USER_BALANCES_STOP(state) {
-      state.loadingUserBalances = false;
+      state.loadingUserBalances = false
     },
     UPDATE_USER_BALANCES_START(state) {
-      state.updatingUserBalances = true;
+      state.updatingUserBalances = true
     },
     UPDATE_USER_BALANCES_STOP(state) {
-      state.updatingUserBalances = false;
+      state.updatingUserBalances = false
     },
     LOAD_ORG_BALANCES_START(state) {
-      state.loadingOrgBalances = true;
+      state.loadingOrgBalances = true
     },
     LOAD_ORG_BALANCES_STOP(state) {
-      state.loadingOrgBalances = false;
+      state.loadingOrgBalances = false
     },
     UPDATE_ORG_BALANCES_START(state) {
-      state.updatingOrgBalances = true;
+      state.updatingOrgBalances = true
     },
     UPDATE_ORG_BALANCES_STOP(state) {
-      state.updatingOrgBalances = false;
+      state.updatingOrgBalances = false
     },
     STORE_USER_BALANCES(state, userBalances) {
       Object.keys(userBalances).forEach((balanceType) => {
-        state.userBalances[balanceType] = userBalances[balanceType];
-      });
-      state.userBalances = { ...state.userBalances };
+        state.userBalances[balanceType] = userBalances[balanceType]
+      })
+      state.userBalances = { ...state.userBalances }
     },
     STORE_ORG_BALANCES(state, orgBalances) {
       Object.keys(orgBalances).forEach((balanceType) => {
-        state.orgBalances[balanceType] = orgBalances[balanceType];
-      });
-      state.orgBalances = { ...state.orgBalances };
+        state.orgBalances[balanceType] = orgBalances[balanceType]
+      })
+      state.orgBalances = { ...state.orgBalances }
     },
     STORE_PROMO_BALANCES(state, promoBalances) {
       Object.keys(promoBalances).forEach((promoId) => {
-        state.promoBalances[promoId] = promoBalances[promoId];
-      });
-      state.promoBalances = { ...state.promoBalances };
+        state.promoBalances[promoId] = promoBalances[promoId]
+      })
+      state.promoBalances = { ...state.promoBalances }
     },
   },
   actions: {
     getUserBalances: async ({ commit }) => {
       try {
-        commit("LOAD_USER_BALANCES_START");
-        const { balances, promotions } = await getUserBalances();
+        commit('LOAD_USER_BALANCES_START')
+        const { balances, promotions } = await getUserBalances()
         if (balances) {
-          commit("STORE_USER_BALANCES", balances);
+          commit('STORE_USER_BALANCES', balances)
         }
         if (promotions) {
-          commit("STORE_PROMO_BALANCES", promotions);
+          commit('STORE_PROMO_BALANCES', promotions)
         }
-        commit("LOAD_USER_BALANCES_STOP");
-
+        commit('LOAD_USER_BALANCES_STOP')
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
     },
     adjustUserBalance: async ({ commit }, { balanceType, amount }) => {
       try {
-        commit("UPDATE_USER_BALANCES_START");
-        const { data } = await updateUserBalance(balanceType, amount);
-        commit("STORE_USER_BALANCES", data);
-        commit("UPDATE_USER_BALANCES_STOP");
-
+        commit('UPDATE_USER_BALANCES_START')
+        const { data } = await updateUserBalance(balanceType, amount)
+        commit('STORE_USER_BALANCES', data)
+        commit('UPDATE_USER_BALANCES_STOP')
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
     },
     getPromoBalances: async ({ commit }) => {
       try {
-        commit("LOAD_USER_BALANCES_START");
-        const { data } = await getPromoBalances('great-dcl-airdrop');
-        commit("STORE_USER_BALANCES", data);
-        commit("LOAD_USER_BALANCES_STOP");
-
+        commit('LOAD_USER_BALANCES_START')
+        const { data } = await getPromoBalances('great-dcl-airdrop')
+        commit('STORE_USER_BALANCES', data)
+        commit('LOAD_USER_BALANCES_STOP')
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
     },
     claimPromoCredits: async ({ dispatch, commit }, { promoId, amount }) => {
       try {
-        commit("UPDATE_USER_BALANCES_START");
-        const { balances, promotions, text, error } = await claimPromotion({ promoId, amount });
+        commit('UPDATE_USER_BALANCES_START')
+        const { balances, promotions, text, error } = await claimPromotion({ promoId, amount })
         if (error) {
-          dispatch("banner/showError", { message: error }, { root: true });
+          dispatch('banner/showError', { message: error }, { root: true })
         } else if (text) {
-          dispatch("banner/showSuccess", { message: text }, { root: true });
-          commit("STORE_USER_BALANCES", balances);
-          commit("STORE_PROMO_BALANCES", promotions);
+          dispatch('banner/showSuccess', { message: text }, { root: true })
+          commit('STORE_USER_BALANCES', balances)
+          commit('STORE_PROMO_BALANCES', promotions)
         }
-        commit("UPDATE_USER_BALANCES_STOP");
-
+        commit('UPDATE_USER_BALANCES_STOP')
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
     },
-    allocateBalance: async ({ dispatch, commit, }, { giveawayId, amount, usePromoBalance }) => {
+    allocateBalance: async ({ dispatch, commit }, { giveawayId, amount, usePromoBalance }) => {
       try {
-        commit("UPDATE_USER_BALANCES_START");
-        const { balances, giveaways, text, error } = await allocateBalance({ giveawayId, balanceType: "airdrop", amount, usePromoBalance });
+        commit('UPDATE_USER_BALANCES_START')
+        const { balances, giveaways, text, error } = await allocateBalance({ giveawayId, balanceType: 'airdrop', amount, usePromoBalance })
         if (error) {
-          dispatch("banner/showError", { message: error }, { root: true });
+          dispatch('banner/showError', { message: error }, { root: true })
         } else if (text) {
-          dispatch("banner/showSuccess", { message: text }, { root: true });
-          commit("STORE_USER_BALANCES", balances);
-          commit("event/STORE_GIVEAWAYS", giveaways, { root: true });
+          dispatch('banner/showSuccess', { message: text }, { root: true })
+          commit('STORE_USER_BALANCES', balances)
+          commit('event/STORE_GIVEAWAYS', giveaways, { root: true })
         }
-        commit("UPDATE_USER_BALANCES_STOP");
-
+        commit('UPDATE_USER_BALANCES_STOP')
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
     },
-  }
+  },
 }

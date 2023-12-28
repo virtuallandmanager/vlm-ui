@@ -9,10 +9,11 @@
     </div>
     <div class="d-flex">
       <div class="flex-row justify-space-between flex-grow-1">
-        <mini-dash icon="mdi-mouse" v-if="instance.clickEvent &&
-          (instance.clickEvent.type > 0 ||
-            (!instance.clickEvent.synced && image.clickEvent.type > 0))
-          " :stats="clickEventStats" />
+        <mini-dash
+          icon="mdi-mouse"
+          v-if="instance.clickEvent && (instance.clickEvent.type > 0 || (!instance.clickEvent.synced && image.clickEvent.type > 0))"
+          :stats="clickEventStats"
+        />
         <mini-dash icon="mdi-tune" :stats="propertiesStats" />
       </div>
     </div>
@@ -34,7 +35,7 @@ export default {
     element: Object,
   },
   data: () => ({
-    editingName: false
+    editingName: false,
   }),
   computed: {
     clickEventStats() {
@@ -48,8 +49,7 @@ export default {
         icons.push({ icon: 'mdi-cog-sync', tooltip: 'Uses Image Default' })
       }
 
-      let clickEventDashText =
-        EClickEventDashText[this.instance.clickEvent.type]
+      let clickEventDashText = EClickEventDashText[this.instance.clickEvent.type]
 
       if (clickEvent.type == EClickEventType.moveTo) {
         clickEventDashText += ` to: ${this.instance.clickEvent.moveTo.position.x}, ${this.instance.clickEvent.moveTo.position.y}, ${this.instance.clickEvent.moveTo.position.z}`
@@ -60,7 +60,7 @@ export default {
 
       icons.push({
         text: clickEventDashText,
-        tooltip: 'Click Action Type'
+        tooltip: 'Click Action Type',
       })
 
       return icons
@@ -75,26 +75,26 @@ export default {
       if (this.instance.customRendering) {
         icons.push({
           icon: 'mdi-cube-scan',
-          tooltip: 'Custom Rendering Enabled'
+          tooltip: 'Custom Rendering Enabled',
         })
       }
       if (this.instance.customId) {
         icons.push({
           icon: 'mdi-variable',
           text: this.instance.customId,
-          tooltip: 'Custom ID'
+          tooltip: 'Custom ID',
         })
       }
       if (this.instance.parent) {
         icons.push({
           icon: 'mdi-file-tree',
           text: this.instance.parent,
-          tooltip: 'Parent'
+          tooltip: 'Parent',
         })
       }
       return icons
-    }
-  }
+    },
+  },
 }
 </script>
 

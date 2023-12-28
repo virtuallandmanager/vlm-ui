@@ -4,15 +4,7 @@
     <div v-for="(stat, key) in stats" :key="key" class="stat-cell">
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
-          <v-icon
-            v-if="stat.icon"
-            v-bind="attrs"
-            v-on="on"
-            small
-            class="grey--text"
-            :class="stat.text ? 'mr-1' : ''"
-            >{{ stat.icon }}</v-icon
-          > 
+          <v-icon v-if="stat.icon" v-bind="attrs" v-on="on" small class="grey--text" :class="stat.text ? 'mr-1' : ''">{{ stat.icon }}</v-icon>
           <div v-if="stat.text" class="grey--text">{{ stat.text }}</div>
         </template>
         <span>{{ stat.tooltip }}</span>
@@ -28,8 +20,8 @@ export default {
   data: () => ({}),
   props: {
     icon: String,
-    stats: Array
-  }
+    stats: Array,
+  },
 }
 </script>
 

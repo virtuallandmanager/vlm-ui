@@ -5,23 +5,25 @@
         <v-card-title class="text-h5"> Create New Scene </v-card-title>
 
         <v-card-text class="text-center">
-          <v-text-field autofocus outlined label="Scene Name" v-model="newSceneName"
-            placeholder="Enter A Scene Name..." />
+          <v-text-field autofocus outlined label="Scene Name" v-model="newSceneName" placeholder="Enter A Scene Name..." />
           <div class="text-button">Show me how to connect to:</div>
           <div class="d-flex justify-center">
             <div>
               <div class="d-flex">
-                <v-icon v-if="newSceneWorlds.decentraland" color="primary" small
-                  class="ml-n6 mr-2">mdi-check-circle</v-icon>
-                <v-btn block outlined class="my-2" :color="newSceneWorlds.decentraland ? 'primary' : 'white'"
-                  @click="toggleWorld('decentraland')"><img src="@/assets/dcl-logo-sm.png" width="20px" height="20px"
-                    class="mr-2" /> Decentraland </v-btn>
+                <v-icon v-if="newSceneWorlds.decentraland" color="primary" small class="ml-n6 mr-2">mdi-check-circle</v-icon>
+                <v-btn block outlined class="my-2" :color="newSceneWorlds.decentraland ? 'primary' : 'white'" @click="toggleWorld('decentraland')"
+                  ><img src="@/assets/dcl-logo-sm.png" width="20px" height="20px" class="mr-2" /> Decentraland
+                </v-btn>
               </div>
 
               <div class="d-flex">
-                <v-btn block outlined disabled class="my-2" @click="toggleWorld('hyperfy')"><img
-                    src="@/assets/hyperfy-logo-sm.png" width="20px" height="20px" class="mr-2" /><v-icon
-                    v-if="newSceneWorlds.hyperfy" small class="ml-n6 mr-2"></v-icon> Hyperfy (Coming Soon!)
+                <v-btn block outlined disabled class="my-2" @click="toggleWorld('hyperfy')"
+                  ><img src="@/assets/hyperfy-logo-sm.png" width="20px" height="20px" class="mr-2" /><v-icon
+                    v-if="newSceneWorlds.hyperfy"
+                    small
+                    class="ml-n6 mr-2"
+                  ></v-icon>
+                  Hyperfy (Coming Soon!)
                 </v-btn>
               </div>
             </div>
@@ -57,74 +59,74 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import SceneCard from "../components/SceneCard";
-import store from "../store";
-import { DateTime } from "luxon";
-import ContentPage from "../components/ContentPage";
+import { mapActions, mapGetters } from 'vuex'
+import SceneCard from '../components/SceneCard'
+import store from '../store'
+import { DateTime } from 'luxon'
+import ContentPage from '../components/ContentPage'
 
 export default {
   components: { SceneCard, ContentPage },
-  name: "Scenes",
+  name: 'Scenes',
   data: () => ({
     newSceneDialog: false,
-    newSceneName: "",
+    newSceneName: '',
     newSceneWorlds: {
       decentraland: false,
       hyperfy: false,
     },
   }),
   async mounted() {
-    await this.getSceneCards();
+    await this.getSceneCards()
   },
   computed: {
     ...mapGetters({
-      scenes: "scene/sceneList",
-      loadingScene: "scene/loadingScene",
+      scenes: 'scene/sceneList',
+      loadingScene: 'scene/loadingScene',
     }),
     userInfo() {
-      return store.state.user.userInfo;
+      return store.state.user.userInfo
     },
     userOrgs() {
-      return store.state.organization.userOrgs;
+      return store.state.organization.userOrgs
     },
     memberSince() {
-      return DateTime.fromSeconds(this.userInfo.registeredAt).toLocaleString();
+      return DateTime.fromSeconds(this.userInfo.registeredAt).toLocaleString()
     },
   },
   methods: {
     ...mapActions({
-      getSceneCards: "scene/getSceneCards",
-      createScene: "scene/createScene",
+      getSceneCards: 'scene/getSceneCards',
+      createScene: 'scene/createScene',
     }),
     openNewSceneDialog() {
-      this.newSceneDialog = true;
+      this.newSceneDialog = true
     },
     resetNewSceneDialog() {
-      this.newSceneDialog = false;
-      this.newSceneName = "";
+      this.newSceneDialog = false
+      this.newSceneName = ''
       this.newSceneWorlds = {
         decentraland: false,
         hyperfy: false,
         roblox: false,
-      };
+      }
     },
     toggleWorld(key) {
-      this.newSceneWorlds[key] = !this.newSceneWorlds[key];
+      this.newSceneWorlds[key] = !this.newSceneWorlds[key]
     },
     async createNewScene() {
       const name = this.newSceneName
-      const scene = await this.createScene({ name });
+      const scene = await this.createScene({ name })
       Object.keys(this.newSceneWorlds).forEach((key) => {
         if (this.newSceneWorlds[key]) {
-          window.open(`/docs`, "_blank");
+          window.open(`/docs`, '_blank')
         }
-      });
-      this.$router.push(`/scene/${scene.sk}`);
-      this.resetNewSceneDialog();
+      })
+      this.$router.push(`/scene/${scene.sk}`)
+      this.resetNewSceneDialog()
     },
   },
-};
+}
 </script>
 
 <style scoped>

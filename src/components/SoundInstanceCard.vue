@@ -6,12 +6,13 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-icon v-bind="attrs" v-on="on" :class="sound.enabled && instance.enabled ? '' : 'red--text'">
-                {{ sound.enabled && instance.enabled ? "mdi-volume-high" : "mdi-volume-variant-off" }}
+                {{ sound.enabled && instance.enabled ? 'mdi-volume-high' : 'mdi-volume-variant-off' }}
               </v-icon>
             </template>
             <span>Mute/Unmute</span>
           </v-tooltip>
-        </v-btn></span>
+        </v-btn></span
+      >
       <div class="d-inline-flex align-center pa-0 ma-0" v-if="editingName">
         <v-text-field hide-details v-model="instance.name" label="Rename Instance"></v-text-field>
         <v-btn small icon @click="editInstanceName()">
@@ -54,14 +55,18 @@
           </v-btn>
         </div>
         <div>
-          <v-btn small icon @click.stop="
-            deleteSceneElement({
-              element: 'sound',
-              elementData: sound,
-              instance: true,
-              instanceData: instance,
-            })
-            ">
+          <v-btn
+            small
+            icon
+            @click.stop="
+              deleteSceneElement({
+                element: 'sound',
+                elementData: sound,
+                instance: true,
+                instanceData: instance,
+              })
+            "
+          >
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
@@ -72,17 +77,20 @@
         </div>
       </div>
     </div>
-    <quick-view v-if="sound.showDetails" :instance="instance" class="grey px-3"
-      :class="i % 2 ? 'darken-3' : 'darken-4'" />
+    <quick-view v-if="sound.showDetails" :instance="instance" class="grey px-3" :class="i % 2 ? 'darken-3' : 'darken-4'" />
     <div class="d-flex pb-3 flex-row justify-space-around grey" :class="i % 2 ? 'darken-3' : 'darken-4'">
-      <v-btn icon :disabled="sound.sourceType > 1" @click.stop="
-        showTransformDialog({
-          element: 'sound',
-          elementData: sound,
-          instance: true,
-          instanceData: instance,
-        })
-        ">
+      <v-btn
+        icon
+        :disabled="sound.sourceType > 1"
+        @click.stop="
+          showTransformDialog({
+            element: 'sound',
+            elementData: sound,
+            instance: true,
+            instanceData: instance,
+          })
+        "
+      >
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-axis-arrow </v-icon>
@@ -91,14 +99,17 @@
         </v-tooltip>
       </v-btn>
 
-      <v-btn icon @click.stop="
-        showPropertiesDialog({
-          element: 'sound',
-          elementData: sound,
-          instance: true,
-          instanceData: instance,
-        })
-        ">
+      <v-btn
+        icon
+        @click.stop="
+          showPropertiesDialog({
+            element: 'sound',
+            elementData: sound,
+            instance: true,
+            instanceData: instance,
+          })
+        "
+      >
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
@@ -111,28 +122,28 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import { EDialogType } from "../models/Dialog";
-import { SceneSound } from "../models/SceneSound";
-import { SceneSoundInstance } from "../models/SceneSoundInstance";
-import QuickView from "./QuickView.vue";
+import { mapActions } from 'vuex'
+import { EDialogType } from '../models/Dialog'
+import { SceneSound } from '../models/SceneSound'
+import { SceneSoundInstance } from '../models/SceneSoundInstance'
+import QuickView from './QuickView.vue'
 
 export default {
   components: { QuickView },
-  name: "SoundInstanceCard",
+  name: 'SoundInstanceCard',
   props: {
     property: Object,
     i: Number,
     instance: {
       type: Object,
       default: function () {
-        return new SceneSoundInstance();
+        return new SceneSoundInstance()
       },
     },
     sound: {
       type: Object,
       default: function () {
-        return new SceneSound();
+        return new SceneSound()
       },
     },
   },
@@ -142,112 +153,112 @@ export default {
   }),
   computed: {
     truncatedName() {
-      const soundNameArr = this.sound && this.sound.name.split("");
-      let noSpacesLength = 0;
-      let truncated = this.sound.name;
+      const soundNameArr = this.sound && this.sound.name.split('')
+      let noSpacesLength = 0
+      let truncated = this.sound.name
       soundNameArr.forEach((char) => {
-        if (char !== " ") {
-          noSpacesLength++;
+        if (char !== ' ') {
+          noSpacesLength++
         } else {
-          noSpacesLength = 0;
+          noSpacesLength = 0
         }
 
         if (noSpacesLength > 18) {
-          truncated = truncated.substr(truncated.length - 18);
-          noSpacesLength = 0;
+          truncated = truncated.substr(truncated.length - 18)
+          noSpacesLength = 0
         }
-      });
+      })
 
       if (truncated !== this.sound.name) {
-        return `...${truncated}`;
+        return `...${truncated}`
       } else {
-        return this.sound.name;
+        return this.sound.name
       }
     },
   },
   methods: {
     ...mapActions({
-      showTransformDialog: "dialog/showTransformDialog",
-      showDeleteDialog: "dialog/showDeleteDialog",
-      showPropertiesDialog: "dialog/showPropertiesDialog",
-      showClickEventDialog: "dialog/showClickEventDialog",
-      updateSceneElement: "scene/updateSceneElement",
-      deleteSceneElement: "scene/deleteSceneElement",
+      showTransformDialog: 'dialog/showTransformDialog',
+      showDeleteDialog: 'dialog/showDeleteDialog',
+      showPropertiesDialog: 'dialog/showPropertiesDialog',
+      showClickEventDialog: 'dialog/showClickEventDialog',
+      updateSceneElement: 'scene/updateSceneElement',
+      deleteSceneElement: 'scene/deleteSceneElement',
     }),
     showRenameField() {
-      this.editingName = true;
-      this.originalName = this.instance.name;
+      this.editingName = true
+      this.originalName = this.instance.name
     },
     cancelEditInstanceName() {
-      this.editingName = false;
-      this.instance.name = this.originalName;
+      this.editingName = false
+      this.instance.name = this.originalName
     },
     editInstanceName() {
       if (!this.instance.name) {
-        return this.cancelEditInstanceName();
+        return this.cancelEditInstanceName()
       }
-      this.editingName = false;
+      this.editingName = false
       this.updateSceneElement({
-        action: "update",
-        element: "sound",
+        action: 'update',
+        element: 'sound',
         instance: true,
-        property: "name",
+        property: 'name',
         id: this.instance.sk,
         elementData: this.sound,
         instanceData: this.instance,
-      });
+      })
     },
     toggleMute() {
-      this.instance.enabled = !this.instance.enabled;
+      this.instance.enabled = !this.instance.enabled
       this.updateSceneElement({
-        action: "update",
-        element: "sound",
+        action: 'update',
+        element: 'sound',
         instance: true,
-        property: "enabled",
+        property: 'enabled',
         id: this.instance.sk,
         elementData: this.sound,
         instanceData: this.instance,
-      });
+      })
     },
     updateInstanceClickEvent() {
       this.updateSceneElement({
-        action: "update",
-        element: "sound",
+        action: 'update',
+        element: 'sound',
         instance: true,
-        property: "clickEvent",
+        property: 'clickEvent',
         id: this.instance.sk,
         elementData: this.sound,
         instanceData: this.instance,
-      });
+      })
     },
     updateInstanceProperties() {
       this.updateSceneElement({
-        action: "update",
-        element: "sound",
+        action: 'update',
+        element: 'sound',
         instance: true,
-        property: "properties",
+        property: 'properties',
         id: this.instance.sk,
         elementData: this.sound,
         instanceData: this.instance,
-      });
+      })
     },
     updateInstanceTransform() {
       this.updateSceneElement({
-        action: "update",
-        element: "sound",
+        action: 'update',
+        element: 'sound',
         instance: true,
-        property: "transform",
+        property: 'transform',
         custom: this.instance.customRendering,
         id: this.instance.sk,
         elementData: this.sound,
         instanceData: this.instance,
-      });
+      })
     },
     addInstance(instance) {
-      this.$emit("addInstance", instance);
+      this.$emit('addInstance', instance)
     },
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>

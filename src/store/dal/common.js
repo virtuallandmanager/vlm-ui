@@ -1,4 +1,4 @@
-import store from "../../store";
+import store from '../../store'
 // import router from "../../router";
 /*/
 These data access methods are used by the Vuex Auth Module to make HTTP requests to the server. There are two classes defined in store/dal/auth.js: AuthenticatedFetch and UnauthenticatedFetch.
@@ -17,151 +17,154 @@ The restoreSession method uses an instance of AuthenticatedFetch to make an auth
 /*/
 
 export class AuthenticatedFetch {
-  sessionToken = store.state.auth.sessionToken;
-  refreshToken = store.state.auth.refreshToken;
+  sessionToken = store.state.auth.sessionToken
+  refreshToken = store.state.auth.refreshToken
 
   get = async (endpoint) => {
     try {
       const payload = {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.sessionToken,
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + this.sessionToken,
         },
-      };
+      }
       const response = await fetch(process.env.VUE_APP_API_URL + endpoint, payload),
-        responseJson = await response.json();
+        responseJson = await response.json()
 
-      return { status: response.status, ...responseJson };
+      if (response.status === 401) {
+        console.log(response, responseJson)
+      }
+
+      return { status: response.status, ...responseJson }
     } catch (error) {
       console.log(error)
     }
-  };
+  }
 
   post = async (endpoint, payloadBody, file) => {
-    let body;
-    let headers;
+    let body
+    let headers
 
     try {
-
       if (file) {
-        body = payloadBody;
+        body = payloadBody
 
         // Headers for multipart/form-data request
         headers = {
-          Authorization: "Bearer " + this.sessionToken,
-        };
+          Authorization: 'Bearer ' + this.sessionToken,
+        }
       } else {
-        body = JSON.stringify(payloadBody);
+        body = JSON.stringify(payloadBody)
 
         // Headers for application/json request
         headers = {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.sessionToken,
-        };
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + this.sessionToken,
+        }
       }
 
       const payload = {
-        method: "POST",
+        method: 'POST',
         headers,
         body,
-      };
+      }
 
-      const response = await fetch(process.env.VUE_APP_API_URL + endpoint, payload);
-      const responseJson = await response.json();
+      const response = await fetch(process.env.VUE_APP_API_URL + endpoint, payload)
+      const responseJson = await response.json()
 
-      return { status: response.status, ...responseJson };
+      return { status: response.status, ...responseJson }
     } catch (error) {
       console.log(error)
     }
-  };
+  }
 
   refresh = async () => {
     try {
       const payload = {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.refreshToken,
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + this.refreshToken,
         },
-      };
+      }
       const response = await fetch(process.env.VUE_APP_API_URL + '/auth/refresh', payload),
-        responseJson = await response.json();
+        responseJson = await response.json()
 
-      await store.dispatch("auth/handleSuccessfulLogin", responseJson);
-      return { status: response.status, ...responseJson };
+      await store.dispatch('auth/handleSuccessfulLogin', responseJson)
+      return { status: response.status, ...responseJson }
     } catch (error) {
       console.log(error)
     }
-  };
+  }
 }
 
 export class UnauthenticatedFetch {
-  authString = store.state.auth.connectedWallet;
+  authString = store.state.auth.connectedWallet
 
   constructor(authString) {
     if (authString) {
-      this.authString = authString;
+      this.authString = authString
     }
   }
 
   get = async (endpoint) => {
     const payload = {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + this.authString,
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + this.authString,
       },
-    };
+    }
     const response = await fetch(process.env.VUE_APP_API_URL + endpoint, payload),
-      responseJson = await response.json();
+      responseJson = await response.json()
 
-    return { status: response.status, ...responseJson };
-  };
+    return { status: response.status, ...responseJson }
+  }
   post = async (endpoint, payloadBody) => {
     const payload = {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + this.authString,
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + this.authString,
       },
       body: JSON.stringify(payloadBody),
-    };
+    }
     const response = await fetch(process.env.VUE_APP_API_URL + endpoint, payload),
-      responseJson = await response.json();
+      responseJson = await response.json()
 
-    return { status: response.status, ...responseJson };
-  };
+    return { status: response.status, ...responseJson }
+  }
 }
 
 export class ExternalFetch {
-  authString = store.state.auth.connectedWallet;
+  authString = store.state.auth.connectedWallet
 
   constructor(authString) {
     if (authString) {
-      this.authString = authString;
+      this.authString = authString
     }
   }
 
   get = async (endpoint) => {
     const response = await fetch(endpoint),
-      responseJson = await response.json();
+      responseJson = await response.json()
 
-    return { status: response.status, ...responseJson };
-  };
+    return { status: response.status, ...responseJson }
+  }
 
   post = async (endpoint, payloadBody) => {
     const payload = {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + this.authString,
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + this.authString,
       },
       body: JSON.stringify(payloadBody),
-    };
+    }
     const response = await fetch(endpoint, payload),
-      responseJson = await response.json();
+      responseJson = await response.json()
 
-    return { status: response.status, ...responseJson };
-  };
+    return { status: response.status, ...responseJson }
+  }
 }

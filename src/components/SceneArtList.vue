@@ -48,7 +48,7 @@
       <template v-slot:no-content-text>
         <div v-if="sometimesLlama">{{ sometimesLlama }}</div>
         <div class="d-flex justify-center pa-4"><v-img position="center center" max-width="250px" :src="luckyLlama" v-if="sometimesLlama" /></div>
-        Would you like to add something{{ sometimesLlama ? " else" : "" }}?
+        Would you like to add something{{ sometimesLlama ? ' else' : '' }}?
       </template>
       <template v-slot:no-content-cta>
         <v-btn @click.stop="showNewImageDialog" class="mr-4">
@@ -78,12 +78,12 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import SceneImageCard from "./SceneImageCard";
-import SceneNftCard from "./SceneNftCard";
-import { SceneImage } from "@/models/SceneImage";
-import ContentSubPanel from "./ContentSubPanel";
-import llama from "@/assets/lucky_llama.jpg";
+import { mapGetters, mapActions } from 'vuex'
+import SceneImageCard from './SceneImageCard'
+import SceneNftCard from './SceneNftCard'
+import { SceneImage } from '@/models/SceneImage'
+import ContentSubPanel from './ContentSubPanel'
+import llama from '@/assets/lucky_llama.jpg'
 
 export default {
   components: {
@@ -91,7 +91,7 @@ export default {
     SceneImageCard,
     SceneNftCard,
   },
-  name: "SceneArtList",
+  name: 'SceneArtList',
   data: () => ({
     creatingNewItem: false,
     luckyLlama: llama,
@@ -103,95 +103,95 @@ export default {
     showNftDialogError: false,
     externalImageMode: false,
     detailedMode: true,
-    selectedImage: "",
-    newImageSrc: "",
+    selectedImage: '',
+    newImageSrc: '',
     nftDetails: {
       chain: 1,
-      contractAddress: "",
-      tokenId: "",
+      contractAddress: '',
+      tokenId: '',
     },
     nftBlockchains: [
-      { value: 1, text: "Ethereum", selected: true },
-      { value: 137, text: "Polygon" },
+      { value: 1, text: 'Ethereum', selected: true },
+      { value: 137, text: 'Polygon' },
     ],
   }),
   computed: {
-    ...mapGetters({ activePreset: "scene/activePreset", sceneImages: "scene/sceneImages", sceneNfts: "scene/sceneNfts" }),
+    ...mapGetters({ activePreset: 'scene/activePreset', sceneImages: 'scene/sceneImages', sceneNfts: 'scene/sceneNfts' }),
     sometimesLlama() {
-      const randomNumber = Math.floor(Math.random() * 100);
+      const randomNumber = Math.floor(Math.random() * 100)
       if (randomNumber < 10) {
-        return "But here's a Virtual Llama to keep you company.";
+        return "But here's a Virtual Llama to keep you company."
       } else {
-        return "";
+        return ''
       }
     },
     art() {
       if (!this.$store?.state?.scene?.activePreset) {
-        return [];
+        return []
       }
 
-      const artArray = [...this.sceneImages, ...this.sceneNfts];
+      const artArray = [...this.sceneImages, ...this.sceneNfts]
 
       if (artArray.length) {
-        return this.sortByCreatedAt(artArray);
+        return this.sortByCreatedAt(artArray)
       } else {
-        return [];
+        return []
       }
     },
   },
 
   methods: {
     ...mapActions({
-      createSceneElement: "scene/createSceneElement",
-      updateSceneElement: "scene/updateSceneElement",
-      uploadImage: "media/uploadUserImage",
+      createSceneElement: 'scene/createSceneElement',
+      updateSceneElement: 'scene/updateSceneElement',
+      uploadImage: 'media/uploadUserImage',
     }),
     resetDialogs() {
-      this.newImageDialog = false;
-      this.externalImageDialog = false;
-      this.newNftDialog = false;
+      this.newImageDialog = false
+      this.externalImageDialog = false
+      this.newNftDialog = false
     },
     selectImage() {
-      this.$refs.fileInput.click();
+      this.$refs.fileInput.click()
     },
     createExternalImage() {
-      const objThis = this;
-      const currentImage = objThis.image;
+      const objThis = this
+      const currentImage = objThis.image
       if (this.validateExternalLink(this.newImageSrc) === true) {
-        let img = new Image();
-        img.src = this.newImageSrc;
+        let img = new Image()
+        img.src = this.newImageSrc
         img.onload = function () {
-          currentImage.width = this.width;
-          currentImage.height = this.height;
-          currentImage.textureSrc = "";
-          currentImage.thumbnailSrc = "";
-          currentImage.externalUrl = true;
+          currentImage.width = this.width
+          currentImage.height = this.height
+          currentImage.textureSrc = ''
+          currentImage.thumbnailSrc = ''
+          currentImage.externalUrl = true
           const newImage = new SceneImage({
             ...currentImage,
-            name: "External Image",
+            name: 'External Image',
             imageSrc: this.src,
             externalUrl: true,
-          });
+          })
 
-          objThis.createSceneElement({ element: "image", elementData: newImage });
-          objThis.newImageSrc = "";
-          objThis.resetDialogs();
-        };
+          objThis.createSceneElement({ element: 'image', elementData: newImage })
+          objThis.newImageSrc = ''
+          objThis.resetDialogs()
+        }
       }
     },
     async onFileSelected(e) {
-      this.resetDialogs();
+      this.resetDialogs()
       const options = {
         image: e.target.files[0],
-      };
-      e.target.value = null;
+      }
+      e.target.value = null
 
       try {
-        const uploadImageRes = await this.uploadImage(options);
-        const imageSrc = `${process.env.VUE_APP_API_URL}/${uploadImageRes.imageSrc}`;
-        const textureSrc = `${process.env.VUE_APP_API_URL}/${uploadImageRes.textureSrc}`;
-        const thumbnailSrc = `${process.env.VUE_APP_API_URL}/${uploadImageRes.thumbnailSrc}`;
-        const metadata = uploadImageRes.metadata;
+        const uploadImageRes = await this.uploadImage(options)
+        const imageSrc = `${process.env.VUE_APP_API_URL}/${uploadImageRes.imageSrc}`
+        const textureSrc = `${process.env.VUE_APP_API_URL}/${uploadImageRes.textureSrc}`
+        const thumbnailSrc = `${process.env.VUE_APP_API_URL}/${uploadImageRes.thumbnailSrc}`
+        const metadata = uploadImageRes.metadata
 
         const newImage = new SceneImage({
           name: metadata.name,
@@ -201,60 +201,60 @@ export default {
           imageSrc,
           textureSrc,
           thumbnailSrc,
-        });
+        })
 
-        await this.createImage(newImage);
+        await this.createImage(newImage)
       } catch (err) {
-        console.log(err);
+        console.log(err)
       }
     },
     async createImage(image) {
       return await this.createSceneElement({
-        element: "image",
+        element: 'image',
         elementData: image,
-      });
+      })
     },
     sortByCreatedAt(objects) {
       return objects.sort((a, b) => {
-        const createdAtA = a.createdAt;
-        const createdAtB = b.createdAt;
-        return createdAtA - createdAtB;
-      });
+        const createdAtA = a.createdAt
+        const createdAtB = b.createdAt
+        return createdAtA - createdAtB
+      })
     },
     validateExternalLink(value) {
       if (!value) {
-        this.hasErrors = true;
-        return "Enter a website URL";
-      } else if (value.includes("https://")) {
-        this.hasErrors = false;
-        return true;
+        this.hasErrors = true
+        return 'Enter a website URL'
+      } else if (value.includes('https://')) {
+        this.hasErrors = false
+        return true
       } else {
-        this.hasErrors = true;
-        return "Must use https:// links";
+        this.hasErrors = true
+        return 'Must use https:// links'
       }
     },
     showNewImageDialog() {
-      this.newImageDialog = true;
+      this.newImageDialog = true
     },
     showExternalUrlDialog() {
-      this.externalImageDialog = true;
-      this.newImageDialog = false;
+      this.externalImageDialog = true
+      this.newImageDialog = false
     },
     showNewNFTDialog() {
-      this.newNftDialog = true;
+      this.newNftDialog = true
     },
     newNft() {
-      this.newImageDialog = true;
+      this.newImageDialog = true
     },
     async replaceImage(options) {
       this.updateSceneElement({
-        action: "update",
-        element: "image",
-        property: "imageLink",
+        action: 'update',
+        element: 'image',
+        property: 'imageLink',
         elementData: options.image,
         id: options.image.customId || options.image.sk,
-      });
+      })
     },
   },
-};
+}
 </script>

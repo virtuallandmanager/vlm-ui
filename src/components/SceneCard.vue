@@ -12,40 +12,53 @@
         <v-row>
           <v-col cols="12">
             <div class="text-h6 font-weight-light text-left">
-              {{ scene.name || "New Scene" }}
+              {{ scene.name || 'New Scene' }}
             </div>
           </v-col>
-          <v-col>
+          <v-col class="my-n1">
             <v-tooltip bottom v-if="dclLocations?.length">
               <template v-slot:activator="{ on, attrs }">
-                <v-card class="d-flex align-center justify-center black pa-2" v-bind="attrs" v-on="on">
+                <v-card class="d-flex align-center justify-center black pa-2 my-1" v-bind="attrs" v-on="on">
                   <img src="@/assets/dcl-logo-sm.png" width="20px" height="20px" class="mr-2" />
                   {{ dclLocations.length }} location{{ dclLocations.length == 1 ? '' : 's' }}
-                  <div class="text-subtitle-2 font-weight-medium text-left" v-if="scene?.location?.parcels?.length">{{
-                    `${scene?.location?.parcels?.length} Parcel` }}{{ scene?.parcels?.length > 1 ? "s" : "" }}</div>
+                  <div class="text-subtitle-2 font-weight-medium text-left" v-if="scene?.location?.parcels?.length">
+                    {{ `${scene?.location?.parcels?.length} Parcel` }}{{ scene?.parcels?.length > 1 ? 's' : '' }}
+                  </div>
+                </v-card>
+              </template>
+              <div class="d-flex justify-center text-center" v-for="(location, i) of exodusLocations" :key="i">
+                <v-chip small class="text-caption ma-1"><v-icon x-small v-if="location.includes('.dcl.eth')">mdi-web</v-icon>{{ location }}</v-chip>
+              </div>
+            </v-tooltip>
+            <v-tooltip bottom v-if="exodusLocations?.length">
+              <template v-slot:activator="{ on, attrs }">
+                <v-card class="d-flex align-center justify-center black pa-2 my-1" v-bind="attrs" v-on="on">
+                  <img src="@/assets/exodus-logo-sm.png" width="20px" height="20px" class="mr-2" />
+                  {{ exodusLocations.length }} location{{ exodusLocations.length == 1 ? '' : 's' }}
+                  <div class="text-subtitle-2 font-weight-medium text-left" v-if="scene?.location?.parcels?.length">
+                    {{ `${scene?.location?.parcels?.length} Parcel` }}{{ scene?.parcels?.length > 1 ? 's' : '' }}
+                  </div>
                 </v-card>
               </template>
               <div class="d-flex justify-center text-center" v-for="(location, i) of dclLocations" :key="i">
-                <v-chip small class="text-caption ma-1"><v-icon x-small
-                    v-if="location.includes('.dcl.eth')">mdi-web</v-icon>{{ location }}</v-chip>
+                <v-chip small class="text-caption ma-1"><v-icon x-small v-if="location.includes('.dcl.eth')">mdi-web</v-icon>{{ location }}</v-chip>
               </div>
             </v-tooltip>
             <v-tooltip bottom v-if="hyperfyLocations?.length">
               <template v-slot:activator="{ on, attrs }">
-                <v-card class="d-flex align-center justify-center black pa-2 mt-2" v-bind="attrs" v-on="on">
+                <v-card class="d-flex align-center justify-center black pa-2 my-1" v-bind="attrs" v-on="on">
                   <img src="@/assets/hyperfy-logo-sm.png" width="20px" height="20px" class="mr-2" />
                   {{ hyperfyLocations.length }} location{{ hyperfyLocations.length == 1 ? '' : 's' }}
-                  <div class="text-subtitle-2 font-weight-medium text-left" v-if="scene?.location?.parcels?.length">{{
-                    `${scene?.location?.parcels?.length} Parcel` }}{{ scene?.parcels?.length > 1 ? "s" : "" }}</div>
+                  <div class="text-subtitle-2 font-weight-medium text-left" v-if="scene?.location?.parcels?.length">
+                    {{ `${scene?.location?.parcels?.length} Parcel` }}{{ scene?.parcels?.length > 1 ? 's' : '' }}
+                  </div>
                 </v-card>
               </template>
               <div class="d-flex justify-center text-center" v-for="(location, i) of hyperfyLocations" :key="i">
                 <v-chip small class="text-caption ma-1"><v-icon x-small>mdi-web</v-icon>{{ location }}</v-chip>
               </div>
             </v-tooltip>
-            <v-card v-if="!scene?.locations?.length" class="d-flex align-center justify-center black pa-2">
-              World Not Assigned
-            </v-card>
+            <v-card v-if="!scene?.locations?.length" class="d-flex align-center justify-center black pa-2"> World Not Assigned </v-card>
           </v-col>
         </v-row>
       </v-container>
@@ -54,35 +67,50 @@
 </template>
 
 <script>
-import placeholderImage from "@/assets/placeholder.png";
+import placeholderImage from '@/assets/placeholder.png'
 
 export default {
   components: {},
 
-  name: "SceneCard",
+  name: 'SceneCard',
 
-  data: () => ({ imagePath: "../assets/" }),
+  data: () => ({ imagePath: '../assets/' }),
   props: {
     scene: Object,
   },
   computed: {
     sceneImgPlaceholder() {
-      return placeholderImage;
+      return placeholderImage
     },
     dclLocations() {
-      return this.scene?.locations?.filter((location) => location.world === "decentraland").map((location) => {
-        if (location?.realm?.serverName.includes(".dcl.eth")) {
-          return location.realm.serverName;
-        } else {
-          return `${location.coordinates[0]},${location.coordinates[1]}`;
-        }
-      });
+      return this.scene?.locations
+        ?.filter((location) => location.world === 'decentraland')
+        .map((location) => {
+          if (location?.realm?.serverName.includes('.dcl.eth')) {
+            return location.realm.serverName
+          } else {
+            return `${location.coordinates[0]},${location.coordinates[1]}`
+          }
+        })
+    },
+    exodusLocations() {
+      return this.scene?.locations
+        ?.filter((location) => location.world === 'decentraland' && location?.realm?.serverName.includes('exodus.town'))
+        .map((location) => {
+          if (location?.realm?.serverName.includes('exodus.town')) {
+            return location.realm.serverName
+          } else {
+            return `${location.coordinates[0]},${location.coordinates[1]}`
+          }
+        })
     },
     hyperfyLocations() {
-      return this.scene?.locations?.filter((location) => location.world === "hyperfy").map((location) => {
-        return `${location.coordinates[0]},${location.coordinates[1]}`;
-      });
+      return this.scene?.locations
+        ?.filter((location) => location.world === 'hyperfy')
+        .map((location) => {
+          return `${location.coordinates[0]},${location.coordinates[1]}`
+        })
     },
-  }
-};
+  },
+}
 </script>

@@ -18,8 +18,7 @@
       <v-list-item>
         <v-list-item-content>
           <v-btn color="red" @click="jumpIn">Jump In</v-btn>
-          <div class="text-caption text-center mt-2 grey--text text--lighten-1" style="font-size: 8px">SEE YOUR CHANGES IN
-            REAL TIME</div>
+          <div class="text-caption text-center mt-2 grey--text text--lighten-1" style="font-size: 8px">SEE YOUR CHANGES IN REAL TIME</div>
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -95,80 +94,80 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
-  name: "LeftNav",
+  name: 'LeftNav',
   data: () => ({
-    previousRoute: "",
+    previousRoute: '',
   }),
   created() {
     this.$router.beforeEach((to, from, next) => {
-      this.previousRoute = from.name;
-      next();
-    });
+      this.previousRoute = from.name
+      next()
+    })
   },
   computed: {
     activeScene() {
-      return this.$store.state.scene?.activeScene;
+      return this.$store.state.scene?.activeScene
     },
     activeEvent() {
-      return this.$store.state.event?.activeEvent;
+      return this.$store.state.event?.activeEvent
     },
     advancedUser() {
-      return !!this.user?.roles?.includes(2);
+      return !!this.user?.roles?.includes(2)
     },
     orgAdmin() {
-      return !!this.user?.roles?.includes(4);
+      return !!this.user?.roles?.includes(4)
     },
     vlmAdmin() {
-      return !!this.user?.roles?.filter((role) => role >= 7).length;
+      return !!this.user?.roles?.filter((role) => role >= 7).length
     },
     showBackArrow() {
-      return this.previousRoute && this.activeScene || this.activeEvent;
+      return (this.previousRoute && this.activeScene) || this.activeEvent
     },
     docsUrl() {
-      return process.env.VUE_APP_DOCS_URL;
+      return process.env.VUE_APP_DOCS_URL
     },
     ...mapGetters({
-      demoMode: "app/demoMode",
-      user: "user/userInfo",
-      demoScene: "scene/demoScene",
-      walletAddress: "user/walletAddress",
+      demoMode: 'app/demoMode',
+      user: 'user/userInfo',
+      demoScene: 'scene/demoScene',
+      walletAddress: 'user/walletAddress',
     }),
     navDrawerOpen: {
       get() {
-        return this.$store.state.app.navDrawerOpen;
+        return this.$store.state.app.navDrawerOpen
       },
       set(value) {
         if (value) {
-          return;
+          return
         } else {
-          this.closeNavDrawer();
+          this.closeNavDrawer()
         }
       },
     },
   },
   methods: {
     goBack() {
-      this.$router.go(-1);
+      this.$router.go(-1)
     },
     closeNavDrawer() {
-      this.setNavDrawerState(false);
+      this.setNavDrawerState(false)
     },
     jumpIn() {
-      window.open(this.demoScene.sceneUrl, "_blank");
+      window.open(this.demoScene.sceneUrl, '_blank')
     },
     ...mapActions({
-      logout: "auth/disconnect",
-      setNavDrawerState: "app/setNavDrawerState",
-      toggleNavDrawer: "app/toggleNavDrawer",
+      logout: 'auth/disconnect',
+      setNavDrawerState: 'app/setNavDrawerState',
+      toggleNavDrawer: 'app/toggleNavDrawer',
     }),
     loadUserProfile() {
-      this.$router.push("/profile");
+      this.$router.push('/profile')
     },
   },
-};
+}
 </script>
 <style scoped>
 .cyberpunk-border {

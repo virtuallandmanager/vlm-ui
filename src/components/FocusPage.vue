@@ -39,11 +39,11 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import Loader from "./Loader";
+import { mapActions } from 'vuex'
+import Loader from './Loader'
 
 export default {
-  name: "FocusPage",
+  name: 'FocusPage',
   data: () => ({}),
   props: {
     loading: Boolean,
@@ -53,26 +53,26 @@ export default {
   },
   computed: {
     hasContent() {
-      return !this.noContent && !this.loading;
+      return !this.noContent && !this.loading
     },
     contentLoading() {
-      return !this.noContent && this.loading;
+      return !this.noContent && this.loading
     },
     noContentLoaded() {
-      return this.noContent && !this.loading;
+      return this.noContent && !this.loading
     },
     authenticated() {
-      return this.$store.getters["auth/authenticated"];
+      return this.$store.getters['auth/authenticated']
     },
     navDrawerState() {
-      return this.$store.state.app.navDrawerOpen;
+      return this.$store.state.app.navDrawerOpen
     },
   },
   components: { Loader },
   methods: {
-    ...mapActions({ toggleNavDrawer: "app/toggleNavDrawer" }),
+    ...mapActions({ toggleNavDrawer: 'app/toggleNavDrawer' }),
   },
-};
+}
 </script>
 
 <style>

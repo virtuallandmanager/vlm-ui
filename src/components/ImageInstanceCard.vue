@@ -7,7 +7,7 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-icon v-bind="attrs" v-on="on" :class="image.enabled && instance.enabled ? '' : 'red--text'">
-                {{ image.enabled && instance.enabled ? "mdi-eye" : "mdi-eye-off" }}
+                {{ image.enabled && instance.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
               </v-icon>
             </template>
             <span>Show/Hide</span>
@@ -68,7 +68,8 @@
                 instance: true,
                 instanceData: instance,
               })
-            ">
+            "
+          >
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
@@ -90,7 +91,8 @@
             instance: true,
             instanceData: instance,
           })
-        ">
+        "
+      >
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-axis-arrow </v-icon>
@@ -108,7 +110,8 @@
             instance: true,
             instanceData: instance,
           })
-        ">
+        "
+      >
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-mouse </v-icon>
@@ -126,7 +129,8 @@
             instance: true,
             instanceData: instance,
           })
-        ">
+        "
+      >
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
@@ -139,27 +143,27 @@
 </template>
 
 <script>
-import Vue from "vue";
-import { SceneImage } from "../models/SceneImage";
-import { SceneImageInstance } from "../models/SceneImageInstance";
-import QuickView from "./QuickView.vue";
-import { mapActions } from "vuex";
+import Vue from 'vue'
+import { SceneImage } from '../models/SceneImage'
+import { SceneImageInstance } from '../models/SceneImageInstance'
+import QuickView from './QuickView.vue'
+import { mapActions } from 'vuex'
 
 export default {
   components: { QuickView },
-  name: "ImageInstanceCard",
+  name: 'ImageInstanceCard',
   props: {
     i: Number,
     instance: {
       type: Object,
       default: function () {
-        return new SceneImageInstance();
+        return new SceneImageInstance()
       },
     },
     image: {
       type: Object,
       default: function () {
-        return new SceneImage();
+        return new SceneImage()
       },
     },
   },
@@ -168,120 +172,120 @@ export default {
   }),
   computed: {
     truncatedName() {
-      const imageNameArr = this.image && this.image.name.split("");
-      let noSpacesLength = 0;
-      let truncated = this.image.name;
+      const imageNameArr = this.image && this.image.name.split('')
+      let noSpacesLength = 0
+      let truncated = this.image.name
       imageNameArr.forEach((char) => {
-        if (char !== " ") {
-          noSpacesLength++;
+        if (char !== ' ') {
+          noSpacesLength++
         } else {
-          noSpacesLength = 0;
+          noSpacesLength = 0
         }
 
         if (noSpacesLength > 18) {
-          truncated = truncated.substr(truncated.length - 18);
-          noSpacesLength = 0;
+          truncated = truncated.substr(truncated.length - 18)
+          noSpacesLength = 0
         }
-      });
+      })
 
       if (truncated !== this.image.name) {
-        return `...${truncated}`;
+        return `...${truncated}`
       } else {
-        return this.image.name;
+        return this.image.name
       }
     },
   },
   methods: {
     ...mapActions({
-      updateSceneElement: "scene/updateSceneElement",
-      deleteSceneElement: "scene/deleteSceneElement",
-      showTransformDialog: "dialog/showTransformDialog",
-      showPropertiesDialog: "dialog/showPropertiesDialog",
-      showClickEventDialog: "dialog/showClickEventDialog",
-      showDeleteDialog: "dialog/showDeleteDialog",
+      updateSceneElement: 'scene/updateSceneElement',
+      deleteSceneElement: 'scene/deleteSceneElement',
+      showTransformDialog: 'dialog/showTransformDialog',
+      showPropertiesDialog: 'dialog/showPropertiesDialog',
+      showClickEventDialog: 'dialog/showClickEventDialog',
+      showDeleteDialog: 'dialog/showDeleteDialog',
     }),
     showRenameField() {
-      this.editingName = true;
-      this.originalName = this.instance.name;
+      this.editingName = true
+      this.originalName = this.instance.name
     },
     removeImageInstance() {
-      const instanceData = { ...this.image.instances[this.i] };
-      Vue.delete(this.image.instances, this.i);
+      const instanceData = { ...this.image.instances[this.i] }
+      Vue.delete(this.image.instances, this.i)
 
       this.deleteSceneElement({
-        element: "image",
+        element: 'image',
         instance: true,
         id: instanceData.id,
         materialId: this.image.id,
         elementData: this.image,
         instanceData,
-      });
+      })
     },
     cancelEditInstanceName() {
-      this.editingName = false;
-      this.instance.name = this.originalName;
+      this.editingName = false
+      this.instance.name = this.originalName
     },
     editInstanceName() {
       if (!this.instance.name) {
-        return this.cancelEditInstanceName();
+        return this.cancelEditInstanceName()
       }
-      this.editingName = false;
+      this.editingName = false
       this.updateSceneElement({
-        element: "image",
+        element: 'image',
         instance: true,
-        property: "name",
+        property: 'name',
         id: this.instance.sk,
         elementData: this.image,
         instanceData: this.instance,
-      });
+      })
     },
     toggleVisibility() {
-      Vue.set(this.instance, "enabled", !this.instance.enabled);
+      Vue.set(this.instance, 'enabled', !this.instance.enabled)
       this.updateSceneElement({
-        element: "image",
+        element: 'image',
         instance: true,
-        property: "enabled",
+        property: 'enabled',
         id: this.instance.sk,
         elementData: this.image,
         instanceData: this.instance,
-      });
+      })
     },
     updateInstanceClickEvent() {
       this.updateSceneElement({
-        element: "image",
+        element: 'image',
         instance: true,
-        property: "clickEvent",
+        property: 'clickEvent',
         id: this.instance.sk,
         elementData: this.image,
         instanceData: this.instance,
-      });
+      })
     },
     updateInstanceProperties() {
       this.updateSceneElement({
-        element: "image",
+        element: 'image',
         instance: true,
-        property: "properties",
+        property: 'properties',
         id: this.instance.sk,
         elementData: this.image,
         instanceData: this.instance,
-      });
+      })
     },
     updateInstanceTransform() {
       this.updateSceneElement({
-        element: "image",
+        element: 'image',
         instance: true,
-        property: "transform",
+        property: 'transform',
         custom: this.instance.customRendering,
         id: this.instance.sk,
         elementData: this.image,
         instanceData: this.instance,
-      });
+      })
     },
     addInstance(instance) {
-      this.$emit("addInstance", instance);
+      this.$emit('addInstance', instance)
     },
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>

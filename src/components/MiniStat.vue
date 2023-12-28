@@ -15,8 +15,8 @@ export default {
   data: () => ({}),
   props: {
     icon: String,
-    stats: Object
-  }
+    stats: Object,
+  },
 }
 </script>
 

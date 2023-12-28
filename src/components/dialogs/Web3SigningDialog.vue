@@ -4,7 +4,13 @@
       <v-card-text>
         <div class="text-h4 text-center pt-6">Sign Message To Log In</div>
         <div class="text-center d-flex justify-center flex-column" style="min-height: 150px" v-if="remainingTime >= 1">
-          <v-progress-circular class="text-center mx-auto" rotate="-90" size="60" :value="remainingTime ? (remainingTime / 90) * 100 : 100" :color="signingTimerColor">
+          <v-progress-circular
+            class="text-center mx-auto"
+            rotate="-90"
+            size="60"
+            :value="remainingTime ? (remainingTime / 90) * 100 : 100"
+            :color="signingTimerColor"
+          >
             <span v-if="signingTimerTextColor">{{ remainingTime }}</span>
           </v-progress-circular>
         </div>
@@ -29,21 +35,21 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import { DateTime } from "luxon";
+import { mapGetters } from 'vuex'
+import { DateTime } from 'luxon'
 
 export default {
-  name: "Web3SigningDialog",
+  name: 'Web3SigningDialog',
   data() {
     return {
       countdownTime: 90,
       countdownInterval: null,
-    };
+    }
   },
   watch: {
     signing(newVal) {
       if (newVal) {
-        this.startCountdown();
+        this.startCountdown()
       }
     },
   },
@@ -52,67 +58,67 @@ export default {
   },
   computed: {
     ...mapGetters({
-      connected: "auth/connected",
-      loadingAuth: "auth/loadingAuth",
-      signing: "auth/signing",
-      signatureMessage: "auth/signatureMessage",
+      connected: 'auth/connected',
+      loadingAuth: 'auth/loadingAuth',
+      signing: 'auth/signing',
+      signatureMessage: 'auth/signatureMessage',
     }),
     show: {
       get() {
-        return this.value;
+        return this.value
       },
       set(value) {
-        this.$emit("input", value);
+        this.$emit('input', value)
       },
     },
     remainingTime() {
-      return this.countdownTime;
+      return this.countdownTime
     },
     showCountdown() {
-      return this.signing && this.remainingTime > 0;
+      return this.signing && this.remainingTime > 0
     },
     signingTime() {
-      return DateTime.now().toUnixInteger() - (this.sigTokenExpires || 0);
+      return DateTime.now().toUnixInteger() - (this.sigTokenExpires || 0)
     },
     signingTimerColor() {
       if ((this.remainingTime / 90) * 100 > 33) {
-        return "white";
+        return 'white'
       } else if ((this.remainingTime / 90) * 100 > 10) {
-        return "yellow";
+        return 'yellow'
       } else {
-        return "red";
+        return 'red'
       }
     },
     signingTimerTextColor() {
       if ((this.remainingTime / 90) * 100 > 33) {
-        return "";
+        return ''
       } else if ((this.remainingTime / 90) * 100 > 10) {
-        return "yellow--text";
+        return 'yellow--text'
       } else {
-        return "error--text";
+        return 'error--text'
       }
     },
     environment() {
-      return process.env.VUE_APP_NODE_ENV;
+      return process.env.VUE_APP_NODE_ENV
     },
     connectedWallet() {
-      return this.$store.getters["auth/walletAddress"](6, 4);
+      return this.$store.getters['auth/walletAddress'](6, 4)
     },
   },
   methods: {
     startCountdown() {
-      this.countdownTime = 90; // Reset the countdown time
+      this.countdownTime = 90 // Reset the countdown time
       this.countdownInterval = setInterval(() => {
         if (this.countdownTime > 0) {
-          this.countdownTime--;
+          this.countdownTime--
         } else {
-          clearInterval(this.countdownInterval);
+          clearInterval(this.countdownInterval)
         }
-      }, 1000); // Update every second
+      }, 1000) // Update every second
     },
     closeWindow() {
-      this.enabled = false;
+      this.enabled = false
     },
   },
-};
+}
 </script>

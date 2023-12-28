@@ -28,65 +28,64 @@
       </div>
 
       <div :class="presets?.length % 2 ? 'grey darken-4' : 'grey darken-3'" class="text-center pa-4">
-        <v-btn class="mx-2" @click="showAddPresetDialog"><v-icon small class="mr-1">mdi-archive-plus</v-icon> Create Empty
-          Preset</v-btn>
+        <v-btn class="mx-2" @click="showAddPresetDialog"><v-icon small class="mr-1">mdi-archive-plus</v-icon> Create Empty Preset</v-btn>
       </div>
     </content-sub-panel>
   </div>
 </template>
 
 <script>
-import ContentSubPanel from "./ContentSubPanel";
-import ScenePresetCard from "./ScenePresetCard";
-import { mapActions, mapGetters } from "vuex";
-import { DateTime } from "luxon";
+import ContentSubPanel from './ContentSubPanel'
+import ScenePresetCard from './ScenePresetCard'
+import { mapActions, mapGetters } from 'vuex'
+import { DateTime } from 'luxon'
 
 export default {
   components: {
     ContentSubPanel,
     ScenePresetCard,
   },
-  name: "ScenePresetList",
+  name: 'ScenePresetList',
   data: () => ({
     show: false,
-    dialogTitle: "",
-    buttonText: "",
-    presetToEdit: { name: "" },
-    dialogCallback: () => { },
+    dialogTitle: '',
+    buttonText: '',
+    presetToEdit: { name: '' },
+    dialogCallback: () => {},
   }),
 
   computed: {
-    ...mapGetters({ processing: "scene/processing", scene: "scene/activeScene", updatePresetProperty: "scene/updatePresetProperty" }),
+    ...mapGetters({ processing: 'scene/processing', scene: 'scene/activeScene', updatePresetProperty: 'scene/updatePresetProperty' }),
     presets() {
-      return this.scene?.presets;
+      return this.scene?.presets
     },
   },
   methods: {
-    ...mapActions({ addPreset: "scene/addPreset", clonePreset: "scene/clonePreset" }),
+    ...mapActions({ addPreset: 'scene/addPreset', clonePreset: 'scene/clonePreset' }),
     createdDate(ts) {
       if (ts) {
-        return DateTime.fromSeconds(Number(ts)).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY);
-      } else return "";
+        return DateTime.fromSeconds(Number(ts)).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)
+      } else return ''
     },
     showAddPresetDialog() {
-      this.handleDialog({ show: true, title: "New Preset Name", callback: () => this.addPreset(), buttonText: "Create Preset" });
+      this.handleDialog({ show: true, title: 'New Preset Name', callback: () => this.addPreset(), buttonText: 'Create Preset' })
     },
     cancel() {
-      this.show = false;
+      this.show = false
     },
     handleDialog(dialogOptions) {
-      this.show = dialogOptions.show;
-      this.buttonText = dialogOptions.buttonText || "Save";
-      this.dialogTitle = dialogOptions.title;
-      this.dialogCallback = dialogOptions.callback;
-      this.presetToEdit = dialogOptions.preset;
+      this.show = dialogOptions.show
+      this.buttonText = dialogOptions.buttonText || 'Save'
+      this.dialogTitle = dialogOptions.title
+      this.dialogCallback = dialogOptions.callback
+      this.presetToEdit = dialogOptions.preset
     },
     closePresetDialog() {
-      this.show = false;
-      this.dialogCallback();
-    }
+      this.show = false
+      this.dialogCallback()
+    },
   },
-};
+}
 </script>
 
 <style scoped>

@@ -24,30 +24,30 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
-  name: "ImageLibrary",
+  name: 'ImageLibrary',
   props: {
     folderPath: String,
   },
   data: () => ({
     ...mapGetters({
-      mediaLibrary: "media/library",
+      mediaLibrary: 'media/library',
     }),
   }),
   computed: {
     images() {
-      return this.mediaLibrary.images;
+      return this.mediaLibrary.images
     },
     folders() {
-      return this.mediaLibrary.folders;
+      return this.mediaLibrary.folders
     },
   },
   methods: {
     ...mapActions({
-      uploadImage: "media/uploadImage",
+      uploadImage: 'media/uploadImage',
     }),
   },
-};
+}
 </script>

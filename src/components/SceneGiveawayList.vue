@@ -1,7 +1,6 @@
 <template>
   <div>
-    <content-sub-panel :loading="loadingGiveaways" :hasContent="!!claimPoints?.length"
-      loadingMessage="Loading giveaway claim points...">
+    <content-sub-panel :loading="loadingGiveaways" :hasContent="!!claimPoints?.length" loadingMessage="Loading giveaway claim points...">
       <template v-slot:header>
         <div class="h4">Giveaway Claim Points</div>
         <v-spacer />
@@ -33,8 +32,17 @@
           <span class="text-h6">Add Claim Point</span>
         </v-card-title>
         <v-card-text>
-          <v-autocomplete autofocus outlined :items="giveaways" item-text="name" item-value="sk"
-            label="Linked Giveaways" v-model="selectedGiveaway" hide-details dense></v-autocomplete>
+          <v-autocomplete
+            autofocus
+            outlined
+            :items="giveaways"
+            item-text="name"
+            item-value="sk"
+            label="Linked Giveaways"
+            v-model="selectedGiveaway"
+            hide-details
+            dense
+          ></v-autocomplete>
         </v-card-text>
         <v-card-actions>
           <v-btn color="primary" text @click="addClaimPoint"> Add </v-btn>
@@ -46,37 +54,38 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import ContentSubPanel from "./ContentSubPanel";
-import ClaimPointCard from "./ClaimPointCard";
-import { GiveawayClaimPoint } from "../models/GiveawayClaimPoint";
+import { mapActions, mapGetters } from 'vuex'
+import ContentSubPanel from './ContentSubPanel'
+import ClaimPointCard from './ClaimPointCard'
+import { GiveawayClaimPoint } from '../models/GiveawayClaimPoint'
+import { GiveawayClaimPointInstance } from '../models/GiveawayClaimPointInstance'
 
 export default {
   components: {
     ContentSubPanel,
     ClaimPointCard,
   },
-  name: "SceneGiveawayList",
+  name: 'SceneGiveawayList',
   data: () => ({
     clickEventDialog: false,
     propertiesDialog: false,
     transformDialog: false,
     deleteDialog: false,
     detailedMode: true,
-    selectedImage: "",
+    selectedImage: '',
     newClaimPointDialog: false,
     selectedGiveaway: null,
-    dialogCallback: () => { },
+    dialogCallback: () => {},
   }),
   giveaways() {
     return this.linkedGiveaways(this.activeScene.sk) || []
   },
   computed: {
     ...mapGetters({
-      activeScene: "scene/activeScene",
-      loadingGiveaways: "giveaway/loadingGiveaways",
-      claimPoints: "scene/sceneClaimPoints",
-      linkedGiveaways: "event/giveawaysForScene"
+      activeScene: 'scene/activeScene',
+      loadingGiveaways: 'giveaway/loadingGiveaways',
+      claimPoints: 'scene/sceneClaimPoints',
+      linkedGiveaways: 'event/giveawaysForScene',
     }),
     giveaways() {
       return this.linkedGiveaways(this.activeScene.sk)
@@ -84,26 +93,33 @@ export default {
   },
   methods: {
     ...mapActions({
-      createSceneElement: "scene/createSceneElement",
-      updateSceneElement: "scene/updateSceneElement",
-      removeSceneElement: "scene/removeSceneElement",
-      toggleSoundLocators: "scene/toggleSoundLocators",
+      createSceneElement: 'scene/createSceneElement',
+      updateSceneElement: 'scene/updateSceneElement',
+      removeSceneElement: 'scene/removeSceneElement',
+      toggleSoundLocators: 'scene/toggleSoundLocators',
     }),
     openGiveawaySelectDialog() {
-      this.newClaimPointDialog = true;
+      this.newClaimPointDialog = true
     },
     addClaimPoint() {
-      this.newClaimPointDialog = false;
-      const elementData = new GiveawayClaimPoint({ name: `Claim Point ${this.claimPoints.length + 1}`, giveawayId: this.selectedGiveaway });
-      this.createSceneElement({ element: "claimPoint", elementData });
+      this.newClaimPointDialog = false
+      const elementData = new GiveawayClaimPoint({
+        name: `Claim Point ${this.claimPoints.length + 1}`,
+        giveawayId: this.selectedGiveaway,
+      })
+      const instanceData = new GiveawayClaimPointInstance({
+        name: `Claim Point Instance ${this.claimPoints.length + 1}`,
+      })
+      elementData.instances.push(instanceData)
+      this.createSceneElement({ element: 'claimpoint', elementData, instanceData })
     },
     removeClaimPoint(i) {
-      const elementData = this.claimPoints[i];
-      this.deleteSceneElement({ element: "claimPoint", elementData, id: elementData.sk });
+      const elementData = this.claimPoints[i]
+      this.deleteSceneElement({ element: 'claimpoint', elementData, id: elementData.sk })
     },
     updateProperties(wssMessages) {
-      this.$emit("updateProperties", { wssMessages });
+      this.$emit('updateProperties', { wssMessages })
     },
   },
-};
+}
 </script>

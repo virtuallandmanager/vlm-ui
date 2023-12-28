@@ -20,34 +20,34 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios'
 
 export default {
   data() {
     return {
       servers: [
-        { name: "API Server", url: "https://api.vlm.gg/_health", status: "Unknown" },
+        { name: 'API Server', url: 'https://api.vlm.gg/_health', status: 'Unknown' },
         // Add more servers as needed
       ],
-    };
+    }
   },
   methods: {
     async checkServerStatus(server, index) {
       try {
-        await axios.get(server.url);
-        this.$set(this.servers, index, { ...server, status: "Online" });
+        await axios.get(server.url)
+        this.$set(this.servers, index, { ...server, status: 'Online' })
       } catch (error) {
-        this.$set(this.servers, index, { ...server, status: "Offline" });
+        this.$set(this.servers, index, { ...server, status: 'Offline' })
       }
     },
   },
   mounted() {
     this.servers.forEach((server, index) => {
-      this.checkServerStatus(server, index);
+      this.checkServerStatus(server, index)
       setInterval(() => {
-        this.checkServerStatus(server, index);
-      }, 5000); // Check server status every 5 seconds
-    });
+        this.checkServerStatus(server, index)
+      }, 5000) // Check server status every 5 seconds
+    })
   },
-};
+}
 </script>

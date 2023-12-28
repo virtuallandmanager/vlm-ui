@@ -1,10 +1,10 @@
 export default {
   namespaced: true,
   state: () => ({
-    transform: { open: false, props: { elementData: {}, instanceData: {}, title: "" } },
-    properties: { open: false, props: { element: "", elementData: {}, instanceData: {}, instance: false, title: "" } },
-    clickEvent: { open: false, props: { element: "", elementData: {}, instanceData: {}, instance: false, title: "" } },
-    delete: { open: false, props: { element: "", elementData: {}, instanceData: {}, instance: false, title: "", property: "" } },
+    transform: { open: false, props: { element: '', instanceData: {}, title: '' } },
+    properties: { open: false, props: { element: '', elementData: {}, instanceData: {}, instance: false, title: '' } },
+    clickEvent: { open: false, props: { element: '', elementData: {}, instanceData: {}, instance: false, title: '' } },
+    delete: { open: false, props: { element: '', elementData: {}, instanceData: {}, instance: false, title: '', property: '' } },
   }),
   getters: {
     transformDialogOpen: (state) => state.transform.open,
@@ -18,54 +18,54 @@ export default {
   },
   mutations: {
     SHOW_TRANSFORM_DIALOG(state, props) {
-      state.transform = { open: true, props };
+      state.transform = { open: true, props }
     },
     HIDE_TRANSFORM_DIALOG(state) {
-      state.transform = { open: false, props: { instanceData: {}, title: "" } };
+      state.transform = { open: false, props: { element: '', elementData: {}, instanceData: {}, title: '' } }
     },
     SHOW_PROPERTIES_DIALOG(state, props) {
-      state.properties = { open: true, props };
+      state.properties = { open: true, props }
     },
     HIDE_PROPERTIES_DIALOG(state) {
-      state.properties = { open: false, props: { elementData: {}, title: "" } };
+      state.properties = { open: false, props: { element: '', elementData: {}, instanceData: {}, title: '' } }
     },
     SHOW_CLICK_EVENT_DIALOG(state, props) {
-      state.clickEvent = { open: true, props };
+      state.clickEvent = { open: true, props }
     },
     HIDE_CLICK_EVENT_DIALOG(state) {
-      state.clickEvent = { open: false, props: { elementData: {}, title: "" } };
+      state.clickEvent = { open: false, props: { element: '', elementData: {}, instanceData: {}, title: '' } }
     },
     SHOW_DELETE_DIALOG(state, props) {
-      state.delete = { open: true, props };
+      state.delete = { open: true, props }
     },
     HIDE_DELETE_DIALOG(state) {
-      state.delete = { open: false, props: { elementData: {}, title: "" } };
+      state.delete = { open: false, props: { element: '', elementData: {}, instanceData: {}, title: '' } }
     },
   },
   actions: {
     showTransformDialog: ({ commit }, props) => {
-      commit("SHOW_TRANSFORM_DIALOG", props);
+      commit('SHOW_TRANSFORM_DIALOG', props)
     },
-    hideTransformDialog: ({ commit }, props) => {
-      commit("HIDE_TRANSFORM_DIALOG", props);
+    hideTransformDialog: ({ commit }) => {
+      commit('HIDE_TRANSFORM_DIALOG')
     },
     showPropertiesDialog: ({ commit }, props) => {
-      commit("SHOW_PROPERTIES_DIALOG", props);
+      commit('SHOW_PROPERTIES_DIALOG', props)
     },
     hidePropertiesDialog: ({ commit }, props) => {
-      commit("HIDE_PROPERTIES_DIALOG", props);
+      commit('HIDE_PROPERTIES_DIALOG', props)
     },
     showClickEventDialog: ({ commit }, props) => {
-      commit("SHOW_CLICK_EVENT_DIALOG", props);
+      commit('SHOW_CLICK_EVENT_DIALOG', props)
     },
     hideClickEventDialog: ({ commit }, props) => {
-      commit("HIDE_CLICK_EVENT_DIALOG", props);
+      commit('HIDE_CLICK_EVENT_DIALOG', props)
     },
     showDeleteDialog: ({ commit }, props) => {
-      commit("SHOW_DELETE_DIALOG", props);
+      commit('SHOW_DELETE_DIALOG', props)
     },
     hideDeleteDialog: ({ commit }, props) => {
-      commit("HIDE_DELETE_DIALOG", props);
+      commit('HIDE_DELETE_DIALOG', props)
     },
   },
-};
+}

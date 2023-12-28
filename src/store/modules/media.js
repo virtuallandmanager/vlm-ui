@@ -1,9 +1,9 @@
-import { uploadUserImage } from "../dal/media";
+import { uploadUserImage } from '../dal/media'
 
 export default {
   namespaced: true,
   state: () => ({
-    currentFolderPath: "/",
+    currentFolderPath: '/',
     uploadingImage: false,
     library: [],
   }),
@@ -14,29 +14,29 @@ export default {
   mutations: {
     startImageUpload: (state) => (state.uploadingImage = true),
     stopImageUpload: (state, errorMessage) => {
-      state.uploadingImage = false;
-      state.imageUploadError = errorMessage;
+      state.uploadingImage = false
+      state.imageUploadError = errorMessage
     },
   },
   actions: {
     async uploadUserImage({ commit }, payload) {
       if (!payload.image) {
-        return;
+        return
       }
 
-      const formData = new FormData();
+      const formData = new FormData()
 
       // Append extra data to the form data
-      formData.append("image", payload.image);
+      formData.append('image', payload.image)
 
-      commit("startImageUpload");
+      commit('startImageUpload')
       try {
-        const uploadedImage = await uploadUserImage(formData);
-        commit("stopImageUpload");
-        return uploadedImage;
+        const uploadedImage = await uploadUserImage(formData)
+        commit('stopImageUpload')
+        return uploadedImage
       } catch (error) {
-        commit("stopImageUpload", error);
+        commit('stopImageUpload', error)
       }
     },
   },
-};
+}

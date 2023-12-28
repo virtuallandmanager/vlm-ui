@@ -7,32 +7,16 @@
         Add Video
       </v-btn>
     </div>
-    <input
-      style="display: none"
-      ref="fileInput"
-      type="file"
-      accept=".png,.jpg,.jpeg"
-      @change="addImage"
-    />
+    <input style="display: none" ref="fileInput" type="file" accept=".png,.jpg,.jpeg" @change="addImage" />
     <div v-if="images.length < 1" class="mt-6">
-      <div class="text-body-1 text-center">
-        There are no videos in your library.
-      </div>
+      <div class="text-body-1 text-center">There are no videos in your library.</div>
     </div>
     <div v-if="images.length > 0" class="mt-6">
-      <v-card
-        v-for="(folder, i) in folders"
-        :key="i"
-        class="text-body-1 text-center"
-      >
+      <v-card v-for="(folder, i) in folders" :key="i" class="text-body-1 text-center">
         <v-icon>mdi-folder</v-icon>
         <v-icon>{{ folder }}</v-icon>
       </v-card>
-      <v-card
-        v-for="(image, i) in image"
-        :key="i"
-        class="text-body-1 text-center"
-      >
+      <v-card v-for="(image, i) in image" :key="i" class="text-body-1 text-center">
         <v-img :src="image" />
       </v-card>
     </div>
@@ -40,25 +24,25 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
-  name: "VideoLibrary",
+  name: 'VideoLibrary',
   props: {
     folderPath: String,
   },
   data: () => ({
     ...mapGetters({
-      videoLibrary: "video/library",
+      videoLibrary: 'video/library',
     }),
   }),
   methods: {
     ...mapActions({
-      uploadVideo: "video/uploadVideo",
+      uploadVideo: 'video/uploadVideo',
     }),
     folders() {
-      return [];
+      return []
     },
   },
-};
+}
 </script>

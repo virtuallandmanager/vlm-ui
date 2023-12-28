@@ -23,7 +23,8 @@
           @click:append-outer="toggleEditMode()"
           @blur="toggleEditMode()"
           dense
-          @change="editImageName()"></v-text-field>
+          @change="editImageName()"
+        ></v-text-field>
       </div>
     </div>
     <div class="d-flex flex-column justify-space-between align-center black dark py-1">
@@ -32,7 +33,7 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-icon v-bind="attrs" v-on="on" :class="nft.enabled ? '' : 'red--text'">
-                {{ nft.enabled ? "mdi-eye" : "mdi-eye-off" }}
+                {{ nft.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
               </v-icon>
             </template>
             <span>Show/Hide All</span>
@@ -97,25 +98,25 @@
 </template>
 
 <script>
-import Vue from "vue";
-import { mapActions } from "vuex";
-import NftInstanceCard from "./NftInstanceCard";
-import { SceneNft } from "../models/SceneNft";
-import { SceneNftInstance } from "../models/SceneNftInstance";
-import { EDialogType } from "../models/Dialog";
+import Vue from 'vue'
+import { mapActions } from 'vuex'
+import NftInstanceCard from './NftInstanceCard'
+import { SceneNft } from '../models/SceneNft'
+import { SceneNftInstance } from '../models/SceneNftInstance'
+import { EDialogType } from '../models/Dialog'
 
 export default {
   components: {
     NftInstanceCard,
   },
-  name: "SceneNftCard",
+  name: 'SceneNftCard',
   props: {
     property: Object,
     i: Number,
     nft: {
       type: Object,
       default: function () {
-        return new SceneNft();
+        return new SceneNft()
       },
     },
   },
@@ -125,152 +126,152 @@ export default {
     selectedInstance: null,
     editingName: false,
     clickEvents: [
-      { text: "None", value: 0, default: true },
-      { text: "Website Link", value: 1 },
-      { text: "Play Sound (Coming Soon)", value: 2, disabled: true },
-      { text: "Move Player in Scene (Coming Soon)", value: 3, disabled: true },
-      { text: "Teleport Player (Coming Soon)", value: 4, disabled: true },
+      { text: 'None', value: 0, default: true },
+      { text: 'Website Link', value: 1 },
+      { text: 'Play Sound (Coming Soon)', value: 2, disabled: true },
+      { text: 'Move Player in Scene (Coming Soon)', value: 3, disabled: true },
+      { text: 'Teleport Player (Coming Soon)', value: 4, disabled: true },
     ],
     panels: [],
-    imageLink: "",
+    imageLink: '',
   }),
   mounted() {
-    this.selectedImage = this.nft;
-    this.imageLink = this.nft.imageLink;
+    this.selectedImage = this.nft
+    this.imageLink = this.nft.imageLink
   },
   computed: {
     truncatedName() {
-      const nftNameArr = this.nft && this.nft.name.split("");
-      let noSpacesLength = 0;
-      let truncated = this.nft.name;
+      const nftNameArr = this.nft && this.nft.name.split('')
+      let noSpacesLength = 0
+      let truncated = this.nft.name
       nftNameArr.forEach((char) => {
-        if (char !== " ") {
-          noSpacesLength++;
+        if (char !== ' ') {
+          noSpacesLength++
         } else {
-          noSpacesLength = 0;
+          noSpacesLength = 0
         }
 
         if (noSpacesLength > 18) {
-          truncated = truncated.substr(truncated.length - 18);
-          noSpacesLength = 0;
+          truncated = truncated.substr(truncated.length - 18)
+          noSpacesLength = 0
         }
-      });
+      })
 
       if (truncated !== this.nft.name) {
-        return `...${truncated}`;
+        return `...${truncated}`
       } else {
-        return this.nft.name;
+        return this.nft.name
       }
     },
   },
   methods: {
     ...mapActions({
-      uploadImage: "nft/uploadImage",
+      uploadImage: 'nft/uploadImage',
     }),
     toggleEditMode() {
-      this.editingName = !this.editingName;
+      this.editingName = !this.editingName
     },
     expandPanels() {
-      this.panels = [];
+      this.panels = []
       for (let i = 0; i < this.nft.instances.length; i++) {
-        this.panels.push(i);
+        this.panels.push(i)
       }
     },
     collapsePanels() {
-      this.panels = [];
+      this.panels = []
     },
     toggleDetails() {
-      Vue.set(this.nft, "showDetails", !this.nft.showDetails);
+      Vue.set(this.nft, 'showDetails', !this.nft.showDetails)
     },
     removeImage() {
-      this.deleteDialog = false;
-      this.$emit("onRemove");
+      this.deleteDialog = false
+      this.$emit('onRemove')
     },
     removeImageInstance(i) {
-      const instanceData = this.nft.instances[i];
-      Vue.delete(this.nft.instances, i);
+      const instanceData = this.nft.instances[i]
+      Vue.delete(this.nft.instances, i)
 
       this.updateProperties({
-        action: "delete",
-        element: "nft",
+        action: 'delete',
+        element: 'nft',
         instance: true,
         id: instanceData.id,
         materialId: this.nft.id,
         elementData: this.nft,
         instanceData,
-      });
+      })
     },
     addInstance(duplicate) {
-      const newInstance = new SceneNftInstance();
-      newInstance.name = `Instance ${this.nft.instances.length + 1}`;
-      newInstance.clickEvent = { ...this.nft.clickEvent, synced: true };
-      newInstance.scale.x = this.nft.width / 1000;
-      newInstance.scale.x = this.nft.width / 1000;
-      newInstance.scale.y = this.nft.height / 1000;
+      const newInstance = new SceneNftInstance()
+      newInstance.name = `Instance ${this.nft.instances.length + 1}`
+      newInstance.clickEvent = { ...this.nft.clickEvent, synced: true }
+      newInstance.scale.x = this.nft.width / 1000
+      newInstance.scale.x = this.nft.width / 1000
+      newInstance.scale.y = this.nft.height / 1000
 
       if (duplicate) {
-        newInstance.enabled = !!duplicate.enabled;
-        newInstance.position = { ...duplicate.position };
-        newInstance.scale = { ...duplicate.scale };
-        newInstance.rotation = { ...duplicate.rotation };
-        newInstance.name = `${duplicate.name} (Copy)`;
-        newInstance.clickEvent = { ...duplicate.clickEvent };
+        newInstance.enabled = !!duplicate.enabled
+        newInstance.position = { ...duplicate.position }
+        newInstance.scale = { ...duplicate.scale }
+        newInstance.rotation = { ...duplicate.rotation }
+        newInstance.name = `${duplicate.name} (Copy)`
+        newInstance.clickEvent = { ...duplicate.clickEvent }
       }
 
-      this.nft.instances.push(newInstance);
+      this.nft.instances.push(newInstance)
       this.updateProperties({
-        action: "create",
-        element: "nft",
+        action: 'create',
+        element: 'nft',
         instance: true,
         id: newInstance.id,
         elementData: this.nft,
         instanceData: newInstance,
-      });
+      })
     },
     editInstanceName(instance) {
       this.updateProperties({
-        action: "update",
-        element: "nft",
+        action: 'update',
+        element: 'nft',
         instance: true,
-        property: "name",
+        property: 'name',
         id: instance.id,
         elementData: this.nft,
         instanceData: instance,
-      });
+      })
     },
     editImageName() {
       this.updateProperties({
-        action: "update",
-        element: "nft",
-        property: "name",
+        action: 'update',
+        element: 'nft',
+        property: 'name',
         id: this.nft.id,
         elementData: this.nft,
-      });
+      })
     },
     saveImageProperties() {
-      this.closePropertiesDialog();
+      this.closePropertiesDialog()
     },
     toggleVisibility(instance) {
       if (instance) {
-        Vue.set(instance, "enabled", !instance.enabled);
+        Vue.set(instance, 'enabled', !instance.enabled)
         this.updateProperties({
-          action: "update",
-          element: "nft",
+          action: 'update',
+          element: 'nft',
           instance: true,
-          property: "enabled",
+          property: 'enabled',
           id: instance.id,
           elementData: this.nft,
           instanceData: instance,
-        });
+        })
       } else {
-        Vue.set(this.nft, "enabled", !this.nft.enabled);
+        Vue.set(this.nft, 'enabled', !this.nft.enabled)
         this.updateProperties({
-          action: "update",
-          element: "nft",
-          property: "enabled",
+          action: 'update',
+          element: 'nft',
+          property: 'enabled',
           id: this.nft.id,
           elementData: this.nft,
-        });
+        })
       }
     },
     openImageClickEventDialog() {
@@ -278,59 +279,58 @@ export default {
         type: EDialogType.clickEvent,
         element: this.nft,
         callback: this.updateImageClickEvent,
-      });
+      })
     },
     openImagePropertiesDialog() {
       this.handleDialog({
         type: EDialogType.properties,
         element: this.nft,
         callback: this.updateImageProperties,
-      });
+      })
     },
     openImageDeleteDialog() {
       this.handleDialog({
         type: EDialogType.delete,
         element: this.nft,
         callback: this.removeImage,
-      });
+      })
     },
     updateImageClickEvent() {
       this.updateProperties({
-        action: "update",
-        element: "nft",
-        property: "clickEvent",
+        action: 'update',
+        element: 'nft',
+        property: 'clickEvent',
         id: this.nft.id,
         elementData: this.nft,
-      });
+      })
     },
     updateImageProperties() {
       this.updateProperties({
-        action: "update",
-        element: "nft",
-        property: "properties",
+        action: 'update',
+        element: 'nft',
+        property: 'properties',
         id: this.nft.id,
         elementData: this.nft,
-      });
+      })
     },
     updateInstanceProperties(instance) {
       this.updateProperties({
-        action: "update",
-        element: "nft",
+        action: 'update',
+        element: 'nft',
         instance: true,
-        property: "properties",
+        property: 'properties',
         id: instance.id,
         elementData: this.nft,
         instanceData: instance,
-      });
+      })
     },
-    panelChange() {
-    },
+    panelChange() {},
     updateProperties(wssMessages) {
-      this.$emit("updateProperties", wssMessages);
+      this.$emit('updateProperties', wssMessages)
     },
     handleDialog(dialogOptions) {
-      this.$emit("handleDialog", { show: true, ...dialogOptions });
+      this.$emit('handleDialog', { show: true, ...dialogOptions })
     },
   },
-};
+}
 </script>

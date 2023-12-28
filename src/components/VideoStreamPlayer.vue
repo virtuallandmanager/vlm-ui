@@ -6,31 +6,33 @@
     <div class="d-flex justify-space-between">
       <v-chip label small>Stream Status:</v-chip>
       <div v-if="src && isValidUrl">
-        <v-chip small label color="success" v-if="isLiveStream && isValidUrl && isStreaming && enabled"><v-icon x-small
-            class="mr-1">mdi-check-circle</v-icon>LIVE</v-chip>
-            <v-chip small label color="success" v-if="isLiveStream && isValidUrl && isStreaming && !enabled"><v-icon x-small
-            class="mr-1">mdi-check-circle</v-icon>LIVE</v-chip>
-        <v-chip small label color="info" v-if="!isLiveStream && isValidUrl && isStreaming"><v-icon x-small
-            class="mr-1">mdi-help-circle</v-icon>STATIC CONTENT</v-chip>
-        <v-chip small label color="error" v-if="(!isLiveStream && !isValidUrl) || !isStreaming"><v-icon x-small
-            class="mr-1">mdi-minus-circle</v-icon>INACTIVE / INVALID</v-chip>
+        <v-chip small label color="success" v-if="isLiveStream && isValidUrl && isStreaming && enabled"
+          ><v-icon x-small class="mr-1">mdi-check-circle</v-icon>LIVE</v-chip
+        >
+        <v-chip small label color="success" v-if="isLiveStream && isValidUrl && isStreaming && !enabled"
+          ><v-icon x-small class="mr-1">mdi-check-circle</v-icon>LIVE</v-chip
+        >
+        <v-chip small label color="info" v-if="!isLiveStream && isValidUrl && isStreaming"
+          ><v-icon x-small class="mr-1">mdi-help-circle</v-icon>STATIC CONTENT</v-chip
+        >
+        <v-chip small label color="error" v-if="(!isLiveStream && !isValidUrl) || !isStreaming"
+          ><v-icon x-small class="mr-1">mdi-minus-circle</v-icon>INACTIVE / INVALID</v-chip
+        >
       </div>
       <v-chip small label color="info" v-else-if="src && !isStreaming" class="text-center">
         <v-icon x-small class="mr-1">mdi-server-off</v-icon>NO LIVE CONTENT
       </v-chip>
-      <v-chip small label color="error" v-else class="text-center"><v-icon class="mr-1"
-          x-small>mdi-minus-circle</v-icon>NO
-        STREAM URL</v-chip>
+      <v-chip small label color="error" v-else class="text-center"><v-icon class="mr-1" x-small>mdi-minus-circle</v-icon>NO STREAM URL</v-chip>
     </div>
   </div>
 </template>
 
 <script>
-import videojs from "video.js";
-import "video.js/dist/video-js.css";
+import videojs from 'video.js'
+import 'video.js/dist/video-js.css'
 
 export default {
-  name: "VideoStreamPlayer",
+  name: 'VideoStreamPlayer',
   props: {
     src: {
       type: String,
@@ -47,52 +49,52 @@ export default {
       isStreaming: true,
       isLiveStream: false,
       isValidUrl: true,
-    };
+    }
   },
   mounted() {
     try {
-      this.player = videojs(this.$refs.videoPlayer, this.getOptions(), function onPlayerReady() { });
+      this.player = videojs(this.$refs.videoPlayer, this.getOptions(), function onPlayerReady() {})
 
-      this.player.on("loadedmetadata", () => {
-        this.isLiveStream = this.player.duration() === Infinity;
-        this.isStreaming = !this.player.paused();
-        this.updateVideoState();
-      });
+      this.player.on('loadedmetadata', () => {
+        this.isLiveStream = this.player.duration() === Infinity
+        this.isStreaming = !this.player.paused()
+        this.updateVideoState()
+      })
 
-      this.player.on("error", () => {
-        this.isStreaming = false;
-        const error = this.player.error();
+      this.player.on('error', () => {
+        this.isStreaming = false
+        const error = this.player.error()
         if (error && error.code === 2) {
           // Check if it's a network error
-          this.isValidUrl = false;
-          this.updateVideoState();
+          this.isValidUrl = false
+          this.updateVideoState()
         }
-      });
+      })
     } catch (e) {
-      this.isLiveStream = false;
-      this.isValidUrl = false;
-      this.isStreaming = false;
-      this.updateVideoState();
+      this.isLiveStream = false
+      this.isValidUrl = false
+      this.isStreaming = false
+      this.updateVideoState()
     }
   },
   beforeDestroy() {
     if (this.player) {
-      if (this.player.hasEventListener("error")) {
-        this.player.off("error");
+      if (this.player.hasEventListener('error')) {
+        this.player.off('error')
       }
-      this.player.dispose();
+      this.player.dispose()
     }
   },
   watch: {
     src(newSource) {
       if (this.player) {
-        this.player.src({ type: "application/x-mpegURL", src: newSource });
+        this.player.src({ type: 'application/x-mpegURL', src: newSource })
       }
     },
   },
   methods: {
     updateVideoState() {
-      this.$emit("updateVideoState", this.isValidUrl);
+      this.$emit('updateVideoState', this.isValidUrl)
     },
     getOptions() {
       return {
@@ -114,13 +116,13 @@ export default {
         sources: [
           {
             src: this.src,
-            type: "application/x-mpegURL",
+            type: 'application/x-mpegURL',
           },
         ],
-      };
+      }
     },
   },
-};
+}
 </script>
 
 <style>

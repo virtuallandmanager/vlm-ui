@@ -24,13 +24,14 @@
 </template>
 
 <script>
-import XYZButtons from "./XYZButtons.vue";
+import XYZButtons from './XYZButtons.vue'
+import Vue from 'vue'
 export default {
   components: { XYZButtons },
-  name: "MoveScaleRotate",
+  name: 'MoveScaleRotate',
 
   data: () => ({
-    mode: "position",
+    mode: 'position',
   }),
   props: {
     instanceData: {
@@ -57,8 +58,9 @@ export default {
   },
   methods: {
     onChange() {
-      this.$emit("onChange");
+      Vue.set(this.instanceData, this.mode, { ...this.instanceData[this.mode] })
+      this.$emit('onChange')
     },
   },
-};
+}
 </script>

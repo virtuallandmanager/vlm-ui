@@ -13,7 +13,7 @@
         <v-row>
           <v-col md="4" sm="12" v-for="(event, i) in linkedEvents" :key="i">
             <router-link :to="`event/${event.sk}`" class="event-card-link">
-            <event-card :event="event" @updateProperties="updateProperties" />
+              <event-card :event="event" @updateProperties="updateProperties" />
             </router-link>
           </v-col>
         </v-row>
@@ -23,39 +23,39 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import EventCard from "./EventCard";
+import { mapGetters } from 'vuex'
+import EventCard from './EventCard'
 
 export default {
   components: {
     EventCard,
   },
-  name: "SceneImageList",
+  name: 'SceneImageList',
   data: () => ({
     clickEventDialog: false,
     propertiesDialog: false,
     transformDialog: false,
     deleteDialog: false,
     detailedMode: true,
-    selectedImage: "",
-    dialogCallback: () => { },
+    selectedImage: '',
+    dialogCallback: () => {},
   }),
   computed: {
     ...mapGetters({
-      activeScene: "scene/activeScene",
-      eventsForScene: "event/eventsForScene",
+      activeScene: 'scene/activeScene',
+      eventsForScene: 'event/eventsForScene',
     }),
     linkedEvents() {
-      return this.eventsForScene(this.activeScene?.sk);
+      return this.eventsForScene(this.activeScene?.sk)
     },
   },
   methods: {
     linkEvent() {
-      this.$refs.fileInput.click();
+      this.$refs.fileInput.click()
     },
     updateProperties(wssMessages) {
-      this.$emit("updateProperties", { wssMessages });
+      this.$emit('updateProperties', { wssMessages })
     },
   },
-};
+}
 </script>

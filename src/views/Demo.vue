@@ -1,6 +1,10 @@
 <template>
-  <focus-page :loadingMessage="`Connecting To ${scene.name || 'Scene'}...`" :loading="processing || loadingPreset"
-    :noContent="!scene" :imageLink="scene?.imageLink || placeholder">
+  <focus-page
+    :loadingMessage="`Connecting To ${scene.name || 'Scene'}...`"
+    :loading="processing || loadingPreset"
+    :noContent="!scene"
+    :imageLink="scene?.imageLink || placeholder"
+  >
     <transform-dialog />
     <delete-dialog />
     <click-event-dialog />
@@ -87,27 +91,27 @@
 
 <script>
 // import SceneAnalytics from "../components/SceneAnalytics";
-import SceneArtList from "../components/SceneArtList";
-import SceneVideoList from "../components/SceneVideoList";
-import SceneEventList from "../components/SceneEventList";
+import SceneArtList from '../components/SceneArtList'
+import SceneVideoList from '../components/SceneVideoList'
+import SceneEventList from '../components/SceneEventList'
 // import SceneSoundList from "../components/SceneSoundList";
-import SceneWidgetList from "../components/SceneWidgetList";
-import ScenePresetList from "../components/ScenePresetList";
+import SceneWidgetList from '../components/SceneWidgetList'
+import ScenePresetList from '../components/ScenePresetList'
 // import SceneModeration from "../components/SceneModeration";
-import SceneSettings from "../components/SceneSettings";
+import SceneSettings from '../components/SceneSettings'
 // import ImageLibrary from "../components/ImageLibrary";
-import { mapActions, mapGetters } from "vuex";
-import { DateTime } from "luxon";
-import placeholderImg from "@/assets/placeholder.png";
-import FocusPage from "../components/FocusPage";
-import TransformDialog from "../components/dialogs/TransformDialog";
-import PropertiesDialog from "../components/dialogs/PropertiesDialog";
-import DeleteDialog from "../components/dialogs/DeleteDialog";
-import ClickEventDialog from "../components/dialogs/ClickEventDialog";
-import store from "../store";
+import { mapActions, mapGetters } from 'vuex'
+import { DateTime } from 'luxon'
+import placeholderImg from '@/assets/placeholder.png'
+import FocusPage from '../components/FocusPage'
+import TransformDialog from '../components/dialogs/TransformDialog'
+import PropertiesDialog from '../components/dialogs/PropertiesDialog'
+import DeleteDialog from '../components/dialogs/DeleteDialog'
+import ClickEventDialog from '../components/dialogs/ClickEventDialog'
+import store from '../store'
 
 export default {
-  name: "Scene",
+  name: 'Scene',
   components: {
     // SceneAnalytics,
     SceneArtList,
@@ -131,92 +135,99 @@ export default {
     updateHistoryDialog: false,
     editingScreenName: false,
     selectedPreset: null,
-    tab: "tab-2",
+    tab: 'tab-2',
   }),
   beforeRouteEnter(to, from, next) {
-    const isAuthenticated = store.getters["auth/authenticated"];
+    const isAuthenticated = store.getters['auth/authenticated']
 
     if (!isAuthenticated) {
-      next("/"); // Redirect to the login page if the user is not authenticated
+      next('/') // Redirect to the login page if the user is not authenticated
     } else {
-      next(); // Continue rendering the component
+      next() // Continue rendering the component
     }
   },
   async mounted() {
-    await this.connectToScene("00000000-0000-0000-0000-000000000000");
+    await this.connectToScene('00000000-0000-0000-0000-000000000000')
   },
   beforeDestroy() {
-    this.disconnectFromScene();
+    this.disconnectFromScene()
   },
   computed: {
     scene() {
-      return this.$store.state.scene.activeScene || {};
+      return this.$store.state.scene.activeScene || {}
     },
     scenePreset() {
       if (!this.$store.state.scene.activeScene) {
-        return {};
+        return {}
       }
 
-      const activeScene = this.$store.state.scene.activeScene;
+      const activeScene = this.$store.state.scene.activeScene
       if (!activeScene) {
-        return {};
+        return {}
       }
       const presetId = activeScene.scenePreset,
         preset = activeScene?.presets?.find((preset) => preset.sk == presetId),
-        scenePresets = activeScene.presets || [];
+        scenePresets = activeScene.presets || []
 
-      return preset || scenePresets[0] || {};
+      return preset || scenePresets[0] || {}
     },
     placeholder() {
-      return placeholderImg;
+      return placeholderImg
     },
     connectedColor() {
-      let colors = { r: 100, g: 100, b: 100 };
+      let colors = { r: 100, g: 100, b: 100 }
       if (this.connected) {
-        colors.g += 100;
+        colors.g += 100
       } else {
-        colors.r += 100;
-        colors.g -= 100;
+        colors.r += 100
+        colors.g -= 100
       }
 
-      return `rgba(${colors.r},${colors.g},${colors.b},${this.blinkBrightness})`;
+      return `rgba(${colors.r},${colors.g},${colors.b},${this.blinkBrightness})`
     },
     worlds() {
-      const worldNames = [];
+      const worldNames = []
       if (this.scene.worlds) {
         this.scene.worlds.forEach((world) => {
           switch (world) {
             case 0:
-              worldNames.push("Decentraland");
-              break;
+              worldNames.push('Decentraland')
+              break
             case 1:
-              worldNames.push("Hyperfy");
+              worldNames.push('Hyperfy')
           }
-        });
+        })
       }
-      return worldNames.join(", ") || "None";
+      return worldNames.join(', ') || 'None'
     },
-    ...mapGetters({ user: "user/userInfo", connected: "scene/connected", inBlink: "scene/inBlink", outBlink: "scene/outBlink", processing: "scene/processing", loadingPreset: "scene/loadingPreset" }),
+    ...mapGetters({
+      user: 'user/userInfo',
+      connected: 'scene/connected',
+      inBlink: 'scene/inBlink',
+      outBlink: 'scene/outBlink',
+      processing: 'scene/processing',
+      loadingPreset: 'scene/loadingPreset',
+    }),
   },
   methods: {
     ...mapActions({
-      create: "scene/create",
-      setActiveScene: "scene/setActiveScene",
-      clearActiveScene: "scene/clearActiveScene",
-      loadScenePreset: "scene/loadScenePreset",
-      updateScene: "scene/updateScene",
-      connectToScene: "scene/connectToScene",
-      sendUiMessage: "moderation/sendUiMessage",
-      disconnectFromScene: "auth/disconnectFromScene"
+      create: 'scene/create',
+      setActiveScene: 'scene/setActiveScene',
+      clearActiveScene: 'scene/clearActiveScene',
+      loadScenePreset: 'scene/loadScenePreset',
+      updateScene: 'scene/updateScene',
+      connectToScene: 'scene/connectToScene',
+      sendUiMessage: 'moderation/sendUiMessage',
+      disconnectFromScene: 'auth/disconnectFromScene',
     }),
     getDateTime(timestamp) {
-      return DateTime.fromSeconds(timestamp).toLocaleString(DateTime.DATETIME_SHORT);
+      return DateTime.fromSeconds(timestamp).toLocaleString(DateTime.DATETIME_SHORT)
     },
     relDateTime(timestamp) {
-      return DateTime.fromSeconds(timestamp).toRelative();
+      return DateTime.fromSeconds(timestamp).toRelative()
     },
   },
-};
+}
 </script>
 
 <style scoped>
@@ -236,4 +247,5 @@ export default {
 
 .cyberpunk-border {
   border: 1px solid rgb(128, 0, 255);
-}</style>
+}
+</style>

@@ -1,6 +1,12 @@
 <template>
   <v-dialog v-model="show" max-width="400" persistent>
-    <instance-click-event v-if="show && instance" :element="element" :instanceData="instanceData" :elementData="elementData" @onUpdate="updateInstance" />
+    <instance-click-event
+      v-if="show && instance"
+      :element="element"
+      :instanceData="instanceData"
+      :elementData="elementData"
+      @onUpdate="updateInstance"
+    />
     <default-click-event v-else-if="show && element" :element="element" :elementData="elementData" @onUpdate="updateElement" />
   </v-dialog>
 </template>

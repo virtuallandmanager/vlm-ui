@@ -19,7 +19,7 @@
     </template>
     <v-container fluid class="pa-0">
       <v-row>
-        <v-col md="4" sm="6" xs="12" v-for="(model) in models" :key="model.id">
+        <v-col md="4" sm="6" xs="12" v-for="model in models" :key="model.id">
           <scene-model-card :model="model" />
         </v-col>
       </v-row>
@@ -28,37 +28,37 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import SceneModelCard from "./SceneModelCard";
-import ContentSubPanel from "./ContentSubPanel.vue";
-import { SceneModel } from "../models/SceneModel";
+import { mapActions, mapGetters } from 'vuex'
+import SceneModelCard from './SceneModelCard'
+import ContentSubPanel from './ContentSubPanel.vue'
+import { SceneModel } from '../models/SceneModel'
 
 export default {
   components: {
     ContentSubPanel,
     SceneModelCard,
   },
-  name: "SceneModelList",
+  name: 'SceneModelList',
   computed: {
     ...mapGetters({
-      models: "scene/sceneModels",
-      processing: "scene/processing",
+      models: 'scene/sceneModels',
+      processing: 'scene/processing',
     }),
   },
   methods: {
     ...mapActions({
-      createSceneElement: "scene/createSceneElement",
-      updateSceneElement: "scene/updateSceneElement",
-      deleteSceneElement: "scene/deleteSceneElement",
+      createSceneElement: 'scene/createSceneElement',
+      updateSceneElement: 'scene/updateSceneElement',
+      deleteSceneElement: 'scene/deleteSceneElement',
     }),
     addModelConfig() {
-      const elementData = new SceneModel({ name: `Model Config ${this.models.length + 1}` });
-      this.createSceneElement({ element: "model", elementData });
+      const elementData = new SceneModel({ name: `Model Config ${this.models.length + 1}` })
+      this.createSceneElement({ element: 'model', elementData })
     },
     removeModelScreen(i) {
-      const elementData = this.models[i];
-      this.deleteSceneElement({ element: "model", elementData, id: elementData.sk });
+      const elementData = this.models[i]
+      this.deleteSceneElement({ element: 'model', elementData, id: elementData.sk })
     },
   },
-};
+}
 </script>

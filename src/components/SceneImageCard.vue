@@ -57,7 +57,8 @@
             @click:append-outer="toggleEditMode()"
             @blur="toggleEditMode()"
             dense
-            @change="editImageName()"></v-text-field>
+            @change="editImageName()"
+          ></v-text-field>
         </div>
       </div>
       <div class="d-flex justify-end align-center black dark pa-1">
@@ -65,7 +66,7 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-icon v-bind="attrs" v-on="on" :class="image.enabled ? '' : 'red--text'">
-                {{ image.enabled ? "mdi-eye" : "mdi-eye-off" }}
+                {{ image.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
               </v-icon>
             </template>
             <span>Show/Hide All</span>
@@ -80,7 +81,8 @@
               element: 'image',
               elementData: image,
             })
-          ">
+          "
+        >
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-icon v-bind="attrs" v-on="on"> mdi-mouse </v-icon>
@@ -96,7 +98,8 @@
               element: 'image',
               elementData: image,
             })
-          ">
+          "
+        >
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
@@ -119,9 +122,10 @@
             showDeleteDialog({
               element: 'image',
               elementData: image,
-              removeAll: true
+              removeAll: true,
             })
-          ">
+          "
+        >
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-icon v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
@@ -155,24 +159,24 @@
 </template>
 
 <script>
-import Vue from "vue";
-import { mapActions } from "vuex";
-import ImageInstanceCard from "./ImageInstanceCard";
-import { SceneImage } from "../models/SceneImage";
-import { SceneImageInstance } from "../models/SceneImageInstance";
+import Vue from 'vue'
+import { mapActions } from 'vuex'
+import ImageInstanceCard from './ImageInstanceCard'
+import { SceneImage } from '../models/SceneImage'
+import { SceneImageInstance } from '../models/SceneImageInstance'
 
 export default {
   components: {
     ImageInstanceCard,
   },
-  name: "SceneImageCard",
+  name: 'SceneImageCard',
   props: {
     property: Object,
     i: Number,
     image: {
       type: Object,
       default: function () {
-        return new SceneImage();
+        return new SceneImage()
       },
     },
   },
@@ -183,228 +187,228 @@ export default {
     selectedImage: null,
     selectedInstance: null,
     editingName: false,
-    newImageSrc: "",
+    newImageSrc: '',
     clickEvents: [
-      { text: "None", value: 0, default: true },
-      { text: "Website Link", value: 1 },
-      { text: "Play Sound (Coming Soon)", value: 2, disabled: true },
-      { text: "Move Player in Scene (Coming Soon)", value: 3, disabled: true },
-      { text: "Teleport Player (Coming Soon)", value: 4, disabled: true },
+      { text: 'None', value: 0, default: true },
+      { text: 'Website Link', value: 1 },
+      { text: 'Play Sound (Coming Soon)', value: 2, disabled: true },
+      { text: 'Move Player in Scene (Coming Soon)', value: 3, disabled: true },
+      { text: 'Teleport Player (Coming Soon)', value: 4, disabled: true },
     ],
     panels: [],
   }),
   mounted() {
-    this.selectedImage = this.image;
+    this.selectedImage = this.image
   },
   computed: {
     imageSrc() {
-      return this.image.thumbnailSrc ? this.image.thumbnailSrc : this.image.imageSrc;
+      return this.image.thumbnailSrc ? this.image.thumbnailSrc : this.image.imageSrc
     },
     truncatedName() {
-      const imageNameArr = this.image && this.image.name.split("");
-      let noSpacesLength = 0;
-      let truncated = this.image.name;
+      const imageNameArr = this.image && this.image.name.split('')
+      let noSpacesLength = 0
+      let truncated = this.image.name
       imageNameArr.forEach((char) => {
-        if (char !== " ") {
-          noSpacesLength++;
+        if (char !== ' ') {
+          noSpacesLength++
         } else {
-          noSpacesLength = 0;
+          noSpacesLength = 0
         }
 
         if (noSpacesLength > 18) {
-          truncated = truncated.substr(truncated.length - 18);
-          noSpacesLength = 0;
+          truncated = truncated.substr(truncated.length - 18)
+          noSpacesLength = 0
         }
-      });
+      })
 
       if (truncated !== this.image.name) {
-        return `...${truncated}`;
+        return `...${truncated}`
       } else {
-        return this.image.name;
+        return this.image.name
       }
     },
   },
   methods: {
     ...mapActions({
-      showTransformDialog: "dialog/showTransformDialog",
-      showPropertiesDialog: "dialog/showPropertiesDialog",
-      showClickEventDialog: "dialog/showClickEventDialog",
-      showDeleteDialog: "dialog/showDeleteDialog",
-      createSceneElement: "scene/createSceneElement",
-      updateSceneElement: "scene/updateSceneElement",
-      deleteSceneElement: "scene/deleteSceneElement",
-      uploadImage: "media/uploadUserImage",
+      showTransformDialog: 'dialog/showTransformDialog',
+      showPropertiesDialog: 'dialog/showPropertiesDialog',
+      showClickEventDialog: 'dialog/showClickEventDialog',
+      showDeleteDialog: 'dialog/showDeleteDialog',
+      createSceneElement: 'scene/createSceneElement',
+      updateSceneElement: 'scene/updateSceneElement',
+      deleteSceneElement: 'scene/deleteSceneElement',
+      uploadImage: 'media/uploadUserImage',
     }),
     validateExternalLink(value) {
       if (!value) {
-        this.hasErrors = true;
-        return "Enter a website URL";
-      } else if (value.includes("https://")) {
-        this.hasErrors = false;
-        return true;
+        this.hasErrors = true
+        return 'Enter a website URL'
+      } else if (value.includes('https://')) {
+        this.hasErrors = false
+        return true
       } else {
-        this.hasErrors = true;
-        return "Must use https:// links";
+        this.hasErrors = true
+        return 'Must use https:// links'
       }
     },
     toggleEditMode() {
-      this.editingName = !this.editingName;
+      this.editingName = !this.editingName
     },
     expandPanels() {
-      this.panels = [];
+      this.panels = []
       for (let i = 0; i < this.image.instances.length; i++) {
-        this.panels.push(i);
+        this.panels.push(i)
       }
     },
     collapsePanels() {
-      this.panels = [];
+      this.panels = []
     },
     toggleDetails() {
-      Vue.set(this.image, "showDetails", !this.image.showDetails);
+      Vue.set(this.image, 'showDetails', !this.image.showDetails)
     },
     removeImage() {
-      this.deleteDialog = false;
-      this.$emit("onRemove");
+      this.deleteDialog = false
+      this.$emit('onRemove')
     },
     removeImageInstance(i) {
-      const instanceData = this.image.instances[i];
-      Vue.delete(this.image.instances, i);
+      const instanceData = this.image.instances[i]
+      Vue.delete(this.image.instances, i)
 
       this.deleteSceneElement({
-        element: "image",
+        element: 'image',
         instance: true,
         id: instanceData.id,
         materialId: this.image.id,
         elementData: this.image,
         instanceData,
-      });
+      })
     },
     addInstance(duplicate) {
-      const newInstance = new SceneImageInstance();
-      newInstance.name = `Instance ${this.image.instances.length + 1}`;
-      newInstance.clickEvent = { ...this.image.clickEvent, synced: true };
-      newInstance.scale.x = this.image.width / 1000;
-      newInstance.scale.y = this.image.height / 1000;
+      const newInstance = new SceneImageInstance()
+      newInstance.name = `Instance ${this.image.instances.length + 1}`
+      newInstance.clickEvent = { ...this.image.clickEvent, synced: true }
+      newInstance.scale.x = this.image.width / 1000
+      newInstance.scale.y = this.image.height / 1000
 
       if (duplicate) {
-        newInstance.enabled = !!duplicate.enabled;
-        newInstance.position = { ...duplicate.position };
-        newInstance.scale = { ...duplicate.scale };
-        newInstance.rotation = { ...duplicate.rotation };
-        newInstance.name = `${duplicate.name} (Copy)`;
-        newInstance.clickEvent = { ...duplicate.clickEvent };
+        newInstance.enabled = !!duplicate.enabled
+        newInstance.position = { ...duplicate.position }
+        newInstance.scale = { ...duplicate.scale }
+        newInstance.rotation = { ...duplicate.rotation }
+        newInstance.name = `${duplicate.name} (Copy)`
+        newInstance.clickEvent = { ...duplicate.clickEvent }
       }
 
       // this.image.instances.push(newInstance);
       this.createSceneElement({
-        element: "image",
+        element: 'image',
         instance: true,
         id: newInstance.id,
         elementData: this.image,
         instanceData: newInstance,
-      });
+      })
     },
     editInstanceName(instance) {
       this.updateSceneElement({
-        element: "image",
+        element: 'image',
         instance: true,
-        property: "name",
+        property: 'name',
         id: instance.id,
         elementData: this.image,
         instanceData: instance,
-      });
+      })
     },
     editImageName() {
       this.updateSceneElement({
-        element: "image",
-        property: "name",
+        element: 'image',
+        property: 'name',
         id: this.image.id,
         elementData: this.image,
-      });
+      })
     },
     saveImageProperties() {
-      this.closePropertiesDialog();
+      this.closePropertiesDialog()
     },
     toggleVisibility() {
-      Vue.set(this.image, "enabled", !this.image.enabled);
+      Vue.set(this.image, 'enabled', !this.image.enabled)
       this.updateSceneElement({
-        element: "image",
-        property: "enabled",
+        element: 'image',
+        property: 'enabled',
         id: this.image.id,
         elementData: this.image,
-      });
+      })
     },
     updateImageClickEvent() {
       this.updateSceneElement({
-        element: "image",
-        property: "clickEvent",
+        element: 'image',
+        property: 'clickEvent',
         id: this.image.id,
         elementData: this.image,
-      });
+      })
     },
     updateImageProperties() {
       this.updateSceneElement({
-        element: "image",
-        property: "properties",
+        element: 'image',
+        property: 'properties',
         id: this.image.id,
         elementData: this.image,
-      });
+      })
     },
     updateInstanceProperties(instance) {
       this.updateSceneElement({
-        element: "image",
-        property: "properties",
+        element: 'image',
+        property: 'properties',
         instance: true,
         id: instance.id,
         elementData: this.image,
         instanceData: instance,
-      });
+      })
     },
     resetDialogs() {
-      this.replaceImageDialog = false;
-      this.externalUrlDialog = false;
+      this.replaceImageDialog = false
+      this.externalUrlDialog = false
     },
     selectImage() {
-      this.$refs.fileInput.click();
+      this.$refs.fileInput.click()
     },
     setExternalImage() {
-      const objThis = this;
-      const currentImage = objThis.image;
+      const objThis = this
+      const currentImage = objThis.image
       if (this.validateExternalLink(this.newImageSrc) === true) {
-        let img = new Image();
-        img.src = this.newImageSrc;
+        let img = new Image()
+        img.src = this.newImageSrc
         img.onload = function () {
-          currentImage.width = this.width;
-          currentImage.height = this.height;
-          currentImage.textureSrc = "";
-          currentImage.thumbnailSrc = "";
+          currentImage.width = this.width
+          currentImage.height = this.height
+          currentImage.textureSrc = ''
+          currentImage.thumbnailSrc = ''
           const newImage = new SceneImage({
             ...currentImage,
-            name: "External Image",
+            name: 'External Image',
             imageSrc: this.src,
             externalUrl: true,
-          });
+          })
 
-          objThis.updateImage(newImage);
-          objThis.newImageSrc = "";
-          objThis.resetDialogs();
-        };
+          objThis.updateImage(newImage)
+          objThis.newImageSrc = ''
+          objThis.resetDialogs()
+        }
       }
     },
     async onFileSelected(e) {
-      this.resetDialogs();
+      this.resetDialogs()
       const options = {
         image: e.target.files[0],
-      };
-      e.target.value = null;
+      }
+      e.target.value = null
 
       try {
-        const uploadImageRes = await this.uploadImage(options);
-        this.image.thumbnailSrc = `${process.env.VUE_APP_API_URL}/${uploadImageRes.imageSrc}`;
-        this.image.textureSrc = `${process.env.VUE_APP_API_URL}/${uploadImageRes.textureSrc}`;
-        this.image.imageSrc = `${process.env.VUE_APP_API_URL}/${uploadImageRes.thumbnailSrc}`;
-        this.image.externalUrl = false;
-        const metadata = uploadImageRes.metadata;
+        const uploadImageRes = await this.uploadImage(options)
+        this.image.thumbnailSrc = `${process.env.VUE_APP_API_URL}/${uploadImageRes.imageSrc}`
+        this.image.textureSrc = `${process.env.VUE_APP_API_URL}/${uploadImageRes.textureSrc}`
+        this.image.imageSrc = `${process.env.VUE_APP_API_URL}/${uploadImageRes.thumbnailSrc}`
+        this.image.externalUrl = false
+        const metadata = uploadImageRes.metadata
 
         const newImage = new SceneImage({
           ...this.image,
@@ -412,29 +416,29 @@ export default {
           height: metadata.height,
           width: metadata.width,
           density: metadata.density,
-        });
+        })
 
-        await this.updateImage(newImage);
+        await this.updateImage(newImage)
       } catch (err) {
-        console.log(err);
+        console.log(err)
       }
     },
     showExternalUrlDialog() {
-      this.resetDialogs();
-      this.externalUrlDialog = true;
+      this.resetDialogs()
+      this.externalUrlDialog = true
     },
     showReplaceImageDialog() {
-      this.resetDialogs();
-      this.replaceImageDialog = true;
+      this.resetDialogs()
+      this.replaceImageDialog = true
     },
     async updateImage(image) {
-      this.resetDialogs();
+      this.resetDialogs()
       return this.updateSceneElement({
-        element: "image",
+        element: 'image',
         elementData: image,
         id: image.sk,
-      });
+      })
     },
   },
-};
+}
 </script>

@@ -2,9 +2,7 @@
   <content-page loadingMessage="Loading media library..." :loading="loading" :noContent="!mediaLibrary.length">
     <template v-slot:header>Scenes</template>
     <template v-slot:no-content-header>No Scenes Found</template>
-    <template v-slot:no-content-text>
-      Would you like to create a new scene?
-    </template>
+    <template v-slot:no-content-text> Would you like to create a new scene? </template>
     <template v-slot:no-content-cta>
       <v-btn @click="createNewScene">Create New Scene</v-btn>
     </template>
@@ -34,30 +32,30 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import ImageLibrary from "../components/ImageLibrary.vue";
-import VideoLibrary from "../components/VideoLibrary.vue";
-import ContentPage from "../components/ContentPage.vue";
+import { mapActions } from 'vuex'
+import ImageLibrary from '../components/ImageLibrary.vue'
+import VideoLibrary from '../components/VideoLibrary.vue'
+import ContentPage from '../components/ContentPage.vue'
 
 export default {
   components: { VideoLibrary, ImageLibrary, ContentPage },
-  name: "MediaLibrary",
+  name: 'MediaLibrary',
   props: {
     folderPath: String,
   },
   data: () => ({}),
   methods: {
     ...mapActions({
-      uploadImage: "media/uploadImage",
+      uploadImage: 'media/uploadImage',
     }),
     folders() {
-      return [];
+      return []
     },
     images() {
-      return [];
+      return []
     },
   },
-};
+}
 </script>
 <style scoped>
 .translucent {

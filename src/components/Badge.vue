@@ -12,7 +12,7 @@
 
 <script>
 export default {
-  name: "Badge",
+  name: 'Badge',
 
   data: () => ({}),
   props: {
@@ -20,7 +20,7 @@ export default {
     title: String,
     description: String,
   },
-};
+}
 </script>
 
 <style scoped>

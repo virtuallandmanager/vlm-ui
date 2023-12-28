@@ -29,11 +29,11 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import Loader from "./Loader";
+import { mapActions } from 'vuex'
+import Loader from './Loader'
 
 export default {
-  name: "ContentSubPanel",
+  name: 'ContentSubPanel',
   data: () => ({}),
   props: {
     loading: Boolean,
@@ -42,17 +42,17 @@ export default {
   },
   computed: {
     contentLoading() {
-      return this.loading;
+      return this.loading
     },
     noContentLoaded() {
-      return !this.hasContent && !this.loading;
+      return !this.hasContent && !this.loading
     },
   },
   components: { Loader },
   methods: {
-    ...mapActions({ toggleNavDrawer: "app/toggleNavDrawer" }),
+    ...mapActions({ toggleNavDrawer: 'app/toggleNavDrawer' }),
   },
-};
+}
 </script>
 
 <style scoped>

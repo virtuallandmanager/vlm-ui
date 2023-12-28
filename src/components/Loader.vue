@@ -15,7 +15,7 @@
 
 <script>
 export default {
-  name: "Loader",
+  name: 'Loader',
 
   data: () => ({}),
   props: {
@@ -23,5 +23,5 @@ export default {
     grid: Boolean,
     loading: Boolean,
   },
-};
+}
 </script>

@@ -3,7 +3,7 @@
     <v-row>
       <v-col>
         <v-img src="@/assets/VLM-Logo-Color.svg" max-width="25vw" class="mx-auto logo" />
-        <div class="font-weight-black text-h4 text-center">Your Virtual Assistant for the Virtual World</div>
+        <div class="font-weight-black text-h4 text-center">Building Virtual Visions</div>
       </v-col>
     </v-row>
     <v-row>
@@ -13,13 +13,20 @@
             <v-col>
               <v-card class="translucent text-center pa-3">
                 <div class="text-overline text-center">CROSS-METAVERSE SCENE MANGEMENT</div>
+                <div class="d-flex justify-center">
+                  <img src="@/assets/dcl-logo.png" width="50px" height="50px" class="ma-2" />
+                  <div class="d-flex ma-2">
+                    <img src="@/assets/hyperfy-logo.png" width="50px" height="50px" />
+                    <div class="purple--text text--lighten-2 ml-n3 mb-n3">*</div>
+                  </div>
+                </div>
                 <v-icon size="124px">mdi-arrow-decision</v-icon>
                 <div class="text-display-1 text-center px-3">
                   <v-list-item>
                     <v-list-item-content>
                       <v-list-item-title>Manage your scene across multiple metaverses</v-list-item-title>
                       <v-list-item-title>VLM plans to integrate as many of our features across as many metaverses as possible!</v-list-item-title>
-                      <div class="text-overline text-center purple--text text--lighten-2">COMING SOON!</div>
+                      <div class="text-overline text-center purple--text text--lighten-2">*COMING SOON!</div>
                     </v-list-item-content>
                   </v-list-item>
                 </div>
@@ -32,8 +39,8 @@
                 <div class="text-display-1 text-center px-3">
                   <v-list-item>
                     <v-list-item-content>
-                      <v-list-item-title>View and export data about how people are interacting with your land</v-list-item-title>
-                      <v-list-item-title>Add custom tracking events from within SDK scenes using a simple line of code</v-list-item-title>
+                      <v-list-item-title>View and export data about how people are interacting with your experiences</v-list-item-title>
+                      <v-list-item-title>Add custom tracking events to your virtual experiences using a simple line of code</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                 </div>
@@ -46,9 +53,8 @@
                 <div class="text-display-1 text-center px-3">
                   <v-list-item>
                     <v-list-item-content>
-                      <v-list-item-title>Build customized experiences in real time!</v-list-item-title>
-                      <v-list-item-title>Create video screens, images, and NFTs.</v-list-item-title>
-                      <v-list-item-title>Move them around and turn them on or off.</v-list-item-title>
+                      <v-list-item-title>Manage video screens, images, 3D models, sounds, and more.</v-list-item-title>
+                      <v-list-item-title>Move, size, rotate, and enable or disable all of your assets in real time.</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                 </div>
@@ -61,7 +67,7 @@
                 <div class="text-display-1 text-center px-3">
                   <v-list-item>
                     <v-list-item-content>
-                      <v-list-item-title>Ban certain names or items from your scene</v-list-item-title>
+                      <v-list-item-title>Ban certain names or wearables from your scene</v-list-item-title>
                       <v-list-item-title>Restrict access to only allow certain people or items</v-list-item-title>
                       <v-list-item-title>Block trolls and toxic troublemakers from interacting with others on your land</v-list-item-title>
                     </v-list-item-content>
@@ -71,12 +77,14 @@
             </v-col>
             <v-col>
               <v-card class="translucent text-center pa-3">
-                <div class="text-overline text-center">SDK CUSTOMIZATIONS</div>
+                <div class="text-overline text-center">CUSTOMIZED CONTROLS</div>
                 <v-icon size="124px">mdi-tune</v-icon>
                 <div class="text-display-1 text-center px-3">
                   <v-list-item>
                     <v-list-item-content>
-                      <v-list-item-title>Create your own toggles, menus, text fields, and buttons to trigger custom code within your scene</v-list-item-title>
+                      <v-list-item-title
+                        >Create your own toggles, menus, text fields, sliders, and buttons to trigger custom code within your scene</v-list-item-title
+                      >
                     </v-list-item-content>
                   </v-list-item>
                 </div>
@@ -91,7 +99,9 @@
                   <v-list-item>
                     <v-list-item-content>
                       <v-list-item-title>Schedule events on your land and offer giveaways of Decentraland wearables or emotes.</v-list-item-title
-                      ><v-list-item-title>Virtual Land Manager uses various security methods to make sure your giveaway is not abused by collectors</v-list-item-title>
+                      ><v-list-item-title
+                        >Virtual Land Manager uses various security methods to make sure your giveaway is not abused by collectors</v-list-item-title
+                      >
                     </v-list-item-content>
                   </v-list-item>
                 </div>
@@ -111,24 +121,24 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import store from "../store";
+import { mapActions } from 'vuex'
+import store from '../store'
 
 export default {
-  name: "Home",
+  name: 'Home',
   beforeRouteEnter(to, from, next) {
-    const isAuthenticated = store.getters["auth/authenticated"];
+    const isAuthenticated = store.getters['auth/authenticated']
     // const isAdmin = store.getters["user/isVLMAdmin"];
     if (isAuthenticated) {
       // next("/scenes"); // Redirect to the scenes page if the user is authenticated
     } else {
-      next(); // Continue rendering the component
+      next() // Continue rendering the component
     }
   },
   methods: {
-    ...mapActions({ connect: "auth/connectWallet" }),
+    ...mapActions({ connect: 'auth/connectWallet' }),
   },
-};
+}
 </script>
 
 <style scoped>

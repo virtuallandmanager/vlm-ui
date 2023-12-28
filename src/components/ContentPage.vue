@@ -3,7 +3,7 @@
     <v-container fluid>
       <v-row>
         <v-col class="d-flex align-center" :class="centerContent ? 'justify-center' : 'justify-space-between'">
-          <div class=" text-h2 font-weight-light mb-3">
+          <div class="text-h2 font-weight-light mb-3">
             <slot name="header"></slot>
           </div>
           <div class="mb-3">
@@ -42,40 +42,40 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import Loader from "./Loader";
+import { mapActions } from 'vuex'
+import Loader from './Loader'
 
 export default {
-  name: "ContentPage",
+  name: 'ContentPage',
   data: () => ({}),
   props: {
     loading: Boolean,
     loadingMessage: String,
     noContent: Boolean,
-    centerContent: Boolean
+    centerContent: Boolean,
   },
   computed: {
     hasContent() {
-      return !this.noContent && !this.loading;
+      return !this.noContent && !this.loading
     },
     contentLoading() {
-      return !this.noContent && this.loading;
+      return !this.noContent && this.loading
     },
     noContentLoaded() {
-      return this.noContent && !this.loading;
+      return this.noContent && !this.loading
     },
     authenticated() {
-      return this.$store.getters["auth/authenticated"];
+      return this.$store.getters['auth/authenticated']
     },
     navDrawerState() {
-      return this.$store.state.app.navDrawerOpen;
+      return this.$store.state.app.navDrawerOpen
     },
   },
   components: { Loader },
   methods: {
-    ...mapActions({ toggleNavDrawer: "app/toggleNavDrawer" }),
+    ...mapActions({ toggleNavDrawer: 'app/toggleNavDrawer' }),
   },
-};
+}
 </script>
 
 <style scoped>

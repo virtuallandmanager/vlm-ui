@@ -1,6 +1,10 @@
 <template>
-  <focus-page :loadingMessage="`Connecting To ${scene?.name || 'Scene'}...`" :loading="loadingScene || loadingPreset"
-    :noContent="!scene" :imageLink="scene?.imageLink || placeholder">
+  <focus-page
+    :loadingMessage="`Connecting To ${scene?.name || 'Scene'}...`"
+    :loading="loadingScene || loadingPreset"
+    :noContent="!scene"
+    :imageLink="scene?.imageLink || placeholder"
+  >
     <transform-dialog />
     <delete-dialog />
     <click-event-dialog />
@@ -101,28 +105,28 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import { DateTime } from "luxon";
-import SceneAnalytics from "../components/SceneAnalytics";
-import SceneArtList from "../components/SceneArtList";
-import SceneVideoList from "../components/SceneVideoList";
-import SceneGiveawayList from "../components/SceneGiveawayList";
-import SceneSoundList from "../components/SceneSoundList";
-import SceneModeration from "../components/SceneModeration";
-import SceneModelList from "../components/SceneModelList";
-import SceneWidgetList from "../components/SceneWidgetList";
-import ScenePresetList from "../components/ScenePresetList";
-import SceneSettings from "../components/SceneSettings";
-import placeholderImg from "@/assets/placeholder.png";
-import FocusPage from "../components/FocusPage";
-import TransformDialog from "../components/dialogs/TransformDialog";
-import PropertiesDialog from "../components/dialogs/PropertiesDialog";
-import DeleteDialog from "../components/dialogs/DeleteDialog";
-import ClickEventDialog from "../components/dialogs/ClickEventDialog";
-import store from "../store";
+import { mapActions, mapGetters } from 'vuex'
+import { DateTime } from 'luxon'
+import SceneAnalytics from '../components/SceneAnalytics'
+import SceneArtList from '../components/SceneArtList'
+import SceneVideoList from '../components/SceneVideoList'
+import SceneGiveawayList from '../components/SceneGiveawayList'
+import SceneSoundList from '../components/SceneSoundList'
+import SceneModeration from '../components/SceneModeration'
+import SceneModelList from '../components/SceneModelList'
+import SceneWidgetList from '../components/SceneWidgetList'
+import ScenePresetList from '../components/ScenePresetList'
+import SceneSettings from '../components/SceneSettings'
+import placeholderImg from '@/assets/placeholder.png'
+import FocusPage from '../components/FocusPage'
+import TransformDialog from '../components/dialogs/TransformDialog'
+import PropertiesDialog from '../components/dialogs/PropertiesDialog'
+import DeleteDialog from '../components/dialogs/DeleteDialog'
+import ClickEventDialog from '../components/dialogs/ClickEventDialog'
+import store from '../store'
 
 export default {
-  name: "Scene",
+  name: 'Scene',
   components: {
     SceneAnalytics,
     SceneArtList,
@@ -146,110 +150,109 @@ export default {
     updateHistoryDialog: false,
     editingScreenName: false,
     selectedPreset: null,
-    tab: "tab-2",
+    tab: 'tab-2',
   }),
   beforeRouteEnter(to, from, next) {
-
-    const isAuthenticated = store.getters["auth/authenticated"];
-    const hasSceneCache = store.getters["scene/sceneList"].length;
+    const isAuthenticated = store.getters['auth/authenticated']
+    const hasSceneCache = store.getters['scene/sceneList'].length
 
     if (!isAuthenticated) {
-      next("/"); // Redirect to the login page if the user is not authenticated
+      next('/') // Redirect to the login page if the user is not authenticated
     } else if (!hasSceneCache) {
-      next("/scenes"); // Redirect to the scenes page if the user has no scenes
+      next('/scenes') // Redirect to the scenes page if the user has no scenes
     } else {
-      next(); // Continue rendering the component
+      next() // Continue rendering the component
     }
   },
   async mounted() {
-    await this.connectToScene(this.$route.params.sceneId);
+    await this.connectToScene(this.$route.params.sceneId)
   },
   beforeDestroy() {
-    this.clearActiveScene();
+    this.clearActiveScene()
   },
   computed: {
     scenePreset() {
       if (!this.$store.state.scene.activeScene) {
-        return {};
+        return {}
       }
 
-      const activeScene = this.$store.state.scene.activeScene;
+      const activeScene = this.$store.state.scene.activeScene
       if (!activeScene) {
-        return {};
+        return {}
       }
       const presetId = activeScene.scenePreset,
         preset = activeScene?.presets?.find((preset) => preset.sk == presetId),
-        scenePresets = activeScene.presets || [];
+        scenePresets = activeScene.presets || []
 
-      return preset || scenePresets[0] || {};
+      return preset || scenePresets[0] || {}
     },
     hasGiveaways() {
-      return this.giveawaysForScene(this.scene.sk)?.length;
+      return this.giveawaysForScene(this.scene.sk)?.length
     },
     placeholder() {
-      return placeholderImg;
+      return placeholderImg
     },
     connectedColor() {
-      let colors = { r: 100, g: 100, b: 100 };
+      let colors = { r: 100, g: 100, b: 100 }
       if (this.connected) {
-        colors.g += 100;
+        colors.g += 100
       } else {
-        colors.r += 100;
-        colors.g -= 100;
+        colors.r += 100
+        colors.g -= 100
       }
 
-      return `rgba(${colors.r},${colors.g},${colors.b},${this.blinkBrightness})`;
+      return `rgba(${colors.r},${colors.g},${colors.b},${this.blinkBrightness})`
     },
     worlds() {
-      const worldNames = [];
+      const worldNames = []
       if (this.scene.worlds) {
         this.scene.worlds.forEach((world) => {
           switch (world) {
             case 0:
-              worldNames.push("Decentraland");
-              break;
+              worldNames.push('Decentraland')
+              break
             case 1:
-              worldNames.push("Hyperfy");
+              worldNames.push('Hyperfy')
           }
-        });
+        })
       }
-      return worldNames.join(", ") || "None";
+      return worldNames.join(', ') || 'None'
     },
     ...mapGetters({
-      scene: "scene/activeScene",
-      user: "user/userInfo",
-      isAdvancedUser: "user/isAdvancedUser",
-      connected: "scene/connected",
-      isDemoScene: "scene/isDemoScene",
-      inBlink: "scene/inBlink",
-      outBlink: "scene/outBlink",
-      processing: "scene/processing",
-      loadingPreset: "scene/loadingPreset",
-      loadingScene: "scene/loadingScene",
-      giveawaysForScene: "event/giveawaysForScene",
+      scene: 'scene/activeScene',
+      user: 'user/userInfo',
+      isAdvancedUser: 'user/isAdvancedUser',
+      connected: 'scene/connected',
+      isDemoScene: 'scene/isDemoScene',
+      inBlink: 'scene/inBlink',
+      outBlink: 'scene/outBlink',
+      processing: 'scene/processing',
+      loadingPreset: 'scene/loadingPreset',
+      loadingScene: 'scene/loadingScene',
+      giveawaysForScene: 'event/giveawaysForScene',
     }),
   },
   methods: {
     ...mapActions({
-      create: "scene/create",
-      setActiveScene: "scene/setActiveScene",
-      clearActiveScene: "scene/clearActiveScene",
-      loadScenePreset: "scene/loadScenePreset",
-      updateScene: "scene/updateScene",
-      connectToScene: "scene/connectToScene",
-      sendUiMessage: "moderation/sendUiMessage",
+      create: 'scene/create',
+      setActiveScene: 'scene/setActiveScene',
+      clearActiveScene: 'scene/clearActiveScene',
+      loadScenePreset: 'scene/loadScenePreset',
+      updateScene: 'scene/updateScene',
+      connectToScene: 'scene/connectToScene',
+      sendUiMessage: 'moderation/sendUiMessage',
     }),
     getDateTime(timestamp) {
-      return DateTime.fromSeconds(timestamp).toLocaleString(DateTime.DATETIME_SHORT);
+      return DateTime.fromSeconds(timestamp).toLocaleString(DateTime.DATETIME_SHORT)
     },
     relDateTime(timestamp) {
-      return DateTime.fromSeconds(timestamp).toRelative();
+      return DateTime.fromSeconds(timestamp).toRelative()
     },
     viewDemoScene() {
-      return window.open("https://play.decentraland.org/?position=104%2C60")
-    }
+      return window.open('https://play.decentraland.org/?position=104%2C60')
+    },
   },
-};
+}
 </script>
 
 <style scoped>

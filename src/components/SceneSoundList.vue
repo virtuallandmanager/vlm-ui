@@ -28,33 +28,33 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import SceneSoundCard from "./SceneSoundCard";
-import ContentSubPanel from "./ContentSubPanel.vue";
-import { SceneSound } from "../models/SceneSound";
+import { mapActions, mapGetters } from 'vuex'
+import SceneSoundCard from './SceneSoundCard'
+import ContentSubPanel from './ContentSubPanel.vue'
+import { SceneSound } from '../models/SceneSound'
 
 export default {
   components: {
     ContentSubPanel,
     SceneSoundCard,
   },
-  name: "SceneSoundList",
+  name: 'SceneSoundList',
   computed: {
     ...mapGetters({
-      sounds: "scene/sceneSounds",
-      processing: "scene/processing",
+      sounds: 'scene/sceneSounds',
+      processing: 'scene/processing',
     }),
   },
   methods: {
     ...mapActions({
-      createSceneElement: "scene/createSceneElement",
-      updateSceneElement: "scene/updateSceneElement",
-      deleteSceneElement: "scene/deleteSceneElement",
+      createSceneElement: 'scene/createSceneElement',
+      updateSceneElement: 'scene/updateSceneElement',
+      deleteSceneElement: 'scene/deleteSceneElement',
     }),
     addSoundConfig() {
-      const elementData = new SceneSound({ name: `Sound Source ${this.sounds.length + 1}` });
-      this.createSceneElement({ element: "sound", elementData });
+      const elementData = new SceneSound({ name: `Sound Source ${this.sounds.length + 1}` })
+      this.createSceneElement({ element: 'sound', elementData })
     },
   },
-};
+}
 </script>

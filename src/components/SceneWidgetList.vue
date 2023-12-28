@@ -3,17 +3,13 @@
     <template v-slot:header>
       <div>Widgets</div>
       <v-spacer></v-spacer>
-      <v-btn @click="macroDialog = true" v-if="filteredWidgets?.length > 0" class="mr-2"><v-icon
-          class="mr-2">mdi-spotlight</v-icon>Macro
-        Mode</v-btn>
+      <v-btn @click="macroDialog = true" v-if="filteredWidgets?.length > 0" class="mr-2"><v-icon class="mr-2">mdi-spotlight</v-icon>Macro Mode</v-btn>
       <v-btn @click="addWidget()" v-if="widgets.length"><v-icon class="mr-2">mdi-palette</v-icon>Add Widget</v-btn>
-
     </template>
     <template v-slot:no-content-header>No Widgets Have Been Added</template>
     <template v-slot:no-content-text>Would you like to add one?</template>
     <template v-slot:no-content-cta>
       <v-btn @click="addWidget()"><v-icon class="mr-2">mdi-palette</v-icon>Add Widget</v-btn>
-
     </template>
     <v-container fluid class="ma-0 pa-0">
       <v-row>
@@ -57,7 +53,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn @click="macroDialog = false">Close</v-btn>
+          <v-btn @click="closeMacroDialog">Close</v-btn>
           <v-spacer />
         </v-card-actions>
       </v-card>
@@ -66,103 +62,104 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import SceneWidgetCard from "./SceneWidgetCard";
-import { SceneWidget } from "../models/SceneWidget";
-import ContentSubPanel from "./ContentSubPanel";
-import { getRandomControlName } from "../helpers/widgetNamer";
+import { mapActions, mapGetters } from 'vuex'
+import SceneWidgetCard from './SceneWidgetCard'
+import { SceneWidget } from '../models/SceneWidget'
+import ContentSubPanel from './ContentSubPanel'
+import { getRandomControlName } from '../helpers/widgetNamer'
 
 export default {
-  name: "SceneWidgetList",
+  name: 'SceneWidgetList',
   components: { ContentSubPanel, SceneWidgetCard },
   data: () => ({
     macroDialog: false,
     lightStatuses: [],
     eventListener: null,
   }),
-  mounted() {
-  },
+  mounted() {},
   watch: {
     macroDialog(newValue) {
-      if (newValue) { // If dialog is opened
-        this.lightStatuses = this.filteredWidgets.map(widget => {
+      if (newValue) {
+        // If dialog is opened
+        this.lightStatuses = this.filteredWidgets.map((widget) => {
           if (widget.type === 1 && widget.value) {
-            return 'green';
+            return 'green'
           } else if (widget.type === 1 && !widget.value) {
-            return 'red';
+            return 'red'
           }
-          return 'transparent';
-        });
+          return 'transparent'
+        })
       }
-    }
+    },
   },
   computed: {
     ...mapGetters({
-      widgets: "scene/sceneWidgets",
-      processing: "scene/processing",
+      widgets: 'scene/sceneWidgets',
+      processing: 'scene/processing',
     }),
     smSizing() {
       if (this.widgets.length < 2) {
-        return 6;
+        return 6
       } else if (this.widgets.length % 3 < 1) {
-        return 4;
+        return 4
       } else if (this.widgets.length % 2 < 1) {
-        return 6;
+        return 6
       }
-      return 6;
+      return 6
     },
 
     filteredWidgets() {
-      return this.widgets.filter(widget => widget.type === 1 || widget.type === 5);
-    }
+      return this.widgets.filter((widget) => widget.type === 1 || widget.type === 5)
+    },
   },
   methods: {
     ...mapActions({
-      createSceneElement: "scene/createSceneElement",
-      updateSceneElement: "scene/updateSceneElement",
-      deleteSceneElement: "scene/deleteSceneElement",
+      createSceneElement: 'scene/createSceneElement',
+      updateAllWidgets: 'scene/updateAllWidgets',
+      directUpdateSceneElement: 'scene/directUpdateSceneElement',
+      deleteSceneElement: 'scene/deleteSceneElement',
     }),
     toggleOrTrigger(event) {
-      if (isNaN(event.key) || event.key.length !== 1) return;
+      if (isNaN(event.key) || event.key.length !== 1) return
 
-      const index = parseInt(event.key, 10) == 0 ? 9 : parseInt(event.key, 10) - 1;
-      const widget = this.filteredWidgets[index];
+      const index = parseInt(event.key, 10) == 0 ? 9 : parseInt(event.key, 10) - 1
+      const widget = this.filteredWidgets[index]
 
-      if (!widget) return;
+      if (!widget) return
 
       if (widget.type === 1) {
-        widget.value = !widget.value;
+        widget.value = !widget.value
       }
 
       if (widget.type === 1 && widget.value) {
-        this.lightStatuses.splice(index, 1, 'green');
+        this.lightStatuses.splice(index, 1, 'green')
       } else if (widget.type === 1 && !widget.value) {
-        this.lightStatuses.splice(index, 1, 'red');
+        this.lightStatuses.splice(index, 1, 'red')
       } else if (widget.type === 5) {
-        widget.value = true;
-        this.lightStatuses.splice(index, 1, 'green');
+        widget.value = true
+        this.lightStatuses.splice(index, 1, 'green')
         setTimeout(() => {
-          this.lightStatuses.splice(index, 1, 'transparent');
-        }, 250);
+          this.lightStatuses.splice(index, 1, 'transparent')
+        }, 250)
       }
 
-      this.updateSceneElement({ element: "widget", elementData: widget, id: widget.id });
-
-
-
-
+      this.directUpdateSceneElement({ element: 'widget', elementData: widget, id: widget.id })
     },
     addWidget() {
-      const newWidgetName = getRandomControlName();
+      const newWidgetName = getRandomControlName()
 
       const newWidget = new SceneWidget({
         name: newWidgetName,
         id: newWidgetName.createSlug(),
         type: 0,
-      });
+      })
 
-      this.createSceneElement({ element: "widget", elementData: newWidget });
+      this.createSceneElement({ element: 'widget', elementData: newWidget })
+    },
+    closeMacroDialog() {
+      this.macroDialog = false
+      this.updateAllWidgets({ element: 'widgets', allElementData: this.widgets })
     },
   },
-};
+}
 </script>
