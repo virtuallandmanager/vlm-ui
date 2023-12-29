@@ -243,10 +243,10 @@ export default {
       sendUiMessage: 'moderation/sendUiMessage',
     }),
     getDateTime(timestamp) {
-      return DateTime.fromSeconds(timestamp).toLocaleString(DateTime.DATETIME_SHORT)
+      return DateTime.fromMillis(timestamp).toLocaleString(DateTime.DATETIME_SHORT)
     },
     relDateTime(timestamp) {
-      return DateTime.fromSeconds(timestamp).toRelative()
+      return DateTime.fromMillis(timestamp).toRelative()
     },
     viewDemoScene() {
       return window.open('https://play.decentraland.org/?position=104%2C60')

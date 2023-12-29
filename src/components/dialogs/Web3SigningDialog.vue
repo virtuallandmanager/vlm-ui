@@ -78,7 +78,7 @@ export default {
       return this.signing && this.remainingTime > 0
     },
     signingTime() {
-      return DateTime.now().toUnixInteger() - (this.sigTokenExpires || 0)
+      return DateTime.now().toMillis() - (this.sigTokenExpires || 0)
     },
     signingTimerColor() {
       if ((this.remainingTime / 90) * 100 > 33) {

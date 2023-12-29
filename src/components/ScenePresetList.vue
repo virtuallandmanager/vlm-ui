@@ -64,7 +64,7 @@ export default {
     ...mapActions({ addPreset: 'scene/addPreset', clonePreset: 'scene/clonePreset' }),
     createdDate(ts) {
       if (ts) {
-        return DateTime.fromSeconds(Number(ts)).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)
+        return DateTime.fromMillis(Number(ts)).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)
       } else return ''
     },
     showAddPresetDialog() {

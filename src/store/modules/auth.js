@@ -81,7 +81,7 @@ export default {
       state.signatureMessage = signatureMessage
       state.signatureToken = signatureToken
       state.signatureAccount = state.connectedWallet
-      state.sigTokenExpires = DateTime.now().plus({ minutes: 1, seconds: 30 }).toUnixInteger()
+      state.sigTokenExpires = DateTime.now().plus({ minutes: 1, seconds: 30 }).toMillis()
       state.signing = true
     },
     SAVE_SIGNATURE(state, signature) {

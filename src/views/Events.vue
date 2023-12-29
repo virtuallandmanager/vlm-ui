@@ -266,7 +266,7 @@ export default {
       return this.events.filter((event) => DateTime.fromMillis(event.startTime).diffNow() > 0)
     },
     memberSince() {
-      return DateTime.fromSeconds(this.userInfo.registeredAt).toLocaleString()
+      return DateTime.fromMillis(this.userInfo.registeredAt).toLocaleString()
     },
   },
   methods: {

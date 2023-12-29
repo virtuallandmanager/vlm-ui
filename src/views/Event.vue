@@ -368,25 +368,25 @@ export default {
       if (!this.event?.eventStart) {
         return ''
       }
-      return DateTime.fromSeconds(this.event.eventStart).toLocaleString(DateTime.DATETIME_MED)
+      return DateTime.fromMillis(this.event.eventStart).toLocaleString(DateTime.DATETIME_MED)
     },
     endDateTimeLocal() {
       if (!this.event?.eventEnd) {
         return ''
       }
-      return DateTime.fromSeconds(this.event.eventEnd).toLocaleString(DateTime.DATETIME_MED)
+      return DateTime.fromMillis(this.event.eventEnd).toLocaleString(DateTime.DATETIME_MED)
     },
     startTimeRelative() {
       if (!this.event?.eventStart) {
         return ''
       }
-      return DateTime.fromSeconds(this.event.eventStart).toRelative()
+      return DateTime.fromMillis(this.event.eventStart).toRelative()
     },
     endTimeRelative() {
       if (!this.event?.eventEnd) {
         return ''
       }
-      return DateTime.fromSeconds(this.event.eventEnd).toRelative()
+      return DateTime.fromMillis(this.event.eventEnd).toRelative()
     },
     ongoing() {
       if (!this.event || (!this.event?.eventStart && !this.event?.eventEnd)) {
@@ -408,26 +408,26 @@ export default {
     },
     eventStartDate: {
       get() {
-        return this.event.eventStart ? DateTime.fromSeconds(this.event.eventStart).toISODate() : null
+        return this.event.eventStart ? DateTime.fromMillis(this.event.eventStart).toISODate() : null
       },
       set(value) {
         const date = DateTime.fromISO(value)
         const time = this.event.eventStart ? DateTime.fromMillis(this.event.eventStart) : DateTime.local()
-        this.updatedEvent.eventStart = date.set({ hour: time.hour, minute: time.minute }).toUnixInteger()
-        this.event.eventStart = date.set({ hour: time.hour, minute: time.minute }).toUnixInteger()
-        return date.set({ hour: time.hour, minute: time.minute }).toUnixInteger()
+        this.updatedEvent.eventStart = date.set({ hour: time.hour, minute: time.minute }).toMillis()
+        this.event.eventStart = date.set({ hour: time.hour, minute: time.minute }).toMillis()
+        return date.set({ hour: time.hour, minute: time.minute }).toMillis()
       },
     },
     eventStartTime: {
       get() {
-        return this.event.eventStart ? DateTime.fromSeconds(this.event.eventStart).toFormat('HH:mm') : null
+        return this.event.eventStart ? DateTime.fromMillis(this.event.eventStart).toFormat('HH:mm') : null
       },
       set(value) {
         const parts = value.split(':')
-        const date = DateTime.fromSeconds(this.event.eventStart)
-        this.updatedEvent.eventStart = date.set({ hour: parts[0], minute: parts[1] }).toUnixInteger()
-        this.event.eventStart = date.set({ hour: parts[0], minute: parts[1] }).toUnixInteger()
-        return date.set({ hour: parts[0], minute: parts[1] }).toUnixInteger()
+        const date = DateTime.fromMillis(this.event.eventStart)
+        this.updatedEvent.eventStart = date.set({ hour: parts[0], minute: parts[1] }).toMillis()
+        this.event.eventStart = date.set({ hour: parts[0], minute: parts[1] }).toMillis()
+        return date.set({ hour: parts[0], minute: parts[1] }).toMillis()
       },
     },
     eventEndDate: {
@@ -438,10 +438,10 @@ export default {
         if (value) {
           // Check if the value is not null or undefined
           const date = DateTime.fromISO(value)
-          const time = this.event.eventEnd ? DateTime.fromSeconds(this.event.eventEnd) : DateTime.local()
-          this.updatedEvent.eventEnd = date.set({ hour: time.hour, minute: time.minute }).toUnixInteger()
-          this.event.eventEnd = date.set({ hour: time.hour, minute: time.minute }).toUnixInteger()
-          return date.set({ hour: time.hour, minute: time.minute }).toUnixInteger()
+          const time = this.event.eventEnd ? DateTime.fromMillis(this.event.eventEnd) : DateTime.local()
+          this.updatedEvent.eventEnd = date.set({ hour: time.hour, minute: time.minute }).toMillis()
+          this.event.eventEnd = date.set({ hour: time.hour, minute: time.minute }).toMillis()
+          return date.set({ hour: time.hour, minute: time.minute }).toMillis()
         } else {
           return this.event.eventEnd
         }
@@ -449,16 +449,16 @@ export default {
     },
     eventEndTime: {
       get() {
-        return this.event.eventEnd ? DateTime.fromSeconds(this.event.eventEnd).toFormat('HH:mm') : null
+        return this.event.eventEnd ? DateTime.fromMillis(this.event.eventEnd).toFormat('HH:mm') : null
       },
       set(value) {
         if (value && this.event.eventEnd) {
           // Check if the value and this.eventEnd are not null or undefined
           const parts = value.split(':')
-          const date = DateTime.fromSeconds(this.event.eventEnd)
-          this.updatedEvent.eventEnd = date.set({ hour: parts[0], minute: parts[1] }).toUnixInteger()
-          this.event.eventEnd = date.set({ hour: parts[0], minute: parts[1] }).toUnixInteger()
-          return date.set({ hour: parts[0], minute: parts[1] }).toUnixInteger()
+          const date = DateTime.fromMillis(this.event.eventEnd)
+          this.updatedEvent.eventEnd = date.set({ hour: parts[0], minute: parts[1] }).toMillis()
+          this.event.eventEnd = date.set({ hour: parts[0], minute: parts[1] }).toMillis()
+          return date.set({ hour: parts[0], minute: parts[1] }).toMillis()
         } else {
           return this.event.eventEnd
         }

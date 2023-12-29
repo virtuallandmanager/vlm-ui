@@ -91,7 +91,7 @@ export default {
       return store.state.organization.userOrgs
     },
     memberSince() {
-      return DateTime.fromSeconds(this.userInfo.registeredAt).toLocaleString()
+      return DateTime.fromMillis(this.userInfo.registeredAt).toLocaleString()
     },
   },
   methods: {

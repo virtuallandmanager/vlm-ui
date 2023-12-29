@@ -54,25 +54,25 @@ export default {
       if (!this.event?.eventStart) {
         return ''
       }
-      return DateTime.fromSeconds(this.event.eventStart).toLocaleString()
+      return DateTime.fromMillis(this.event.eventStart).toLocaleString()
     },
     startTimeString() {
       if (!this.event?.eventStart) {
         return ''
       }
-      return DateTime.fromSeconds(this.event.eventStart).toRelative()
+      return DateTime.fromMillis(this.event.eventStart).toRelative()
     },
     endTime() {
       if (!this.event?.eventEnd) {
         return ''
       }
-      return DateTime.fromSeconds(this.event.eventEnd).toLocaleString()
+      return DateTime.fromMillis(this.event.eventEnd).toLocaleString()
     },
     endTimeString() {
       if (!this.event?.eventEnd) {
         return ''
       }
-      return DateTime.fromSeconds(this.event.eventEnd).toRelative()
+      return DateTime.fromMillis(this.event.eventEnd).toRelative()
     },
     ongoing() {
       return DateTime.now().toSeconds() >= this.event.eventStart && (!this.event.eventEnd || DateTime.now().toSeconds() <= this.event.eventEnd)
