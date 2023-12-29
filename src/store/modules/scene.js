@@ -651,7 +651,6 @@ export default {
           }
         })
         room.onMessage('send_active_users', ({ activeUsers }) => {
-          console.log(activeUsers)
           commit('SET_ACTIVE_USERS', activeUsers)
         })
         room.onMessage('add_session_action', ({ action, metadata, pathPoint, displayName, timestamp }) => {

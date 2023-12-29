@@ -113,7 +113,7 @@ export default {
   methods: {
     connectButton() {
       const interval = setInterval(() => {
-        if (!this.sigTokenExpires || DateTime.fromMillis(this.sigTokenExpires).fromMillis() < DateTime.now().fromMillis()) {
+        if (!this.sigTokenExpires || DateTime.fromMillis(this.sigTokenExpires) < DateTime.now().fromMillis()) {
           return
         }
         this.signingTime = Interval.fromDateTimes(DateTime.now(), DateTime.fromMillis(this.sigTokenExpires)).toDuration(['seconds']).toFormat('s')
