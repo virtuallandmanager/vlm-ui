@@ -72,7 +72,7 @@ export default {
     },
     CONNECT(state, connectedWallet) {
       state.connectedWallet = connectedWallet
-      localStorage.setItem('connectedWallet', connectedWallet)
+      localStorage.setItem('connectedWallet', connectedWallet.toLowerCase())
     },
     AUTHENTICATE(state) {
       state.authenticated = true
@@ -102,15 +102,22 @@ export default {
     },
   },
   actions: {
-    async refreshSession({ commit, dispatch }) {
+    async refreshSession({ state, commit, dispatch }) {
       const token = localStorage.getItem('refreshToken')
-      if (!token) {
+      const connectedWallet = localStorage.getItem('connectedWallet')
+      if (!token || !connectedWallet) {
         return false
       }
 
       commit('START')
+
       // Send token to server and handle response
       const response = await refreshSession(token)
+
+      if (response?.session.connectedWallet !== connectedWallet && response?.session.connectedWallet !== state.connectedWallet) {
+        await dispatch('sendWalletAddress', connectedWallet || state.connectedWallet)
+        return false
+      }
 
       //If active session
       if (response?.status < 400) {
@@ -125,6 +132,8 @@ export default {
     async connectWallet({ commit, dispatch }, newAccountList) {
       // connect the user's wallet
       commit('START')
+      const token = localStorage.getItem('refreshToken')
+
       let accountList = newAccountList
 
       if (!accountList) {
@@ -133,8 +142,12 @@ export default {
 
       commit('CONNECT', accountList[0])
 
-      // send address to the server
-      dispatch('sendWalletAddress', accountList[0])
+      if (token) {
+        return dispatch('refreshSession')
+      } else {
+        // send address to the server
+        dispatch('sendWalletAddress', accountList[0])
+      }
     },
 
     async sendWalletAddress({ commit, dispatch }) {
@@ -231,11 +244,11 @@ export default {
     },
 
     autoRefreshToken({ state, dispatch }) {
-      const timeToExpiry = state.sessionExpires - DateTime.now().toSeconds()
+      const timeToExpiry = state.sessionExpires - DateTime.now().toMillis()
 
       setTimeout(() => {
         dispatch('refreshSession')
-      }, timeToExpiry * 1000 - 5000)
+      }, timeToExpiry - 5000)
     },
 
     disconnect({ commit }) {
