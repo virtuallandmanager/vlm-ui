@@ -26,7 +26,7 @@
                   </div>
                 </v-card>
               </template>
-              <div class="d-flex justify-center text-center" v-for="(location, i) of exodusLocations" :key="i">
+              <div class="d-flex justify-center text-center" v-for="(location, i) of dclLocations" :key="i">
                 <v-chip small class="text-caption ma-1"><v-icon x-small v-if="location.includes('.dcl.eth')">mdi-web</v-icon>{{ location }}</v-chip>
               </div>
             </v-tooltip>
@@ -40,7 +40,7 @@
                   </div>
                 </v-card>
               </template>
-              <div class="d-flex justify-center text-center" v-for="(location, i) of dclLocations" :key="i">
+              <div class="d-flex justify-center text-center" v-for="(location, i) of exodusLocations" :key="i">
                 <v-chip small class="text-caption ma-1"><v-icon x-small v-if="location.includes('.dcl.eth')">mdi-web</v-icon>{{ location }}</v-chip>
               </div>
             </v-tooltip>
