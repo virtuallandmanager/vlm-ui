@@ -114,6 +114,11 @@ export default {
       // Send token to server and handle response
       const response = await refreshSession(token)
 
+      if (!response.session) {
+        await dispatch('handleFailedRestore')
+        return false
+      }
+
       if (response?.session.connectedWallet !== connectedWallet && response?.session.connectedWallet !== state.connectedWallet) {
         await dispatch('sendWalletAddress', connectedWallet || state.connectedWallet)
         return false
