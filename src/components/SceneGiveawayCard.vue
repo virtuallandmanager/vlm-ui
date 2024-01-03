@@ -113,6 +113,7 @@ export default {
       updateSceneElement: "scene/updateSceneElement",
       removeSceneElement: "scene/removeSceneElement",
       toggleGiveawayLocators: "scene/toggleGiveawayLocators",
+      updateGiveaway: "giveaway/updateGiveaway",
     }),
     toggleEditMode() {
       this.editingName = !this.editingName;
@@ -190,24 +191,8 @@ export default {
           elementData: this.claimPoint,
         });
     },
-    updateGiveawayProperties() {
-      this.updateSceneElement({
-        action: "update",
-        element: "giveaway",
-        property: "properties",
-        id: this.claimPoint.id,
-        elementData: this.claimPoint,
-      });
-    },
-    updateInstanceProperties(instance) {
-      this.updateSceneElement({
-        action: "update",
-        element: "claimPoint",
-        property: "properties",
-        id: instance.id,
-        elementData: this.giveaway,
-        instanceData: instance,
-      });
+    updateProperties() {
+      this.updateGiveaway(this.giveaway);
     },
   },
 };

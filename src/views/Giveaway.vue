@@ -9,10 +9,10 @@
             <v-icon>mdi-bag-personal</v-icon>
             <div class="text-button">My Collectables</div>
           </v-card>
-          <!-- <v-card class="flex-grow-1 text-center pa-4 mt-2" @click="showOtherCollectablesDialog">
+          <v-card class="flex-grow-1 text-center pa-4 mt-2" @click="showOtherCollectablesDialog">
             <v-icon>mdi-storefront</v-icon>
             <div class="text-button">Other Collectables</div>
-          </v-card> -->
+          </v-card>
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -70,8 +70,33 @@
       <v-card>
         <v-card-title class="text-h5"> Item Details </v-card-title>
         <v-card-text>
-          <v-text-field label="Contract Address" outlined v-model="newContractAddress"></v-text-field>
-          <v-text-field label="Item ID" outlined v-model="newItemId"></v-text-field>
+          <v-text-field label="Contract Address" outlined v-model="newContractAddress" @change="importCollection"></v-text-field>
+          <!-- <v-text-field label="Item ID" outlined v-model="newItemId"></v-text-field> -->
+          <v-select
+            v-if="selectedCollection"
+            label="Item"
+            outlined
+            v-model="newItemId"
+            :items="collectionItems()"
+            :loading="loadingCollectionItems"
+            :disabled="loadingCollectionItems"
+          >
+            <template v-slot:selection="data">
+              <v-avatar class="mr-4">
+                <v-img :src="data.item.thumbnail"></v-img>
+              </v-avatar>
+              <v-list-item-content v-html="data.item.name"> </v-list-item-content>
+            </template>
+            <template v-slot:item="data">
+              <v-list-item-avatar>
+                <img :src="data.item.thumbnail" />
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title v-html="data.item.name"></v-list-item-title>
+                <v-list-item-subtitle v-html="`${data.item.category.capitalize()} - ${data.item.rarity.capitalize()}`"></v-list-item-subtitle>
+              </v-list-item-content>
+            </template>
+          </v-select>
         </v-card-text>
 
         <v-card-actions>
@@ -79,7 +104,7 @@
 
           <v-btn color="grey darken-1" text @click="otherCollectablesDialog = false"> Cancel </v-btn>
 
-          <v-btn color="primary darken-1" text @click="addGiveawayItem"> Add </v-btn>
+          <v-btn color="primary darken-1" text @click="addGiveawayItem" :loading="this.loadingItem"> Add </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -91,21 +116,8 @@
       <v-card class="cyberpunk-border">
         <v-card-text class="d-flex align-center flex-grow-2">
           <div class="d-flex flex-column flex-grow-1 mr-4">
-            <v-text-field
-              label="Giveaway Title"
-              v-model="giveaway.name"
-              outlined
-              hide-details
-              class="mb-4"
-              @change="updateGiveawayProperties"
-            ></v-text-field>
-            <v-textarea
-              label="Giveaway Description"
-              v-model="giveaway.description"
-              outlined
-              hide-details
-              @change="updateGiveawayProperties"
-            ></v-textarea>
+            <v-text-field label="Giveaway Title" v-model="giveaway.name" outlined hide-details class="mb-4" @change="updateProperties"></v-text-field>
+            <v-textarea label="Giveaway Description" v-model="giveaway.description" outlined hide-details @change="updateProperties"></v-textarea>
           </div>
           <v-card class="pa-4 frosted mr-6 d-flex flex-column">
             <v-card-text class="flex-grow-1 d-flex flex-column justify-center align-center">
@@ -142,9 +154,11 @@
         <v-card-text v-else>
           <v-container>
             <v-row class="d-flex justify-start">
-              <v-col xs="12" sm="6" md="6" lg="4" v-for="(item, i) in items" :key="i" class="d-flex justify-start align-start">
-                <giveaway-item-card :item="item" :key="i" @removeGiveawayItem="removeGiveawayItem"></giveaway-item-card>
-              </v-col>
+              <div v-for="(item, i) in items" :key="i">
+                <v-col xs="12" sm="6" md="6" lg="4" v-if="item?.contractAddress" class="d-flex justify-start align-start">
+                  <giveaway-item-card :item="item" :key="i" @removeGiveawayItem="removeGiveawayItem"></giveaway-item-card>
+                </v-col>
+              </div>
             </v-row>
           </v-container>
         </v-card-text>
@@ -176,6 +190,8 @@ export default {
     selectedCollection: null,
     newContractAddress: '',
     newItemId: '',
+    loadingItem: false,
+    importedCollection: null,
   }),
 
   mounted() {
@@ -208,6 +224,9 @@ export default {
       return imgPlaceholder
     },
     selectedGiveawayItem() {
+      if (!this.userItemsCache[this.selectedCollection]) {
+        return {}
+      }
       return this.userItemsCache[this.selectedCollection].find((item) => item.itemId == this.newItemId)
     },
   },
@@ -245,10 +264,13 @@ export default {
         }
       })
     },
-
+    async importCollection() {
+      this.selectedCollection = this.newContractAddress
+      return await this.getUserCollectionItems(this.selectedCollection)
+    },
     async getCollectionItems() {
       this.newItemId = null
-      await this.getUserCollectionItems(this.selectedCollection)
+      return await this.getUserCollectionItems(this.selectedCollection)
     },
     async showUserCollectionsDialog() {
       this.selectedCollection = null
@@ -261,11 +283,11 @@ export default {
       this.otherCollectablesDialog = true
     },
     openItemDialog() {
-      // this.newItemDialog = true;
-      this.showUserCollectionsDialog()
+      this.newItemDialog = true
+      // this.showUserCollectionsDialog()
     },
     openBuyCreditsDialog() {
-      // this.buyCreditsDialog = true;
+      this.buyCreditsDialog = true
     },
     openAllocationDialog() {
       if (this.giveaways.length) {
@@ -291,18 +313,38 @@ export default {
         },
       })
     },
+    async addOtherGiveawayItem() {
+      this.loadingItem = true
+      this.selectedCollection = this.newContractAddress
+      this.importedCollection = await this.getCollectionItems()
+      this.loadingItem = false
+      this.newItemDialog = false
+      this.userCollectionsDialog = false
+      this.otherCollectablesDialog = false
+      console.log(this.importedCollection)
+
+      // this.selectedGiveawayItem = this.importedCollection
+      // this.newContractAddress = ''
+      // this.newItemId = ''
+
+      // this.addItemToGiveaway({
+      //   giveawayId: this.giveaway.sk,
+      //   item: {
+      //     name: this.selectedGiveawayItem.name,
+      //     chain: this.selectedGiveawayItem.chainId,
+      //     imageSrc: this.selectedGiveawayItem.thumbnail,
+      //     category: this.selectedGiveawayItem.category,
+      //     rarity: this.selectedGiveawayItem.rarity,
+      //     contractAddress: this.selectedCollection,
+      //     itemId: this.newItemId,
+      //   },
+      // })
+    },
     changeFilterType(filterType) {
       this.filterType = filterType
     },
-    updateGiveawayProperties() {
-      const items = this.giveaway.items.map((item) => item.sk)
-      this.updateGiveaway({
-        sk: this.giveaway.sk,
-        name: this.giveaway.name,
-        description: this.giveaway.description,
-        claimLimits: this.giveaway.claimLimits,
-        items,
-      })
+    updateProperties() {
+      this.updateGiveaway(this.giveaway)
     },
     goBack() {
       this.$router.go(-1)
@@ -314,7 +356,7 @@ export default {
       this.giveaway.items = this.giveaway.items.filter((giveawayItem) => {
         return giveawayItem.contractAddress !== item.contractAddress || giveawayItem.itemId !== item.itemId
       })
-      this.updateGiveawayProperties()
+      this.updateProperties()
     },
   },
 }

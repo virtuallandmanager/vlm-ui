@@ -72,14 +72,14 @@ export default {
     test: false,
     tsConfigJsonCode: '',
     sceneJsonCode: '',
-    installCode: 'dcl install vlm-dcl',
+    installCode: 'npm install vlm-dcl@sdk7',
     mainSceneCode: `import VLM from "vlm-dcl";
 VLM.init();`,
   }),
   mounted() {
-    ;(this.tsConfigJsonCode = `"noLib": false,
+    ;(this.tsConfigJsonCode = `
 "skipLibCheck": true,
-"moduleResolution": "node",`),
+`),
       (this.sceneJsonCode = `"vlm": { "sceneId": "${this.sceneId || emptyGuid}" },`)
   },
   methods: {

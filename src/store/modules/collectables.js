@@ -53,6 +53,7 @@ export default {
         const { data } = await getCollectionItems(contractAddress)
         commit('STORE_USER_COLLECTION_ITEMS', { userItems: data, contractAddress })
         commit('LOAD_USER_ITEMS_STOP')
+        return data
       } catch (error) {
         console.error(error)
       }

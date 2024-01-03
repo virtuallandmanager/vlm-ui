@@ -25,13 +25,13 @@ const humanizeDateTimes = (arr) => {
       return
     }
     if (obj.created) {
-      obj.created = DateTime.fromSeconds(obj.created).toLocaleString()
+      obj.created = DateTime.fromMillis(obj.created).toLocaleString()
     }
     if (obj.createdAt) {
-      obj.createdAt = DateTime.fromSeconds(obj.createdAt).toLocaleString()
+      obj.createdAt = DateTime.fromMillis(obj.createdAt).toLocaleString()
     }
     if (obj.registeredAt) {
-      obj.registeredAt = DateTime.fromSeconds(obj.registeredAt).toLocaleString()
+      obj.registeredAt = DateTime.fromMillis(obj.registeredAt).toLocaleString()
     }
     if (obj.ts) {
       obj.lastModified = DateTime.fromMillis(obj.ts).toRelative()

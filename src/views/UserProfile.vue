@@ -125,7 +125,7 @@ export default {
     },
     formattedRegisterDate() {
       if (!this.userInfo.registeredAt) return ''
-      return new DateTime.fromSeconds(this.userInfo.registeredAt).toLocaleString()
+      return new DateTime.fromMillis(this.userInfo.registeredAt).toLocaleString()
     },
     orgAdmin() {
       return this.userRoles[4]

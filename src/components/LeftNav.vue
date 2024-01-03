@@ -52,12 +52,12 @@
         </v-list-item-icon>
         <v-list-item-title>Giveaways</v-list-item-title>
       </v-list-item>
-      <v-list-item link to="/media" disabled>
+      <!-- <v-list-item link to="/media" disabled>
         <v-list-item-icon>
           <v-icon disabled>mdi-folder-multiple-image</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Media Library</v-list-item-title>
-      </v-list-item>
+      </v-list-item> -->
       <v-list-item link :href="docsUrl">
         <v-list-item-icon>
           <v-icon>mdi-book</v-icon>
