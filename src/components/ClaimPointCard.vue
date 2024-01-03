@@ -26,7 +26,7 @@
             @click:append-outer="toggleEditMode"
             @blur="toggleEditMode"
             dense
-            @change="editClaimPointName()"
+            @change="editClaimPointName"
           ></v-text-field>
         </div>
       </div>
@@ -135,7 +135,7 @@
             <v-img :src="item.imageSrc"></v-img>
             <v-card class="text-caption text-center black pa-1">
               <div class="text-caption">{{ item.name }}</div>
-              <div class="text-caption grey--text">{{ item.category.capitalize() }}</div>
+              <div class="text-caption grey--text">{{ item.category?.capitalize() }}</div>
             </v-card>
           </v-col>
         </v-row>
@@ -285,10 +285,10 @@ export default {
         }
       })
 
-      if (truncated !== this.instance.name) {
+      if (truncated !== this.claimPoint?.name) {
         return `...${truncated}`
       } else {
-        return this.instance.name
+        return this.claimPoint.name
       }
     },
     itemColSize() {
