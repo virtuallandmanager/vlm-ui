@@ -42,8 +42,7 @@
 
         <v-card-text>
           <v-text-field label="Event Name" outlined v-model="newEventName"></v-text-field>
-          <v-autocomplete :items="timezoneList" v-model="newTzCode" placeholder="Timezone" outlined @change="save('tzCode', 'newTzCode')">
-          </v-autocomplete>
+          <v-autocomplete :items="timezoneList" v-model="newTzCode" placeholder="Timezone" outlined> </v-autocomplete>
           <div class="d-flex">
             <v-menu v-model="showStartDatePicker" :close-on-content-click="false" transition="expand-transition" offset-y max-width="380">
               <template v-slot:activator="{ on, attrs }">
@@ -197,7 +196,6 @@ export default {
       { value: 'decentraland', text: 'Decentraland' },
       { value: 'hyperfy', text: 'Hyperfy' },
     ],
-    filteredEvents: [],
     timezoneList: [
       { text: 'UTC', value: 'UTC' },
       ...timezones.map((tz) => ({
@@ -208,7 +206,6 @@ export default {
   }),
   async mounted() {
     this.getEvents()
-    this.filteredEvents = this.events
   },
   computed: {
     ...mapGetters({
@@ -250,23 +247,37 @@ export default {
     },
     pastEvents() {
       return this.events
-        .filter((event) => event.endTime && DateTime.fromMillis(event?.endTime).diffNow() < 0)
-        .sort((a, b) => a.startTime > b.startTime)
+        .filter((event) => event.eventEnd && DateTime.fromMillis(event?.eventEnd).diffNow() < 0)
+        .sort((a, b) => a.eventStart > b.eventStart)
     },
     ongoingEvents() {
       return [...this.events]
         .sort((a, b) => {
-          return a.startTime - b.startTime >= 0 ? a.startTime : b.startTime
+          return a.eventStart - b.eventStart >= 0 ? a.eventStart : b.eventStart
         })
         .filter(
-          (event) => DateTime.fromMillis(event.startTime).diffNow() < 0 && (!event.endTime || DateTime.fromMillis(event?.endTime).diffNow() > 0)
+          (event) => DateTime.fromMillis(event.eventStart).diffNow() < 0 && (!event.eventEnd || DateTime.fromMillis(event?.eventEnd).diffNow() > 0)
         )
     },
     futureEvents() {
-      return this.events.filter((event) => DateTime.fromMillis(event.startTime).diffNow() > 0)
+      return this.events.filter((event) => DateTime.fromMillis(event.eventStart).diffNow() > 0)
     },
     memberSince() {
       return DateTime.fromMillis(this.userInfo.registeredAt).toLocaleString()
+    },
+    filteredEvents() {
+      switch (this.filterType) {
+        case 0:
+          return this.events
+        case 1:
+          return this.futureEvents
+        case 2:
+          return this.ongoingEvents
+        case 3:
+          return this.pastEvents
+        default:
+          return this.events
+      }
     },
   },
   methods: {
@@ -274,9 +285,9 @@ export default {
       getEvents: 'event/getEvents',
       createEvent: 'event/createEvent',
     }),
-    createNewEvent() {
+    async createNewEvent() {
       this.newEventDialog = false
-      this.createEvent({
+      await this.createEvent({
         name: this.newEventName,
         eventStart: this.eventStart,
         eventEnd: this.eventEnd,
@@ -285,26 +296,24 @@ export default {
         location: this.newEventLocation,
         locationUrl: this.newEventLocationUrl,
       })
+      this.resetNewEvent()
+    },
+    resetNewEvent() {
+      this.newEventName = ''
+      this.newEventStartDate = null
+      this.newEventEndDate = null
+      this.newEventStartTime = null
+      this.newEventEndTime = null
+      this.newTzCode = null
+      this.newEventWorlds = []
+      this.newEventLocation = null
+      this.newEventLocationUrl = null
     },
     openNewEventDialog() {
       this.newEventDialog = true
     },
     changeFilterType(filterType) {
       this.filterType = filterType.value
-      switch (this.filterType) {
-        case 0:
-          this.filteredEvents = this.events
-          break
-        case 1:
-          this.filteredEvents = this.futureEvents
-          break
-        case 2:
-          this.filteredEvents = this.ongoingEvents
-          break
-        case 3:
-          this.filteredEvents = this.pastEvents
-          break
-      }
     },
     clockIcon(time) {
       if (!time) {
