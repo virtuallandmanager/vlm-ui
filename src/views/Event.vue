@@ -392,19 +392,19 @@ export default {
       if (!this.event || (!this.event?.eventStart && !this.event?.eventEnd)) {
         return null
       }
-      return DateTime.now().toSeconds() >= this.event.eventStart && (!this.event.eventEnd || DateTime.now().toSeconds() <= this.event.eventEnd)
+      return DateTime.now().toMillis() >= this.event.eventStart && (!this.event.eventEnd || DateTime.now().toMillis() <= this.event.eventEnd)
     },
     future() {
       if (!this.event || (!this.event?.eventStart && !this.event?.eventEnd)) {
         return ''
       }
-      return DateTime.now().toSeconds() < this.event.eventStart
+      return DateTime.now().toMillis() < this.event.eventStart
     },
     past() {
       if (!this.event || (!this.event?.eventStart && !this.event?.eventEnd)) {
         return ''
       }
-      return DateTime.now().toSeconds() > this.event.eventEnd
+      return DateTime.now().toMillis() > this.event.eventEnd
     },
     eventStartDate: {
       get() {

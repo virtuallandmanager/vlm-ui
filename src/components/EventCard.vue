@@ -75,13 +75,13 @@ export default {
       return DateTime.fromMillis(this.event.eventEnd).toRelative()
     },
     ongoing() {
-      return DateTime.now().toSeconds() >= this.event.eventStart && (!this.event.eventEnd || DateTime.now().toSeconds() <= this.event.eventEnd)
+      return DateTime.now().toMillis() >= this.event.eventStart && (!this.event.eventEnd || DateTime.now().toMillis() <= this.event.eventEnd)
     },
     future() {
-      return DateTime.now().toSeconds() < this.event.startTime
+      return DateTime.now().toMillis() < this.event.startTime
     },
     past() {
-      return DateTime.now().toSeconds() > this.event.endTime
+      return DateTime.now().toMillis() > this.event.endTime
     },
   },
 }

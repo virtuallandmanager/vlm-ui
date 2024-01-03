@@ -59,7 +59,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary darken-1" text @click="addGiveawayItem"> Add </v-btn>
+          <v-btn color="primary darken-1" text @click="addGiveawayItem" :disabled="!selectedGiveawayItem?.contractAddress"> Add </v-btn>
 
           <v-btn color="grey darken-1" text @click="userCollectionsDialog = false"> Cancel </v-btn>
         </v-card-actions>
@@ -68,12 +68,12 @@
 
     <v-dialog v-model="otherCollectablesDialog" width="380">
       <v-card>
-        <v-card-title class="text-h5"> Item Details </v-card-title>
+        <v-card-title class="text-h6" > Item Details </v-card-title>
         <v-card-text>
-          <v-text-field label="Contract Address" outlined v-model="newContractAddress" @change="importCollection"></v-text-field>
-          <!-- <v-text-field label="Item ID" outlined v-model="newItemId"></v-text-field> -->
+          <v-text-field label="Collection Contract Address" outlined v-model="newContractAddress" @input="debounceImportCollection"></v-text-field>
+          <div class="text-h6 align-center" v-if="newContractAddress && !loadingCollectionItems && selectedCollection && !collectionItems().length">Collection Not Found</div>
           <v-select
-            v-if="selectedCollection"
+            v-else-if="newContractAddress && selectedCollection && collectionItems().length"
             label="Item"
             outlined
             v-model="newItemId"
@@ -81,12 +81,6 @@
             :loading="loadingCollectionItems"
             :disabled="loadingCollectionItems"
           >
-            <template v-slot:selection="data">
-              <v-avatar class="mr-4">
-                <v-img :src="data.item.thumbnail"></v-img>
-              </v-avatar>
-              <v-list-item-content v-html="data.item.name"> </v-list-item-content>
-            </template>
             <template v-slot:item="data">
               <v-list-item-avatar>
                 <img :src="data.item.thumbnail" />
@@ -104,7 +98,9 @@
 
           <v-btn color="grey darken-1" text @click="otherCollectablesDialog = false"> Cancel </v-btn>
 
-          <v-btn color="primary darken-1" text @click="addGiveawayItem" :loading="this.loadingItem"> Add </v-btn>
+          <v-btn color="primary darken-1" text @click="addGiveawayItem" :loading="this.loadingItem" :disabled="!this.collectionItems().length">
+            Add
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -124,19 +120,48 @@
               <div class="text-h4">{{ giveaway.allocatedCredits }}</div>
               <div class="text-h6">Allocated Credits</div>
             </v-card-text>
-            <v-card-actions>
+            <v-card-text v-if="allocationDialog" class="flex-grow-1 d-flex flex-column justify-center align-center">
+              <v-btn-toggle v-model="selectedAllocationAmount" outlined class="d-block text-center mb-4" exclusive mandatory>
+                <v-btn> 100 </v-btn>
+                <v-btn> 1000 </v-btn>
+                <v-btn> 5000 </v-btn>
+                <v-btn> 10000 </v-btn>
+              </v-btn-toggle>
+            </v-card-text>
+            <v-card-actions v-if="!allocationDialog">
               <v-btn color="primary" @click="openAllocationDialog">Allocate Credits</v-btn>
               <v-btn color="primary" @click="openBuyCreditsDialog" disabled>Buy More Credits</v-btn>
             </v-card-actions>
+            <v-card-actions v-if="allocationDialog">
+              <v-btn color="primary" @click="allocateCreditBalance">Add</v-btn>
+              <v-btn color="grey darken-1" @click="allocationDialog = false">Cancel</v-btn>
+            </v-card-actions>
           </v-card>
           <v-card class="pa-4 frosted mr-6 d-flex flex-column">
-            <v-card-text class="flex-grow-1 d-flex flex-column justify-center align-center">
-              <div class="text-h4">{{ linkedEvents.length }}</div>
-              <div class="text-h6">Linked Event{{ linkedEvents.length !== 1 ? 's' : '' }}</div>
+            <v-card-text class="flex-grow-1 d-flex flex-column justify-center align-center" v-if="!eventLinkMenu">
+              <div class="text-h4">{{ linkedEvents(giveaway.sk).length }}</div>
+              <div class="text-h6">Linked Event{{ linkedEvents(giveaway.sk).length !== 1 ? 's' : '' }}</div>
             </v-card-text>
-            <v-card-actions class="d-flex justify-center">
-              <!-- <v-btn color="primary" @click="openItemDialog" :loading="loadingCollections"
-                :disabled="userCollectionsDialog || loadingCollections">Link Event</v-btn> -->
+            <v-card-text class="flex-grow-1 d-flex flex-column justify-center align-center" v-if="eventLinkMenu">
+              <v-select label="Event" outlined v-model="selectedEvent" :items="events" :loading="updatingLink">
+                <template v-slot:selection="data">
+                  <v-list-item-content v-html="data.item.name"> </v-list-item-content>
+                </template>
+                <template v-slot:item="data">
+                  <v-list-item-content>
+                    <v-list-item-title v-html="data.item.name"></v-list-item-title>
+                    <v-list-item-subtitle v-html="`${getDateTime(data.item.eventStart)} - ${getDateTime(data.item.eventEnd)}`"></v-list-item-subtitle>
+                  </v-list-item-content>
+                </template>
+              </v-select>
+            </v-card-text>
+            <v-card-actions class="d-flex justify-center" v-if="!eventLinkMenu">
+              <v-btn color="primary" @click="eventLinkMenu = true">Edit</v-btn>
+            </v-card-actions>
+            <v-card-actions class="d-flex justify-center" v-if="eventLinkMenu">
+              <v-btn color="primary" @click="linkEvent" v-if="!linkedEvent" :loading="updatingLink">Link</v-btn>
+              <v-btn color="error" @click="unlinkEvent" v-if="linkedEvent" :loading="updatingLink">Unlink</v-btn>
+              <v-btn color="grey darken-1" @click="eventLinkMenu = false">Cancel</v-btn>
             </v-card-actions>
           </v-card>
         </v-card-text>
@@ -174,6 +199,7 @@ import imgPlaceholder from '@/assets/placeholder.png'
 import FocusPage from '../components/FocusPage'
 import Loader from '../components/Loader'
 import GiveawayItemCard from '../components/GiveawayItemCard'
+import { debounce } from 'lodash'
 
 export default {
   name: 'Giveaway',
@@ -192,6 +218,10 @@ export default {
     newItemId: '',
     loadingItem: false,
     importedCollection: null,
+    selectedAllocationAmount: 1,
+    eventLinkMenu: false,
+    updatingLink: false,
+    selectedEvent: null,
   }),
 
   mounted() {
@@ -213,12 +243,18 @@ export default {
       userCollectionsCache: 'collectables/userCollections',
       userItemsCache: 'collectables/userItems',
       linkedEvents: 'event/eventsForGiveaway',
+      giveawaysForEvent: 'event/giveawaysForEvent',
+      events: 'event/eventList',
     }),
     giveaway() {
       return this.activeGiveaway || {}
     },
     items() {
       return this.giveaway.items || []
+    },
+    linkedEvent() {
+      if (!this.selectedEvent) return false
+      return !!this.linkedEvents(this.giveaway?.sk).find((event) => event.sk === this.selectedEvent?.sk)
     },
     placeholder() {
       return imgPlaceholder
@@ -228,6 +264,20 @@ export default {
         return {}
       }
       return this.userItemsCache[this.selectedCollection].find((item) => item.itemId == this.newItemId)
+    },
+    airdropAllocationAmount() {
+      switch (this.selectedAllocationAmount) {
+        case 0:
+          return 100
+        case 1:
+          return 1000
+        case 2:
+          return 5000
+        case 3:
+          return 10000
+        default:
+          return 100
+      }
     },
   },
   methods: {
@@ -241,6 +291,8 @@ export default {
       addItemToGiveaway: 'giveaway/addItemToGiveaway',
       getUserCollections: 'collectables/getUserCollections',
       getUserCollectionItems: 'collectables/getUserCollectionItems',
+      updateGiveawayLinks: 'event/updateGiveawayLinks',
+      unlinkGiveaway: 'event/unlinkGiveaway',
     }),
     collectionItems() {
       if (this.selectedCollection && !this.loadingCollectionItems && this.userItemsCache[this.selectedCollection]) {
@@ -264,6 +316,9 @@ export default {
         }
       })
     },
+    debounceImportCollection: debounce(function () {
+      this.importCollection()
+    }, 1000),
     async importCollection() {
       this.selectedCollection = this.newContractAddress
       return await this.getUserCollectionItems(this.selectedCollection)
@@ -279,7 +334,7 @@ export default {
       this.userCollectionsDialog = true
     },
     showOtherCollectablesDialog() {
-      this.newGiveawayDialog = false
+      this.newItemDialog = false
       this.otherCollectablesDialog = true
     },
     openItemDialog() {
@@ -295,6 +350,20 @@ export default {
       } else {
         this.showError({ message: 'You must create a giveaway before allocating credits.' })
       }
+    },
+    async linkEvent() {
+      this.updatingLink = true
+      const giveawayLinkIds = this.giveawaysForEvent(this.selectedEvent.sk).map((giveaway) => giveaway.sk)
+      giveawayLinkIds.push(this.giveaway.sk)
+      await this.updateGiveawayLinks({ eventId: this.selectedEvent?.sk, giveawayLinkIds })
+      this.updatingLink = false
+      this.eventLinkMenu = false
+    },
+    async unlinkEvent() {
+      this.updatingLink = true
+      await this.unlinkGiveaway({ eventId: this.selectedEvent?.sk, giveawayId: this.giveaway.sk })
+      this.updatingLink = false
+      this.eventLinkMenu = false
     },
     addGiveawayItem() {
       this.newItemDialog = false
@@ -313,32 +382,13 @@ export default {
         },
       })
     },
-    async addOtherGiveawayItem() {
-      this.loadingItem = true
-      this.selectedCollection = this.newContractAddress
-      this.importedCollection = await this.getCollectionItems()
-      this.loadingItem = false
-      this.newItemDialog = false
-      this.userCollectionsDialog = false
-      this.otherCollectablesDialog = false
-      console.log(this.importedCollection)
-
-      // this.selectedGiveawayItem = this.importedCollection
-      // this.newContractAddress = ''
-      // this.newItemId = ''
-
-      // this.addItemToGiveaway({
-      //   giveawayId: this.giveaway.sk,
-      //   item: {
-      //     name: this.selectedGiveawayItem.name,
-      //     chain: this.selectedGiveawayItem.chainId,
-      //     imageSrc: this.selectedGiveawayItem.thumbnail,
-      //     category: this.selectedGiveawayItem.category,
-      //     rarity: this.selectedGiveawayItem.rarity,
-      //     contractAddress: this.selectedCollection,
-      //     itemId: this.newItemId,
-      //   },
-      // })
+    allocateCreditBalance() {
+      this.allocationDialog = false
+      this.allocateBalance({
+        giveawayId: this.giveaway.sk,
+        amount: this.airdropAllocationAmount,
+        usePromoBalance: true,
+      })
     },
     changeFilterType(filterType) {
       this.filterType = filterType

@@ -105,9 +105,16 @@ export default {
         state.sceneLinks = state.sceneLinks.filter((link) => link.sk !== linkId)
       }
     },
-    REMOVE_GIVEAWAY_LINK(state, linkId) {
+    REMOVE_GIVEAWAY_LINK(state, linkId, eventId, giveawayId) {
       if (linkId) {
         state.giveawayLinks = state.giveawayLinks.filter((link) => link.sk !== linkId)
+      }
+      const existingLink = state.giveawayLinks.find((link) => link.eventId === eventId && link.giveawayId === giveawayId)
+      if (existingLink) {
+        state.giveawayLinks.splice(
+          state.giveawayLinks.findIndex((link) => link.sk === existingLink.sk),
+          1
+        )
       }
     },
     SET_ACTIVE_EVENT(state, eventId) {
@@ -146,23 +153,28 @@ export default {
     },
     getEvents: async ({ commit }) => {
       commit('LOAD_EVENTS_START')
-      const { events, giveawayLinks, sceneLinks } = await eventDal.getAll()
-      if (events) {
-        events.forEach((event) => {
-          commit('STORE_EVENT', event)
-        })
+      try {
+        const { events, giveawayLinks, sceneLinks } = await eventDal.getAll()
+        if (events) {
+          events.forEach((event) => {
+            commit('STORE_EVENT', event)
+          })
+        }
+        if (giveawayLinks) {
+          giveawayLinks.forEach((giveawayLink) => {
+            commit('STORE_GIVEAWAY_LINK', giveawayLink)
+          })
+        }
+        if (sceneLinks) {
+          sceneLinks.forEach((sceneLink) => {
+            commit('STORE_SCENE_LINK', sceneLink)
+          })
+        }
+        commit('LOAD_EVENTS_STOP')
+      } catch (error) {
+        console.error(error)
+        commit('LOAD_EVENTS_STOP')
       }
-      if (giveawayLinks) {
-        giveawayLinks.forEach((giveawayLink) => {
-          commit('STORE_GIVEAWAY_LINK', giveawayLink)
-        })
-      }
-      if (sceneLinks) {
-        sceneLinks.forEach((sceneLink) => {
-          commit('STORE_SCENE_LINK', sceneLink)
-        })
-      }
-      commit('LOAD_EVENTS_STOP')
     },
     getEvent: async ({ commit }, eventId, setActive = true) => {
       commit('LOAD_EVENT_START')
@@ -241,7 +253,7 @@ export default {
       commit('LOAD_EVENTS_START')
       const { success, linkId } = await eventDal.unlinkGiveaway({ eventId, giveawayId })
       if (success && linkId) {
-        commit('REMOVE_GIVEAWAY_LINK', linkId)
+        commit('REMOVE_GIVEAWAY_LINK', linkId, eventId, giveawayId)
       }
       commit('LOAD_EVENTS_STOP')
     },

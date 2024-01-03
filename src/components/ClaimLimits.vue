@@ -24,27 +24,27 @@
     </v-dialog>
     <div class="text-display font-weight-black">Claim Limits</div>
     <div class="d-flex justify-center align-center" v-if="!Object.keys(claimLimits).length">No Limits Set</div>
-    <div class="d-flex justify-space-between align-center" v-if="claimLimits.perUser">
+    <div class="d-flex justify-space-between align-center" v-if="claimLimits?.perUser">
       <div>User:</div>
       <div>{{ claimLimits.perUser }}</div>
     </div>
-    <div class="d-flex justify-space-between align-center" v-if="claimLimits.perIp">
+    <div class="d-flex justify-space-between align-center" v-if="claimLimits?.perIp">
       <div>IP:</div>
       <div>{{ claimLimits.perIp }}</div>
     </div>
-    <div class="d-flex justify-space-between align-center" v-if="claimLimits.daily">
+    <div class="d-flex justify-space-between align-center" v-if="claimLimits?.daily">
       <div>Daily:</div>
       <div>{{ claimLimits.daily }}</div>
     </div>
-    <div class="d-flex justify-space-between align-center" v-if="claimLimits.weekly">
+    <div class="d-flex justify-space-between align-center" v-if="claimLimits?.weekly">
       <div>Weekly:</div>
       <div>{{ claimLimits.weekly }}</div>
     </div>
-    <div class="d-flex justify-space-between align-center" v-if="claimLimits.monthly">
+    <div class="d-flex justify-space-between align-center" v-if="claimLimits?.monthly">
       <div>Monthly:</div>
       <div>{{ claimLimits.monthly }}</div>
     </div>
-    <div class="d-flex justify-space-between align-center" v-if="claimLimits.yearly">
+    <div class="d-flex justify-space-between align-center" v-if="claimLimits?.yearly">
       <div>Yearly:</div>
       <div>{{ claimLimits.yearly }}</div>
     </div>
