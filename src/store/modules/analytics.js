@@ -7,32 +7,32 @@ export default {
     historicalData: {},
   }),
   getters: {
-    recentSceneMetrics: (state) => state.recentSceneMetrics,
+    recentSceneMetrics: (state) => (sceneId) => state.recentSceneMetrics[sceneId] || {},
+    historicalData: (state) => (sceneId) => state.historicalData[sceneId] || [],
   },
   mutations: {
     ADD_SCENE_METRICS(state, { sceneId, metrics }) {
-      if (!state.recentSceneMetrics[sceneId]) {
-        state.recentSceneMetrics[sceneId] = metrics
-      } else {
-        state.recentSceneMetrics[sceneId].push(metrics)
-      }
+      state.recentSceneMetrics = { ...state.recentSceneMetrics, [sceneId]: metrics }
     },
     ADD_HISTORICAL_DATA(state, { sceneId, metrics }) {
       if (!state.historicalData[sceneId]) {
         state.historicalData[sceneId] = metrics
       } else {
-        state.historicalData[sceneId].push(metrics)
+        state.historicalData = { ...state.historicalData, [sceneId]: metrics }
       }
     },
   },
   actions: {
     async getRecentSceneMetrics({ commit }, sceneId) {
       const metrics = await getRecentSceneMetrics(sceneId)
-      commit('ADD_SCENE_METRICS', metrics)
+      commit('ADD_SCENE_METRICS', { sceneId, metrics })
     },
     async getHistoricalData({ commit }, sceneId, dateRange) {
-      const metrics = await getHistoricalData(sceneId, dateRange)
-      commit('ADD_HISTORICAL_DATA', metrics)
+      if (!dateRange) {
+        return
+      }
+      const metrics = await getHistoricalData(sceneId, dateRange, 'day')
+      commit('ADD_HISTORICAL_DATA', { sceneId, metrics })
     },
   },
 }

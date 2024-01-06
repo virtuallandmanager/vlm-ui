@@ -15,67 +15,104 @@ The login method first checks if a sessionToken exists in the Vuex store. If it 
 
 The restoreSession method uses an instance of AuthenticatedFetch to make an authenticated POST request to the /auth/vlm/restore endpoint with a payload containing the connectedWallet stored in the Vuex store.
 /*/
-
 export class AuthenticatedFetch {
-  sessionToken = store.state.auth.sessionToken
-  refreshToken = store.state.auth.refreshToken
+  static refreshing = false
+  static refreshQueue = []
+  static maxRetries = 3 // Maximum number of retries for a request
 
-  get = async (endpoint) => {
+  constructor() {
+    this.sessionToken = store.state.auth.sessionToken
+    this.refreshToken = store.state.auth.refreshToken
+  }
+
+  async refreshSession() {
     try {
-      const payload = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + this.sessionToken,
-        },
-      }
-      const response = await fetch(process.env.VUE_APP_API_URL + endpoint, payload),
-        responseJson = await response.json()
-
-      if (response.status === 401) {
-        console.log(response, responseJson)
-      }
-
-      return { status: response.status, ...responseJson }
-    } catch (error) {
-      console.log(error)
+      AuthenticatedFetch.refreshing = true
+      await store.dispatch('auth/refreshSession')
+      this.sessionToken = store.state.auth.sessionToken // Update token after refresh
+    } finally {
+      AuthenticatedFetch.refreshing = false
     }
   }
 
-  post = async (endpoint, payloadBody, file) => {
-    let body
-    let headers
+  async get(endpoint, retryCount = 0) {
+    const payload = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + this.sessionToken,
+      },
+    }
 
     try {
-      if (file) {
-        body = payloadBody
-
-        // Headers for multipart/form-data request
-        headers = {
-          Authorization: 'Bearer ' + this.sessionToken,
-        }
-      } else {
-        body = JSON.stringify(payloadBody)
-
-        // Headers for application/json request
-        headers = {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + this.sessionToken,
-        }
-      }
-
-      const payload = {
-        method: 'POST',
-        headers,
-        body,
-      }
-
       const response = await fetch(process.env.VUE_APP_API_URL + endpoint, payload)
       const responseJson = await response.json()
 
-      return { status: response.status, ...responseJson }
+      if (response.status === 401) {
+        if (!AuthenticatedFetch.refreshing) {
+          await this.refreshSession()
+          // Check if the session was successfully refreshed
+          if (this.sessionToken) {
+            return this.get(endpoint) // Retry with new session token
+          } else {
+            // Handle case where session cannot be refreshed
+            // Example: Logout the user or show an error
+          }
+        } else if (retryCount < AuthenticatedFetch.maxRetries) {
+          // Enqueue the request for retry
+          setTimeout(() => this.get(endpoint, retryCount + 1), 1000) // Retry after a delay
+        }
+      } else {
+        return { status: response.status, ...responseJson }
+      }
     } catch (error) {
-      console.log(error)
+      // Handle other errors
+      console.error('Fetch error:', error)
+    }
+  }
+
+  async post(endpoint, payloadBody, file, retryCount = 0) {
+    let body
+    let headers
+
+    // Configure headers and body based on whether a file is included
+    if (file) {
+      body = payloadBody // Assuming payloadBody is FormData for file upload
+      headers = { Authorization: 'Bearer ' + this.sessionToken }
+    } else {
+      body = JSON.stringify(payloadBody)
+      headers = {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + this.sessionToken,
+      }
+    }
+
+    const payload = { method: 'POST', headers, body }
+
+    try {
+      const response = await fetch(process.env.VUE_APP_API_URL + endpoint, payload)
+      const responseJson = await response.json()
+
+      if (response.status === 401) {
+        if (!AuthenticatedFetch.refreshing) {
+          await this.refreshSession()
+
+          // Check if session was successfully refreshed
+          if (this.sessionToken) {
+            return this.post(endpoint, payloadBody, file) // Retry with new session token
+          } else {
+            // Handle case where session cannot be refreshed
+            // Example: Logout the user or show an error
+          }
+        } else if (retryCount < AuthenticatedFetch.maxRetries) {
+          // Enqueue the request for retry
+          setTimeout(() => this.post(endpoint, payloadBody, file, retryCount + 1), 1000)
+        }
+      } else {
+        return { status: response.status, ...responseJson }
+      }
+    } catch (error) {
+      console.log('Fetch error:', error)
     }
   }
 

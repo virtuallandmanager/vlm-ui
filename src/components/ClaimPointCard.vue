@@ -62,6 +62,23 @@
               <span>Transform</span>
             </v-tooltip>
           </v-btn>
+          <v-btn
+            icon
+            dark
+            @click.stop="
+              showPropertiesDialog({
+                element: 'claimpoint',
+                elementData: claimPoint,
+              })
+            "
+          >
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
+              </template>
+              <span>Properties</span>
+            </v-tooltip>
+          </v-btn>
         </span>
         <v-spacer></v-spacer>
         <div>
@@ -86,6 +103,7 @@
       </div>
       <div class="d-flex flex-column px-4 align-center">
         <v-switch v-model="properties.enableKiosk" label="Show Kiosk" class="ml-4 flex-grow-1" @change="updateClaimPointProperties"></v-switch>
+        <v-switch v-model="properties.showHoverText" label="Show Hover Text" class="ml-4 flex-grow-1" @change="updateClaimPointProperties"></v-switch>
         <v-btn v-if="properties.enableKiosk" outlined color="secondary" @click="showColorPickerDialog">Edit Kiosk Design</v-btn>
       </div>
       <div class="d-flex px-4">
@@ -128,6 +146,15 @@
           class="mt-4"
           @change="updateClaimPointProperties"
         ></v-select>
+        <v-text-field
+          v-if="properties.showHoverText"
+          v-model="properties.hoverText"
+          label="Hover Text"
+          outlined
+          hide-details
+          class="mt-4"
+          @change="updateClaimPointProperties"
+        ></v-text-field>
       </div>
       <v-container>
         <v-row>
