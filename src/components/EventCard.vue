@@ -78,7 +78,7 @@ export default {
       return DateTime.now().toMillis() >= this.event.eventStart && (!this.event.eventEnd || DateTime.now().toMillis() <= this.event.eventEnd)
     },
     future() {
-      return DateTime.now().toMillis() < this.event.startTime
+      return DateTime.now().toMillis() < this.event.eventStart
     },
     past() {
       return DateTime.now().toMillis() > this.event.endTime

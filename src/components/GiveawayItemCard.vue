@@ -19,7 +19,7 @@
           <v-col>
             <div class="d-flex flex-column justify-center align-center">
               <v-img :src="item.imageSrc" class="item-image mb-1" :class="bgColor" :width="size || 100" :height="size || 100" contain> </v-img>
-              <v-chip class="giveaway-item-data text-truncate mb-1" x-small>{{ item.rarity.capitalize() }} {{ item.category.capitalize() }}</v-chip>
+              <v-chip class="giveaway-item-data text-truncate mb-1" x-small>{{ item.rarity?.capitalize() }} {{ item.category?.capitalize() }}</v-chip>
             </div>
           </v-col>
           <v-col class="d-flex justify-center align-start flex-grow-1">

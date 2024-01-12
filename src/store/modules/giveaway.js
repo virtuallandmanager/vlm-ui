@@ -117,6 +117,10 @@ export default {
     },
     checkMintingRights: async ({ commit }, { giveawayIds }) => {
       const { grantedRights, missingRights } = await giveawayDal.checkMintingRights({ giveawayIds })
+      if (!grantedRights || !missingRights) {
+        commit('LOAD_GIVEAWAYS_STOP')
+        return
+      }
       console.log(grantedRights)
       if (Object.keys(grantedRights).length || Object.keys(missingRights).length) {
         commit('STORE_MINTING_RIGHTS', { giveawayIds, grantedRights, missingRights })

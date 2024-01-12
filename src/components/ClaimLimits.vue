@@ -58,7 +58,17 @@ export default {
   data: () => ({ editing: false }),
   props: {
     itemName: String,
-    claimLimits: Object,
+    claimLimits: {
+      type: Object,
+      default: () => ({
+        perUser: 1,
+        perIp: 3,
+        daily: 0,
+        weekly: 0,
+        monthly: 0,
+        yearly: 0,
+      }),
+    },
   },
   methods: {
     async saveClaimLimits() {
