@@ -1,5 +1,4 @@
 import store from '..'
-import axios from 'axios'
 import { AuthenticatedFetch, UnauthenticatedFetch } from './common'
 
 export const logError = async (payload) => {
