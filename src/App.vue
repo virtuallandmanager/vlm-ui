@@ -52,6 +52,27 @@
         </v-app-bar>
       </div>
     </v-main>
+    <v-footer app class="d-flex align-center justify-center row py-2 my-0">
+      <p class="text-body1 my-0 pa-1">vlm.gg</p>
+      <v-spacer></v-spacer>
+      <v-btn
+        v-for="icon in footerIcons"
+        :key="icon.icon"
+        class="mx-4"
+        dark
+        icon
+        small
+        @click="
+          {
+            icon.name == 'Bug Report' ? openBugReportDialog() : openLink(icon.link)
+          }
+        "
+      >
+        <v-img v-if="icon.local" :src="require(`@/assets/${icon.icon}.svg`)" max-height="20px" contain fill="white" />
+        <v-icon v-if="!icon.local" size="24px">{{ icon.icon }}</v-icon>
+      </v-btn>
+      <bug-report-dialog v-if="showBugReport" v-model="showBugReport" />
+    </v-footer>
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000" bottom center>
       {{ snackbar.message }}
     </v-snackbar>
@@ -63,14 +84,38 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 import { DateTime, Interval } from 'luxon'
 import Web3SigningDialog from './components/dialogs/Web3SigningDialog'
 import LeftNav from './components/LeftNav'
+import BugReportDialog from './components/dialogs/BugReportDialog'
 
 export default {
   name: 'App',
 
   data: () => ({
     signingTime: null,
+    footerIcons: [
+      {
+        name: 'Bug Report',
+        icon: 'mdi-bug',
+      },
+      {
+        name: 'Discord',
+        icon: 'discord-logo',
+        local: true,
+        link: 'https://discord.gg/zSMq8YvKYX',
+      },
+      {
+        name: 'X',
+        icon: 'x-app-logo',
+        local: true,
+        link: 'https://x.com/virtuallandmngr',
+      },
+      {
+        name: 'GitHub',
+        icon: 'mdi-github',
+        link: 'https://www.github.com/virtuallandmanager',
+      },
+    ],
   }),
-  components: { Web3SigningDialog, LeftNav },
+  components: { Web3SigningDialog, LeftNav, BugReportDialog },
   mounted() {
     this.setWindowSize()
   },
@@ -92,6 +137,14 @@ export default {
     },
     connectedWallet() {
       return this.$store.getters['auth/walletAddress'](6, 4)
+    },
+    showBugReport: {
+      get() {
+        return this.$store.state.logs.showBugReport
+      },
+      set(value) {
+        this.$store.commit('logs/SET_BUG_REPORT_DIALOG', value)
+      },
     },
     ...mapGetters({
       connected: 'auth/authenticated',
@@ -128,14 +181,22 @@ export default {
     logOut() {
       this.disconnect()
     },
+    openLink(link) {
+      if (!link) return
+      window.open(link, '_blank')
+    },
     setWindowSize() {
       const mdAndUp = this.$vuetify.breakpoint.mdAndUp
       this.setNavDrawerState(mdAndUp)
+    },
+    openBugReportDialog() {
+      this.toggleBugReportDialog(true)
     },
     ...mapActions({
       toggleNavDrawer: 'app/toggleNavDrawer',
       connectWallet: 'auth/connectWallet',
       setNavDrawerState: 'app/setNavDrawerState',
+      toggleBugReportDialog: 'logs/toggleBugReportDialog',
       disconnect: 'auth/disconnect',
     }),
   },

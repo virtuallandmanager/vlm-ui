@@ -1,5 +1,6 @@
 import store from '..'
-import { AuthenticatedFetch } from './common'
+import axios from 'axios'
+import { AuthenticatedFetch, UnauthenticatedFetch } from './common'
 
 export const logError = async (payload) => {
   try {
@@ -30,8 +31,8 @@ export const logInfo = async (payload) => {
 
 export const logWAT = async (payload) => {
   try {
-    const { sessionToken } = store.state.auth
-    return await new AuthenticatedFetch(sessionToken).post(`/log/wat`, payload)
+    console.log(payload)
+    return await new UnauthenticatedFetch().post(`/log/wat`, { log: payload.discordMessage, metadata: payload, userInfo: store.state.user.userInfo })
   } catch (error) {
     return error
   }
