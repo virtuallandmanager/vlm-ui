@@ -52,25 +52,25 @@
         </v-app-bar>
       </div>
     </v-main>
-    <v-footer app class="d-flex align-center justify-center row py-2 my-0">
+    <v-footer app class="d-flex py-2 my-0">
       <p class="text-body1 my-0 pa-1">vlm.gg</p>
       <v-spacer></v-spacer>
-      <v-btn
-        v-for="icon in footerIcons"
-        :key="icon.icon"
-        class="mx-4"
-        dark
-        icon
-        small
-        @click="
-          {
-            icon.name == 'Bug Report' ? openBugReportDialog() : openLink(icon.link)
-          }
-        "
-      >
-        <v-img v-if="icon.local" :src="require(`@/assets/${icon.icon}.svg`)" max-height="20px" contain fill="white" />
-        <v-icon v-if="!icon.local" size="24px">{{ icon.icon }}</v-icon>
-      </v-btn>
+      <div v-for="(icon, i) in footerIcons" :key="i">
+        <v-btn
+          class="mx-4"
+          dark
+          icon
+          small
+          @click="
+            {
+              icon.name == 'Bug Report' ? openBugReportDialog() : openLink(icon.link)
+            }
+          "
+        >
+          <v-img v-if="icon?.local" :src="require(`@/assets/${icon.icon}.svg`)" max-height="20px" max-width="20px" contain />
+          <v-icon v-else size="24px">{{ icon.icon }}</v-icon>
+        </v-btn>
+      </div>
       <bug-report-dialog v-if="showBugReport" v-model="showBugReport" />
     </v-footer>
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000" bottom center>
