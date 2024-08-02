@@ -17,7 +17,7 @@ export class GiveawayClaimPointInstance {
   customId = null
   name = ''
   enabled = true
-  properties = null
+  properties = { hoverText: 'Claim Item', hoverTextEnabled: true }
   position = { x: 8, y: 0, z: 8 }
   scale = { x: 1, y: 1, z: 1 }
   rotation = { x: 0, y: 0, z: 0 }

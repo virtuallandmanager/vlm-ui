@@ -19,7 +19,7 @@ export class GiveawayClaimPoint {
   name = ''
   enabled = true
   giveawayId = null
-  properties = null
+  properties = { hoverText: 'Claim Item', hoverTextEnabled: true }
   instances = []
 
   constructor(config = {}) {
