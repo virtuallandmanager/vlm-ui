@@ -11,6 +11,21 @@
             @focus="resetForm"
             :rules="[(v) => !submitted || !!v || `Please enter the user's wallet address`]"
           ></v-text-field>
+          <v-text-field
+            label="Start Time"
+            outlined
+            v-model="startTime"
+            type="datetime-local"
+            :rules="[(v) => !submitted || !!v || `Please enter the start time`]"
+          ></v-text-field>
+          <v-text-field
+            label="End Time"
+            outlined
+            v-model="endTime"
+            type="datetime-local"
+            :rules="[(v) => !submitted || !!v || `Please enter the end time`]"
+            icon-prepend="mdi-calendar"
+          ></v-text-field>
         </v-form>
       </v-card-text>
       <v-divider></v-divider>
@@ -30,6 +45,8 @@ export default {
   name: 'UserInviteDialog',
   data: () => ({
     connectedWallet: '',
+    startTime: '',
+    endTime: '',
     submitted: false,
   }),
   props: {
@@ -50,12 +67,14 @@ export default {
       inviteUserToCollab: 'scene/inviteUserToCollab',
     }),
     save() {
+      const startTime = this.startTime ? new Date(this.startTime).getTime() : null
+      const endTime = this.endTime ? new Date(this.endTime).getTime() : null
       this.submitted = true
       if (this.$refs.form.validate()) {
+        this.inviteUserToCollab({ userWallet: this.connectedWallet, sceneId: this.$route.params.sceneId, startTime, endTime })
         this.show = false
         this.connectedWallet = ''
         this.submitted = false
-        this.inviteUserToCollab(this.connectedWallet)
       } else {
         // The form is invalid, show errors
       }
