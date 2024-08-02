@@ -564,7 +564,7 @@ export default {
       this.requestMintingRights({ giveawayId: this.giveaway.sk, revoke: true })
     },
     collectionItems() {
-      if (this.selectedCollection && !this.loadingCollectionItems && this.userItemsCache[this.selectedCollection]) {
+      if (this.selectedCollection && !this.loadingCollectionItems && this.userItemsCache[this.selectedCollection]?.length) {
         return this.userItemsCache[this.selectedCollection].map((item) => {
           return {
             ...item,
