@@ -437,7 +437,7 @@ export default {
     requestPlayerPosition: async ({ state, rootGetters }, instanceData, element) => {
       const userInfo = rootGetters['user/userInfo']
       try {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
           // Set up callback
           callbacks['requestPlayerPosition'] = (message) => {
             const processedMessage = placeInstanceNearPlayer(message, instanceData, element)
@@ -451,8 +451,14 @@ export default {
           setTimeout(() => {
             if (callbacks['requestPlayerPosition']) {
               delete callbacks['requestPlayerPosition']
-              reject(new Error('Timed out while requesting player position.'))
-              return placeInstanceNearPlayer({ positionData: [null, 8, 1, 8, null, null, null, null, null, null, null] }, instanceData, element)
+              const processedMessage = placeInstanceNearPlayer(
+                { positionData: [null, 8, 1, 8, null, null, null, null, null, null, null] },
+                instanceData,
+                element
+              )
+              resolve(processedMessage)
+            } else {
+              placeInstanceNearPlayer({ positionData: [null, 8, 1, 8, null, null, null, null, null, null, null] }, instanceData, element)
             }
           }, 5000) // 5 seconds timeout
         })
