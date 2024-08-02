@@ -25,6 +25,7 @@ export default {
   getters: {
     signing: (state) => !!state.signing,
     loadingAuth: (state) => !!state.processing,
+    tokens: (state) => ({ refresh: state.refreshToken, session: state.sessionToken }),
     sigTokenExpires: (state) => state.sigTokenExpires,
     signature: (state) => state.signature,
     signatureMessage: (state) => state.signatureMessage,
@@ -69,6 +70,9 @@ export default {
       state.refreshToken = session.refreshToken
       state.sessionIpData = session.ipData
       localStorage.setItem('refreshToken', session.refreshToken)
+    },
+    SET_ADMIN_TOKEN: (state, { session }) => {
+      state.sessionToken = session.sessionToken
     },
     CONNECT(state, connectedWallet) {
       state.connectedWallet = connectedWallet

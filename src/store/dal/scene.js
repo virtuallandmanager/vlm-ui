@@ -81,6 +81,24 @@ export const updateScene = async (scene) => {
   }
 }
 
+export const deleteScene = async (sceneId) => {
+  try {
+    const { sessionToken } = store.state.auth
+    return await new AuthenticatedFetch(sessionToken).get(`/scene/delete/${sceneId}`)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export const leaveScene = async (sceneId) => {
+  try {
+    const { sessionToken } = store.state.auth
+    return await new AuthenticatedFetch(sessionToken).get(`/scene/leave/${sceneId}`)
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export const liveUpdateScene = async (message) => {
   try {
     const { sessionToken } = store.state.auth

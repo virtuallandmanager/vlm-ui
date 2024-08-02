@@ -25,7 +25,7 @@
           <v-icon>mdi-key-change</v-icon>
           <div class="text-button">Grant Rights</div>
         </v-card>
-        <v-card v-if="itemsWithMinterRights.length > 0" class="flex-grow-1 text-center pa-4 mt-2" @click="openRevokeRightsDialog">
+        <v-card v-if="itemsWithMinterRights?.length > 0" class="flex-grow-1 text-center pa-4 mt-2" @click="openRevokeRightsDialog">
           <v-icon>mdi-key-remove</v-icon>
           <div class="text-button">Revoke Rights</div>
         </v-card>
@@ -508,7 +508,7 @@ export default {
       return this.giveaway.items?.every((item) => this.grantedMinterRights.includes(`${item.contractAddress}:${item.itemId}`))
     },
     itemsWithMinterRights() {
-      return this.giveaway.items?.filter((item) => this.grantedMinterRights.includes(`${item.contractAddress}:${item.itemId}`))
+      return this.giveaway?.items?.filter((item) => this.grantedMinterRights.includes(`${item.contractAddress}:${item.itemId}`))
     },
     allItemsHaveMinterRights() {
       return this.giveaway.items?.length == this.itemsWithMinterRights?.length

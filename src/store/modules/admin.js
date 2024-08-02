@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { getUsers, getScenes, getOrganizations, getAdminPanelKeys } from '../dal/admin'
+import { getUsers, getScenes, getOrganizations, getAdminPanelKeys, loginAs } from '../dal/admin'
 
 function mergeSetId(arr1, arr2, id) {
   const mergedArray = [...arr1]
@@ -63,6 +63,9 @@ export default {
     scenePageSize: 100,
     eventPage: 1,
     eventPageSize: 100,
+    loggedInUser: null,
+    adminUser: null,
+    adminTokens: null,
   }),
   getters: {
     users: (state) => state.userCache,
@@ -71,6 +74,7 @@ export default {
     events: (state) => state.eventCache,
     userSessions: (state) => state.userSessionCache,
     analyticsSessions: (state) => state.analyticsSessionCache,
+    loggedInAs: (state) => state.loggedInAs,
   },
   mutations: {
     START(state) {
@@ -145,6 +149,19 @@ export default {
       state.eventCache.length = 0
       state.userSessionCache.length = 0
     },
+    LOGIN_AS(state, data) {
+      state.loggedInUser = data.user
+      state.adminUser = data.admin
+      state.adminTokens = data.tokens
+    },
+    LOGOUT_AS(state) {
+      state.loggedInUser = null
+      if (state.adminUser) {
+        state.loggedInUser = state.adminUser
+        state.adminUser = null
+        state.adminTokens = null
+      }
+    },
   },
   actions: {
     getAdminPanelKeys: async ({ commit, state }, force) => {
@@ -201,6 +218,18 @@ export default {
       const scenes = await getScenes(page, pageSize, sort)
       commit('ADD_SCENES', scenes)
       commit('STOP')
+    },
+    async loginAs({ commit, rootGetters }, userConfig) {
+      const response = await loginAs(userConfig)
+      if (response.status >= 400) {
+        return
+      }
+      const { user, session } = response
+      commit('auth/SET_ADMIN_TOKEN', { session }, { root: true })
+      commit('LOGIN_AS', { user, session, admin: rootGetters['user/userInfo'], tokens: rootGetters['auth/tokens'] })
+    },
+    async logoutAs({ commit }, user) {
+      commit('LOGOUT_AS', user)
     },
   },
 }

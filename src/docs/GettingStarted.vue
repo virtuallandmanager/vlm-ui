@@ -4,8 +4,16 @@
       <div class="text-h4 text-center">Getting Started</div>
       <v-divider class="my-4"></v-divider>
       <div v-if="!world || world == 'decentraland'">
-        <div class="text-h5 text-center mb-4">Decentraland SDK Setup</div>
-
+        <div class="d-flex justify-space-between align-top">
+          <div class="text-h5 text-center mb-4">Decentraland SDK Setup</div>
+          <div class="d-flex flex-column justify-center align-top">
+            <div class="mb-2 text-center">Version</div>
+            <v-btn-toggle v-model="version" @change="setVersion" class="mb-4">
+              <v-btn color="secondary px-2">SDK6</v-btn>
+              <v-btn color="secondary px-2">SDK7</v-btn>
+            </v-btn-toggle>
+          </div>
+        </div>
         <div class="text-left mb-1">
           1. Install the VLM package for Decentraland
           <!-- Display the code in a textarea -->
@@ -41,7 +49,7 @@
         </div>
         <v-divider class="my-4"></v-divider>
         <div class="text-left mb-1">
-          {{ sceneId ? '4.' : '6.' }} Add these lines to your <code>game.ts</code> file.
+          {{ sceneId ? '4.' : '6.' }} Add these lines to your <code v-if="version == 1">index.ts</code><code v-else>game.ts</code> file.
 
           <!-- Display the code in a textarea -->
           <v-textarea :value="mainSceneCode" rows="3" disabled filled ref="tsConfigBlock"></v-textarea>
@@ -51,7 +59,7 @@
         </div>
         <v-divider class="my-4" v-if="sceneId"></v-divider>
         <v-btn v-if="sceneId" @click="backToScene" color="primary" class="mr-2">Back To Scene</v-btn>
-        <v-btn @click="backToScene" color="primary" disabled>Advanced Feature Setup (Coming Soon)</v-btn>
+        <v-btn @click="devSetup" color="primary">Advanced Feature Setup</v-btn>
       </div>
     </v-card>
   </content-page>
@@ -70,20 +78,28 @@ export default {
   name: 'DocsGettingStarted',
   data: () => ({
     test: false,
-    tsConfigJsonCode: '',
     sceneJsonCode: '',
+    version: 1,
     installCode: 'npm install vlm-dcl@sdk7',
     mainSceneCode: `import VLM from "vlm-dcl";
 VLM.init();`,
+    tsConfigJsonCode: `"skipLibCheck": true,`,
   }),
   mounted() {
-    ;(this.tsConfigJsonCode = `
-"skipLibCheck": true,
-`),
-      (this.sceneJsonCode = `"vlm": { "sceneId": "${this.sceneId || emptyGuid}" },`)
+    this.sceneJsonCode = `"vlm": { "sceneId": "${this.sceneId || emptyGuid}" },`
   },
   methods: {
     ...mapActions({ showSuccess: 'banner/showSuccess' }),
+    setVersion() {
+      this.installCode = this.version === 0 ? 'dcl install vlm-dcl@sdk6' : 'npm install vlm-dcl@sdk7'
+      this.tsConfigJsonCode =
+        this.version === 0
+          ? `"noLib": false,
+"skipLibCheck": true,
+"moduleResolution": "node",
+`
+          : `"skipLibCheck": true,`
+    },
     async copySceneJson() {
       try {
         // Use the Clipboard API to copy the code
@@ -113,6 +129,13 @@ VLM.init();`,
     },
     backToScene() {
       this.$router.back()
+    },
+    devSetup() {
+      if (this.version == 1) {
+        window.open('https://docs.vlm.gg/#/decentraland/getting-started/advanced-install?id=_5-configure-custom-widgets', '_blank')
+      } else {
+        window.open('https://docs.vlm.gg/#/decentraland/getting-started/advanced-install?id=_5-configure-custom-widgets-1', '_blank')
+      }
     },
   },
 }

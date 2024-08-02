@@ -1,4 +1,13 @@
-import { createScene, sendSceneMessage, getSceneCards, connectToScene, disconnectFromScene, inviteUserToCollab } from '../dal/scene'
+import {
+  createScene,
+  leaveScene,
+  deleteScene,
+  sendSceneMessage,
+  getSceneCards,
+  connectToScene,
+  disconnectFromScene,
+  inviteUserToCollab,
+} from '../dal/scene'
 import store from '../../store'
 import router from '../../router'
 
@@ -192,7 +201,7 @@ export default {
       !rootGetters['user/userInfo']?.hideDemoScene
         ? Object.values(state.userSceneCache)
         : Object.values(state.userSceneCache).filter((scene) => scene.sk != '00000000-0000-0000-0000-000000000000'),
-    sharedSceneList: (state) => state.sharedSceneCache,
+    sharedSceneList: (state) => Object.values(state.sharedSceneCache),
     sceneListSelect: (state) => Object.values(state.userSceneCache).map((scene) => ({ text: scene.name, value: scene.sk })),
     connected: (state) => {
       return state.room?.state
@@ -263,10 +272,11 @@ export default {
         state.activeScene = adminScene
       }
     },
-    UPDATE_SCENE(state, { scene, prop, val }) {
-      const { sk, displayName } = this.$store.state.user.userInfo
-      const orgs = this.$store.state.organization.userOrgs.map((org) => org.sk)
-      sendSceneMessage('update_scene', { scene: scene || state.activeScene, user: { sk, displayName, orgs }, prop, val })
+    DELETE_SCENE(state, { sceneId }) {
+      state.userSceneCache = Object.fromEntries(Object.entries(state.userSceneCache).filter(([key]) => key != sceneId))
+    },
+    LEAVE_SCENE(state, { sceneId }) {
+      state.sharedSceneCache = Object.fromEntries(Object.entries(state.sharedSceneCache).filter(([key]) => key != sceneId))
     },
     UPDATE_SCENE_SETTING(state, { settingName, settingValue }) {
       const sceneSetting = state.activeScene.settings.find((setting) => setting.settingName === settingName)
@@ -370,6 +380,13 @@ export default {
         instanceData,
         settingData,
         scenePreset,
+      })
+    },
+    updateSceneProperty: async ({ state }, { property, value }) => {
+      await state.room.send('scene_update_property', {
+        action: 'update',
+        property,
+        value,
       })
     },
     directUpdateSceneElement: async ({ state }, { property, element, instance, id, setting, elementData, instanceData, settingData }) => {
@@ -511,9 +528,23 @@ export default {
       dispatch('fadeBlink', 'out')
       commit('UPDATE_SCENE', { scene, prop, val })
     },
-    deleteScene({ commit, dispatch }, scene, prop, val) {
-      dispatch('fadeBlink', 'out')
-      commit('UPDATE_SCENE', { scene, prop, val })
+    async leaveScene({ commit, dispatch }, scene) {
+      try {
+        const { sceneId } = await leaveScene(scene.sk)
+        commit('LEAVE_SCENE', { sceneId })
+        dispatch('banner/showSuccess', { message: `You left the ${scene?.name} scene.` }, { root: true })
+      } catch (error) {
+        dispatch('banner/showError', { message: error || `Could not leave the scene.` }, { root: true })
+      }
+    },
+    async deleteScene({ commit, dispatch }, scene) {
+      try {
+        const { sceneId } = await deleteScene(scene.sk)
+        commit('DELETE_SCENE', { sceneId })
+        dispatch('banner/showSuccess', { message: `Scene ${scene?.name} deleted successfully.` }, { root: true })
+      } catch (error) {
+        dispatch('banner/showError', { message: error || `Could not delete the scene.` }, { root: true })
+      }
     },
     // END SCENE C/U/D //
 
@@ -586,6 +617,11 @@ export default {
         })
         room.onMessage('scene_update', ({ scene, user }) => {
           dispatch('banner/showSuccess', { message: `${user.displayName} made an edit to the scene.` }, { root: true })
+          commit('STORE_SCENE', scene)
+          commit('SCENE_LOAD_STOP')
+        })
+        room.onMessage('scene_update_property', ({ scene, property, user }) => {
+          dispatch('banner/showSuccess', { message: `${user.displayName} made an edit to the scene ${property}.` }, { root: true })
           commit('STORE_SCENE', scene)
           commit('SCENE_LOAD_STOP')
         })

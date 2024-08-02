@@ -11,21 +11,8 @@
             @focus="resetForm"
             :rules="[(v) => !submitted || !!v || `Please enter the user's wallet address`]"
           ></v-text-field>
-          <v-text-field
-            label="Start Time"
-            outlined
-            v-model="startTime"
-            type="datetime-local"
-            :rules="[(v) => !submitted || !!v || `Please enter the start time`]"
-          ></v-text-field>
-          <v-text-field
-            label="End Time"
-            outlined
-            v-model="endTime"
-            type="datetime-local"
-            :rules="[(v) => !submitted || !!v || `Please enter the end time`]"
-            icon-prepend="mdi-calendar"
-          ></v-text-field>
+          <v-text-field label="Start Time" outlined v-model="startTime" type="datetime-local"></v-text-field>
+          <v-text-field label="End Time" outlined v-model="endTime" type="datetime-local" icon-prepend="mdi-calendar"></v-text-field>
         </v-form>
       </v-card-text>
       <v-divider></v-divider>

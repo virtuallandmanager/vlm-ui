@@ -39,6 +39,39 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="confirmLeaveSceneDialog" width="400" persistent>
+      <v-card>
+        <v-card-title class="text-h5"> Leave Scene </v-card-title>
+        <v-card-text class="text-center">
+          <p>
+            Are you sure you want to leave <strong>{{ sceneToLeave?.name || 'this shared scene' }}</strong
+            >?
+          </p>
+          <p>{{ sceneToLeave?.ownerName || 'The scene owner' }} will have to send a new invite for you to collaborate on this scene again.</p>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="confirmLeaveScene(sceneToLeave)"> Leave </v-btn>
+          <v-btn color="grey" text @click="confirmLeaveSceneDialog = false"> Cancel </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="confirmDeleteSceneDialog" width="400" persistent>
+      <v-card>
+        <v-card-title class="text-h5"> Delete Scene </v-card-title>
+        <v-card-text class="text-center"
+          >Are you sure you want to delete <strong>{{ sceneToDelete?.name || 'this scene' }}</strong
+          >?</v-card-text
+        >
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="confirmDeleteScene(sceneToDelete)"> Delete </v-btn>
+          <v-btn color="grey" text @click="confirmDeleteSceneDialog = false"> Cancel </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <template v-slot:header>Scenes</template>
     <template v-slot:header-actions><v-btn @click="openNewSceneDialog">Create New Scene</v-btn></template>
     <template v-slot:no-content-header>No Scenes Found</template>
@@ -52,9 +85,7 @@
       </v-row>
       <v-row class="text-center" v-if="!loadingScene">
         <v-col lg="3" md="4" sm="6" xs="12" v-for="(scene, i) in scenes" :key="i">
-          <router-link :to="`scene/${scene.sk}`" class="scene-card-link">
-            <scene-card :scene="scene" />
-          </router-link>
+          <scene-card :scene="scene" @confirmDelete="openDeleteSceneDialog" />
         </v-col>
       </v-row>
     </v-container>
@@ -64,9 +95,7 @@
       </v-row>
       <v-row class="text-center">
         <v-col lg="3" md="4" sm="6" xs="12" v-for="(scene, i) in sharedScenes" :key="i">
-          <router-link :to="`scene/${scene.sk}`" class="scene-card-link">
-            <scene-card :scene="scene" />
-          </router-link>
+          <scene-card :scene="scene" :shared="true" @confirmLeave="openLeaveSceneDialog" />
         </v-col>
       </v-row>
     </v-container>
@@ -85,7 +114,11 @@ export default {
   name: 'Scenes',
   data: () => ({
     newSceneDialog: false,
+    confirmDeleteSceneDialog: false,
+    confirmLeaveSceneDialog: false,
     newSceneName: '',
+    sceneToDelete: null,
+    sceneToLeave: null,
     newSceneWorlds: {
       decentraland: false,
       hyperfy: false,
@@ -114,9 +147,29 @@ export default {
     ...mapActions({
       getSceneCards: 'scene/getSceneCards',
       createScene: 'scene/createScene',
+      deleteScene: 'scene/deleteScene',
+      leaveScene: 'scene/leaveScene',
     }),
     openNewSceneDialog() {
       this.newSceneDialog = true
+    },
+    openDeleteSceneDialog(scene) {
+      this.sceneToDelete = scene
+      this.confirmDeleteSceneDialog = true
+    },
+    openLeaveSceneDialog(scene) {
+      this.sceneToLeave = scene
+      this.confirmLeaveSceneDialog = true
+    },
+    confirmDeleteScene() {
+      this.deleteScene(this.sceneToDelete)
+      this.sceneToDelete = null
+      this.confirmDeleteSceneDialog = false
+    },
+    confirmLeaveScene() {
+      this.leaveScene(this.sceneToLeave)
+      this.sceneToLeave = null
+      this.confirmLeaveSceneDialog = false
     },
     resetNewSceneDialog() {
       this.newSceneDialog = false

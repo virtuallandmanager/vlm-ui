@@ -45,3 +45,13 @@ export const getEvents = async (page, pageSize, sort) => {
     return error
   }
 }
+
+export const loginAs = async (user) => {
+  try {
+    const payload = { user }
+    const { sessionToken } = store.state.auth
+    return await new AuthenticatedFetch(sessionToken).post('/admin/loginAs', payload)
+  } catch (error) {
+    return error
+  }
+}

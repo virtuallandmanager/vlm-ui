@@ -50,7 +50,10 @@
       </v-card-title>
       <v-data-table :headers="userHeaders" :items="composite" group-by="group" :items-per-page="100" :search="search">
         <template v-slot:item.actions="{ item }">
-          <v-btn small color="primary" @click="editItem(item)"> <v-icon small class="mr-1"> mdi-pencil </v-icon> Edit </v-btn>
+          <v-btn small color="primary" v-if="item.pk === 'vlm:user:account'" @click="loginAs(item)">
+            <v-icon small class="mr-1"> mdi-pencil </v-icon> Login As
+          </v-btn>
+          <v-btn small color="primary" v-else @click="editItem(item)"> <v-icon small class="mr-1"> mdi-pencil </v-icon> Edit </v-btn>
         </template></v-data-table
       >
     </v-card>
@@ -190,6 +193,9 @@ export default {
       } else if (item.group == 'Metaverse Sessions') {
         router.push(`analytics-session/${item.sk}`)
       }
+    },
+    loginAs(item) {
+      this.$store.dispatch('admin/loginAs', item)
     },
     ...mapActions({
       getAdminPanelKeys: 'admin/getAdminPanelKeys',

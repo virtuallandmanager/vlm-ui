@@ -1,6 +1,39 @@
 <template>
   <v-container class="py-6 mx-auto">
     <user-invite-dialog :value="userInviteDialog" @input="toggleInviteDialog" />
+    <v-dialog v-model="confirmLeaveSceneDialog" width="400" persistent>
+      <v-card>
+        <v-card-title class="text-h5"> Leave Scene </v-card-title>
+        <v-card-text class="text-center">
+          <p>
+            Are you sure you want to leave <strong>{{ scene?.name || 'this shared scene' }}</strong
+            >?
+          </p>
+          <p>{{ scene?.ownerName || 'The scene owner' }} will have to send a new invite for you to collaborate on this scene again.</p>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="confirmLeaveScene"> Leave </v-btn>
+          <v-btn color="grey" text @click="confirmLeaveSceneDialog = false"> Cancel </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="confirmDeleteSceneDialog" width="400" persistent>
+      <v-card>
+        <v-card-title class="text-h5"> Delete Scene </v-card-title>
+        <v-card-text class="text-center"
+          >Are you sure you want to delete <strong>{{ scene?.name || 'this scene' }}</strong
+          >?</v-card-text
+        >
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="confirmDeleteScene"> Delete </v-btn>
+          <v-btn color="grey" text @click="confirmDeleteSceneDialog = false"> Cancel </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-row>
       <v-col no-gutters>
         <div class="text-h5 mb-4">Scene Settings</div>
@@ -20,7 +53,7 @@
     </v-row>
     <v-row>
       <v-col>
-        <v-text-field label="Scene Name" outlined v-model="scene.name" :disabled="isDemoScene" hide-details />
+        <v-text-field label="Scene Name" outlined v-model="scene.name" @change="updateName" :disabled="isDemoScene" hide-details />
         <!-- <div class="text-h5 mb-4">Scene Image</div>
         <v-img :src="scene.imageSrc" v-if="scene.imageSrc" />
         <v-btn :src="scene.imageSrc" v-if="!scene.imageSrc">
@@ -49,12 +82,28 @@
         </div>
       </v-col>
     </v-row>
+    <v-row>
+      <v-divider class="my-2" />
+    </v-row>
+    <div v-if="isSharedScene" class="d-flex pt-4">
+      <v-spacer></v-spacer>
+      <v-btn color="error" outlined @click="openLeaveSceneDialog(scene)" v-if="!isDemoScene">
+        <v-icon small class="mr-2">mdi-hand-wave</v-icon>Leave Scene
+      </v-btn>
+    </div>
+    <div v-if="!isSharedScene" class="d-flex pt-4">
+      <v-spacer></v-spacer>
+      <v-btn color="error" outlined @click="openDeleteSceneDialog(scene)" v-if="!isDemoScene">
+        <v-icon small class="mr-2">mdi-delete</v-icon>Delete Scene
+      </v-btn>
+    </div>
   </v-container>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import UserInviteDialog from './dialogs/UserInviteDialog'
+import router from '../router'
 
 export default {
   name: 'SceneSettings',
@@ -62,6 +111,8 @@ export default {
   data: () => ({
     adminAccess: false,
     userInviteDialog: false,
+    confirmLeaveSceneDialog: false,
+    confirmDeleteSceneDialog: false,
   }),
   mounted() {
     this.adminAccess = this.vlmAdminAccess
@@ -71,7 +122,11 @@ export default {
       scene: 'scene/activeScene',
       vlmAdminAccess: 'scene/vlmAdminAccess',
       isDemoScene: 'scene/isDemoScene',
+      sharedSceneList: 'scene/sharedSceneList',
     }),
+    isSharedScene() {
+      return this.sharedSceneList.map((scene) => scene.sk).includes(this.scene.sk)
+    },
   },
   methods: {
     ...mapActions({
@@ -85,8 +140,14 @@ export default {
       uploadImage: 'media/uploadSceneImage',
       showSuccess: 'banner/showSuccess',
       updateSceneSetting: 'scene/updateSceneSetting',
+      updateSceneProperty: 'scene/updateSceneProperty',
       inviteUserToCollab: 'scene/inviteUserToCollab',
+      leaveScene: 'scene/leaveScene',
+      deleteScene: 'scene/deleteScene',
     }),
+    updateName() {
+      this.updateSceneProperty({ property: 'name', value: this.scene.name })
+    },
     toggleAdminAccess() {
       this.updateSceneSetting({ setting: 'access', settingName: 'VLM Admin Access', settingValue: this.adminAccess })
     },
@@ -96,6 +157,22 @@ export default {
     },
     showSceneSetup() {
       this.$router.push(`/docs/getting-started?sceneId=${this.scene.sk}`)
+    },
+    openDeleteSceneDialog() {
+      this.confirmDeleteSceneDialog = true
+    },
+    openLeaveSceneDialog() {
+      this.confirmLeaveSceneDialog = true
+    },
+    async confirmDeleteScene() {
+      this.confirmDeleteSceneDialog = false
+      await this.deleteScene(this.scene)
+      router.push('/scenes')
+    },
+    async confirmLeaveScene() {
+      this.confirmLeaveSceneDialog = false
+      await this.leaveScene(this.scene)
+      router.push('/scenes')
     },
     toggleInviteDialog(value) {
       this.userInviteDialog = value

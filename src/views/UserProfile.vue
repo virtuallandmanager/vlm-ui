@@ -9,7 +9,7 @@
               <div class="text-h6">{{ userInfo.displayName }}</div>
               <div class="text-display">Member since {{ formattedRegisterDate }}</div>
               <v-avatar size="128px" class="ma-4" @click="onAvatarClick">
-                <img :src="userInfo.avatar" alt="Avatar" />
+                <img :src="userInfo?.avatar" alt="Avatar" />
               </v-avatar>
               <v-btn @click="onAvatarClick" class="mt-2">Change Avatar</v-btn>
               <input type="file" ref="fileInput" accept="image/*" style="display: none" @change="onFileSelected" />
@@ -35,6 +35,7 @@
                   :rules="[validateEmailAddress]"
                   v-model="userInfo.emailAddress"
                   class="mr-2"
+                  @change="saveAndContinue"
                 ></v-text-field>
                 <vue-tel-input-vuetify
                   class="ml-2 flex-grow-1"
@@ -47,6 +48,7 @@
                   persistent-hint
                   :defaultCountry="userInfo.location?.country_code || 'us'"
                   @input="onInput"
+                  @change="saveAndContinue"
                 />
               </div>
               <div class="text-h6 mt-4">Advanced & Experimental</div>
@@ -57,12 +59,14 @@
                   hint="Enables use of advanced developer features and custom SDK implementation"
                   persistent-hint
                   v-model="userRoles[2]"
+                  @change="saveAndContinue"
                 ></v-switch>
               </div>
               <div class="text-h6">Demo Features</div>
               <v-switch
                 label="Hide Demo Scene"
                 v-model="userInfo.hideDemoScene"
+                @change="saveAndContinue"
                 persistent-hint
                 hint="Removes the Public Demo Scene from your list of scenes"
               ></v-switch>
@@ -137,19 +141,21 @@ export default {
   methods: {
     async saveAndContinue() {
       try {
-        if (this.orgAdmin && !this.newOrg.displayName) {
-          this.showError({
-            message: 'Please enter a name for your organization.',
-            timeout: 4000,
-          })
-          return
-        }
+        // if (this.orgAdmin) {
+        //   this.showError({
+        //     message: 'Please enter a name for your organization.',
+        //     timeout: 4000,
+        //   })
+        //   return
+        // }
         if (this.userInfo?.phone?.number && !this.userInfo?.phone?.valid) {
           this.showError({ message: 'Invalid phone number.', timeout: 4000 })
           return
         }
 
-        this.userInfo.roles = this.newUserRoles.map((role, i) => (role ? i : -1)).filter((x) => x > -1)
+        if (this.newUserRoles?.length) {
+          this.userInfo.roles = this.newUserRoles.map((role, i) => (role ? i : -1)).filter((x) => x > -1)
+        }
 
         await this.updateUserInfo({
           userInfo: this.userInfo,

@@ -138,9 +138,9 @@
     <v-expansion-panels multiple accordion class="d-flex justify-space-between align-center grey darken-2 pa-0">
       <v-expansion-panel class="pa-0">
         <v-expansion-panel-header>
-          <div class="text-h6">Video Config</div>
+          <h1 class="text-body-1 font-weight-bold flex-grow-1" dark>Video Config</h1>
         </v-expansion-panel-header>
-        <v-expansion-panel-content>
+        <v-expansion-panel-content class="pa-0">
           <div class="grey darken-2 d-flex align-center text-right">
             <h1 class="text-body-1 font-weight-bold pa-4 flex-grow-1 text-left" dark>Live Stream</h1>
             <v-switch
@@ -224,11 +224,12 @@
       </v-expansion-panel>
 
       <v-expansion-panel class="pa-0">
-        <v-expansion-panel-header class="text-h6"
-          >Instances <v-btn @click="addInstance"> <v-icon>mdi-plus</v-icon> Add Instance </v-btn>
+        <v-expansion-panel-header class="d-flex text-body justify-space-between align-center">
+          <h1 class="text-body-1 font-weight-bold flex-grow-1" dark>Instances</h1>
+          <v-btn @click="addInstance" small class="mr-2"> <v-icon>mdi-plus</v-icon> Add Instance </v-btn>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <div class="d-flex flex-column pa-4">
+          <div class="d-flex flex-column pa-0">
             <div class="text-body-1 text-center" v-if="!video?.instances?.length">Add an instance for this video screen to see it in the scene.</div>
             <div v-for="(instance, i) in video.instances" :key="instance.id" :class="i > 0 ? 'mt-3' : ''">
               <video-instance-card :video="video" :instance="instance" />

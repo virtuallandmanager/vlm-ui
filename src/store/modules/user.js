@@ -10,7 +10,7 @@ export default {
   getters: {
     userInfo: (state) => ({ location: store?.state?.auth?.session?.ipData?.location, ...state.userInfo }),
     unregistered: (state) => !state.userInfo.registeredAt,
-    userDisplayName: (state) => state.userInfo.displayName,
+    userDisplayName: (state) => state.userInfo?.displayName,
     isEarlyAccess: (state) => state.userInfo?.roles?.includes(1),
     isAdvancedUser: (state) => state.userInfo?.roles?.includes(2),
     isVLMAdmin: (state) => !!state.userInfo?.roles?.filter((role) => role >= 7).length,
@@ -34,10 +34,10 @@ export default {
     },
   },
   actions: {
-    async updateUserInfo({ commit }, userInfo) {
+    async updateUserInfo({ commit }, { userInfo, userOrgInfo }) {
       try {
         commit('start')
-        await updateUserInfo()
+        await updateUserInfo({ userInfo, userOrgInfo })
         commit('updateUserInfo', userInfo)
         commit('stop')
       } catch (error) {

@@ -10,10 +10,10 @@ export const getUserInfo = async () => {
   }
 }
 
-export const updateUserInfo = async () => {
+export const updateUserInfo = async ({ userInfo, userOrgInfo }) => {
   try {
-    const { sessionToken, userInfo } = store.state.auth
-    const payload = { userInfo }
+    const { sessionToken } = store.state.auth
+    const payload = { userInfo, userOrgInfo }
     return await new AuthenticatedFetch(sessionToken).post('/user/vlm/update', payload)
   } catch (error) {
     return error
