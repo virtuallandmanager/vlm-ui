@@ -4,11 +4,14 @@ import router from '../../router'
 
 export const callbacks = {}
 
-function preventEdgeOverflow(position, scale, rotation) {
-  const roundedUpX = Math.ceil(position.x / 16) * 16,
-    roundedDownX = Math.floor(position.x / 16) * 16,
-    roundedUpZ = Math.ceil(position.z / 16) * 16,
-    roundedDownZ = Math.floor(position.z / 16) * 16
+function preventEdgeOverflow(playerPosition, instanceData) {
+  const { position, rotation, scale } = instanceData,
+    playerX = playerPosition[1],
+    playerZ = playerPosition[3],
+    roundedUpX = Math.ceil(playerX / 16) * 16,
+    roundedDownX = Math.floor(playerX / 16) * 16,
+    roundedUpZ = Math.ceil(playerZ / 16) * 16,
+    roundedDownZ = Math.floor(playerZ / 16) * 16
 
   if (position.x > roundedUpX) {
     position.x = roundedUpX
@@ -56,10 +59,8 @@ const placeInstanceNearPlayer = (message, instanceData, element) => {
   } else {
     height = positionData[2] + 1
   }
-  console.log(message)
-
   instanceData.position.x = positionData[1] || 8
-  instanceData.position.y = height || 1
+  instanceData.position.y = height + 1.38 || 1.38
   instanceData.position.z = positionData[3] || 8
 
   if (direction == 'north' && instanceData.position.z + 1 > Math.ceil(positionData[3])) {
@@ -85,7 +86,7 @@ const placeInstanceNearPlayer = (message, instanceData, element) => {
     instanceData.position.z = 8
   }
 
-  preventEdgeOverflow(instanceData.position, instanceData.scale, instanceData.rotation)
+  preventEdgeOverflow(positionData, instanceData)
 
   return message
 }
@@ -97,6 +98,7 @@ export default {
     activeSceneVisitors: [],
     sessionActionList: [],
     userSceneCache: {},
+    sharedSceneCache: {},
     loadingScene: false,
     loadingPreset: false,
     room: null,
@@ -190,6 +192,7 @@ export default {
       !rootGetters['user/userInfo']?.hideDemoScene
         ? Object.values(state.userSceneCache)
         : Object.values(state.userSceneCache).filter((scene) => scene.sk != '00000000-0000-0000-0000-000000000000'),
+    sharedSceneList: (state) => state.sharedSceneCache,
     sceneListSelect: (state) => Object.values(state.userSceneCache).map((scene) => ({ text: scene.name, value: scene.sk })),
     connected: (state) => {
       return state.room?.state
@@ -230,6 +233,14 @@ export default {
     STORE_SCENE(state, scene) {
       if (scene?.sk && state.userSceneCache) {
         state.userSceneCache = { ...state.userSceneCache, [scene.sk]: scene }
+      }
+      if (state.activeScene?.sk == scene?.sk) {
+        state.activeScene = scene
+      }
+    },
+    STORE_SHARED_SCENE(state, scene) {
+      if (scene?.sk && state.sharedSceneCache) {
+        state.sharedSceneCache = { ...state.sharedSceneCache, [scene.sk]: scene }
       }
       if (state.activeScene?.sk == scene?.sk) {
         state.activeScene = scene
@@ -476,11 +487,14 @@ export default {
     getSceneCards: async ({ commit, dispatch }) => {
       commit('SCENE_LOAD_START')
       try {
-        const { scenes } = await getSceneCards()
+        const { scenes, sharedScenes } = await getSceneCards()
         scenes.forEach((scene) => {
           commit('STORE_SCENE', scene)
-          commit('SCENE_LOAD_STOP')
         })
+        sharedScenes.forEach((scene) => {
+          commit('STORE_SHARED_SCENE', scene)
+        })
+        commit('SCENE_LOAD_STOP')
       } catch (error) {
         dispatch('banner/showError', { message: `Could not connect to the server.` }, { root: true })
         commit('SCENE_LOAD_STOP')
@@ -676,10 +690,11 @@ export default {
     setSessionActionDuration: async ({ commit }, duration) => {
       commit('SET_SESSION_ACTION_DURATION', duration)
     },
-    inviteUserToCollab: async ({ commit }, userWallet) => {
-      const userInviteResponse = await inviteUserToCollab(userWallet)
-      if (userInviteResponse.user) {
-        commit('ADD_INVITED_USER', userInviteResponse.user)
+    inviteUserToCollab: async ({ commit, dispatch }, { userWallet, sceneId }) => {
+      const { userInfo, text } = await inviteUserToCollab({ userWallet, sceneId })
+      if (userInfo) {
+        commit('ADD_INVITED_USER', userInfo)
+        dispatch('banner/showSuccess', { message: text }, { root: true })
       }
     },
     fadeBlink({ commit, state }, direction) {
