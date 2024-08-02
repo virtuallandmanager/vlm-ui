@@ -46,9 +46,24 @@
     <template v-slot:no-content-cta>
       <v-btn @click="createNewScene(newSceneName)">Create New Scene</v-btn>
     </template>
-    <v-container fluid>
+    <v-container fluid v-if="!loadingScene && scenes.length">
+      <v-row class="text-center" v-if="sharedScenes.length">
+        <v-col>My Scenes</v-col>
+      </v-row>
       <v-row class="text-center" v-if="!loadingScene">
         <v-col lg="3" md="4" sm="6" xs="12" v-for="(scene, i) in scenes" :key="i">
+          <router-link :to="`scene/${scene.sk}`" class="scene-card-link">
+            <scene-card :scene="scene" />
+          </router-link>
+        </v-col>
+      </v-row>
+    </v-container>
+    <v-container fluid v-if="!loadingScene && sharedScenes.length">
+      <v-row class="text-center" v-if="scenes.length">
+        <v-col>Shared Scenes</v-col>
+      </v-row>
+      <v-row class="text-center">
+        <v-col lg="3" md="4" sm="6" xs="12" v-for="(scene, i) in sharedScenes" :key="i">
           <router-link :to="`scene/${scene.sk}`" class="scene-card-link">
             <scene-card :scene="scene" />
           </router-link>
@@ -82,6 +97,7 @@ export default {
   computed: {
     ...mapGetters({
       scenes: 'scene/sceneList',
+      sharedScenes: 'scene/sharedSceneList',
       loadingScene: 'scene/loadingScene',
     }),
     userInfo() {
