@@ -95,10 +95,10 @@ export const liveUpdateScene = async (message) => {
   }
 }
 
-export const inviteUserToCollab = async (userWallet) => {
+export const inviteUserToCollab = async ({ userWallet, sceneId, startTime, endTime }) => {
   try {
     const { sessionToken } = store.state.auth
-    const payload = { userWallet }
+    const payload = { userWallet, sceneId, startTime, endTime }
     return await new AuthenticatedFetch(sessionToken).post('/scene/invite/user', payload)
   } catch (error) {
     throw new Error(error)

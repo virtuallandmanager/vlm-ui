@@ -258,6 +258,9 @@ export default {
         instanceData: this.instance,
       })
     },
+    addInstance(instance) {
+      this.$emit('addInstance', instance)
+    },
   },
 }
 </script>

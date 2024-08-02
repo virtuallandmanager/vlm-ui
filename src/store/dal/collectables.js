@@ -1,10 +1,19 @@
-import { ExternalFetch } from './common'
+import { AuthenticatedFetch } from './common'
 import store from '..'
 
-export const getCollections = async () => {
+export const getUserCollections = async () => {
   try {
-    const { connectedWallet } = store.state.auth
-    return await new ExternalFetch().get(`https://nft-api.decentraland.org/v1/collections?sortBy=newest&creator=${connectedWallet}`)
+    const { sessionToken } = store.state.auth
+    return await new AuthenticatedFetch(sessionToken).get(`/collection/user`)
+  } catch (error) {
+    return error
+  }
+}
+
+export const getCollection = async (contractAddress) => {
+  try {
+    const { sessionToken } = store.state.auth
+    return await new AuthenticatedFetch(sessionToken).get(`/collection/${contractAddress}`)
   } catch (error) {
     return error
   }
@@ -12,7 +21,8 @@ export const getCollections = async () => {
 
 export const getCollectionItems = async (contractAddress) => {
   try {
-    return await new ExternalFetch().get(`https://nft-api.decentraland.org/v1/items?contractAddress=${contractAddress}`)
+    const { sessionToken } = store.state.auth
+    return await new AuthenticatedFetch(sessionToken).get(`/collection/${contractAddress}/items`)
   } catch (error) {
     return error
   }

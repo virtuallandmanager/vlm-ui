@@ -1,4 +1,4 @@
-import { getUserBalances, claimPromotion, getPromoBalances, allocateBalance, updateUserBalance } from '../dal/balances'
+import { getUserBalances, claimPromotion, getPromoBalances, allocateBalance, deallocateBalance, updateUserBalance } from '../dal/balances'
 
 export default {
   namespaced: true,
@@ -122,7 +122,23 @@ export default {
         } else if (text) {
           dispatch('banner/showSuccess', { message: text }, { root: true })
           commit('STORE_USER_BALANCES', balances)
-          commit('event/STORE_GIVEAWAYS', giveaways, { root: true })
+          commit('giveaway/STORE_GIVEAWAYS', giveaways, { root: true })
+        }
+        commit('UPDATE_USER_BALANCES_STOP')
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    deallocateBalance: async ({ dispatch, commit }, { giveawayId, amount }) => {
+      try {
+        commit('UPDATE_USER_BALANCES_START')
+        const { balances, giveaways, text, error } = await deallocateBalance({ giveawayId, balanceType: 'airdrop', amount })
+        if (error) {
+          dispatch('banner/showError', { message: error }, { root: true })
+        } else if (text) {
+          dispatch('banner/showSuccess', { message: text }, { root: true })
+          commit('STORE_USER_BALANCES', balances)
+          commit('giveaway/STORE_GIVEAWAYS', giveaways, { root: true })
         }
         commit('UPDATE_USER_BALANCES_STOP')
       } catch (error) {

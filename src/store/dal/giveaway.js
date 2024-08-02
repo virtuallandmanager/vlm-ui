@@ -55,19 +55,19 @@ export const checkMintingRights = async ({ giveawayIds }) => {
   }
 }
 
-export const sendMinterRightsRequest = async ({ contracts, ids }) => {
+export const sendMinterRightsRequest = async ({ giveawayId, byItem }) => {
   try {
     const { sessionToken } = store.state.auth
-    return await new AuthenticatedFetch(sessionToken).post(`/giveaway/set-minter/request`, { contracts, ids })
+    return await new AuthenticatedFetch(sessionToken).post(`/giveaway/set-minter/request`, { giveawayId, byItem })
   } catch (error) {
     return error
   }
 }
 
-export const sendMinterRightsTransactions = async ({ contracts, ids }) => {
+export const sendMinterRightsTransactions = async ({ signedTransactions }) => {
   try {
     const { sessionToken } = store.state.auth
-    return await new AuthenticatedFetch(sessionToken).post(`/giveaway/set-minter/broadcast`, { contracts, ids })
+    return await new AuthenticatedFetch(sessionToken).post(`/giveaway/set-minter/broadcast`, { signedTransactions })
   } catch (error) {
     return error
   }

@@ -68,6 +68,16 @@ export const updateGiveawayLinks = async ({ eventId, giveawayLinkIds }) => {
   }
 }
 
+export const updateEventLinks = async ({ giveawayId, eventLinkIds }) => {
+  try {
+    const { sessionToken } = store.state.auth
+    const payload = { giveawayId, eventLinkIds }
+    return await new AuthenticatedFetch(sessionToken).post('/event/link/giveaways', payload)
+  } catch (error) {
+    return error
+  }
+}
+
 export const linkScene = async ({ eventId, sceneId }) => {
   try {
     const { sessionToken } = store.state.auth
@@ -116,4 +126,5 @@ export default {
   unlinkGiveaway,
   updateSceneLinks,
   updateGiveawayLinks,
+  updateEventLinks,
 }

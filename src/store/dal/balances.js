@@ -46,6 +46,15 @@ export const allocateBalance = async (payload) => {
   }
 }
 
+export const deallocateBalance = async (payload) => {
+  try {
+    const { sessionToken } = store.state.auth
+    return await new AuthenticatedFetch(sessionToken).post('/balance/deallocate', payload)
+  } catch (error) {
+    return error
+  }
+}
+
 export const claimPromotion = async (payload) => {
   try {
     const { sessionToken } = store.state.auth

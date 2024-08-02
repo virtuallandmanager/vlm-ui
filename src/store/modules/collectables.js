@@ -1,4 +1,4 @@
-import { getCollections, getCollectionItems } from '../dal/collectables'
+import { getUserCollections, getCollection, getCollectionItems } from '../dal/collectables'
 
 export default {
   namespaced: true,
@@ -40,9 +40,20 @@ export default {
     getUserCollections: async ({ commit }) => {
       try {
         commit('LOAD_USER_COLLECTIONS_START')
-        const { data } = await getCollections()
-        commit('STORE_USER_COLLECTIONS', data)
+        const { collections } = await getUserCollections()
+        commit('STORE_USER_COLLECTIONS', collections)
         commit('LOAD_USER_COLLECTIONS_STOP')
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    getCollection: async ({ commit }, contractAddress) => {
+      try {
+        commit('LOAD_USER_COLLECTIONS_START')
+        const { collection } = await getCollection(contractAddress)
+        commit('STORE_USER_COLLECTIONS', [collection])
+        commit('LOAD_USER_COLLECTIONS_STOP')
+        return collection
       } catch (error) {
         console.error(error)
       }
@@ -50,10 +61,10 @@ export default {
     getUserCollectionItems: async ({ commit }, contractAddress) => {
       try {
         commit('LOAD_USER_ITEMS_START')
-        const { data } = await getCollectionItems(contractAddress)
-        commit('STORE_USER_COLLECTION_ITEMS', { userItems: data, contractAddress })
+        const { items } = await getCollectionItems(contractAddress)
+        commit('STORE_USER_COLLECTION_ITEMS', { userItems: items, contractAddress })
         commit('LOAD_USER_ITEMS_STOP')
-        return data
+        return items
       } catch (error) {
         console.error(error)
       }

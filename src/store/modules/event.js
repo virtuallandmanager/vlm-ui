@@ -85,9 +85,20 @@ export default {
       }
     },
     STORE_GIVEAWAY_LINKS(state, giveawayLinks) {
-      if (giveawayLinks) {
-        state.giveawayLinks = giveawayLinks
+      if (!giveawayLinks) {
+        return
       }
+      giveawayLinks.forEach((giveawayLink) => {
+        if (giveawayLink && !state.giveawayLinks.find((link) => link.sk === giveawayLink.sk)) {
+          state.giveawayLinks.push(giveawayLink)
+        } else {
+          state.giveawayLinks.splice(
+            state.giveawayLinks.findIndex((link) => link.sk === giveawayLink.sk),
+            1,
+            giveawayLink
+          )
+        }
+      })
     },
     STORE_GIVEAWAY_LINK(state, giveawayLink) {
       if (giveawayLink && !state.giveawayLinks.find((link) => link.sk === giveawayLink.sk)) {
@@ -228,6 +239,14 @@ export default {
         commit('STORE_GIVEAWAY_LINKS', giveawayLinks)
       }
       commit('CLEAR_LOADING_PROPERTY', 'linkedGiveaways')
+    },
+    updateEventLinks: async ({ commit }, { giveawayId, eventLinkIds }) => {
+      commit('ADD_LOADING_PROPERTY', 'linkedEvents')
+      const { giveawayLinks } = await eventDal.updateEventLinks({ giveawayId, eventLinkIds })
+      if (giveawayLinks) {
+        commit('STORE_GIVEAWAY_LINKS', giveawayLinks)
+      }
+      commit('CLEAR_LOADING_PROPERTY', 'linkedEvents')
     },
     linkScene: async ({ commit }, { eventId, sceneId }) => {
       commit('ADD_LOADING_PROPERTY', 'linkedScenes')

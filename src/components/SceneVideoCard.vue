@@ -135,107 +135,108 @@
         </v-chip>
       </div>
     </div>
-
-    <v-tabs background-color="primary" center-active centered dark v-model="tab">
-      <v-tab href="#tab-1">Content</v-tab>
-      <v-tab href="#tab-2">Instances</v-tab>
-    </v-tabs>
-    <v-tabs-items v-model="tab">
-      <v-tab-item value="tab-1">
-        <div class="grey darken-2 d-flex align-center text-right">
-          <h1 class="text-body-1 font-weight-bold pa-4 flex-grow-1 text-left" dark>Live Stream</h1>
-          <v-switch
-            v-model="video.enableLiveStream"
-            :disabled="!video.liveSrc"
-            color="red"
-            hide-details
-            @change="updateLiveToggle"
-            class="ma-0 pr-4 flex-shrink-0 red--text"
-          >
-            <template v-slot:label>
-              <v-chip small class="text-button" :class="video.enableLiveStream ? 'red' : 'grey--text grey darken-2'">
-                {{ video.enableLiveStream ? 'ON AIR' : 'OFF AIR' }}
-              </v-chip>
-            </template>
-          </v-switch>
-        </div>
-        <div class="my-0 pa-4 d-flex">
-          <v-text-field
-            outlined
-            v-model="video.liveSrc"
-            label="Live Video URL"
-            hide-details="auto"
-            :rules="[validateStreamLink]"
-            :persistent-hint="true"
-            @blur="updateLiveSrc"
-            hint="Enter a .m3u8 link to enable live streaming"
-          >
-          </v-text-field>
-        </div>
-        <div class="d-flex justify-center flex-column align-center">
-          <div class="text-label">Off Air Content</div>
-          <v-btn-toggle mandatory v-model="video.offType" class="pb-4" @change="updateOffType">
-            <v-btn :value="0">None</v-btn>
-            <v-btn :value="2">Playlist</v-btn>
-            <v-btn :value="1">Image</v-btn>
-          </v-btn-toggle>
-        </div>
-        <div>
-          <div class="d-flex justify-space-between align-center grey darken-2 pa-4">
-            <h1 class="d-block text-body-1 font-weight-bold" dark>On-Demand Playlist</h1>
-            <v-btn @click="addVideo"><v-icon>mdi-playlist-plus</v-icon></v-btn>
+    <v-expansion-panels multiple accordion class="d-flex justify-space-between align-center grey darken-2 pa-0">
+      <v-expansion-panel class="pa-0">
+        <v-expansion-panel-header>
+          <div class="text-h6">Video Config</div>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <div class="grey darken-2 d-flex align-center text-right">
+            <h1 class="text-body-1 font-weight-bold pa-4 flex-grow-1 text-left" dark>Live Stream</h1>
+            <v-switch
+              v-model="video.enableLiveStream"
+              :disabled="!video.liveSrc"
+              color="red"
+              hide-details
+              @change="updateLiveToggle"
+              class="ma-0 pr-4 flex-shrink-0 red--text"
+            >
+              <template v-slot:label>
+                <v-chip small class="text-button" :class="video.enableLiveStream ? 'red' : 'grey--text grey darken-2'">
+                  {{ video.enableLiveStream ? 'ON AIR' : 'OFF AIR' }}
+                </v-chip>
+              </template>
+            </v-switch>
           </div>
-          <div v-for="(item, v) in video.playlist" :key="v" class="d-flex align-center pa-4">
+          <div class="my-0 pa-4 d-flex">
             <v-text-field
               outlined
-              v-model="video.playlist[v]"
-              :label="`Video ${v + 1}`"
-              placeholder="Enter Video URL"
-              hide-details="true"
-              @blur="updatePlaylist"
-              class="flex-grow-1"
-            />
-            <v-btn icon @click.stop="removePlaylistItem(v)" v-if="video.playlist.length > 1">
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-icon v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
-                </template>
-                <span>Remove Video</span>
-              </v-tooltip>
-            </v-btn>
+              v-model="video.liveSrc"
+              label="Live Video URL"
+              hide-details="auto"
+              :rules="[validateStreamLink]"
+              :persistent-hint="true"
+              @blur="updateLiveSrc"
+              hint="Enter a .m3u8 link to enable live streaming"
+            >
+            </v-text-field>
           </div>
-        </div>
-        <div>
-          <div class="d-flex justify-space-between align-center grey darken-2 pa-4">
-            <h1 class="d-block text-body-1 font-weight-bold">Placeholder Image</h1>
-          </div>
-          <!-- <div class="px-4"> -->
-          <!-- <v-btn>Use External Image</v-btn> -->
-          <!-- <v-btn>Image from Library</v-btn> -->
-          <!-- <v-btn>New Image</v-btn> -->
-          <!-- </div> -->
-          <div class="px-4 pt-6">
-            <v-text-field outlined v-model="video.offImageSrc" label="Image Link" placeholder="Enter Image URL" @blur="updateOffImage" />
+          <div class="d-flex justify-center flex-column align-center">
+            <div class="text-label">Off Air Content</div>
+            <v-btn-toggle mandatory v-model="video.offType" class="pb-4" @change="updateOffType">
+              <v-btn :value="0">None</v-btn>
+              <v-btn :value="2">Playlist</v-btn>
+              <v-btn :value="1">Image</v-btn>
+            </v-btn-toggle>
           </div>
           <div>
-            <v-img max-height="250" max-width="250" contain :src="video.videoLink" class="mx-auto"></v-img>
+            <div class="d-flex justify-space-between align-center grey darken-2 pa-4">
+              <h1 class="d-block text-body-1 font-weight-bold" dark>On-Demand Playlist</h1>
+              <v-btn @click="addVideo"><v-icon>mdi-playlist-plus</v-icon></v-btn>
+            </div>
+            <div v-for="(item, v) in video.playlist" :key="v" class="d-flex align-center pa-4">
+              <v-text-field
+                outlined
+                v-model="video.playlist[v]"
+                :label="`Video ${v + 1}`"
+                placeholder="Enter Video URL"
+                hide-details="true"
+                @blur="updatePlaylist"
+                class="flex-grow-1"
+              />
+              <v-btn icon @click.stop="removePlaylistItem(v)" v-if="video.playlist.length > 1">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
+                  </template>
+                  <span>Remove Video</span>
+                </v-tooltip>
+              </v-btn>
+            </div>
           </div>
-        </div>
-      </v-tab-item>
-      <v-tab-item value="tab-2">
-        <div class="d-flex justify-center align-center grey darken-2 pa-4">
-          <v-btn @click="addInstance"> <v-icon>mdi-plus</v-icon> Add Instance </v-btn>
-        </div>
-        <div>
+          <div>
+            <div class="d-flex justify-space-between align-center grey darken-2 pa-4">
+              <h1 class="d-block text-body-1 font-weight-bold">Placeholder Image</h1>
+            </div>
+            <!-- <div class="px-4"> -->
+            <!-- <v-btn>Use External Image</v-btn> -->
+            <!-- <v-btn>Image from Library</v-btn> -->
+            <!-- <v-btn>New Image</v-btn> -->
+            <!-- </div> -->
+            <div class="px-4 pt-6">
+              <v-text-field outlined v-model="video.offImageSrc" label="Image Link" placeholder="Enter Image URL" @blur="updateOffImage" />
+            </div>
+            <div>
+              <v-img max-height="250" max-width="250" contain :src="video.videoLink" class="mx-auto"></v-img>
+            </div>
+          </div>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+
+      <v-expansion-panel class="pa-0">
+        <v-expansion-panel-header class="text-h6"
+          >Instances <v-btn @click="addInstance"> <v-icon>mdi-plus</v-icon> Add Instance </v-btn>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
           <div class="d-flex flex-column pa-4">
             <div class="text-body-1 text-center" v-if="!video?.instances?.length">Add an instance for this video screen to see it in the scene.</div>
             <div v-for="(instance, i) in video.instances" :key="instance.id" :class="i > 0 ? 'mt-3' : ''">
               <video-instance-card :video="video" :instance="instance" />
             </div>
           </div>
-        </div>
-      </v-tab-item>
-    </v-tabs-items>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
   </v-card>
 </template>
 
@@ -254,7 +255,7 @@ export default {
   },
   name: 'SceneVideoCard',
   data: () => ({
-    tab: 'tab-1',
+    showConfig: true,
     offAirContent: false,
     propertiesDialog: false,
     instancePropertiesDialog: false,
@@ -277,6 +278,9 @@ export default {
         return new SceneVideo()
       },
     },
+  },
+  mounted() {
+    this.showConfig = this.video.showConfig
   },
   computed: {
     truncatedName() {
@@ -312,6 +316,17 @@ export default {
       updateSceneElement: 'scene/updateSceneElement',
       deleteSceneElement: 'scene/deleteSceneElement',
     }),
+    toggleConfig() {
+      this.showConfig = !this.showConfig
+      this.video.showConfig = !this.video.showConfig
+      this.updateSceneElement({
+        action: 'update',
+        element: 'video',
+        property: 'showConfig',
+        id: this.video.id,
+        elementData: this.video,
+      })
+    },
     addVideo() {
       const nextItem = ''
       this.video.playlist.push(nextItem)

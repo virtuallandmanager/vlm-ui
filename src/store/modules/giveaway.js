@@ -1,5 +1,8 @@
 import giveawayDal from '../dal/giveaway'
 import store from '../../store/index'
+import Web3 from 'web3'
+
+const web3 = new Web3(window.ethereum || (window.web3 && window.web3.currentProvider))
 
 export default {
   namespaced: true,
@@ -12,10 +15,10 @@ export default {
   }),
   getters: {
     activeEvent: (state) => state.activeEvent,
-    activeGiveaway: (state) => state.activeGiveaway,
+    activeGiveaway: (state) => state.userGiveawayCache[state.activeGiveaway] || state.adminGiveawayCache[state.activeGiveaway],
     loadingGiveaways: (state) => state.loadingGiveaways,
     giveawayList: (state) => {
-      return Object.values(state.userGiveawayCache)
+      return state?.userGiveawayCache && Object.values(state.userGiveawayCache)
     },
     giveawayListSelect: (state) => {
       return Object.values(state.userGiveawayCache).map((giveaway) => ({ text: giveaway.name, value: giveaway.sk }))
@@ -35,7 +38,7 @@ export default {
       state.loadingGiveaways = false
     },
     STORE_GIVEAWAY(state, giveaway) {
-      if (giveaway?.userId && giveaway?.userId !== store.state.user.userInfo.sk) {
+      if (giveaway?.userId && giveaway?.userId !== store?.state?.user?.userInfo?.sk) {
         state.adminGiveawayCache = { ...state.adminGiveawayCache, [giveaway.sk]: giveaway }
       }
       if (giveaway?.sk) {
@@ -46,8 +49,9 @@ export default {
       giveaways.forEach((giveaway) => {
         if (giveaway?.userId && giveaway?.userId !== store.state.user.userInfo.sk) {
           state.adminGiveawayCache = { ...state.adminGiveawayCache, [giveaway.sk]: giveaway }
+        } else if (giveaway?.sk) {
+          state.userGiveawayCache = { ...state.userGiveawayCache, [giveaway.sk]: giveaway }
         }
-        state.userGiveawayCache = { ...state.userGiveawayCache, [giveaway.sk]: giveaway }
       })
     },
     STORE_MINTING_RIGHTS(state, { grantedRights }) {
@@ -62,9 +66,7 @@ export default {
     },
     SET_ACTIVE_GIVEAWAY(state, giveawayId) {
       if (giveawayId) {
-        state.activeGiveaway = state.userGiveawayCache[giveawayId] || state.adminGiveawayCache[state.activeEvent.sk]
-      } else if (!giveawayId && state.activeGiveaway) {
-        state.activeGiveaway = state.userGiveawayCache[state.activeGiveaway.sk] || state.adminGiveawayCache[state.activeEvent.sk]
+        state.activeGiveaway = giveawayId
       }
     },
     CLEAR_ACTIVE_GIVEAWAY(state) {
@@ -109,11 +111,13 @@ export default {
       commit('STORE_GIVEAWAY', giveaway)
       commit('LOAD_GIVEAWAYS_STOP')
     },
-    addItemToGiveaway: async ({ commit }, { giveawayId, item }) => {
+    addItemToGiveaway: async ({ commit, dispatch }, { giveawayId, item }) => {
       commit('LOAD_GIVEAWAYS_START')
       const { giveaway } = await giveawayDal.addItem({ giveawayId, item })
       commit('STORE_GIVEAWAY', giveaway)
+      commit('SET_ACTIVE_GIVEAWAY', giveaway.sk)
       commit('LOAD_GIVEAWAYS_STOP')
+      dispatch('checkMintingRights', { giveawayIds: [giveawayId] })
     },
     checkMintingRights: async ({ commit }, { giveawayIds }) => {
       const { grantedRights, missingRights } = await giveawayDal.checkMintingRights({ giveawayIds })
@@ -121,9 +125,39 @@ export default {
         commit('LOAD_GIVEAWAYS_STOP')
         return
       }
-      console.log(grantedRights)
+
       if (Object.keys(grantedRights).length || Object.keys(missingRights).length) {
         commit('STORE_MINTING_RIGHTS', { giveawayIds, grantedRights, missingRights })
+      } else {
+        commit('LOAD_GIVEAWAYS_STOP')
+      }
+    },
+    requestMintingRights: async ({ dispatch }, { giveawayId, byItem, revoke }) => {
+      const { transactions } = await giveawayDal.sendMinterRightsRequest({ giveawayId, byItem, revoke })
+      console.log(transactions)
+      const signedTxs = []
+      for (let i = 0; i < transactions.length; i++) {
+        // send transaction
+        transactions[i].from = store.state.auth.connectedWallet
+        transactions[i].nonce = await web3.eth.getTransactionCount(store.state.auth.connectedWallet, 'latest')
+        const signedTx = await web3.eth.personal.sign(transactions[i].data, store.state.auth.connectedWallet)
+        // const signedTx = await window.ethereum.request({
+        //   method: 'eth_signTransaction',
+        //   params: [transactions[i]],
+        // })
+        signedTxs.push(signedTx)
+      }
+      dispatch('sendMinterRightsTransaction', { signedTransactions: signedTxs })
+    },
+    sendMinterRightsTransaction: async ({ commit }, { signedTransactions }) => {
+      commit('LOAD_GIVEAWAYS_START')
+      const { grantedRights, missingRights } = await giveawayDal.sendMinterRightsTransactions({ signedTransactions })
+      if (!grantedRights || !missingRights) {
+        commit('LOAD_GIVEAWAYS_STOP')
+        return
+      }
+      if (Object.keys(grantedRights).length || Object.keys(missingRights).length) {
+        commit('STORE_MINTING_RIGHTS', { grantedRights })
       } else {
         commit('LOAD_GIVEAWAYS_STOP')
       }
