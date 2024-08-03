@@ -21,11 +21,14 @@
     <v-dialog v-model="mintingRightsDialog" width="380">
       <v-card>
         <v-card-title class="text-h5"> Manage Minting Rights </v-card-title>
-        <v-card v-if="!allItemsHaveMinterRights" class="flex-grow-1 text-center pa-4 mt-2" @click="openGrantRightsDialog">
+        <v-card-text class="text-h6"> Allowing minting rights through VLM is currently in testing and will be available soon.</v-card-text>
+        <v-card-text class="text-body1">Here's a guide on how to allow VLM to mint from your collection.</v-card-text>
+        <v-btn class="text-body1">Minting Guide</v-btn>
+        <v-card v-if="!allItemsHaveMinterRights" class="flex-grow-1 text-center pa-4 mt-2" @click="openGrantRightsDialog" disabled>
           <v-icon>mdi-key-change</v-icon>
           <div class="text-button">Grant Rights</div>
         </v-card>
-        <v-card v-if="itemsWithMinterRights?.length > 0" class="flex-grow-1 text-center pa-4 mt-2" @click="openRevokeRightsDialog">
+        <v-card v-if="itemsWithMinterRights?.length > 0" class="flex-grow-1 text-center pa-4 mt-2" @click="openRevokeRightsDialog" disabled>
           <v-icon>mdi-key-remove</v-icon>
           <div class="text-button">Revoke Rights</div>
         </v-card>
@@ -434,11 +437,16 @@
       <v-card class="cyberpunk-border pa-4 mt-4">
         <v-card-title class="d-flex justify-space-between">
           <div>Giveaway Items</div>
-          <v-btn @click="openItemDialog" :loading="loadingCollections" :disabled="userCollectionsDialog || loadingCollections">Add Item</v-btn>
+          <v-btn @click="openItemDialog" :loading="loadingCollections" :disabled="userCollectionsDialog || loadingCollections"
+            ><v-icon class="mr-1">mdi-plus</v-icon> Item</v-btn
+          >
         </v-card-title>
         <v-card-text v-if="!items?.length">
           <div class="text-h6 text-center">No Items Added</div>
           <div class="text-display text-center">Add a giveaway item to get started</div>
+          <v-btn @click="openItemDialog" :loading="loadingCollections" :disabled="userCollectionsDialog || loadingCollections"
+            ><v-icon class="mr-1">mdi-plus</v-icon> Item</v-btn
+          >
         </v-card-text>
         <v-card-text v-else>
           <v-container>

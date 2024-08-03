@@ -37,10 +37,10 @@ export const update = async (giveaway) => {
   }
 }
 
-export const addItem = async ({ giveawayId, item }) => {
+export const addItems = async ({ giveawayId, items }) => {
   try {
     const { sessionToken } = store.state.auth
-    return await new AuthenticatedFetch(sessionToken).post(`/giveaway/item/add`, { giveawayId, item })
+    return await new AuthenticatedFetch(sessionToken).post(`/giveaway/item/add`, { giveawayId, items })
   } catch (error) {
     return error
   }
@@ -73,4 +73,4 @@ export const sendMinterRightsTransactions = async ({ signedTransactions }) => {
   }
 }
 
-export default { get, getAll, create, update, addItem, checkMintingRights, sendMinterRightsRequest, sendMinterRightsTransactions }
+export default { get, getAll, create, update, addItems, checkMintingRights, sendMinterRightsRequest, sendMinterRightsTransactions }

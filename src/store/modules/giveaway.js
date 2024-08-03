@@ -111,9 +111,9 @@ export default {
       commit('STORE_GIVEAWAY', giveaway)
       commit('LOAD_GIVEAWAYS_STOP')
     },
-    addItemToGiveaway: async ({ commit, dispatch }, { giveawayId, item }) => {
+    addItemsToGiveaway: async ({ commit, dispatch }, { giveawayId, items }) => {
       commit('LOAD_GIVEAWAYS_START')
-      const { giveaway } = await giveawayDal.addItem({ giveawayId, item })
+      const { giveaway } = await giveawayDal.addItems({ giveawayId, items })
       commit('STORE_GIVEAWAY', giveaway)
       commit('SET_ACTIVE_GIVEAWAY', giveaway.sk)
       commit('LOAD_GIVEAWAYS_STOP')
