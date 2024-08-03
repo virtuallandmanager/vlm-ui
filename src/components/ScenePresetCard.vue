@@ -90,11 +90,16 @@ export default {
         show: true,
         title: 'Rename Preset',
         preset: this.preset,
-        callback: () => this.updatePresetProperty({ preset: this.preset, prop: 'name' }),
+        callback: (name) => this.updatePresetProperty({ preset: this.preset, property: 'name', value: name }),
       })
     },
     showCloneDialog() {
-      this.$emit('handleDialog', { show: true, title: 'New Preset Name', preset: { ...this.preset }, callback: this.clonePreset })
+      this.$emit('handleDialog', {
+        show: true,
+        title: 'New Preset Name',
+        preset: { ...this.preset },
+        callback: (name) => this.clonePreset({ ...this.preset, name }),
+      })
     },
   },
 }

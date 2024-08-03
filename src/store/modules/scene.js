@@ -110,6 +110,7 @@ export default {
     sharedSceneCache: {},
     loadingScene: false,
     loadingPreset: false,
+    loadingPresetList: false,
     room: null,
     inBlink: 0,
     outBlink: 0,
@@ -216,7 +217,10 @@ export default {
       return state.processing
     },
     loadingPreset: (state) => {
-      return state.loadingPreset
+      return state.loadingPreset || state.activeScene?.presets?.some((preset) => typeof preset == 'string')
+    },
+    loadingPresetList: (state) => {
+      return state.loadingPresetList
     },
     loadingScene: (state) => {
       return state.loadingScene
@@ -232,6 +236,12 @@ export default {
     },
     SCENE_LOAD_STOP(state) {
       state.loadingScene = false
+    },
+    PRESET_LIST_LOAD_START(state) {
+      state.loadingPresetList = true
+    },
+    PRESET_LIST_LOAD_STOP(state) {
+      state.loadingPresetList = false
     },
     PRESET_LOAD_START(state) {
       state.loadingPreset = true
@@ -289,8 +299,13 @@ export default {
     ADD_PRESET(state, preset) {
       state.activeScene.presets.push(preset)
     },
-    UPDATE_PRESET(state, preset) {
-      const presetIndex = state.activeScene.presets.findIndex((preset) => preset.sk)
+    UPDATE_PRESET(state, { preset, knownIndex }) {
+      let presetIndex
+      if (knownIndex) {
+        presetIndex = knownIndex
+      } else {
+        presetIndex = state.activeScene.presets.findIndex((original) => preset.sk == original.sk)
+      }
       state.activeScene.presets.splice(presetIndex, 1, preset)
     },
     REMOVE_PRESET(state, presetId) {
@@ -387,6 +402,14 @@ export default {
         action: 'update',
         property,
         value,
+      })
+    },
+    updatePresetProperty: async ({ state }, { preset, property, value }) => {
+      await state.room.send('scene_update_preset_property', {
+        action: 'update',
+        property,
+        value,
+        preset,
       })
     },
     directUpdateSceneElement: async ({ state }, { property, element, instance, id, setting, elementData, instanceData, settingData }) => {
@@ -565,13 +588,13 @@ export default {
       commit('PRESET_LOAD_START')
       sendSceneMessage('scene_load_presets', { sceneId })
     },
-    addPreset: async ({ state, commit }) => {
-      commit('PRESET_LOAD_START')
+    addPreset: async ({ state, commit }, name) => {
+      commit('PRESET_LIST_LOAD_START')
       const scene = state.activeScene
-      sendSceneMessage('scene_add_preset_request', { scene })
+      sendSceneMessage('scene_add_preset_request', { scene, name })
     },
     deletePreset: async ({ state, commit }, presetId) => {
-      commit('PRESET_LOAD_START')
+      commit('PRESET_LIST_LOAD_START')
       const sceneId = state.activeScene.sk
       sendSceneMessage('scene_delete_preset_request', { sceneId, presetId })
     },
@@ -581,10 +604,10 @@ export default {
       sceneData.scenePreset = presetId
       sendSceneMessage('scene_change_preset', { sceneData, id: presetId })
     },
-    clonePreset: async ({ state, commit }, presetId) => {
-      commit('PRESET_LOAD_START')
+    clonePreset: async ({ state, commit }, preset) => {
+      commit('PRESET_LIST_LOAD_START')
       const scene = state.activeScene
-      sendSceneMessage('scene_clone_preset_request', { scene, presetId })
+      sendSceneMessage('scene_clone_preset_request', { scene, preset })
     },
     // END SCENE PRESET C/U/D //
 
@@ -632,7 +655,7 @@ export default {
           commit('SCENE_LOAD_STOP')
         })
         room.onMessage('scene_preset_update', (message) => {
-          commit('UPDATE_PRESET', message.scenePreset)
+          commit('UPDATE_PRESET', { preset: message.scenePreset })
           commit('SCENE_LOAD_STOP')
           if (message.user.sk == rootGetters['user/userInfo'].sk) {
             return
@@ -676,25 +699,40 @@ export default {
         })
         room.onMessage('scene_add_preset_response', ({ user, preset }) => {
           commit('ADD_PRESET', preset)
-          dispatch('banner/showSuccess', { message: `${user.displayName} changed the scene preset to "${preset.name}"` }, { root: true })
-          commit('PRESET_LOAD_STOP')
+          dispatch(
+            'banner/showSuccess',
+            { message: `${user.displayName} added a ${preset.name} preset to ${state.activeScene.name}` },
+            { root: true }
+          )
+          commit('PRESET_LIST_LOAD_STOP')
         })
-        room.onMessage('scene_clone_preset_response', ({ user, preset, presetId }) => {
-          const clonedPreset = state.activeScene.presets.find((preset) => preset.sk == presetId)
+        room.onMessage('scene_clone_preset_response', ({ user, preset, original }) => {
+          const clonedPreset = state.activeScene.presets.find((preset) => preset.sk == original.sk)
           commit('ADD_PRESET', preset)
-          dispatch('banner/showSuccess', { message: `${user.displayName} created a new preset from "${clonedPreset.name}"` }, { root: true })
-          commit('PRESET_LOAD_STOP')
+          if (user.sk !== store.state.user.userInfo.sk) {
+            dispatch(
+              'banner/showSuccess',
+              { message: `${user.displayName} created a new preset ${clonedPreset?.name && 'from '} ${clonedPreset?.name && clonedPreset.name}` },
+              { root: true }
+            )
+          }
+          commit('PRESET_LIST_LOAD_STOP')
         })
         room.onMessage('scene_delete_preset_response', ({ user, presetId }) => {
           const deletedPreset = state.activeScene.presets.find((preset) => preset.sk == presetId)
           commit('REMOVE_PRESET', presetId)
           dispatch('banner/showSuccess', { message: `${user.displayName} deleted the "${deletedPreset.name}" preset` }, { root: true })
-          commit('PRESET_LOAD_STOP')
+          commit('PRESET_LIST_LOAD_STOP')
         })
-        room.onMessage('update_preset_property_response', ({ user, preset, original }) => {
-          commit('UPDATE_PRESET', preset)
+        room.onMessage('scene_update_preset_property_response', ({ user, preset, original }) => {
+          const presetIndex = state.activeScene.presets.findIndex((original) => preset.sk == original.sk)
+          if (presetIndex > -1) {
+            commit('UPDATE_PRESET', { preset, knownIndex: presetIndex })
+          } else {
+            commit('ADD_PRESET', preset)
+          }
           dispatch('banner/showSuccess', { message: `${user.displayName} renamed the "${original.name}" preset to "${preset.name}"` }, { root: true })
-          commit('PRESET_LOAD_STOP')
+          commit('PRESET_LIST_LOAD_STOP')
         })
         room.onMessage('scene_setting_update', ({ user, sceneData, settingData }) => {
           commit('STORE_SCENE_SETTING', { sceneId: sceneData.sk, settingData })

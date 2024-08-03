@@ -4,7 +4,7 @@
       <v-card>
         <v-card-title class="text-h5">{{ dialogTitle }}</v-card-title>
         <v-card-text>
-          <v-text-field label="Name" outlined hide-details></v-text-field>
+          <v-text-field label="Preset Name" v-model="newPresetName" outlined hide-details></v-text-field>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
@@ -26,9 +26,13 @@
       <div v-for="(preset, i) in presets" :key="i" :class="i % 2 ? 'grey darken-4' : 'grey darken-3'">
         <scene-preset-card :preset="preset" v-if="preset" @handleDialog="handleDialog" />
       </div>
-
+      <v-expand-transition>
+        <div v-if="loadingPresetList" :class="presets?.length % 2 ? 'grey darken-3' : 'grey darken-4'" class="text-center pa-4">
+          <loader :loading="loadingPresetList" :grid="true" />
+        </div>
+      </v-expand-transition>
       <div :class="presets?.length % 2 ? 'grey darken-4' : 'grey darken-3'" class="text-center pa-4">
-        <v-btn class="mx-2" @click="showAddPresetDialog"><v-icon small class="mr-1">mdi-archive-plus</v-icon> Create Empty Preset</v-btn>
+        <v-btn class="mx-2" @click="showAddPresetDialog"><v-icon class="mr-1">mdi-plus</v-icon> Empty Preset</v-btn>
       </div>
     </content-sub-panel>
   </div>
@@ -37,6 +41,7 @@
 <script>
 import ContentSubPanel from './ContentSubPanel'
 import ScenePresetCard from './ScenePresetCard'
+import Loader from './Loader'
 import { mapActions, mapGetters } from 'vuex'
 import { DateTime } from 'luxon'
 
@@ -44,6 +49,7 @@ export default {
   components: {
     ContentSubPanel,
     ScenePresetCard,
+    Loader,
   },
   name: 'ScenePresetList',
   data: () => ({
@@ -51,11 +57,15 @@ export default {
     dialogTitle: '',
     buttonText: '',
     presetToEdit: { name: '' },
+    newPresetName: '',
     dialogCallback: () => {},
   }),
 
   computed: {
-    ...mapGetters({ processing: 'scene/processing', scene: 'scene/activeScene', updatePresetProperty: 'scene/updatePresetProperty' }),
+    ...mapGetters({
+      scene: 'scene/activeScene',
+      loadingPresetList: 'scene/loadingPresetList',
+    }),
     presets() {
       return this.scene?.presets
     },
@@ -68,7 +78,7 @@ export default {
       } else return ''
     },
     showAddPresetDialog() {
-      this.handleDialog({ show: true, title: 'New Preset Name', callback: () => this.addPreset(), buttonText: 'Create Preset' })
+      this.handleDialog({ show: true, title: 'New Preset Name', callback: this.addPreset, buttonText: 'Create Preset' })
     },
     cancel() {
       this.show = false
@@ -79,10 +89,12 @@ export default {
       this.dialogTitle = dialogOptions.title
       this.dialogCallback = dialogOptions.callback
       this.presetToEdit = dialogOptions.preset
+      this.newPresetName = dialogOptions.preset?.name || ''
     },
     closePresetDialog() {
       this.show = false
-      this.dialogCallback()
+      this.dialogCallback(this.newPresetName)
+      this.newPresetName = ''
     },
   },
 }

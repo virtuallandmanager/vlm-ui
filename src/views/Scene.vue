@@ -1,7 +1,7 @@
 <template>
   <focus-page
     :loadingMessage="`Connecting To ${scene?.name || 'Scene'}...`"
-    :loading="loadingScene || loadingPreset"
+    :loading="loadingScene"
     :noContent="!scene"
     :imageLink="scene?.imageLink || placeholder"
   >
@@ -67,7 +67,10 @@
       </v-tabs>
     </v-card>
     <v-spacer class="p"></v-spacer>
-    <v-card class="cyberpunk-border pa-6 mt-4">
+    <v-card class="cyberpunk-border pa-6 mt-4" v-if="loadingPreset">
+      <loader :message="`Loading Preset...`" :loading="loadingPreset" :grid="true" />
+    </v-card>
+    <v-card class="cyberpunk-border pa-6 mt-4" v-else>
       <v-tabs-items v-model="tab">
         <v-tab-item value="tab-1">
           <scene-analytics />
@@ -107,6 +110,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { DateTime } from 'luxon'
+import Loader from '../components/Loader'
 import SceneAnalytics from '../components/SceneAnalytics'
 import SceneArtList from '../components/SceneArtList'
 import SceneVideoList from '../components/SceneVideoList'
@@ -143,6 +147,7 @@ export default {
     PropertiesDialog,
     ClickEventDialog,
     DeleteDialog,
+    Loader,
   },
   data: () => ({
     editingName: false,
@@ -228,6 +233,7 @@ export default {
       outBlink: 'scene/outBlink',
       processing: 'scene/processing',
       loadingPreset: 'scene/loadingPreset',
+      loadingPresetList: 'scene/loadingPresetList',
       loadingScene: 'scene/loadingScene',
       giveawaysForScene: 'event/giveawaysForScene',
     }),
