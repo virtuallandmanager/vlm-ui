@@ -41,7 +41,7 @@
     <div>
       <div class="d-flex justify-start align-center grey darken-2 pa-4">
         <h1 class="text-body-1 font-weight-bold flex-grow-1" dark>Claim Points</h1>
-        <v-btn small @click="addClaimPoint()" class="flex-shrink-1"><v-icon small>mdi-plus</v-icon> Add</v-btn>
+        <v-btn small @click="addClaimPoint()" class="flex-shrink-1"><v-icon small>mdi-plus</v-icon> Claim Point</v-btn>
       </div>
       <div class="d-flex flex-column my-0" v-if="giveaway?.claimPoints?.length">
         <div v-for="(claimPoint, i) in claimPoints" :key="i">

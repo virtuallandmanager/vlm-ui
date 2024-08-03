@@ -41,12 +41,12 @@
       </template>
       <template v-slot:header>Giveaways</template>
       <template v-slot:header-actions>
-        <v-btn @click="createGiveaway" class="mr-2">Create New Giveaway</v-btn>
+        <v-btn @click="createGiveaway" class="mr-2"><v-icon class="mr-1">mdi-plus</v-icon> Giveaway</v-btn>
       </template>
       <template v-slot:no-content-header>No Giveaways Found</template>
       <template v-slot:no-content-text> Would you like to create a new giveaway? </template>
       <template v-slot:no-content-cta>
-        <v-btn @click="createGiveaway">Create New Giveaway</v-btn>
+        <v-btn @click="createGiveaway"><v-icon class="mr-1">mdi-plus</v-icon> Giveaway</v-btn>
       </template>
       <v-container fluid>
         <v-row class="text-center" v-if="!loadingGiveaways">

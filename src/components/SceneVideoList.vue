@@ -4,8 +4,8 @@
       <div>Video Screens</div>
       <v-spacer />
       <v-btn @click="addVideoScreen()" v-if="videos?.length">
-        <v-icon class="mr-2">mdi-television</v-icon>
-        New Video Screen
+        <v-icon class="mr-2">mdi-plus</v-icon>
+        Video Screen
       </v-btn>
     </template>
 
@@ -13,8 +13,8 @@
     <template v-slot:no-content-text>Would you like to add one?</template>
     <template v-slot:no-content-cta>
       <v-btn @click="addVideoScreen()">
-        <v-icon class="mr-2">mdi-television</v-icon>
-        New Video Screen
+        <v-icon class="mr-2">mdi-plus</v-icon>
+        Video Screen
       </v-btn>
     </template>
 

@@ -80,7 +80,7 @@
     <div>
       <div class="d-flex justify-start align-center purple lighten-1 pa-4">
         <h1 class="text-body-1 font-weight-bold flex-grow-1" dark>Instances</h1>
-        <v-btn small @click="addInstance()" color="primary" class="flex-shrink-1"><v-icon small>mdi-plus</v-icon> Add Instance</v-btn>
+        <v-btn small @click="addInstance()" color="primary" class="flex-shrink-1"><v-icon small>mdi-plus</v-icon> Instance</v-btn>
       </div>
       <div class="d-flex justify-end align-center px-3">
         <v-switch v-model="nft.showDetails" class="flex-shrink-1 pa-0" label="Detailed"> Detailed View </v-switch>

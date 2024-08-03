@@ -226,7 +226,7 @@
       <v-expansion-panel class="pa-0">
         <v-expansion-panel-header class="d-flex text-body justify-space-between align-center">
           <h1 class="text-body-1 font-weight-bold flex-grow-1" dark>Instances</h1>
-          <v-btn @click="addInstance" small class="mr-2"> <v-icon>mdi-plus</v-icon> Add Instance </v-btn>
+          <v-btn @click="addInstance" small class="mr-2 flex-grow-0"> <v-icon small class="mr-1">mdi-plus</v-icon> Instance </v-btn>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <div class="d-flex flex-column pa-0">

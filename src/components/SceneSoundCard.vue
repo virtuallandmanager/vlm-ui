@@ -96,7 +96,7 @@
     <div>
       <div class="d-flex justify-start align-center grey darken-2 pa-4">
         <h1 class="text-body-1 font-weight-bold flex-grow-1" dark>Instances</h1>
-        <v-btn small @click="addInstance()" class="flex-shrink-1"><v-icon small>mdi-plus</v-icon> Add Instance</v-btn>
+        <v-btn small @click="addInstance()" class="flex-shrink-1"><v-icon small class="mr-1">mdi-plus</v-icon> Instance</v-btn>
       </div>
       <div class="d-flex justify-space-between align-center px-3" v-if="sound.instances.length">
         <v-tooltip bottom>

@@ -4,12 +4,12 @@
       <div>Widgets</div>
       <v-spacer></v-spacer>
       <v-btn @click="macroDialog = true" v-if="filteredWidgets?.length > 0" class="mr-2"><v-icon class="mr-2">mdi-spotlight</v-icon>Macro Mode</v-btn>
-      <v-btn @click="addWidget()" v-if="widgets.length"><v-icon class="mr-2">mdi-palette</v-icon>Add Widget</v-btn>
+      <v-btn @click="addWidget()" v-if="widgets.length"><v-icon class="mr-1">mdi-plus</v-icon> Widget</v-btn>
     </template>
     <template v-slot:no-content-header>No Widgets Have Been Added</template>
     <template v-slot:no-content-text>Would you like to add one?</template>
     <template v-slot:no-content-cta>
-      <v-btn @click="addWidget()"><v-icon class="mr-2">mdi-palette</v-icon>Add Widget</v-btn>
+      <v-btn @click="addWidget()"><v-icon class="mr-1">mdi-plus</v-icon> Widget</v-btn>
     </template>
     <v-container fluid class="ma-0 pa-0">
       <v-row>

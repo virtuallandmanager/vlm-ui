@@ -4,8 +4,8 @@
       <div class="h4">3D Models</div>
       <v-spacer />
       <v-btn @click="addModelConfig()" v-if="models?.length">
-        <v-icon class="mr-2">mdi-cube-outline</v-icon>
-        New Model
+        <v-icon class="mr-1">mdi-plus</v-icon>
+        Model
       </v-btn>
     </template>
 
@@ -13,8 +13,8 @@
     <template v-slot:no-content-text>Would you like to add one?</template>
     <template v-slot:no-content-cta>
       <v-btn @click="addModelConfig()">
-        <v-icon class="mr-2">mdi-cube-outline</v-icon>
-        New Model
+        <v-icon class="mr-1">mdi-plus</v-icon>
+        Model
       </v-btn>
     </template>
     <v-container fluid class="pa-0">

@@ -4,8 +4,8 @@
       <div class="h4">Sounds</div>
       <v-spacer />
       <v-btn @click="addSoundConfig()" v-if="sounds?.length">
-        <v-icon class="mr-2">mdi-speaker</v-icon>
-        New Sound
+        <v-icon class="mr-1">mdi-plus</v-icon>
+        Sound
       </v-btn>
     </template>
 
@@ -13,8 +13,8 @@
     <template v-slot:no-content-text>Would you like to add one?</template>
     <template v-slot:no-content-cta>
       <v-btn @click="addSoundConfig()">
-        <v-icon class="mr-2">mdi-speaker</v-icon>
-        New Sound
+        <v-icon class="mr-1">mdi-plus</v-icon>
+        Sound
       </v-btn>
     </template>
     <v-container fluid class="pa-0">

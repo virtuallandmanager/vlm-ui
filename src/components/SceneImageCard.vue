@@ -4,7 +4,6 @@
     <v-dialog v-if="replaceImageDialog" v-model="replaceImageDialog" width="500">
       <v-card>
         <v-card-title class="text-h5"> Replace Image </v-card-title>
-
         <v-card-text class="d-flex justify-space-between lighten-1">
           <v-card class="flex-grow-1 text-center pa-4 mr-2" @click.stop="selectImage">
             <v-icon>mdi-file-image</v-icon>
@@ -140,7 +139,7 @@
       <div>
         <div class="d-flex justify-start align-center grey darken-2 pa-4">
           <h1 class="text-body-1 font-weight-bold flex-grow-1" dark>Instances</h1>
-          <v-btn small @click="addInstance()" class="flex-shrink-1"><v-icon small>mdi-plus</v-icon> Add Instance</v-btn>
+          <v-btn small @click="addInstance()" class="flex-shrink-1"><v-icon small class="mr-1">mdi-plus</v-icon> Instance</v-btn>
         </div>
         <div class="d-flex justify-end align-center px-3" v-if="image.instances.length">
           <v-switch v-model="image.showDetails" class="flex-shrink-1 pa-0" label="Detailed"> Detailed View </v-switch>

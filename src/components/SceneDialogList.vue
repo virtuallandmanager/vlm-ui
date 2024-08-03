@@ -72,7 +72,7 @@
       </div>
       <div class="d-flex justify-end px-4">
         <v-btn @click="addMessage(d)"
-          ><v-icon>mdi-plus</v-icon> Add Message</v-btn
+          ><v-icon>mdi-plus</v-icon> Message</v-btn
         >
       </div>
     </div>

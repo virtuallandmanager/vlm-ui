@@ -36,12 +36,12 @@
         <div class="h4">Art</div>
         <v-spacer></v-spacer>
         <v-btn @click="showNewImageDialog()" class="mr-4" v-if="art?.length">
-          <v-icon class="mr-2">mdi-image</v-icon>
-          New Image
+          <v-icon class="mr-2">mdi-plus</v-icon>
+          Image
         </v-btn>
         <v-btn @click="showNewNFTDialog()" disabled v-if="art?.length">
-          <v-icon class="mr-2">mdi-image-frame</v-icon>
-          New NFT
+          <v-icon class="mr-2">mdi-plus</v-icon>
+          NFT
         </v-btn>
       </template>
       <template v-slot:no-content-header> No Art Has Been Added </template>
@@ -52,12 +52,12 @@
       </template>
       <template v-slot:no-content-cta>
         <v-btn @click.stop="showNewImageDialog" class="mr-4">
-          <v-icon class="mr-2">mdi-image</v-icon>
-          New Image
+          <v-icon class="mr-2">mdi-plus</v-icon>
+          Image
         </v-btn>
         <v-btn @click.stop="showNewNFTDialog" disabled>
-          <v-icon class="mr-2">mdi-image-frame</v-icon>
-          New NFT
+          <v-icon class="mr-2">mdi-plus</v-icon>
+          NFT
         </v-btn>
       </template>
 
@@ -105,6 +105,7 @@ export default {
     detailedMode: true,
     selectedImage: '',
     newImageSrc: '',
+    newImage: {},
     nftDetails: {
       chain: 1,
       contractAddress: '',
@@ -156,7 +157,7 @@ export default {
     },
     createExternalImage() {
       const objThis = this
-      const currentImage = objThis.image
+      const currentImage = objThis.newImage || {}
       if (this.validateExternalLink(this.newImageSrc) === true) {
         let img = new Image()
         img.src = this.newImageSrc
@@ -168,7 +169,7 @@ export default {
           currentImage.externalUrl = true
           const newImage = new SceneImage({
             ...currentImage,
-            name: 'External Image',
+            name: objThis.stripFilenameAndExtension(this.src),
             imageSrc: this.src,
             externalUrl: true,
           })
@@ -178,6 +179,23 @@ export default {
           objThis.resetDialogs()
         }
       }
+    },
+    stripFilenameAndExtension(url) {
+      // Use the URL constructor to parse the URL
+      const parsedUrl = new URL(url)
+
+      // Get the pathname from the URL
+      let path = parsedUrl.pathname
+
+      // Find the last index of '/' in the path
+      const lastSlashIndex = path.lastIndexOf('/')
+
+      // If there is a slash, slice the path up to the last slash
+      if (lastSlashIndex !== -1) {
+        path = path.slice(0, lastSlashIndex + 1)
+      }
+
+      return path
     },
     async onFileSelected(e) {
       this.resetDialogs()

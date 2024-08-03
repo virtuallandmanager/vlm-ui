@@ -5,8 +5,8 @@
         <div class="h4">Giveaway Claim Points</div>
         <v-spacer />
         <v-btn @click="openGiveawaySelectDialog" v-if="claimPoints?.length">
-          <v-icon class="mr-2">mdi-plus</v-icon>
-          New Claim Point
+          <v-icon class="mr-1">mdi-plus</v-icon>
+          Claim Point
         </v-btn>
       </template>
 
@@ -14,8 +14,8 @@
       <template v-slot:no-content-text>Would you like to add one?</template>
       <template v-slot:no-content-cta>
         <v-btn @click="openGiveawaySelectDialog">
-          <v-icon class="mr-2">mdi-plus</v-icon>
-          New Claim Point
+          <v-icon class="mr-1">mdi-plus</v-icon>
+          Claim Point
         </v-btn>
       </template>
       <v-container fluid class="pa-0">

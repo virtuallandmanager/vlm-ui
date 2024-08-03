@@ -3,7 +3,7 @@
     <content-page loadingMessage="Loading your events..." :loading="loadingEvents" :noContent="filteredEvents?.length == 0">
       <template v-slot:header>Events</template>
       <template v-slot:header-actions>
-        <v-btn @click="openNewEventDialog">Create New Event</v-btn>
+        <v-btn @click="openNewEventDialog"><v-icon small class="mr-1">mdi-plus</v-icon> Event</v-btn>
         <v-menu offset-y :close-on-content-click="true">
           <template v-slot:activator="{ on, attrs }">
             <v-btn color="primary" dark v-bind="attrs" v-on="on" class="mx-4">
@@ -24,7 +24,7 @@
       <template v-slot:no-content-header>No Events Found</template>
       <template v-slot:no-content-text> Would you like to create a new event? </template>
       <template v-slot:no-content-cta>
-        <v-btn @click="openNewEventDialog">Create New Event</v-btn>
+        <v-btn @click="openNewEventDialog"><v-icon class="mr-1">mdi-plus</v-icon> Event</v-btn>
       </template>
       <v-container fluid>
         <v-row class="text-center" v-if="!loadingEvents">
@@ -38,7 +38,7 @@
     </content-page>
     <v-dialog v-model="newEventDialog" width="380">
       <v-card>
-        <v-card-title class="text-h5"> Create New Event </v-card-title>
+        <v-card-title class="text-h5"><v-icon class="mr-1">mdi-plus</v-icon> Event </v-card-title>
 
         <v-card-text>
           <v-text-field label="Event Name" outlined v-model="newEventName"></v-text-field>

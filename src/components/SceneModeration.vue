@@ -68,7 +68,7 @@
           </v-row>
           <v-row>
             <v-col>
-              <v-btn @click="addBannedItem()">Add Item</v-btn>
+              <v-btn @click="addBannedItem()"><v-icon class="mr-1">mdi-plus</v-icon>Item</v-btn>
             </v-col>
           </v-row>
         </v-col>
@@ -94,7 +94,7 @@
           </v-row>
           <v-row>
             <v-col>
-              <v-btn @click="addAllowedItem">Add Item</v-btn>
+              <v-btn @click="addAllowedItem"><v-icon class="mr-1">mdi-plus</v-icon>Item</v-btn>
             </v-col>
           </v-row>
         </v-col>

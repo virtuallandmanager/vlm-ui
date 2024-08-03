@@ -2,7 +2,7 @@
   <content-page loadingMessage="Loading your scenes..." :loading="loadingScene" :noContent="!scenes.length">
     <v-dialog v-model="newSceneDialog" width="400" persistent>
       <v-card>
-        <v-card-title class="text-h5"> Create New Scene </v-card-title>
+        <v-card-title class="text-h5"> <v-icon class="mr-1">mdi-plus</v-icon> Scene </v-card-title>
 
         <v-card-text class="text-center">
           <v-text-field autofocus outlined label="Scene Name" v-model="newSceneName" placeholder="Enter A Scene Name..." />
@@ -73,11 +73,13 @@
       </v-card>
     </v-dialog>
     <template v-slot:header>Scenes</template>
-    <template v-slot:header-actions><v-btn @click="openNewSceneDialog">Create New Scene</v-btn></template>
+    <template v-slot:header-actions
+      ><v-btn @click="openNewSceneDialog"><v-icon class="mr-1">mdi-plus</v-icon> Scene</v-btn></template
+    >
     <template v-slot:no-content-header>No Scenes Found</template>
     <template v-slot:no-content-text> Would you like to create a new scene? </template>
     <template v-slot:no-content-cta>
-      <v-btn @click="createNewScene(newSceneName)">Create New Scene</v-btn>
+      <v-btn @click="createNewScene(newSceneName)"><v-icon class="mr-1">mdi-plus</v-icon> Scene</v-btn>
     </template>
     <v-container fluid v-if="!loadingScene && scenes.length">
       <v-row class="text-center" v-if="sharedScenes.length">
