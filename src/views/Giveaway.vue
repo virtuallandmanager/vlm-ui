@@ -123,7 +123,7 @@
             v-if="selectedCollection"
             label="Item"
             outlined
-            v-model="newItemId"
+            v-model="newItemIds"
             :items="collectionItems()"
             :loading="loadingCollectionItems"
             :disabled="loadingCollectionItems"
@@ -151,7 +151,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary darken-1" text @click="addGiveawayItem" :loading="this.loadingItem" :disabled="!this.collectionItems().length">
+          <v-btn color="primary darken-1" text @click="addGiveawayItems" :loading="this.loadingItem" :disabled="!this.collectionItems().length">
             Add
           </v-btn>
 
@@ -224,7 +224,14 @@
             hide-details
             class="my-2"
           ></v-text-field>
-          <v-text-field label="Item ID" outlined v-model="newItemId" hide-details></v-text-field>
+          <v-text-field
+            label="Item ID"
+            outlined
+            :hide-details="!/[^0-9]/.test(strItemIds)"
+            v-model="strItemIds"
+            hint="Use a comma to separate multiple item ids"
+          ></v-text-field>
+          <v-divider class="my-6"></v-divider>
           <div
             class="text-body1 align-center my-4"
             v-if="newContractAddress && !loadingCollectionItems && selectedCollection && !collectionItems().length"
@@ -236,7 +243,7 @@
             v-else-if="newContractAddress && selectedCollection && collectionItems().length"
             label="Select An Item"
             outlined
-            v-model="newItemId"
+            v-model="newItemIds"
             :items="collectionItems()"
             :loading="loadingCollectionItems"
             :disabled="loadingCollectionItems"
@@ -263,7 +270,7 @@
 
           <v-btn color="grey darken-1" text @click="otherCollectablesDialog = false"> Cancel </v-btn>
 
-          <v-btn color="primary darken-1" text @click="addGiveawayItem" :loading="this.loadingItem" :disabled="!this.collectionItems().length">
+          <v-btn color="primary darken-1" text @click="addGiveawayItems" :loading="this.loadingItem" :disabled="!this.collectionItems().length">
             Add
           </v-btn>
         </v-card-actions>
@@ -477,7 +484,7 @@ export default {
     allocationDialog: false,
     selectedCollection: null,
     newContractAddress: '',
-    newItemId: '',
+    newItemIds: [],
     loadingItem: false,
     importedCollection: null,
     selectedAllocationAmount: 1,
@@ -526,6 +533,29 @@ export default {
     items() {
       return this.giveaway.items
     },
+    strItemIds: {
+      get() {
+        return this.newItemIds.join(',')
+      },
+      set(newValue) {
+        // Remove any character that is not a digit or a comma
+        let cleanedValue = newValue.replace(/[^0-9,]/g, '')
+
+        // Remove trailing comma, if any
+        if (cleanedValue.endsWith(',')) {
+          cleanedValue = cleanedValue.slice(0, -1)
+        }
+
+        // Convert the cleaned string back to an array of integers
+        const tempArray = cleanedValue
+          .split(',')
+          // .map(Number)
+          .filter((n) => !isNaN(n))
+
+        // Remove duplicate values
+        this.newItemIds = [...new Set(tempArray)]
+      },
+    },
     placeholder() {
       return imgPlaceholder
     },
@@ -538,10 +568,20 @@ export default {
     allItemsHaveMinterRights() {
       return this.giveaway.items?.length == this.itemsWithMinterRights?.length
     },
-    selectedGiveawayItem() {
-      return this.userItemsCache[this.selectedCollection]
-        ? this.userItemsCache[this.selectedCollection]?.find((item) => item.itemId == this.newItemId)
-        : null
+    selectedGiveawayItems() {
+      const newItemArray = this.parseCommaSeparatedIntegers(this.newItemIds)
+
+      if (!newItemArray) {
+        return []
+      }
+
+      return newItemArray.map((itemId) => {
+        if (this.userItemsCache[this.selectedCollection][itemId]) {
+          return this.userItemsCache[this.selectedCollection][itemId]
+        } else {
+          return { contractAddress: this.selectedCollection, itemId, name: `Item ${itemId}`, thumbnail: this.placeholder }
+        }
+      })
     },
     airdropAllocationAmount() {
       switch (this.selectedAllocationAmount) {
@@ -626,17 +666,32 @@ export default {
     unlinkEvent(eventId) {
       this.eventLinkIds = this.eventLinkIds.filter((id) => id !== eventId)
     },
+    parseCommaSeparatedIntegers(str) {
+      // Define a regular expression to match a comma-separated list of integers
+      const regex = /^(\d+)(,\d+)*$/
+
+      // Check if the string matches the regular expression
+      if (regex.test(str)) {
+        // Split the string by commas and convert each substring to an integer
+        const intArray = str.split(',').map(Number)
+        return intArray
+      } else {
+        // Return null if the string does not match the pattern
+        return null
+      }
+    },
+
     debounceImportCollection: debounce(function () {
       this.importCollection()
     }, 1000),
     async importCollection() {
       this.selectedCollection = this.newContractAddress
       await this.getUserCollectionItems(this.selectedCollection)
-      this.newItemId = null
+      this.newItemIds = []
     },
     async getCollectionItems() {
       await this.getUserCollectionItems(this.selectedCollection)
-      this.newItemId = null
+      this.newItemIds = []
     },
     async openUserCollectionsDialog() {
       this.selectedCollection = null
@@ -677,21 +732,24 @@ export default {
       await this.updateEventLinks({ giveawayId: this.giveaway?.sk, eventLinkIds: this.eventLinkIds })
       this.updatingLink = false
     },
-    addGiveawayItem() {
+    addGiveawayItems() {
       this.newItemDialog = false
       this.userCollectionsDialog = false
       this.otherCollectablesDialog = false
+      const items = this.selectedGiveawayItems.map((item) => ({
+        ...item,
+        name: item.name || `Item ${item.itemId}`,
+        chain: item.chainId || 137,
+        imageSrc: item.thumbnail || '',
+        category: item.category || 'unknown category',
+        rarity: item.rarity || 'unknown rarity',
+        contractAddress: item.contractAddress || this.selectedCollection,
+        itemId: item.itemId,
+      }))
+
       this.addItemToGiveaway({
         giveawayId: this.giveaway.sk,
-        item: {
-          name: this.selectedGiveawayItem.name,
-          chain: this.selectedGiveawayItem.chainId,
-          imageSrc: this.selectedGiveawayItem.thumbnail,
-          category: this.selectedGiveawayItem.category,
-          rarity: this.selectedGiveawayItem.rarity,
-          contractAddress: this.selectedCollection,
-          itemId: this.newItemId,
-        },
+        items,
       })
     },
     allocateCreditBalance() {
