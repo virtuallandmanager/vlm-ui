@@ -21,9 +21,11 @@
     <v-dialog v-model="mintingRightsDialog" width="380">
       <v-card>
         <v-card-title class="text-h5"> Manage Minting Rights </v-card-title>
-        <v-card-text class="text-h6"> Allowing minting rights through VLM is currently in testing and will be available soon.</v-card-text>
-        <v-card-text class="text-body1">Here's a guide on how to allow VLM to mint from your collection.</v-card-text>
-        <v-btn class="text-body1">Minting Guide</v-btn>
+        <v-card-text class="text-body1 text-center">
+          Allowing minting rights through VLM is currently in testing and will be available soon.
+        </v-card-text>
+        <v-card-text class="text-body2 text-center">Here's a guide on how to allow VLM to mint from your collection.</v-card-text>
+        <v-card-text class="text-center"><v-btn @click="downloadMintingGuide" color="primary">Minting Guide</v-btn></v-card-text>
         <v-card v-if="!allItemsHaveMinterRights" class="flex-grow-1 text-center pa-4 mt-2" @click="openGrantRightsDialog" disabled>
           <v-icon>mdi-key-change</v-icon>
           <div class="text-button">Grant Rights</div>
@@ -775,6 +777,10 @@ export default {
         amount: this.airdropAllocationAmount,
         usePromoBalance: true,
       })
+    },
+    downloadMintingGuide() {
+      const url = 'https://api.vlm.gg/media/guides/VLM-Guide-MintingRights.pdf' // The URL you want to open
+      window.open(url, '_blank') // '_blank' opens the link in a new window or tab
     },
     changeFilterType(filterType) {
       this.filterType = filterType
