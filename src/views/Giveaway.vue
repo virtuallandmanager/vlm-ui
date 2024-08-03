@@ -446,9 +446,11 @@
         <v-card-text v-if="!items?.length">
           <div class="text-h6 text-center">No Items Added</div>
           <div class="text-display text-center">Add a giveaway item to get started</div>
-          <v-btn @click="openItemDialog" :loading="loadingCollections" :disabled="userCollectionsDialog || loadingCollections"
-            ><v-icon class="mr-1">mdi-plus</v-icon> Item</v-btn
-          >
+          <div class="text-display text-center">
+            <v-btn @click="openItemDialog" :loading="loadingCollections" :disabled="userCollectionsDialog || loadingCollections">
+              <v-icon class="mr-1">mdi-plus</v-icon> Item
+            </v-btn>
+          </div>
         </v-card-text>
         <v-card-text v-else>
           <v-container>
@@ -579,7 +581,7 @@ export default {
       return this.giveaway.items?.length == this.itemsWithMinterRights?.length
     },
     selectedGiveawayItems() {
-      const newItemArray = this.parseCommaSeparatedIntegers(this.newItemIds)
+      const newItemArray = this.parseCommaSeparatedIntegers(this.strItemIds)
 
       if (!newItemArray) {
         return []
