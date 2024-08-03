@@ -623,7 +623,7 @@ export default {
       sendUiMessage: 'moderation/sendUiMessage',
       createGiveaway: 'giveaway/createGiveaway',
       updateGiveaway: 'giveaway/updateGiveaway',
-      addItemToGiveaway: 'giveaway/addItemToGiveaway',
+      addItemsToGiveaway: 'giveaway/addItemsToGiveaway',
       getUserCollections: 'collectables/getUserCollections',
       getUserCollectionItems: 'collectables/getUserCollectionItems',
       updateGiveawayLinks: 'event/updateGiveawayLinks',
@@ -759,7 +759,7 @@ export default {
         itemId: item.itemId,
       }))
 
-      this.addItemToGiveaway({
+      this.addItemsToGiveaway({
         giveawayId: this.giveaway.sk,
         items,
       })
