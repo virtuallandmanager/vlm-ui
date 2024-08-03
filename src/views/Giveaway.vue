@@ -114,9 +114,12 @@
             v-model="selectedCollection"
             @change="getCollectionItems"
             :loading="loadingCollections"
+            offset-y
+            hide-details
+            class="my-2"
           >
           </v-autocomplete>
-          <v-select
+          <v-autocomplete
             v-if="selectedCollection"
             label="Item"
             outlined
@@ -124,6 +127,9 @@
             :items="collectionItems()"
             :loading="loadingCollectionItems"
             :disabled="loadingCollectionItems"
+            offset-y
+            hide-details
+            class="my-2"
           >
             <template v-slot:selection="data">
               <v-avatar class="mr-4">
@@ -138,9 +144,10 @@
               <v-list-item-content>
                 <v-list-item-title v-html="data.item.name"></v-list-item-title>
                 <v-list-item-subtitle v-html="`${data.item.category.capitalize()} - ${data.item.rarity.capitalize()}`"></v-list-item-subtitle>
+                <v-list-item-text>Item ID: {{ data.item.itemId }}</v-list-item-text>
               </v-list-item-content>
             </template>
-          </v-select>
+          </v-autocomplete>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -208,18 +215,34 @@
       <v-card>
         <v-card-title class="text-h6"> Item Details </v-card-title>
         <v-card-text>
-          <v-text-field label="Collection Contract Address" outlined v-model="newContractAddress" @input="debounceImportCollection"></v-text-field>
-          <div class="text-h6 align-center" v-if="newContractAddress && !loadingCollectionItems && selectedCollection && !collectionItems().length">
+          <v-text-field
+            label="Collection Contract Address"
+            outlined
+            v-model="newContractAddress"
+            @input="debounceImportCollection"
+            :loading="loadingCollectionItems"
+            hide-details
+            class="my-2"
+          ></v-text-field>
+          <v-text-field label="Item ID" outlined v-model="newItemId" hide-details></v-text-field>
+          <div
+            class="text-body1 align-center my-4"
+            v-if="newContractAddress && !loadingCollectionItems && selectedCollection && !collectionItems().length"
+          >
             Collection Not Found
           </div>
-          <v-select
+          <div class="text-body1 align-center my-4" v-if="newContractAddress && loadingCollectionItems">Loading collection items...</div>
+          <v-autocomplete
             v-else-if="newContractAddress && selectedCollection && collectionItems().length"
-            label="Item"
+            label="Select An Item"
             outlined
             v-model="newItemId"
             :items="collectionItems()"
             :loading="loadingCollectionItems"
             :disabled="loadingCollectionItems"
+            multiple
+            hide-details
+            class="my-2"
           >
             <template v-slot:item="data">
               <v-list-item-avatar>
@@ -227,10 +250,12 @@
               </v-list-item-avatar>
               <v-list-item-content>
                 <v-list-item-title v-html="data.item.name"></v-list-item-title>
-                <v-list-item-subtitle v-html="`${data.item.category.capitalize()} - ${data.item.rarity.capitalize()}`"></v-list-item-subtitle>
+                <v-list-item-subtitle
+                  v-html="`Item  ${data.item.itemId} - <strong>${data.item.rarity.capitalize()}</strong> ${data.item.category.capitalize()}`"
+                ></v-list-item-subtitle>
               </v-list-item-content>
             </template>
-          </v-select>
+          </v-autocomplete>
         </v-card-text>
 
         <v-card-actions>
@@ -568,7 +593,7 @@ export default {
         return this.userItemsCache[this.selectedCollection].map((item) => {
           return {
             ...item,
-            text: item.name,
+            text: `${item.itemId} - ${item.name}`,
             value: item.itemId,
           }
         })
