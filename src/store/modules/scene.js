@@ -275,7 +275,7 @@ export default {
       }
     },
     SET_ACTIVE_SCENE(state, { sceneId, adminScene }) {
-      state.activeScene = state.userSceneCache[sceneId]
+      state.activeScene = state.userSceneCache[sceneId] || state.sharedSceneCache[sceneId]
       if (state.activeScene) {
         state.activePreset = state.activeScene.presets.find((preset) => preset.sk == state.activeScene.scenePreset)
       } else if (adminScene) {
