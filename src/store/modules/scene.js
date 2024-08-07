@@ -632,6 +632,9 @@ export default {
           commit('SET_ROOM', room)
         }
 
+        const isUserScene = getters.sceneList.find((scene) => scene.sk == sceneId)
+        const isSharedScene = getters.sharedSceneList.find((scene) => scene.sk == sceneId)
+
         room.onLeave((code) => {
           console.log('Room left, with code: ', code)
           router.push('/scenes')
@@ -640,18 +643,30 @@ export default {
           dispatch('fadeBlink', 'out')
         })
         room.onMessage('scene_load_response', (scene) => {
-          commit('STORE_SCENE', scene)
+          if (isUserScene) {
+            commit('STORE_SCENE', scene)
+          } else if (isSharedScene) {
+            commit('STORE_SHARED_SCENE', scene)
+          }
           commit('SET_ACTIVE_SCENE', { sceneId: scene.sk })
           commit('SCENE_LOAD_STOP')
         })
         room.onMessage('scene_update', ({ scene, user }) => {
           dispatch('banner/showSuccess', { message: `${user.displayName} made an edit to the scene.` }, { root: true })
-          commit('STORE_SCENE', scene)
+          if (isUserScene) {
+            commit('STORE_SCENE', scene)
+          } else if (isSharedScene) {
+            commit('STORE_SHARED_SCENE', scene)
+          }
           commit('SCENE_LOAD_STOP')
         })
         room.onMessage('scene_update_property', ({ scene, property, user }) => {
           dispatch('banner/showSuccess', { message: `${user.displayName} made an edit to the scene ${property}.` }, { root: true })
-          commit('STORE_SCENE', scene)
+          if (isUserScene) {
+            commit('STORE_SCENE', scene)
+          } else if (isSharedScene) {
+            commit('STORE_SHARED_SCENE', scene)
+          }
           commit('SCENE_LOAD_STOP')
         })
         room.onMessage('scene_preset_update', (message) => {
@@ -693,7 +708,11 @@ export default {
           commit('SCENE_LOAD_STOP')
         })
         room.onMessage('scene_change_preset', ({ user, scene, preset }) => {
-          commit('STORE_SCENE', scene)
+          if (isUserScene) {
+            commit('STORE_SCENE', scene)
+          } else if (isSharedScene) {
+            commit('STORE_SHARED_SCENE', scene)
+          }
           dispatch('banner/showSuccess', { message: `${user.displayName} changed the scene preset to "${preset.name}"` }, { root: true })
           commit('PRESET_LOAD_STOP')
         })
