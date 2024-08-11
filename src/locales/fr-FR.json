@@ -1,0 +1,65 @@
+{
+    "appName": "Gestionnaire de Terres Virtuelles",
+    "welcome": "Bienvenue",
+    "login": {
+      "title": "Connexion",
+      "username": "Nom d'utilisateur",
+      "password": "Mot de passe",
+      "submit": "Soumettre",
+      "forgotPassword": "Mot de passe oublié?",
+      "button": "Connexion"
+    },
+    "home": {
+      "title": "Accueil",
+      "description": "Bienvenue sur Gestionnaire de Terres Virtuelles!",
+      "tiles": {
+        "info1": "Texte informatif pour la tuile 1",
+        "info2": "Texte informatif pour la tuile 2",
+        "info3": "Texte informatif pour la tuile 3",
+        "info4": "Texte informatif pour la tuile 4"
+      }
+    },
+    "navigation": {
+      "scenes": "Scènes",
+      "events": "Événements",
+      "giveaways": "Cadeaux",
+      "docs": "Docs",
+      "mediaLibrary": "Bibliothèque de Médias",
+      "userProfile": "Profil d'utilisateur",
+      "logout": "Se déconnecter"
+    },
+    "scenes": {
+      "title": "Scènes",
+      "videos": "Vidéos",
+      "images": "Images",
+      "models3D": "Modèles 3D",
+      "sounds": "Sons",
+      "widgets": "Widgets",
+      "presets": "Préréglages",
+      "claimPoints": "Points de Réclamation",
+      "settings": "Paramètres",
+      "configurations": "Configurations",
+      "instances": "Instances"
+    },
+    "analytics": {
+      "title": "Analyses"
+    },
+    "events": {
+      "title": "Événements"
+    },
+    "giveaways": {
+      "title": "Cadeaux",
+      "items": "Articles de Cadeaux"
+    },
+    "userProfile": {
+      "title": "Profil d'utilisateur"
+    },
+    "docs": {
+      "title": "Documentation"
+    },
+    "errors": {
+      "requiredField": "Ce champ est obligatoire",
+      "invalidEmail": "Veuillez entrer une adresse email valide"
+    }
+  }
+  

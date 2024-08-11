@@ -446,7 +446,7 @@
         <v-card-text v-if="!items?.length">
           <div class="text-h6 text-center">No Items Added</div>
           <div class="text-display text-center">Add a giveaway item to get started</div>
-          <div class="text-display text-center">
+          <div class="text-display text-center mt-2">
             <v-btn @click="openItemDialog" :loading="loadingCollections" :disabled="userCollectionsDialog || loadingCollections">
               <v-icon class="mr-1">mdi-plus</v-icon> Item
             </v-btn>

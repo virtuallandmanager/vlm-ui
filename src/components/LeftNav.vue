@@ -37,20 +37,20 @@
         <v-list-item-icon>
           <v-icon>mdi-island</v-icon>
         </v-list-item-icon>
-        <v-list-item-title>Scenes</v-list-item-title>
+        <v-list-item-title>{{ navText('Scenes') }}</v-list-item-title>
       </v-list-item>
 
       <v-list-item link to="/events">
         <v-list-item-icon>
           <v-icon>mdi-calendar-star</v-icon>
         </v-list-item-icon>
-        <v-list-item-title>Events</v-list-item-title>
+        <v-list-item-title>{{ navText('Events') }}</v-list-item-title>
       </v-list-item>
       <v-list-item link to="/giveaways">
         <v-list-item-icon>
           <v-icon>mdi-gift</v-icon>
         </v-list-item-icon>
-        <v-list-item-title>Giveaways</v-list-item-title>
+        <v-list-item-title>{{ navText('Giveaways') }}</v-list-item-title>
       </v-list-item>
       <!-- <v-list-item link to="/media" disabled>
         <v-list-item-icon>
@@ -62,7 +62,7 @@
         <v-list-item-icon>
           <v-icon>mdi-book</v-icon>
         </v-list-item-icon>
-        <v-list-item-title>Docs</v-list-item-title>
+        <v-list-item-title>{{ navText('Docs') }}</v-list-item-title>
       </v-list-item>
       <!-- <v-list-item link to="/organizations" v-if="orgAdmin">
         <v-list-item-icon>
@@ -74,7 +74,7 @@
         <v-list-item-icon>
           <v-icon>mdi-shield-account</v-icon>
         </v-list-item-icon>
-        <v-list-item-title>Admin Panel</v-list-item-title>
+        <v-list-item-title>{{ navText('Admin') }}</v-list-item-title>
       </v-list-item>
     </v-list>
     <template v-slot:append>
@@ -130,6 +130,7 @@ export default {
       return process.env.VUE_APP_DOCS_URL
     },
     ...mapGetters({
+      navText: 'i18n/navigation',
       demoMode: 'app/demoMode',
       user: 'user/userInfo',
       demoScene: 'scene/demoScene',

@@ -1,0 +1,64 @@
+{
+  "appName": "Administrador de Tierras Virtuales",
+  "welcome": "Bienvenido",
+  "login": {
+    "title": "Iniciar sesión",
+    "username": "Nombre de usuario",
+    "password": "Contraseña",
+    "submit": "Enviar",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "button": "Iniciar sesión"
+  },
+  "home": {
+    "title": "Inicio",
+    "description": "¡Bienvenido a Administrador de Tierras Virtuales!",
+    "tiles": {
+      "info1": "Texto informativo para el mosaico 1",
+      "info2": "Texto informativo para el mosaico 2",
+      "info3": "Texto informativo para el mosaico 3",
+      "info4": "Texto informativo para el mosaico 4"
+    }
+  },
+  "navigation": {
+    "scenes": "Escenas",
+    "events": "Eventos",
+    "giveaways": "Sorteos",
+    "docs": "Documentos",
+    "mediaLibrary": "Biblioteca de Medios",
+    "userProfile": "Perfil de Usuario",
+    "logout": "Cerrar sesión"
+  },
+  "scenes": {
+    "title": "Escenas",
+    "videos": "Videos",
+    "images": "Imágenes",
+    "models3D": "Modelos 3D",
+    "sounds": "Sonidos",
+    "widgets": "Widgets",
+    "presets": "Preajustes",
+    "claimPoints": "Puntos de Reclamo",
+    "settings": "Configuraciones",
+    "configurations": "Configuraciones",
+    "instances": "Instancias"
+  },
+  "analytics": {
+    "title": "Analíticas"
+  },
+  "events": {
+    "title": "Eventos"
+  },
+  "giveaways": {
+    "title": "Sorteos",
+    "items": "Elementos de Sorteo"
+  },
+  "userProfile": {
+    "title": "Perfil de Usuario"
+  },
+  "docs": {
+    "title": "Documentación"
+  },
+  "errors": {
+    "requiredField": "Este campo es obligatorio",
+    "invalidEmail": "Por favor, introduce una dirección de correo electrónico válida"
+  }
+}

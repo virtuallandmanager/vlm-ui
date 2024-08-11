@@ -1,0 +1,135 @@
+{
+  "code": "en-US",
+  "name": "English (United States)",
+  "flag": "us",
+  "translations": {
+    "appName": "Virtual Land Manager",
+    "welcome": "Welcome",
+    "login": {
+      "title": "Login",
+      "username": "Username",
+      "password": "Password",
+      "submit": "Submit",
+      "connectWallet": "Connect Wallet",
+      "passkey": "Passkey",
+      "forgotPassword": "Forgot Password?",
+      "button": "Login"
+    },
+    "home": {
+      "title": "Home",
+      "tagline": "Building Virtual Visions",
+      "description": "Welcome to Virtual Land Manager!",
+      "logo": "VLM-Logo.svg",
+      "tiles": [
+        {
+          "title": "CROSS-METAVERSE SCENE MANGEMENT"
+        },
+        { "title": "SCENE ANALYTICS" },
+        {
+          "title": "REAL-TIME SCENE MANAGEMENT"
+        },
+        { "title": "SCENE MODERATION TOOLS" },
+        { "title": "CUSTOMIZED CONTROLS" },
+        { "title": "EVENT GIVEAWAYS" }
+      ]
+    },
+    "navigation": {
+      "admin": "Admin Panel",
+      "scenes": "Scenes",
+      "events": "Events",
+      "giveaways": "Giveaways",
+      "docs": "Docs",
+      "mediaLibrary": "Media Library",
+      "userProfile": "User Profile",
+      "logout": "Log Out"
+    },
+    "scenes": {
+      "title": "Scenes",
+      "videos": "Videos",
+      "images": "Images",
+      "models": "Models",
+      "sounds": "Sounds",
+      "widgets": "Widgets",
+      "presets": "Presets",
+      "claimPoints": "Claim Points",
+      "settings": "Settings",
+      "configurations": "Configurations",
+      "instances": "Instances"
+    },
+    "analytics": {
+      "title": "Analytics"
+    },
+    "events": {
+      "title": "Events"
+    },
+    "giveaways": {
+      "title": "Giveaways",
+      "items": "Giveaway Items"
+    },
+    "userProfile": {
+      "title": "User Profile",
+      "email": "Email",
+      "phone": "Phone Number",
+      "smsPhoneNumber": "SMS Phone Number",
+      "address": "Address",
+      "city": "City",
+      "state": "State",
+      "zip": "Zip",
+      "country": "Country",
+      "save": "Save"
+    },
+    "docs": {
+      "title": "Documentation"
+    },
+    "errors": {
+      "requiredField": "This field is required",
+      "invalidEmail": "Please enter a valid email address"
+    },
+    "actions": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "continue": "Continue",
+      "revert": "Revert",
+      "send": "Send",
+      "add": "Add",
+      "deduct": "Deduct",
+      "remove": "Remove",
+      "delete": "Delete",
+      "edit": "Edit",
+      "update": "Update",
+      "create": "Create",
+      "view": "View",
+      "search": "Search",
+      "filter": "Filter",
+      "sort": "Sort",
+      "submit": "Submit",
+      "reset": "Reset",
+      "close": "Close",
+      "open": "Open",
+      "upload": "Upload",
+      "download": "Download",
+      "refresh": "Refresh",
+      "retry": "Retry",
+      "confirm": "Confirm",
+      "approve": "Approve",
+      "decline": "Decline",
+      "yes": "Yes",
+      "no": "No",
+      "ok": "OK",
+      "next": "Next",
+      "previous": "Previous",
+      "back": "Back",
+      "home": "Home",
+      "login": "Login",
+      "logout": "Log Out",
+      "register": "Register",
+      "signUp": "Sign Up",
+      "signIn": "Sign In",
+      "explore": "Explore",
+      "details": "Details",
+      "info": "Info",
+      "help": "Help",
+      "settings": "Settings"
+    }
+  }
+}

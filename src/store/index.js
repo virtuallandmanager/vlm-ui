@@ -11,6 +11,7 @@ import dialog from './modules/dialog'
 import event from './modules/event'
 import feature from './modules/feature'
 import giveaway from './modules/giveaway'
+import i18n from './modules/i18n'
 import logs from './modules/logs'
 import media from './modules/media'
 import scene from './modules/scene'
@@ -34,6 +35,7 @@ export default new Vuex.Store({
     event,
     feature,
     giveaway,
+    i18n,
     logs,
     media,
     scene,

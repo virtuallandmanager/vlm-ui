@@ -3,7 +3,7 @@
     <v-row>
       <v-col>
         <v-img src="@/assets/VLM-Logo-Color.svg" max-width="25vw" class="mx-auto logo" />
-        <div class="font-weight-black text-h4 text-center">Building Virtual Visions</div>
+        <div class="font-weight-black text-h4 text-center">{{ localText('Tagline') }}</div>
       </v-col>
     </v-row>
     <v-row>
@@ -121,7 +121,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import store from '../store'
 
 export default {
@@ -134,6 +134,9 @@ export default {
     } else {
       next() // Continue rendering the component
     }
+  },
+  computed: {
+    ...mapGetters({ localText: 'i18n/home' }),
   },
   methods: {
     ...mapActions({ connect: 'auth/connectWallet' }),

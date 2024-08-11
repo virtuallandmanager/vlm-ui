@@ -228,6 +228,7 @@ export default {
       }
 
       await Promise.all([
+        dispatch('i18n/setLocale', user.locale || 'en-us', { root: true }),
         dispatch('scene/getSceneCards', null, { root: true }),
         dispatch('balances/getUserBalances', user, { root: true }),
         dispatch('event/getEvents', user, { root: true }),

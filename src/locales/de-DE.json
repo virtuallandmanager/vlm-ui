@@ -1,0 +1,64 @@
+{
+  "appName": "Virtueller Land Manager",
+  "welcome": "Willkommen",
+  "login": {
+    "title": "Anmeldung",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "submit": "Absenden",
+    "forgotPassword": "Passwort vergessen?",
+    "button": "Anmelden"
+  },
+  "home": {
+    "title": "Startseite",
+    "description": "Willkommen bei Virtueller Land Manager!",
+    "tiles": {
+      "info1": "Informationstext für Kachel 1",
+      "info2": "Informationstext für Kachel 2",
+      "info3": "Informationstext für Kachel 3",
+      "info4": "Informationstext für Kachel 4"
+    }
+  },
+  "navigation": {
+    "scenes": "Szenen",
+    "events": "Veranstaltungen",
+    "giveaways": "Geschenke",
+    "docs": "Dokumente",
+    "mediaLibrary": "Medienbibliothek",
+    "userProfile": "Benutzerprofil",
+    "logout": "Abmelden"
+  },
+  "scenes": {
+    "title": "Szenen",
+    "videos": "Videos",
+    "images": "Bilder",
+    "models3D": "3D-Modelle",
+    "sounds": "Geräusche",
+    "widgets": "Widgets",
+    "presets": "Voreinstellungen",
+    "claimPoints": "Anspruchspunkte",
+    "settings": "Einstellungen",
+    "configurations": "Konfigurationen",
+    "instances": "Instanzen"
+  },
+  "analytics": {
+    "title": "Analysen"
+  },
+  "events": {
+    "title": "Veranstaltungen"
+  },
+  "giveaways": {
+    "title": "Geschenke",
+    "items": "Geschenkartikel"
+  },
+  "userProfile": {
+    "title": "Benutzerprofil"
+  },
+  "docs": {
+    "title": "Dokumentation"
+  },
+  "errors": {
+    "requiredField": "Dieses Feld ist erforderlich",
+    "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein"
+  }
+}
