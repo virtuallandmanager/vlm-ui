@@ -122,7 +122,7 @@ export default {
       return state.activeScene
     },
     activeSceneHosts: (state) => {
-      return state.activeSceneHosts
+      return state.activeSceneHosts.filter((host, index, self) => index === self.findIndex((t) => t.id === host.id))
     },
     activeSceneVisitors: (state) => {
       return state.activeSceneVisitors
@@ -134,7 +134,7 @@ export default {
       return state.sessionActionDuration
     },
     isDemoScene: (state) => {
-      return state.activeScene?.sk == '00000000-0000-0000-0000-000000000000'
+      return state.activeScene?.sk == '00000000-0000-0000-0000-000000000000' || state.activeScene?.sk == 'demo'
     },
     activePreset: (state) => {
       const activePresetId = state.activeScene?.scenePreset,
@@ -200,8 +200,8 @@ export default {
     },
     sceneList: (state, getters, rootState, rootGetters) =>
       !rootGetters['user/userInfo']?.hideDemoScene
-        ? Object.values(state.userSceneCache)
-        : Object.values(state.userSceneCache).filter((scene) => scene.sk != '00000000-0000-0000-0000-000000000000'),
+        ? Object.values(state.userSceneCache).sort((a) => (a.sk == 'demo' || a.sk == '00000000-0000-0000-0000-000000000000' ? -1 : 1))
+        : Object.values(state.userSceneCache).filter((scene) => scene.sk != '00000000-0000-0000-0000-000000000000' && scene.sk != 'demo'),
     sharedSceneList: (state) => Object.values(state.sharedSceneCache),
     sceneListSelect: (state) => Object.values(state.userSceneCache).map((scene) => ({ text: scene.name, value: scene.sk })),
     connected: (state) => {
@@ -574,6 +574,11 @@ export default {
       } catch (error) {
         dispatch('banner/showError', { message: error || `Could not delete the scene.` }, { root: true })
       }
+    },
+    async hideDemoScene({ dispatch, rootGetters }) {
+      const userInfo = rootGetters['user/userInfo']
+      await dispatch('user/updateUserInfo', { userInfo: { ...userInfo, hideDemoScene: true } }, { root: true })
+      dispatch('banner/showSuccess', { message: `Hiding demo scene. You can unhide it from your User Profile.` }, { root: true })
     },
     // END SCENE C/U/D //
 

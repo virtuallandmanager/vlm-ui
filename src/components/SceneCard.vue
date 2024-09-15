@@ -32,12 +32,20 @@
                     <v-list-item-title>Leave Scene</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item link @click="openConfirmDeleteDialog" v-if="!shared" class="d-flex align-center">
+                <v-list-item link @click="openConfirmDeleteDialog" v-if="!shared && !isDemoScene" class="d-flex align-center">
                   <v-list-item-icon class="mx-0">
                     <v-icon small>mdi-trash-can</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content class="pa-0 ma-0">
                     <v-list-item-title>Delete Scene</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item link @click="hideDemoScene" v-if="isDemoScene" class="d-flex align-center">
+                  <v-list-item-icon class="mx-0">
+                    <v-icon small>mdi-eye-off</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content class="pa-0 ma-0">
+                    <v-list-item-title>Hide Demo Scene</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -100,6 +108,7 @@
 
 <script>
 import placeholderImage from '@/assets/placeholder.png'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: {},
@@ -112,6 +121,12 @@ export default {
     shared: Boolean,
   },
   computed: {
+    ...mapGetters({
+      userInfo: 'user/userInfo',
+    }),
+    isDemoScene() {
+      return this.scene?.sk === 'demo' || this.scene?.sk === '00000000-0000-0000-0000-000000000000'
+    },
     sceneImgPlaceholder() {
       return placeholderImage
     },
@@ -146,6 +161,10 @@ export default {
     },
   },
   methods: {
+    ...mapActions({
+      hideDemoScene: 'scene/hideDemoScene',
+      showSuccess: 'banner/showSuccess',
+    }),
     openConfirmDeleteDialog() {
       this.$emit('confirmDelete', this.scene)
     },

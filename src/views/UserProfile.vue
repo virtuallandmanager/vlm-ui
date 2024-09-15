@@ -13,7 +13,7 @@
               </v-avatar>
               <v-btn @click="onAvatarClick" class="mt-2">Change Avatar</v-btn>
               <input type="file" ref="fileInput" accept="image/*" style="display: none" @change="onFileSelected" />
-              <div class="text-h6 mt-4">Badges</div>
+              <div class="text-h6 mt-4" v-if="specialUserRoles?.length">Badges</div>
               <div v-if="specialUserRoles?.length">
                 <Badge icon="mdi-weather-sunset" title="Early Access" description="Thanks for being an early adopter!" />
               </div>
@@ -129,7 +129,7 @@ export default {
     },
     formattedRegisterDate() {
       if (!this.userInfo.registeredAt) return ''
-      return new DateTime.fromMillis(this.userInfo.registeredAt).toLocaleString()
+      return new DateTime.fromSeconds(this.userInfo.registeredAt).toLocaleString()
     },
     orgAdmin() {
       return this.userRoles[4]
