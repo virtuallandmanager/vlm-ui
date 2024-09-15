@@ -59,7 +59,7 @@
                   hint="Enables use of advanced developer features and custom SDK implementation"
                   persistent-hint
                   v-model="userRoles[2]"
-                  @change="saveAndContinue"
+                  @change="enableAdvancedUserRole"
                 ></v-switch>
               </div>
               <div class="text-h6">Demo Features</div>
@@ -165,6 +165,10 @@ export default {
         console.log(error)
         this.showError({ message: error, timeout: 4000 })
       }
+    },
+    enableAdvancedUserRole() {
+      this.newUserRoles = this.userRoles.map((role, i) => (i == 2 ? !role : role))
+      this.saveAndContinue()
     },
     validateDisplayName() {
       if (!this.userInfo?.displayName) {
