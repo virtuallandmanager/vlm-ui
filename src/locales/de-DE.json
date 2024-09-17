@@ -1,64 +1,138 @@
 {
-  "appName": "Virtueller Land Manager",
-  "welcome": "Willkommen",
-  "login": {
-    "title": "Anmeldung",
-    "username": "Benutzername",
-    "password": "Passwort",
-    "submit": "Absenden",
-    "forgotPassword": "Passwort vergessen?",
-    "button": "Anmelden"
-  },
-  "home": {
-    "title": "Startseite",
-    "description": "Willkommen bei Virtueller Land Manager!",
-    "tiles": {
-      "info1": "Informationstext für Kachel 1",
-      "info2": "Informationstext für Kachel 2",
-      "info3": "Informationstext für Kachel 3",
-      "info4": "Informationstext für Kachel 4"
+  "code": "de-DE",
+  "name": "Deutsch (Deutschland)",
+  "flag": "de",
+  "translations": {
+    "Virtual Land Manager": "Virtueller Landmanager",
+    "login": {
+      "Username": "Benutzername",
+      "Password": "Passwort",
+      "Submit": "Einreichen",
+      "Connect Wallet": "Wallet verbinden",
+      "Connecting": "Verbinden",
+      "Please Sign": "Bitte unterschreiben",
+      "Validating": "Überprüfung läuft",
+      "Passkey": "Schlüssel",
+      "Forgot Password": "Passwort vergessen?"
+    },
+    "home": {
+      "title": "Startseite",
+      "tagline": "Virtuelle Visionen erschaffen",
+      "description": "Willkommen beim Virtuellen Landmanager!",
+      "logo": "VLM-Logo.svg",
+      "tiles": [
+        {
+          "title": "SZENENVERWALTUNG ÜBER MEHRERE METAVERSE"
+        },
+        { "title": "SZENENANALYSE" },
+        {
+          "title": "ECHTZEIT SZENENVERWALTUNG"
+        },
+        { "title": "MODERATIONSWERKZEUGE FÜR SZENEN" },
+        { "title": "INDIVIDUELLE KONTROLLEN" },
+        { "title": "VERANSTALTUNGS-VERLOSUNGEN" }
+      ]
+    },
+    "navigation": {
+      "Admin Panel": "Admin-Panel",
+      "Scenes": "Szenen",
+      "Events": "Veranstaltungen",
+      "Giveaways": "Verlosungen",
+      "Docs": "Dokumentation",
+      "Media Library": "Medienbibliothek",
+      "User Profile": "Benutzerprofil",
+      "Log Out": "Abmelden"
+    },
+    "scene": {
+      "Scene": "Szene",
+      "Scenes": "Szenen",
+      "Videos": "Videos",
+      "Images": "Bilder",
+      "3D Models": "3D-Modelle",
+      "Sounds": "Geräusche",
+      "Widgets": "Widgets",
+      "Presets": "Voreinstellungen",
+      "Claim Points": "Anspruchspunkte",
+      "Settings": "Einstellungen",
+      "Configurations": "Konfigurationen",
+      "Instances": "Instanzen"
+    },
+    "analytics": {
+      "Analytics": "Analytik"
+    },
+    "events": {
+      "Event": "Veranstaltung",
+      "Events": "Veranstaltungen"
+    },
+    "giveaways": {
+      "Giveaway": "Verlosung",
+      "Giveaways": "Verlosungen",
+      "Giveaway Items": "Verlosungsartikel"
+    },
+    "userProfile": {
+      "User Profile": "Benutzerprofil",
+      "Email": "E-Mail",
+      "Phone": "Telefonnummer",
+      "SMS Phone Number": "SMS-Telefonnummer",
+      "Address": "Adresse",
+      "City": "Stadt",
+      "State": "Bundesland",
+      "Zip": "Postleitzahl",
+      "Country": "Land",
+      "Save": "Speichern"
+    },
+    "docs": {
+      "Documentation": "Dokumentation"
+    },
+    "errors": {
+      "required": "Dieses Feld ist erforderlich",
+      "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein"
+    },
+    "actions": {
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "continue": "Fortfahren",
+      "revert": "Zurücksetzen",
+      "send": "Senden",
+      "add": "Hinzufügen",
+      "deduct": "Abziehen",
+      "remove": "Entfernen",
+      "delete": "Löschen",
+      "edit": "Bearbeiten",
+      "update": "Aktualisieren",
+      "create": "Erstellen",
+      "view": "Ansehen",
+      "search": "Suchen",
+      "filter": "Filtern",
+      "sort": "Sortieren",
+      "submit": "Einreichen",
+      "reset": "Zurücksetzen",
+      "close": "Schließen",
+      "open": "Öffnen",
+      "upload": "Hochladen",
+      "download": "Herunterladen",
+      "refresh": "Aktualisieren",
+      "retry": "Erneut versuchen",
+      "confirm": "Bestätigen",
+      "approve": "Genehmigen",
+      "decline": "Ablehnen",
+      "yes": "Ja",
+      "no": "Nein",
+      "ok": "OK",
+      "next": "Weiter",
+      "previous": "Zurück",
+      "back": "Zurück",
+      "home": "Startseite",
+      "login": "Anmelden",
+      "logout": "Abmelden",
+      "register": "Registrieren",
+      "signUp": "Registrieren",
+      "signIn": "Anmelden",
+      "explore": "Erkunden",
+      "details": "Details",
+      "info": "Information",
+      "help": "Hilfe",
+      "settings": "Einstellungen"
     }
-  },
-  "navigation": {
-    "scenes": "Szenen",
-    "events": "Veranstaltungen",
-    "giveaways": "Geschenke",
-    "docs": "Dokumente",
-    "mediaLibrary": "Medienbibliothek",
-    "userProfile": "Benutzerprofil",
-    "logout": "Abmelden"
-  },
-  "scenes": {
-    "title": "Szenen",
-    "videos": "Videos",
-    "images": "Bilder",
-    "models3D": "3D-Modelle",
-    "sounds": "Geräusche",
-    "widgets": "Widgets",
-    "presets": "Voreinstellungen",
-    "claimPoints": "Anspruchspunkte",
-    "settings": "Einstellungen",
-    "configurations": "Konfigurationen",
-    "instances": "Instanzen"
-  },
-  "analytics": {
-    "title": "Analysen"
-  },
-  "events": {
-    "title": "Veranstaltungen"
-  },
-  "giveaways": {
-    "title": "Geschenke",
-    "items": "Geschenkartikel"
-  },
-  "userProfile": {
-    "title": "Benutzerprofil"
-  },
-  "docs": {
-    "title": "Dokumentation"
-  },
-  "errors": {
-    "requiredField": "Dieses Feld ist erforderlich",
-    "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein"
   }
 }

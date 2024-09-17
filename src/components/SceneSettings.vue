@@ -3,57 +3,57 @@
     <user-invite-dialog :value="userInviteDialog" @input="toggleInviteDialog" />
     <v-dialog v-model="confirmLeaveSceneDialog" width="400" persistent>
       <v-card>
-        <v-card-title class="text-h5"> Leave Scene </v-card-title>
+        <v-card-title class="text-h5"> {{ localeText('Leave Scene') }} </v-card-title>
         <v-card-text class="text-center">
           <p>
-            Are you sure you want to leave <strong>{{ scene?.name || 'this shared scene' }}</strong
+            {{ localeText('leaveSceneConfirm') }} <strong>{{ scene?.name || localeText('this shared scene') }}</strong
             >?
           </p>
-          <p>{{ scene?.ownerName || 'The scene owner' }} will have to send a new invite for you to collaborate on this scene again.</p>
+          <p>{{ scene?.ownerName || localeText('The scene owner') }} {{ localeText('newInviteNeededText') }}</p>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="confirmLeaveScene"> Leave </v-btn>
-          <v-btn color="grey" text @click="confirmLeaveSceneDialog = false"> Cancel </v-btn>
+          <v-btn color="primary" text @click="confirmLeaveScene"> {{ localeAction('leave') }} </v-btn>
+          <v-btn color="grey" text @click="confirmLeaveSceneDialog = false"> {{ localeAction('cancel') }} </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
     <v-dialog v-model="confirmDeleteSceneDialog" width="400" persistent>
       <v-card>
-        <v-card-title class="text-h5"> Delete Scene </v-card-title>
-        <v-card-text class="text-center"
-          >Are you sure you want to delete <strong>{{ scene?.name || 'this scene' }}</strong
-          >?</v-card-text
-        >
+        <v-card-title class="text-h5"> {{ localeText('Delete Scene') }} </v-card-title>
+        <v-card-text class="text-center">
+          {{ localeText('leaveSceneConfirm') }} <strong>{{ scene?.name || localeText('this shared scene') }}</strong
+          >?
+        </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="confirmDeleteScene"> Delete </v-btn>
-          <v-btn color="grey" text @click="confirmDeleteSceneDialog = false"> Cancel </v-btn>
+          <v-btn color="primary" text @click="confirmDeleteScene"> {{ localeAction('delete') }} </v-btn>
+          <v-btn color="grey" text @click="confirmDeleteSceneDialog = false"> {{ localeAction('cancel') }} </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
     <v-row>
       <v-col no-gutters>
-        <div class="text-h5 mb-4">Scene Settings</div>
+        <div class="text-h5 mb-4">{{ localeText('Scene Settings') }}</div>
       </v-col>
       <v-col class="d-flex justify-end" v-if="!isDemoScene">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-chip class="mr-4" v-bind="attrs" v-on="on" @click="copySceneId">
-              <v-icon small class="mr-1">mdi-content-copy</v-icon>Scene ID: {{ scene.sk }}
+              <v-icon small class="mr-1">mdi-content-copy</v-icon>{{ localeText('Scene ID') }}: {{ scene.sk }}
             </v-chip>
           </template>
-          <span>Copy Scene ID</span>
+          <span>{{ localeText('Copy Scene ID') }}</span>
         </v-tooltip>
 
-        <v-btn color="primary" @click="showSceneSetup"><v-icon small class="mr-2">mdi-map</v-icon>Scene Setup</v-btn>
+        <v-btn color="primary" @click="showSceneSetup"><v-icon small class="mr-2">mdi-map</v-icon>{{ localeText('Scene Setup') }}</v-btn>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-text-field label="Scene Name" outlined v-model="scene.name" @change="updateName" :disabled="isDemoScene" hide-details />
+        <v-text-field :label="localeText('Scene Name')" outlined v-model="scene.name" @change="updateName" :disabled="isDemoScene" hide-details />
         <!-- <div class="text-h5 mb-4">Scene Image</div>
         <v-img :src="scene.imageSrc" v-if="scene.imageSrc" />
         <v-btn :src="scene.imageSrc" v-if="!scene.imageSrc">
@@ -65,19 +65,19 @@
     <v-row>
       <v-divider class="my-2" />
     </v-row>
-    <v-row>
+    <v-row v-if="!isDemoScene">
       <v-col sm="12">
-        <div class="text-h6">Shared Access</div>
+        <div class="text-h6">{{ localeText('Shared Access') }}</div>
+      </v-col>
+      <v-col sm="12">
+        <v-switch v-model="adminAccess" :label="localeText('Enable VLM Admin Access')" @change="toggleAdminAccess" dense hide-details />
       </v-col>
       <v-col sm="12" v-if="!isDemoScene">
-        <v-switch v-if="!isDemoScene" v-model="adminAccess" label="Enable VLM Admin Access" @change="toggleAdminAccess" dense hide-details />
-      </v-col>
-      <v-col sm="12" v-if="!isDemoScene">
-        <div class="text-body ml-2 mb-4 grey--text">No Other Users Have Access</div>
-        <div class="text-body mb-4">Invite A User To Collaborate:</div>
+        <div class="text-body ml-2 mb-4 grey--text">{{ localeText('noUserList') }}</div>
+        <div class="text-body mb-4">{{ localeText('inviteUserText') }}</div>
         <div class="d-flex align-center">
           <v-btn color="primary" @click="userInviteDialog = true" class="ml-4"
-            ><v-icon small class="mr-2">mdi-paper-airplane</v-icon>Send Invite</v-btn
+            ><v-icon small class="mr-2">mdi-paper-airplane</v-icon>{{ localeText('Send Invite') }}</v-btn
           >
         </div>
       </v-col>
@@ -88,13 +88,13 @@
     <div v-if="isSharedScene" class="d-flex pt-4">
       <v-spacer></v-spacer>
       <v-btn color="error" outlined @click="openLeaveSceneDialog(scene)" v-if="!isDemoScene">
-        <v-icon small class="mr-2">mdi-hand-wave</v-icon>Leave Scene
+        <v-icon small class="mr-2">mdi-hand-wave</v-icon>{{ localeText('Leave Scene') }}
       </v-btn>
     </div>
     <div v-if="!isSharedScene" class="d-flex pt-4">
       <v-spacer></v-spacer>
       <v-btn color="error" outlined @click="openDeleteSceneDialog(scene)" v-if="!isDemoScene">
-        <v-icon small class="mr-2">mdi-delete</v-icon>Delete Scene
+        <v-icon small class="mr-2">mdi-delete</v-icon>{{ localeText('Delete Scene') }}
       </v-btn>
     </div>
   </v-container>
@@ -123,6 +123,8 @@ export default {
       vlmAdminAccess: 'scene/vlmAdminAccess',
       isDemoScene: 'scene/isDemoScene',
       sharedSceneList: 'scene/sharedSceneList',
+      localeText: 'i18n/sceneSettings',
+      localeAction: 'i18n/actions',
     }),
     isSharedScene() {
       return this.sharedSceneList.map((scene) => scene.sk).includes(this.scene.sk)

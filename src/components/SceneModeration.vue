@@ -2,37 +2,37 @@
   <v-container class="py-6 mx-auto">
     <v-row>
       <v-col no-gutters>
-        <div class="text-h4">Moderation</div>
+        <div class="text-h4">{{ localeText('Moderation') }}</div>
       </v-col>
     </v-row>
     <v-row class="d-flex">
       <v-col no-gutters>
-        <h1 class="text-h6">Moderator Message</h1>
+        <h1 class="text-h6">{{ localeText('Moderator Message') }}</h1>
       </v-col>
     </v-row>
     <v-row>
       <v-col class="flex-grow-1">
-        <v-select label="Font Color" :items="fontColors" v-model="messageColor"></v-select>
+        <v-select :label="localeText('Font Color')" :items="fontColors" v-model="messageColor"></v-select>
       </v-col>
       <v-col class="flex-grow-1">
-        <v-select label="Font Size" :items="fontSizes" v-model="messageFontSize"></v-select>
+        <v-select :label="localeText('Font Size')" :items="fontSizes" v-model="messageFontSize"></v-select>
       </v-col>
       <v-col class="flex-grow-1">
-        <v-text-field label="Display Time (Seconds)" v-model="messageDelay" type="number"></v-text-field>
+        <v-text-field :label="localeText('Display Time')" v-model="messageDelay" type="number"></v-text-field>
       </v-col>
     </v-row>
     <v-row>
       <v-col class="flex-grow-1">
-        <v-text-field label="Message" placeholder="Hello World" v-model="messageText"></v-text-field>
+        <v-text-field :label="localeText('Message')" :placeholder="localeText('Hello World')" v-model="messageText"></v-text-field>
       </v-col>
       <v-col class="flex-grow-0">
-        <v-btn tile color="primary" @click="sendMessage">Send Message</v-btn>
+        <v-btn tile color="primary" @click="sendMessage">{{ localeText('Send Message') }}</v-btn>
       </v-col>
     </v-row>
     <div>
       <v-row>
         <v-col class="col-3" no-gutters>
-          <h1 class="text-h6 white--text">Wearables</h1>
+          <h1 class="text-h6 white--text">{{ localeText('Wearables') }}</h1>
         </v-col>
       </v-row>
       <v-row>
@@ -48,7 +48,7 @@
         </v-col>
       </v-row>
       <v-row v-if="moderationSettings.banCertainWearables" class="grey darken-5">
-        <v-col class="text-subtitle-1 white--text"> Wearables Banned From Scene </v-col>
+        <v-col class="text-subtitle-1 white--text"> {{ localeText('Wearables Banned From Scene') }} </v-col>
       </v-row>
       <v-row v-if="moderationSettings.banCertainWearables">
         <v-col>
@@ -68,22 +68,22 @@
           </v-row>
           <v-row>
             <v-col>
-              <v-btn @click="addBannedItem()"><v-icon class="mr-1">mdi-plus</v-icon>Item</v-btn>
+              <v-btn @click="addBannedItem()"><v-icon class="mr-1">mdi-plus</v-icon>{{ localeText('Item') }}</v-btn>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
       <v-row v-if="moderationSettings.allowCertainWearables" class="grey darken-5">
-        <v-col class="text-subtitle-1 white--text"> Wearables Allowed In Scene </v-col>
+        <v-col class="text-subtitle-1 white--text"> {{ localeText('Wearables Allowed In Scene') }} </v-col>
       </v-row>
       <v-row v-if="moderationSettings.allowCertainWearables">
         <v-col>
           <v-row v-for="(item, i) in moderationSettings.allowedWearables" :key="i" dense>
             <v-col cols="7" md="8" sm="9" xs="4">
-              <v-text-field label="Contract Address" dense v-model="item.contractAddress" hide-details="auto"></v-text-field>
+              <v-text-field :label="localeText('Contract Address')" dense v-model="item.contractAddress" hide-details="auto"></v-text-field>
             </v-col>
             <v-col cols="4" md="3" sm="2" xs="6">
-              <v-text-field label="Item ID" dense v-model="item.itemId" hide-details="auto"></v-text-field>
+              <v-text-field :label="localeText('Item ID')" dense v-model="item.itemId" hide-details="auto"></v-text-field>
             </v-col>
             <v-spacer></v-spacer>
             <v-col cols="1" sm="1" xs="2" class="text-right">
@@ -101,29 +101,41 @@
       </v-row>
       <v-row class="mx-n3">
         <v-col no-gutters>
-          <h1 class="text-h6 white--text">Visitors</h1>
+          <h1 class="text-h6 white--text">{{ localeText('Visitors') }}</h1>
         </v-col>
       </v-row>
       <v-row>
         <v-col>
-          <v-switch v-model="moderationSettings.banCertainUsers" @change="updateModerationSettings" label="Ban Certain People"></v-switch>
+          <v-switch
+            v-model="moderationSettings.banCertainUsers"
+            @change="updateModerationSettings"
+            :label="localeText('Ban Certain People')"
+          ></v-switch>
         </v-col>
         <v-col>
-          <v-switch v-model="moderationSettings.allowCertainUsers" @change="updateModerationSettings" label="Only Allow Certain People"></v-switch>
+          <v-switch
+            v-model="moderationSettings.allowCertainUsers"
+            @change="updateModerationSettings"
+            :label="localeText('Only Allow Certain People')"
+          ></v-switch>
         </v-col>
         <v-col>
-          <v-switch v-model="moderationSettings.allowWeb3Only" @change="updateModerationSettings" label="Only Allow Web3 Accounts"></v-switch>
+          <v-switch
+            v-model="moderationSettings.allowWeb3Only"
+            @change="updateModerationSettings"
+            :label="localeText('Only Allow Web3 Accounts')"
+          ></v-switch>
         </v-col>
       </v-row>
       <v-row v-if="moderationSettings.banCertainUsers" class="grey darken-5">
-        <v-col class="text-subtitle-1 white--text"> People Banned From Scene </v-col>
+        <v-col class="text-subtitle-1 white--text"> {{ localeText('People Banned From Scene') }} </v-col>
       </v-row>
       <v-row v-if="moderationSettings.banCertainUsers">
         <v-col>
           <v-row v-for="(item, i) in moderationSettings.bannedUsers" :key="i" dense>
             <v-col cols="7" md="8" sm="9" xs="4">
               <v-text-field
-                label="Wallet Address"
+                :label="localeText('Wallet Address')"
                 dense
                 v-model="item.connectedWallet"
                 hide-details="auto"
@@ -132,7 +144,7 @@
             </v-col>
             <v-col cols="4" md="3" sm="2" xs="6">
               <v-text-field
-                label="Display Name"
+                :label="localeText('Display Name')"
                 dense
                 v-model="item.displayName"
                 hide-details="auto"
@@ -151,13 +163,13 @@
           </v-row>
           <v-row>
             <v-col>
-              <v-btn @click="addBannedUser()">Add Banned Person</v-btn>
+              <v-btn @click="addBannedUser()">{{ localeText('Add Banned Person') }}</v-btn>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
       <v-row v-if="moderationSettings.allowCertainUsers" class="grey darken-5">
-        <v-col class="text-subtitle-1 white--text"> People Allowed In Scene </v-col>
+        <v-col class="text-subtitle-1 white--text"> {{ localeText('People Allowed In Scene') }} </v-col>
       </v-row>
       <v-row v-if="moderationSettings.allowCertainUsers">
         <v-col>
@@ -177,24 +189,24 @@
           </v-row>
           <v-row>
             <v-col>
-              <v-btn @click="addAllowedPerson()">Add Allowed Person</v-btn>
+              <v-btn @click="addAllowedPerson()">{{ localeText('Add Allowed Person') }}</v-btn>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
       <v-row class="mx-n3">
         <v-col no-gutters>
-          <h1 class="text-h6 white--text">Actions (Alpha)</h1>
+          <h1 class="text-h6 white--text">{{ localeText('Actions') }}</h1>
         </v-col>
       </v-row>
       <v-row>
         <v-col>
-          <div class="text-subtitle-1">Actions taken when visitor is banned or restricted:</div>
+          <div class="text-subtitle-1">{{ localeText('banActionsDescription') }}:</div>
           <v-select
             :items="banActions"
             v-model="moderationSettings.banActions"
             @change="updateModerationSettings"
-            label="Moderation Actions"
+            :label="localeText('Moderation Actions')"
             multiple
           ></v-select>
           <v-select
@@ -202,11 +214,11 @@
             :items="banWallTypes"
             v-model="moderationSettings.banWallType"
             @change="updateModerationSettings"
-            label="Wall Type"
+            :label="localeText('Wall Type')"
           ></v-select>
         </v-col>
         <v-col v-if="moderationSettings.allowCertainUsers">
-          <div class="text-subtitle-1">Actions taken when user is allowed:</div>
+          <div class="text-subtitle-1">{{ localeText('allowActionsDescription') }}</div>
           <!-- <v-select :items="allowActions" v-model="moderationSettings.allowActions" @change="updateModerationSettings"
             label="Gated Actions" multiple></v-select> -->
         </v-col>
@@ -277,6 +289,7 @@ export default {
       scene: 'scene/activeScene',
       isDemoScene: 'scene/isDemoScene',
       sceneModerationSettings: 'scene/sceneModerationSettings',
+      localeText: 'i18n/moderation',
     }),
   },
   methods: {

@@ -15,7 +15,7 @@
               {{ claimPoint.enabled ? "mdi-eye" : "mdi-eye-off" }}
             </v-icon>
           </template>
-          <span>Show/Hide Claim Point</span>
+          <span>{{ localeAction('show/hide') }} Claim Point</span>
         </v-tooltip>
       </v-btn>
       <v-btn icon dark @click.stop="openGiveawayDeleteDialog()">

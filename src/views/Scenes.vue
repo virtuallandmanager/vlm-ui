@@ -134,6 +134,7 @@ export default {
       scenes: 'scene/sceneList',
       sharedScenes: 'scene/sharedSceneList',
       loadingScene: 'scene/loadingScene',
+      localeText: 'i18n/scene'
     }),
     userInfo() {
       return store.state.user.userInfo

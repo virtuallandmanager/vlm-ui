@@ -5,15 +5,15 @@
       <v-img src="@/assets/VLM-Logo.svg" max-width="80" class="ml-2"></v-img>
       <v-btn v-if="!connected && !signing" color="primary" @click.stop="connectButton()" :loading="loadingAuth" :disabled="loadingAuth" fixed right>
         <v-icon class="mr-2">mdi-wallet</v-icon>
-        Connect Wallet
-        <template v-slot:loading><v-progress-circular indeterminate :size="15" class="mr-2" /> Connecting</template>
+        {{ localeText('Connect Wallet') }}
+        <template v-slot:loading><v-progress-circular indeterminate :size="15" class="mr-2" /> {{ localeText('Connecting') }}</template>
       </v-btn>
       <v-btn v-else-if="signing && signature" color="primary" @click.stop="connectButton()" :disabled="loadingAuth" fixed right>
         <v-progress-circular indeterminate :size="15" class="mr-2" />
-        Validating
+        {{ localeText('Validating') }}
       </v-btn>
       <v-btn v-else-if="signing && !signature" color="primary" @click.stop="connectButton()" :disabled="loadingAuth" fixed right>
-        <v-progress-circular indeterminate :size="15" class="mr-2" /> Please Sign
+        <v-progress-circular indeterminate :size="15" class="mr-2" />{{ localeText('Please Sign') }}
       </v-btn>
     </v-app-bar>
     <v-main>
@@ -39,15 +39,15 @@
             right
           >
             <v-icon class="mr-2">mdi-wallet</v-icon>
-            Connect Wallet
+            {{ localeText('Connect Wallet') }}
             <template v-slot:loading><v-progress-circular indeterminate :size="15" class="mr-2" /> Connecting</template>
           </v-btn>
           <v-btn v-else-if="signing && signature" color="primary" @click.stop="connectButton()" :disabled="loadingAuth" fixed right>
             <v-progress-circular indeterminate :size="15" class="mr-2" />
-            Validating
+            {{ localeText('Validating') }}
           </v-btn>
           <v-btn v-else-if="signing && !signature" color="primary" @click.stop="connectButton()" :disabled="loadingAuth" fixed right>
-            <v-progress-circular indeterminate :size="15" class="mr-2" /> Please Sign
+            <v-progress-circular indeterminate :size="15" class="mr-2" /> {{ localeText('Please Sign') }}
           </v-btn>
         </v-app-bar>
       </div>
@@ -71,6 +71,7 @@
           <v-icon v-else size="24px">{{ icon.icon }}</v-icon>
         </v-btn>
       </div>
+      <locale-selector />
       <bug-report-dialog v-if="showBugReport" v-model="showBugReport" />
     </v-footer>
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000" bottom center>
@@ -85,6 +86,7 @@ import { DateTime, Interval } from 'luxon'
 import Web3SigningDialog from './components/dialogs/Web3SigningDialog'
 import LeftNav from './components/LeftNav'
 import BugReportDialog from './components/dialogs/BugReportDialog'
+import LocaleSelector from './components/LocaleSelector'
 
 export default {
   name: 'App',
@@ -115,9 +117,11 @@ export default {
       },
     ],
   }),
-  components: { Web3SigningDialog, LeftNav, BugReportDialog },
+  components: { Web3SigningDialog, LeftNav, BugReportDialog, LocaleSelector },
   mounted() {
     this.setWindowSize()
+    const locale = this.getUserLocale()
+    this.setLocale(locale)
   },
   computed: {
     snackbar() {
@@ -154,6 +158,7 @@ export default {
       sigTokenExpires: 'auth/sigTokenExpires',
       signature: 'auth/signature',
       unregistered: 'user/unregistered',
+      localeText: 'i18n/login',
     }),
     ...mapState({
       signatureMessage: 'auth/signatureMessage',
@@ -189,6 +194,9 @@ export default {
       const mdAndUp = this.$vuetify.breakpoint.mdAndUp
       this.setNavDrawerState(mdAndUp)
     },
+    getUserLocale() {
+      return navigator.languages && navigator.languages.length ? navigator.languages[0] : navigator.language
+    },
     openBugReportDialog() {
       this.toggleBugReportDialog(true)
     },
@@ -198,6 +206,7 @@ export default {
       setNavDrawerState: 'app/setNavDrawerState',
       toggleBugReportDialog: 'logs/toggleBugReportDialog',
       disconnect: 'auth/disconnect',
+      setLocale: 'i18n/setLocale',
     }),
   },
 }

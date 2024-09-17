@@ -9,18 +9,18 @@
                 {{ sound.enabled && instance.enabled ? 'mdi-volume-high' : 'mdi-volume-variant-off' }}
               </v-icon>
             </template>
-            <span>Mute/Unmute</span>
+            <span>{{ localeText('Mute/Unmute') }}</span>
           </v-tooltip>
         </v-btn></span
       >
       <div class="d-inline-flex align-center pa-0 ma-0" v-if="editingName">
-        <v-text-field hide-details v-model="instance.name" label="Rename Instance"></v-text-field>
+        <v-text-field hide-details v-model="instance.name" :label="localeText('Rename Instance')"></v-text-field>
         <v-btn small icon @click="editInstanceName()">
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-icon small v-bind="attrs" v-on="on"> mdi-content-save </v-icon>
             </template>
-            <span>Save</span>
+            <span>{{ localeAction('save') }}</span>
           </v-tooltip>
         </v-btn>
         <v-btn small icon @click="cancelEditInstanceName()">
@@ -28,7 +28,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-icon small v-bind="attrs" v-on="on"> mdi-close </v-icon>
             </template>
-            <span>Cancel</span>
+            <span>{{ localeAction('cancel') }}</span>
           </v-tooltip>
         </v-btn>
       </div>
@@ -40,7 +40,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-rename </v-icon>
               </template>
-              <span>Rename</span>
+              <span>{{ localeAction('rename') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
@@ -50,7 +50,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-content-duplicate </v-icon>
               </template>
-              <span>Duplicate</span>
+              <span>{{ localeAction('duplicate') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
@@ -71,7 +71,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
               </template>
-              <span>Remove</span>
+              <span>{{ localeAction('remove') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
@@ -95,7 +95,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-axis-arrow </v-icon>
           </template>
-          <span>Transform</span>
+          <span> {{ localeAction('transform') }}</span>
         </v-tooltip>
       </v-btn>
 
@@ -114,7 +114,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
           </template>
-          <span>Instance Properties</span>
+          <span>{{ localeText('Instance Properties') }}</span>
         </v-tooltip>
       </v-btn>
     </div>
@@ -122,7 +122,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { EDialogType } from '../models/Dialog'
 import { SceneSound } from '../models/SceneSound'
 import { SceneSoundInstance } from '../models/SceneSoundInstance'
@@ -152,6 +152,10 @@ export default {
     editingName: false,
   }),
   computed: {
+    ...mapGetters({
+      localeAction: 'i18n/actions',
+      localeText: 'i18n/audio',
+    }),
     truncatedName() {
       const soundNameArr = this.sound && this.sound.name.split('')
       let noSpacesLength = 0

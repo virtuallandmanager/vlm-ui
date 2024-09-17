@@ -8,7 +8,7 @@
             <v-icon small>mdi-rename</v-icon>
           </v-btn>
         </template>
-        <span>Rename</span>
+        <span>{{ localeAction('rename') }}</span>
       </v-tooltip>
 
       <div class="text-h5" v-if="editingName">
@@ -36,7 +36,7 @@
                 {{ nft.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
               </v-icon>
             </template>
-            <span>Show/Hide All</span>
+            <span>{{ localeAction('show/hide all') }}</span>
           </v-tooltip>
         </v-btn>
         <input style="display: none" ref="replaceFileInput" type="file" accept=".png,.jpg,.jpeg" @change="replaceImage(nft, i)" />
@@ -45,7 +45,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-icon v-bind="attrs" v-on="on"> mdi-mouse </v-icon>
             </template>
-            <span>Default Click Action</span>
+            <span>{{ localeAction('default click action') }}</span>
           </v-tooltip>
         </v-btn>
         <v-btn icon dark @click.stop="openImagePropertiesDialog()">
@@ -99,7 +99,7 @@
 
 <script>
 import Vue from 'vue'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import NftInstanceCard from './NftInstanceCard'
 import { SceneNft } from '../models/SceneNft'
 import { SceneNftInstance } from '../models/SceneNftInstance'
@@ -140,6 +140,9 @@ export default {
     this.imageLink = this.nft.imageLink
   },
   computed: {
+    ...mapGetters({
+      localeAction: 'i18n/actions',
+    }),
     truncatedName() {
       const nftNameArr = this.nft && this.nft.name.split('')
       let noSpacesLength = 0

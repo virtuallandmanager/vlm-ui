@@ -221,10 +221,10 @@ export default {
       disconnectFromScene: 'auth/disconnectFromScene',
     }),
     getDateTime(timestamp) {
-      return DateTime.fromSeconds(timestamp).toLocaleString(DateTime.DATETIME_SHORT)
+      return DateTime.fromMillis(timestamp).toLocaleString(DateTime.DATETIME_SHORT)
     },
     relDateTime(timestamp) {
-      return DateTime.fromSeconds(timestamp).toRelative()
+      return DateTime.fromMillis(timestamp).toRelative()
     },
   },
 }

@@ -3,15 +3,15 @@
     <v-tabs v-model="mode" centered icons-and-text color="nav">
       <v-tabs-slider></v-tabs-slider>
       <v-tab href="#position">
-        Position
+        {{ localeAction('position') }}
         <v-icon>mdi-axis-arrow</v-icon>
       </v-tab>
       <v-tab href="#scale">
-        Scale
+        {{ localeAction('scale') }}
         <v-icon>mdi-resize</v-icon>
       </v-tab>
       <v-tab href="#rotation">
-        Rotation
+        {{ localeAction('rotation') }}
         <v-icon>mdi-rotate-360</v-icon>
       </v-tab>
     </v-tabs>
@@ -25,6 +25,7 @@
 
 <script>
 import XYZButtons from './XYZButtons.vue'
+import { mapGetters } from 'vuex'
 import Vue from 'vue'
 export default {
   components: { XYZButtons },
@@ -55,6 +56,11 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  computed: {
+    ...mapGetters({
+      localeAction: 'i18n/actions',
+    }),
   },
   methods: {
     onChange() {

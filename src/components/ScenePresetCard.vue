@@ -3,12 +3,12 @@
     <div class="d-flex pa-4 justify-space-between">
       <div class="info-section d-flex flex-column justify-start align-start">
         <div class="text-h5 white--text">{{ preset?.name }}</div>
-        <div v-if="preset?.createdAt">Created {{ createdDate(preset.createdAt) }}</div>
+        <div v-if="preset?.createdAt">{{ localeText('Created') }} {{ createdDate(preset.createdAt) }}</div>
         <div class="scene-element-tiles">
-          <v-btn text class="d-inline" v-if="preset.videos"><v-icon class="mr-2">mdi-television</v-icon> {{ preset.videos.length }}</v-btn>
-          <v-btn text class="d-inline" v-if="preset.images"
-            ><v-icon class="mr-2">mdi-image-frame</v-icon> {{ preset.images.length + preset.nfts.length }}</v-btn
-          >
+          <v-btn text class="d-inline" v-if="preset.videos"> <v-icon class="mr-2">mdi-television</v-icon> {{ preset.videos.length }} </v-btn>
+          <v-btn text class="d-inline" v-if="preset.images">
+            <v-icon class="mr-2">mdi-image-frame</v-icon> {{ preset.images.length + preset.nfts.length }}
+          </v-btn>
           <v-btn text class="d-inline" v-if="preset.sounds"><v-icon class="mr-2">mdi-speaker</v-icon> {{ preset.sounds.length }}</v-btn>
           <v-btn text class="d-inline" v-if="preset.widgets"><v-icon class="mr-2">mdi-palette</v-icon> {{ preset.widgets.length }}</v-btn>
         </div>
@@ -21,7 +21,7 @@
                 <v-icon small>mdi-rename</v-icon>
               </v-btn>
             </template>
-            <span>Rename Preset</span>
+            <span>{{ localeText('Rename Preset') }} </span>
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
@@ -29,7 +29,7 @@
                 <v-icon small>mdi-content-duplicate</v-icon>
               </v-btn>
             </template>
-            <span>Clone Preset</span>
+            <span>{{ localeText('Clone Preset') }} </span>
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
@@ -37,14 +37,14 @@
                 <v-icon small>mdi-trash-can</v-icon>
               </v-btn>
             </template>
-            <span>Delete Preset</span>
+            <span>{{ localeText('Delete Preset') }} </span>
           </v-tooltip>
         </div>
         <div class="text-right">
           <v-btn v-if="scene.scenePreset !== preset.sk" color="primary" block @click="() => changePreset(preset.sk)">
-            <v-icon class="mr-1">mdi-archive-sync</v-icon> APPLY</v-btn
+            <v-icon class="mr-1">mdi-archive-sync</v-icon> {{ localeText('Apply') }}</v-btn
           >
-          <v-btn disabled outlined v-else color="primary" block> <v-icon class="mr-1">mdi-archive-check</v-icon> ACTIVE</v-btn>
+          <v-btn disabled outlined v-else color="primary" block> <v-icon class="mr-1">mdi-archive-check</v-icon> {{ localeText('Active') }}</v-btn>
         </div>
         <div></div>
       </div>
@@ -71,7 +71,7 @@ export default {
     dialogCallback: () => {},
   }),
   computed: {
-    ...mapGetters({ scene: 'scene/activeScene' }),
+    ...mapGetters({ scene: 'scene/activeScene', localeText: 'i18n/scenePreset' }),
   },
   methods: {
     ...mapActions({
@@ -88,7 +88,7 @@ export default {
     showRenameDialog() {
       this.$emit('handleDialog', {
         show: true,
-        title: 'Rename Preset',
+        title: this.localeText('Rename Preset'),
         preset: this.preset,
         callback: (name) => this.updatePresetProperty({ preset: this.preset, property: 'name', value: name }),
       })
@@ -96,7 +96,7 @@ export default {
     showCloneDialog() {
       this.$emit('handleDialog', {
         show: true,
-        title: 'New Preset Name',
+        title: this.localeText('New Preset Name'),
         preset: { ...this.preset },
         callback: (name) => this.clonePreset({ ...this.preset, name }),
       })

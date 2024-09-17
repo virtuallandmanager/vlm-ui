@@ -10,7 +10,7 @@
                 {{ image.enabled && instance.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
               </v-icon>
             </template>
-            <span>Show/Hide</span>
+            <span>{{ localeAction('show/hide') }}</span>
           </v-tooltip>
         </v-btn></span
       >
@@ -41,7 +41,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-rename </v-icon>
               </template>
-              <span>Rename</span>
+              <span>{{ localeAction('rename') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
@@ -97,7 +97,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-axis-arrow </v-icon>
           </template>
-          <span>Transform</span>
+          <span> {{ localeAction('transform') }}</span>
         </v-tooltip>
       </v-btn>
       <v-btn
@@ -116,7 +116,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-mouse </v-icon>
           </template>
-          <span>Click Action</span>
+          <span>{{ localeAction('click action') }}</span>
         </v-tooltip>
       </v-btn>
       <v-btn
@@ -147,7 +147,7 @@ import Vue from 'vue'
 import { SceneImage } from '../models/SceneImage'
 import { SceneImageInstance } from '../models/SceneImageInstance'
 import QuickView from './QuickView.vue'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: { QuickView },
@@ -171,6 +171,9 @@ export default {
     editingName: false,
   }),
   computed: {
+    ...mapGetters({
+      localeAction: 'i18n/actions',
+    }),
     truncatedName() {
       const imageNameArr = this.image && this.image.name.split('')
       let noSpacesLength = 0

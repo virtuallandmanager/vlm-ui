@@ -4,7 +4,7 @@
       <v-card>
         <v-card-title class="text-h5">{{ dialogTitle }}</v-card-title>
         <v-card-text>
-          <v-text-field label="Preset Name" v-model="newPresetName" outlined hide-details></v-text-field>
+          <v-text-field :label="localeText('Preset Name')" v-model="newPresetName" outlined hide-details></v-text-field>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
@@ -12,15 +12,14 @@
           <v-btn color="primary" text @click="closePresetDialog">
             {{ buttonText }}
           </v-btn>
-          <v-btn color="grey darken-1" text @click="cancel"> Cancel </v-btn>
+          <v-btn color="grey darken-1" text @click="cancel"> {{ localeAction('cancel') }} </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <content-sub-panel :hasContent="!!presets?.length" loadingMessage="Loading presets...">
-      <template v-slot:no-content-header>No Presets Found</template>
+    <content-sub-panel :hasContent="!!presets?.length" :loadingMessage="localeText('Loading')">
+      <template v-slot:no-content-header>{{ localeText('NoData') }}</template>
       <template v-slot:no-content-text>
-        Hmmm... that's strange. Every scene starts with one preset, but yours seems to be missing!<br />
-        Please contact support and we'll get to the bottom of it.
+        {{ localeText('CTA') }}
       </template>
 
       <div v-for="(preset, i) in presets" :key="i" :class="i % 2 ? 'grey darken-4' : 'grey darken-3'">
@@ -32,7 +31,7 @@
         </div>
       </v-expand-transition>
       <div :class="presets?.length % 2 ? 'grey darken-4' : 'grey darken-3'" class="text-center pa-4">
-        <v-btn class="mx-2" @click="showAddPresetDialog"><v-icon class="mr-1">mdi-plus</v-icon> Empty Preset</v-btn>
+        <v-btn class="mx-2" @click="showAddPresetDialog"><v-icon class="mr-1">mdi-plus</v-icon> {{ localeText('Empty Preset') }}</v-btn>
       </div>
     </content-sub-panel>
   </div>
@@ -65,6 +64,8 @@ export default {
     ...mapGetters({
       scene: 'scene/activeScene',
       loadingPresetList: 'scene/loadingPresetList',
+      localeText: 'i18n/scenePreset',
+      localeAction: 'i18n/actions',
     }),
     presets() {
       return this.scene?.presets

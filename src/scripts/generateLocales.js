@@ -13,7 +13,7 @@ fs.readdir(localesDir, (err, files) => {
   }
 
   const locales = files
-    .filter((file) => path.extname(file) === '.json')
+    .filter((file) => path.extname(file) === '.json' && file !== 'locales.json')
     .map((file) => {
       const filePath = path.join(localesDir, file)
       const content = JSON.parse(fs.readFileSync(filePath, 'utf8'))

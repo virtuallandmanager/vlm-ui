@@ -15,6 +15,7 @@ import i18n from './modules/i18n'
 import logs from './modules/logs'
 import media from './modules/media'
 import scene from './modules/scene'
+import stream from './modules/stream'
 import moderation from './modules/moderation'
 import organization from './modules/organization'
 import user from './modules/user'
@@ -39,6 +40,7 @@ export default new Vuex.Store({
     logs,
     media,
     scene,
+    stream,
     moderation,
     organization,
     user,

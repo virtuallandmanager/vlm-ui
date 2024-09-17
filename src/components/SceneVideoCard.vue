@@ -10,7 +10,7 @@
             <v-icon small>mdi-rename</v-icon>
           </v-btn>
         </template>
-        <span>Rename</span>
+        <span>{{ tooltipText('rename') }}</span>
       </v-tooltip>
 
       <div class="text-h5 flex-grow-1" v-if="editingName">
@@ -25,7 +25,7 @@
           @click:append-outer="toggleEditMode"
           @blur="toggleEditMode"
           dense
-          @change="editSoundName()"
+          @change="updateVideoName()"
         ></v-text-field>
       </div>
     </div>
@@ -63,7 +63,7 @@
               {{ video.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
             </v-icon>
           </template>
-          <span>Show/Hide All</span>
+          <span>{{ video.enabled ? tooltipText('hideAll') : tooltipText('showAll') }}</span>
         </v-tooltip>
       </v-btn>
       <v-btn
@@ -80,7 +80,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-mouse </v-icon>
           </template>
-          <span>Click Action</span>
+          <span>{{ tooltipText('Click Action') }}</span>
         </v-tooltip>
       </v-btn>
       <v-btn
@@ -97,7 +97,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
           </template>
-          <span>Video Properties</span>
+          <span>{{ tooltipText('Video Properties') }}</span>
         </v-tooltip>
       </v-btn>
       <v-btn
@@ -114,7 +114,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
           </template>
-          <span>Remove Video Screen</span>
+          <span>{{ tooltipText('Remove') }}</span>
         </v-tooltip>
       </v-btn>
     </div>
@@ -124,14 +124,14 @@
       <div class="d-flex justify-space-between mt-2">
         <v-chip small label>Showing:</v-chip>
         <v-chip small label color="success" class="text-center" v-if="videoState && video.enableLiveStream">
-          <v-icon class="mr-1" x-small>mdi-video</v-icon>LIVE STREAM
+          <v-icon class="mr-1" x-small>mdi-video</v-icon>{{ localeText('Live Stream').toUpperCase() }}
         </v-chip>
         <v-chip small label class="text-center" v-if="video.offType == 0 && (!videoState || !video.enableLiveStream)"> NOTHING </v-chip>
         <v-chip small label color="primary" class="text-center" v-if="video.offType == 1 && (!videoState || !video.enableLiveStream)">
-          <v-icon class="mr-1" x-small>mdi-image-area</v-icon>OFF AIR IMAGE
+          <v-icon class="mr-1" x-small>mdi-image-area</v-icon>{{ localeText('Off Air Image').toUpperCase() }}
         </v-chip>
         <v-chip small label color="primary" class="text-center" v-if="video.offType == 2 && (!videoState || !video.enableLiveStream)">
-          <v-icon class="mr-1" x-small>mdi-playlist-play</v-icon>OFF AIR PLAYLIST
+          <v-icon class="mr-1" x-small>mdi-playlist-play</v-icon>{{ localeText('Off Air Playlist').toUpperCase() }}
         </v-chip>
       </div>
     </div>
@@ -153,7 +153,7 @@
             >
               <template v-slot:label>
                 <v-chip small class="text-button" :class="video.enableLiveStream ? 'red' : 'grey--text grey darken-2'">
-                  {{ video.enableLiveStream ? 'ON AIR' : 'OFF AIR' }}
+                  {{ video.enableLiveStream ? localeText('On Air').toUpperCase() : localeText('Off Air').toUpperCase() }}
                 </v-chip>
               </template>
             </v-switch>
@@ -172,11 +172,12 @@
             </v-text-field>
           </div>
           <div class="d-flex justify-center flex-column align-center">
-            <div class="text-label">Off Air Content</div>
+            <div class="text-label">{{ localeText('Off Air Content') }}</div>
             <v-btn-toggle mandatory v-model="video.offType" class="pb-4" @change="updateOffType">
-              <v-btn :value="0">None</v-btn>
-              <v-btn :value="2">Playlist</v-btn>
-              <v-btn :value="1">Image</v-btn>
+              <v-btn :value="0">{{ localeText('None') }}</v-btn>
+              <v-btn :value="2">{{ localeText('Playlist') }}</v-btn>
+              <v-btn :value="1">{{ localeText('Image') }}</v-btn>
+              <v-btn :value="3">{{ localeText('Community Channels') }}</v-btn>
             </v-btn-toggle>
           </div>
           <div>
@@ -243,7 +244,7 @@
 
 <script>
 import Vue from 'vue'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { SceneVideo } from '../models/SceneVideo'
 import { SceneVideoInstance } from '../models/SceneVideoInstance'
 import VideoStreamPlayer from './VideoStreamPlayer'
@@ -284,6 +285,11 @@ export default {
     this.showConfig = this.video.showConfig
   },
   computed: {
+    ...mapGetters({
+      localeText: 'i18n/videoScreens',
+      actionText: 'i18n/actions',
+      tooltipText: 'i18n/tooltips',
+    }),
     truncatedName() {
       const videoNameArr = this.video && this.video.name.split('')
       let noSpacesLength = 0

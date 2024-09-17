@@ -11,7 +11,7 @@
         <div class="text-h5" v-if="editingName">
           <v-text-field
             autofocus
-            label="Event Name"
+            :label="localeText('Event Name')"
             v-model="event.name"
             hide-details="auto"
             append-outer-icon="mdi-content-save"
@@ -22,7 +22,7 @@
         </div>
         <div>
           <v-select
-            label="Event Type"
+            :label="localeText('Event Type')"
             :items="eventTypes"
             hide-details="auto"
             v-model="event.type"
@@ -32,94 +32,45 @@
           </v-select>
         </div>
         <div>
-          <v-text-field
-            label="Event Id"
-            v-model="event.id"
-            hide-details="auto"
-            :disabled="locked"
-            @blur="editEvent()"
-          ></v-text-field>
+          <v-text-field label="Event Id" v-model="event.id" hide-details="auto" :disabled="locked" @blur="editEvent()"></v-text-field>
         </div>
         <div>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                icon
-                @click="toggleEventLock()"
-                v-bind="attrs"
-                v-on="on"
-              >
+              <v-btn icon @click="toggleEventLock()" v-bind="attrs" v-on="on">
                 <v-icon>{{ locked ? 'mdi-lock' : 'mdi-lock-open' }}</v-icon>
               </v-btn>
             </template>
-            <span>{{ locked ? 'Unlock' : 'Lock' }} Event Settings</span>
+            <span>{{ locked ? localeText('Unlock Event Settings') : localeText('Lock Event Settings') }}</span>
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                icon
-                @click="openDeleteDialog()"
-                v-bind="attrs"
-                v-on="on"
-              >
+              <v-btn icon @click="openDeleteDialog()" v-bind="attrs" v-on="on">
                 <v-icon>mdi-trash-can</v-icon>
               </v-btn>
             </template>
-            <span>Remove Event</span>
+            <span>{{ localeText('Remove Event') }}</span>
           </v-tooltip>
         </div>
       </div>
     </div>
     <div class="pa-4">
-      <v-switch
-        v-if="event.type == 0"
-        v-model="event.value"
-        hide-details
-        class="mt-0"
-        @change="editEvent()"
+      <v-switch v-if="event.type == 0" v-model="event.value" hide-details class="mt-0" @change="editEvent()"
         ><template v-slot:label>
           <div class="text-body">
-            {{ event.name }} is
-            <strong
-              :class="event.value ? 'green--text' : 'red--text'"
-              >{{ event.value ? 'Enabled' : 'Disabled' }}</strong
-            >
+            {{ event.name }}:
+            <strong :class="event.value ? 'green--text' : 'red--text'">{{ event.value ? localeText('Enabled') : localeText('Disabled') }}</strong>
           </div>
         </template></v-switch
       >
-      <v-text-field
-        v-if="event.type == 1"
-        v-model="event.value"
-        :label="`${event.name} Value`"
-        @change="editEvent()"
-      ></v-text-field>
+      <v-text-field v-if="event.type == 1" v-model="event.value" :label="`${event.name} Value`" @change="editEvent()"></v-text-field>
 
-      <div
-        class="d-flex align-center justify-space-between"
-        v-if="event.type == 2"
-      >
-        <v-select
-          :items="eventSelections"
-          v-model="event.value"
-          :label="`${event.name} State`"
-          hide-details="auto"
-          @change="editEvent()"
-        ></v-select>
-        <v-btn
-          class="ml-4"
-          :disabled="locked"
-          @click.stop="openEditSelectDialog"
-        >
-          Edit Selections
-        </v-btn>
+      <div class="d-flex align-center justify-space-between" v-if="event.type == 2">
+        <v-select :items="eventSelections" v-model="event.value" :label="`${event.name} State`" hide-details="auto" @change="editEvent()"></v-select>
+        <v-btn class="ml-4" :disabled="locked" @click.stop="openEditSelectDialog"> {{ localeText('Edit Selections') }} </v-btn>
       </div>
       <div class="d-flex justify-center">
-        <v-btn
-          v-if="event.type == 3"
-          color="green"
-          @click="triggerEvent()"
-          >Trigger {{ event.name }}</v-btn
-        >
+        <v-btn v-if="event.type == 3" color="green" @click="triggerEvent()">{{ localeText('Trigger') }} {{ event.name }}</v-btn>
       </div>
     </div>
   </div>
@@ -127,7 +78,7 @@
 
 <script>
 import Vue from 'vue'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import DeleteDialog from './dialogs/DeleteDialog'
 import { SceneEvent } from '../models/SceneEvent'
 import EditSelectDialog from '../components/dialogs/EditSelectDialog'
@@ -135,7 +86,7 @@ import EditSelectDialog from '../components/dialogs/EditSelectDialog'
 export default {
   components: {
     EditSelectDialog,
-    DeleteDialog
+    DeleteDialog,
   },
   name: 'SceneEvent',
   data: () => ({
@@ -146,69 +97,71 @@ export default {
       { text: 'Toggle', value: 0 },
       { text: 'Text', value: 1 },
       { text: 'Selector', value: 2 },
-      { text: 'Trigger', value: 3 }
+      { text: 'Trigger', value: 3 },
     ],
-    locked: false
+    locked: false,
   }),
   props: {
     event: {
       type: Object,
       default: function () {
         return new SceneEvent()
-      }
-    }
+      },
+    },
   },
-  mounted () {
-    
-  },
+  mounted() {},
   computed: {
-    eventSelections () {
-      return this.event.selections.map(event => ({
+    ...mapGetters({
+      localeText: 'i18n/widgets',
+      localeAction: 'i18n/actions',
+    }),
+    eventSelections() {
+      return this.event.selections.map((event) => ({
         text: `${event.text}  [ id: ${event.value} ]`,
-        value: event.value
+        value: event.value,
       }))
-    }
+    },
   },
   methods: {
     ...mapActions({
-      uploadImage: 'media/uploadImage'
+      uploadImage: 'media/uploadImage',
     }),
-    removeEvent () {
+    removeEvent() {
       this.$emit('onRemove')
     },
-    editEvent () {
+    editEvent() {
       this.updateProperties({
         action: 'update',
         element: 'event',
         id: this.event.id,
-        eventData: this.event
+        eventData: this.event,
       })
     },
-    triggerEvent () {
-      this.event.value = true;
+    triggerEvent() {
+      this.event.value = true
       this.updateProperties({
         action: 'update',
         element: 'event',
         id: this.event.id,
-        eventData: this.event
+        eventData: this.event,
       })
     },
-    openEditSelectDialog () {
+    openEditSelectDialog() {
       this.editingSelections = true
     },
-    openDeleteDialog () {
+    openDeleteDialog() {
       this.deleteDialog = true
     },
-    toggleEditMode () {
+    toggleEditMode() {
       this.editingName = !this.editingName
 
       if (!this.editingName && !this.locked) {
         this.event.id = this.event.name.createSlug()
       }
-      
+
       this.editEvent()
     },
-    changeEventType () {
+    changeEventType() {
       if (this.event.type == 0) {
         this.event.value = false
       } else if (this.event.type == 1) {
@@ -216,14 +169,14 @@ export default {
       }
       this.editEvent()
     },
-    toggleEventLock () {
+    toggleEventLock() {
       this.locked = !this.locked
       Vue.set(this.event, 'locked', this.locked)
       this.editEvent()
     },
-    updateProperties (wssMessages) {
+    updateProperties(wssMessages) {
       this.$emit('updateProperties', { ...wssMessages })
-    }
-  }
+    },
+  },
 }
 </script>

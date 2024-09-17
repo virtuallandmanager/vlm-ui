@@ -1,20 +1,20 @@
 <template>
   <content-sub-panel :loading="processing" :hasContent="!!sounds?.length" loadingMessage="Loading sound screens...">
     <template v-slot:header>
-      <div class="h4">Sounds</div>
+      <div class="h4">{{ localeText('Sounds') }}</div>
       <v-spacer />
       <v-btn @click="addSoundConfig()" v-if="sounds?.length">
         <v-icon class="mr-1">mdi-plus</v-icon>
-        Sound
+        {{ localeText('Sound') }}
       </v-btn>
     </template>
 
-    <template v-slot:no-content-header>No Sounds Have Been Added</template>
-    <template v-slot:no-content-text>Would you like to add one?</template>
+    <template v-slot:no-content-header>{{ localeText('NoData') }}</template>
+    <template v-slot:no-content-text>{{ localeText('CTA') }}</template>
     <template v-slot:no-content-cta>
       <v-btn @click="addSoundConfig()">
         <v-icon class="mr-1">mdi-plus</v-icon>
-        Sound
+        {{ localeText('Sound') }}
       </v-btn>
     </template>
     <v-container fluid class="pa-0">
@@ -43,6 +43,7 @@ export default {
     ...mapGetters({
       sounds: 'scene/sceneSounds',
       processing: 'scene/processing',
+      localeText: 'i18n/audio',
     }),
   },
   methods: {

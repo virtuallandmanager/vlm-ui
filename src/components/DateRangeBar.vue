@@ -57,7 +57,6 @@
                     ref="startDateMenu"
                     v-model="startDateMenu"
                     :close-on-content-click="false"
-                    :return-value.sync="startDateTime"
                     transition="scale-transition"
                     offset-y
                     min-width="auto"
@@ -75,12 +74,12 @@
                         v-on="on"
                       >
                         <v-icon small class="mr-2">mdi-calendar</v-icon>
-                        {{ startDate }}
+                        {{ newStartDate || startDate }}
                       </v-btn>
                     </template>
                     <v-date-picker v-model="newStartDate" no-title>
                       <v-spacer></v-spacer>
-                      <v-btn text color="primary" @click="save('startDate', 'newStartDate', null, 'startDateMenu')"> Save </v-btn>
+                      <v-btn text color="primary" @click="save('startDate', 'newStartDate', 'newStartDate', 'startDateMenu')"> Save </v-btn>
                       <v-btn text color="primary" @click="cancel('newStartDate', 'startDateMenu')"> Cancel </v-btn>
                     </v-date-picker>
                   </v-menu>
@@ -88,7 +87,7 @@
                     ref="startTimeMenu"
                     v-model="startTimeMenu"
                     :close-on-content-click="false"
-                    :return-value.sync="startDateTime"
+                    :return-value.sync="startTime"
                     transition="scale-transition"
                     offset-y
                     min-width="auto"
@@ -115,7 +114,7 @@
                       <v-btn text color="accent" @click="newStartTime = '00:00:00'"> Start Of Day </v-btn>
                       <v-btn text color="accent" @click="newStartTime = '23:59:59'"> End Of Day </v-btn>
                       <v-spacer></v-spacer>
-                      <v-btn text color="primary" @click="save('startTime', 'newStartTime', null, 'startTimeMenu')"> Save </v-btn>
+                      <v-btn text color="primary" @click="save('startTime', 'newStartTime', 'newStartTime', 'startTimeMenu')"> Save </v-btn>
                       <v-btn text color="primary" @click="cancel('newStartTime', 'startTimeMenu')"> Cancel </v-btn>
                     </v-time-picker>
                   </v-menu>
@@ -127,7 +126,6 @@
                   ref="endDateMenu"
                   v-model="endDateMenu"
                   :close-on-content-click="false"
-                  :return-value.sync="endDateTime"
                   transition="scale-transition"
                   offset-y
                   min-width="auto"
@@ -144,12 +142,12 @@
                       v-on="on"
                       small
                       ><v-icon small class="mr-2">mdi-calendar</v-icon>
-                      {{ endDate }}
+                      {{ newEndDate || endDate }}
                     </v-btn>
                   </template>
                   <v-date-picker v-model="newEndDate" no-title v-if="!endTimeMenu">
                     <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="save('endDate', 'newEndDate', null, 'endDateMenu')"> Save </v-btn>
+                    <v-btn text color="primary" @click="save('endDate', 'newEndDate', 'newEndDate', 'endDateMenu')"> Save </v-btn>
                     <v-btn text color="primary" @click="cancel('newEndDate', 'endDateMenu')"> Cancel </v-btn>
                   </v-date-picker>
                 </v-menu>
@@ -157,7 +155,7 @@
                   ref="endTimeMenu"
                   v-model="endTimeMenu"
                   :close-on-content-click="false"
-                  :return-value.sync="endDateTime"
+                  :return-value.sync="endTime"
                   transition="scale-transition"
                   offset-y
                   min-width="auto"
@@ -184,7 +182,7 @@
                     <v-btn text color="accent" @click="newEndTime = '00:00'"> Start Of Day </v-btn>
                     <v-btn text color="accent" @click="newEndTime = '23:59'"> End Of Day </v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="save('endTime', 'newEndTime', null, 'endTimeMenu')"> Save </v-btn>
+                    <v-btn text color="primary" @click="save('endTime', 'newEndTime', 'newEndTime', 'endTimeMenu')"> Save </v-btn>
                     <v-btn text color="primary" @click="cancel('newEndTime', 'endTimeMenu')"> Cancel </v-btn>
                   </v-time-picker>
                 </v-menu>
@@ -205,7 +203,7 @@ import chartsVue from '@carbon/charts-vue'
 import { DateTime, Interval } from 'luxon'
 import timezones from 'timezones-list'
 import { downloadCsv } from '../helpers/download.js'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import _ from 'lodash'
 
 Vue.use(chartsVue)
@@ -240,6 +238,7 @@ export default {
     newEndDate: '',
     newEndTime: '',
     timescaleEnum: 1,
+    errorMessage: '',
   }),
   props: {
     baseParcel: {
@@ -249,29 +248,60 @@ export default {
       type: Object,
     },
   },
+  mounted() {
+    this.startDate = this.defaultDate
+    this.endDate = this.defaultDate
+    this.loadHistoricalData()
+  },
   computed: {
+    ...mapGetters({
+      activeScene: 'scene/activeScene',
+      eventTypes: 'analytics/eventTypes',
+      eventTypeFilter: 'analytics/eventTypeFilter',
+      removeDuplicateWallets: 'analytics/removeDuplicateWallets',
+      removeDuplicateIps: 'analytics/removeDuplicateIps',
+      exportOptions: 'analytics/exportOptions',
+    }),
     startDateTime: {
       get() {
-        return DateTime.fromFormat(this.startDate + this.startTime, 'yyyy-MM-ddt')
+        return DateTime.fromFormat(this.startDate + ' ' + this.startTime, 'yyyy-MM-dd HH:mm:ss', { zone: this.selectedTimezone.tzCode })
       },
-      set() {
-        return DateTime.fromFormat(this.startDate + this.startTime, 'yyyy-MM-ddt')
+      set(value) {
+        console.log('this.startDate', this.startDate)
+        console.log('this.startTime', this.startTime)
+        const dt = DateTime.fromMillis(value, { zone: this.selectedTimezone.tzCode })
+
+        // Only update if the values have changed to avoid infinite loop
+        const newDate = dt.toFormat('yyyy-MM-dd')
+        const newTime = dt.toFormat('HH:mm:ss')
+
+        if (this.startDate !== newDate) {
+          this.startDate = newDate
+        }
+        if (this.startTime !== newTime) {
+          this.startTime = newTime
+        }
       },
     },
     endDateTime: {
       get() {
-        return DateTime.fromFormat(this.endDate + this.endTime, 'yyyy-MM-ddt')
-      },
-      set() {
-        return DateTime.fromFormat(this.endDate + this.endTime, 'yyyy-MM-ddt')
-      },
-    },
-    errorMessage: {
-      get() {
-        return this.$store.getters['land/errorMessage']
+        console.log('this.endDate', this.endDate)
+        console.log('this.endTime', this.endTime)
+        return DateTime.fromFormat(this.endDate + ' ' + this.endTime, 'yyyy-MM-dd HH:mm:ss', { zone: this.selectedTimezone.tzCode })
       },
       set(value) {
-        this.setErrorMessage(value)
+        const dt = DateTime.fromMillis(value, { zone: this.selectedTimezone.tzCode })
+
+        // Only update if the values have changed to avoid infinite loop
+        const newDate = dt.toFormat('yyyy-MM-dd')
+        const newTime = dt.toFormat('HH:mm:ss')
+
+        if (this.endDate !== newDate) {
+          this.endDate = newDate
+        }
+        if (this.endTime !== newTime) {
+          this.endTime = newTime
+        }
       },
     },
     startDateTimeText() {
@@ -292,7 +322,7 @@ export default {
       return dateRangeDays
     },
     defaultDate() {
-      const today = new Date().toISOString()
+      const today = DateTime.now().minus({ days: 1 }).toISODate()
       return this.formatDate(today)
     },
     isDev() {
@@ -326,8 +356,19 @@ export default {
   },
   methods: {
     ...mapActions({
-      setErrorMessage: 'land/setErrorMessage',
+      getHistoricalData: 'analytics/getHistoricalData',
     }),
+    async loadHistoricalData() {
+      console.log('startDateTime', this.startDateTime)
+      console.log('endDateTime', this.endDateTime)
+      await this.getHistoricalData({
+        sceneId: this.activeScene.sk,
+        start: this.startDateTime.toMillis(),
+        end: this.endDateTime.toMillis(),
+        tz: this.selectedTimezone.tzCode,
+        scale: this.timescale,
+      })
+    },
     validateDateRange() {
       //todo
     },
@@ -356,13 +397,21 @@ export default {
     },
     save(varName, newVarName, clearVal, menuVar, runQuery = true) {
       const objThis = this
-      Vue.set(this, varName, objThis[newVarName])
-      Vue.set(this, newVarName, clearVal || '')
-      if (menuVar) {
-        Vue.set(this, menuVar, false)
+      this[varName] = objThis[newVarName]
+      // Vue.set(this, varName, objThis[newVarName])
+      // Vue.set(this, newVarName, clearVal || '')
+      if (clearVal && Object.prototype.hasOwnProperty.call(this, clearVal)) {
+        this[clearVal] = ''
       }
+      if (menuVar && Object.prototype.hasOwnProperty.call(this, menuVar)) {
+        this[menuVar] = false
+        // Vue.set(this, menuVar, false)
+      }
+
+      this.onChange()
+
       if (runQuery) {
-        this.runQuery()
+        this.loadHistoricalData()
       }
     },
     cancel(newVar, menuVar) {
@@ -380,7 +429,6 @@ export default {
         console.log(error)
       }
     },
-    async runQuery() {},
 
     async exportQuery() {
       const selectedExportOptions = Object.entries(this.exportOptions).map(([key, value]) => {
@@ -499,14 +547,23 @@ export default {
       }
     },
     formatDate(date) {
-      const [dateStr] = new Date(date).toISOString().split('T')
-      return dateStr
+      console.log('date', date)
+      return date
     },
     updateExportOptions() {
       this.selectDataError = ''
     },
     updateProperties() {
       this.$emit('updateProperties')
+    },
+    onChange() {
+      console.log('onChange')
+      this.$emit('onChange', {
+        start: this.startDateTime.toISO(),
+        end: this.endDateTime.toISO(),
+        tz: this.selectedTimezone.tzCode,
+        timescale: this.timescale,
+      })
     },
   },
 }

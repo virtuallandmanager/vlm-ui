@@ -1,20 +1,20 @@
 <template>
-  <content-sub-panel :loading="processing" :hasContent="!!models?.length" loadingMessage="Loading model screens...">
+  <content-sub-panel :loading="processing" :hasContent="!!models?.length" :loadingMessage="localeText('Loading')">
     <template v-slot:header>
-      <div class="h4">3D Models</div>
+      <div class="h4">{{ localeText('3D Models') }}</div>
       <v-spacer />
       <v-btn @click="addModelConfig()" v-if="models?.length">
         <v-icon class="mr-1">mdi-plus</v-icon>
-        Model
+        {{ localeText('Model') }}
       </v-btn>
     </template>
 
-    <template v-slot:no-content-header>No Models Have Been Added</template>
-    <template v-slot:no-content-text>Would you like to add one?</template>
+    <template v-slot:no-content-header>{{ localeText('NoData') }}</template>
+    <template v-slot:no-content-text>{{ localeText('CTA') }}</template>
     <template v-slot:no-content-cta>
       <v-btn @click="addModelConfig()">
         <v-icon class="mr-1">mdi-plus</v-icon>
-        Model
+        {{ localeText('Model') }}
       </v-btn>
     </template>
     <v-container fluid class="pa-0">
@@ -43,6 +43,8 @@ export default {
     ...mapGetters({
       models: 'scene/sceneModels',
       processing: 'scene/processing',
+      localeText: 'i18n/models',
+      localeAction: 'i18n/actions',
     }),
   },
   methods: {

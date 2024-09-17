@@ -91,8 +91,10 @@ export default {
       hidePropertiesDialog: 'dialog/hidePropertiesDialog',
     }),
     changeTransparency() {
+      console.log('changeTransparency', this.elementData.isTransparent)
+      const newElementData = { ...this.elementData, isTransparent: this.elementData.isTransparent }
       this.updateSceneElement({
-        elementData: this.elementData,
+        elementData: newElementData,
         instance: !!this.instance,
         property: 'isTransparent',
       })

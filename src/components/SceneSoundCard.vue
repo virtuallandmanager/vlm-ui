@@ -10,7 +10,7 @@
             <v-icon small>mdi-rename</v-icon>
           </v-btn>
         </template>
-        <span>Rename</span>
+        <span>{{ localeAction('rename') }}</span>
       </v-tooltip>
 
       <div class="text-h5 flex-grow-1" v-if="editingName">
@@ -18,7 +18,7 @@
           autofocus
           outlined
           color="white"
-          label="Sound Name"
+          :label="localeText('Sound Name')"
           v-model="sound.name"
           hide-details="auto"
           append-outer-icon="mdi-content-save"
@@ -48,7 +48,7 @@
               {{ sound.enabled ? 'mdi-volume-high' : 'mdi-volume-variant-off' }}
             </v-icon>
           </template>
-          <span>Mute/Unmute All</span>
+          <span>{{ localeText('Mute/Unmute All') }}</span>
         </v-tooltip>
       </v-btn>
       <input style="display: none" ref="replaceFileInput" type="file" accept=".png,.jpg,.jpeg" @change="replaceSound(sound, i)" />
@@ -57,7 +57,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
           </template>
-          <span>Sound Properties</span>
+          <span>{{ localeText('Sound Properties') }}</span>
         </v-tooltip>
       </v-btn>
       <v-btn icon dark @click.stop="showDeleteDialog({ element: 'sound', elementData: sound })">
@@ -65,7 +65,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
           </template>
-          <span>Remove Sound</span>
+          <span>{{ localeText('Remove Sound') }}</span>
         </v-tooltip>
       </v-btn>
     </div>
@@ -84,38 +84,38 @@
       <v-text-field
         outlined
         dark
-        label="Sound File"
+        :label="localeText('Sound File')"
         v-model="sound.audioSrc"
         :error-messages="errors"
         @input="validateInput"
         @change="updateAudioSrc()"
         :persistent-hint="sound.sourceType !== 3"
-        hint="Sound files must exist in your project."
+        :hint="localeText('soundFileHint')"
       ></v-text-field>
     </div>
     <div>
       <div class="d-flex justify-start align-center grey darken-2 pa-4">
-        <h1 class="text-body-1 font-weight-bold flex-grow-1" dark>Instances</h1>
-        <v-btn small @click="addInstance()" class="flex-shrink-1"><v-icon small class="mr-1">mdi-plus</v-icon> Instance</v-btn>
+        <h1 class="text-body-1 font-weight-bold flex-grow-1" dark>{{ localeText('Instances') }}</h1>
+        <v-btn small @click="addInstance()" class="flex-shrink-1"><v-icon small class="mr-1">mdi-plus</v-icon> {{ localeText('Instance') }}</v-btn>
       </div>
       <div class="d-flex justify-space-between align-center px-3" v-if="sound.instances.length">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-btn v-bind="attrs" v-on="on" icon class="flex-shrink-1 pa-0" @click="toggleLocators()"><v-icon>mdi-map-marker</v-icon></v-btn>
           </template>
-          <span>Show Locators</span>
+          <span>{{ localeText('Show Locators') }}</span>
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on" small color="primary">mdi-information</v-icon>
           </template>
-          <span>Makes sounds visible only for you. (Beta)</span>
+          <span>{{ localeText('showLocatorsDescription') }}</span>
         </v-tooltip>
         <v-spacer />
         <v-switch v-model="sound.showDetails" class="flex-shrink-1 pa-0" label="Detailed" />
       </div>
       <div class="d-flex flex-column pa-4" v-if="!sound.instances.length">
-        <div class="text-body-1 text-center">Add an instance for this sound to hear it in the scene.</div>
+        <div class="text-body-1 text-center">{{ localeText('instanceCTA') }}</div>
       </div>
       <div class="d-flex flex-column my-0" v-if="sound.instances.length">
         <div v-for="(instance, ii) in sound.instances" :key="ii">
@@ -128,7 +128,7 @@
 
 <script>
 import Vue from 'vue'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import SoundInstanceCard from './SoundInstanceCard'
 import { SceneSound } from '../models/SceneSound'
 import { SceneSoundInstance } from '../models/SceneSoundInstance'
@@ -166,6 +166,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      localeAction: 'i18n/actions',
+      localeText: 'i18n/audio',
+    }),
     truncatedName() {
       const soundNameArr = this.sound && this.sound.name.split('')
       let noSpacesLength = 0
@@ -237,7 +241,7 @@ export default {
     },
     addInstance(duplicate) {
       const newInstance = new SceneSoundInstance()
-      newInstance.name = `Instance ${this.sound.instances.length + 1}`
+      newInstance.name = `${this.localeText('Instance')} ${this.sound.instances.length + 1}`
       newInstance.clickEvent = { ...this.sound.clickEvent, synced: true }
 
       if (duplicate) {

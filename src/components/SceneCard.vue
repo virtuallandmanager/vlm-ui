@@ -29,7 +29,7 @@
                     <v-icon small>mdi-hand-wave</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content class="pa-0 ma-0">
-                    <v-list-item-title>Leave Scene</v-list-item-title>
+                    <v-list-item-title>{{ localeText('Leave Scene') }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item link @click="openConfirmDeleteDialog" v-if="!shared && !isDemoScene" class="d-flex align-center">
@@ -37,7 +37,7 @@
                     <v-icon small>mdi-trash-can</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content class="pa-0 ma-0">
-                    <v-list-item-title>Delete Scene</v-list-item-title>
+                    <v-list-item-title>{{ localeText('Delete Scene') }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item link @click="hideDemoScene" v-if="isDemoScene" class="d-flex align-center">
@@ -45,7 +45,7 @@
                     <v-icon small>mdi-eye-off</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content class="pa-0 ma-0">
-                    <v-list-item-title>Hide Demo Scene</v-list-item-title>
+                    <v-list-item-title>{{ localeText('Hide Demo Scene') }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -59,7 +59,7 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-card class="d-flex align-center justify-center black pa-2 my-1" v-bind="attrs" v-on="on">
                     <img src="@/assets/dcl-logo-sm.png" width="20px" height="20px" class="mr-2" />
-                    {{ dclLocations.length }} location{{ dclLocations.length == 1 ? '' : 's' }}
+                    {{ dclLocations.length }} {{ dclLocations.length == 1 ? localeText('Location') : localeText('Locations') }}
                     <div class="text-subtitle-2 font-weight-medium text-left" v-if="scene?.location?.parcels?.length">
                       {{ `${scene?.location?.parcels?.length} Parcel` }}{{ scene?.parcels?.length > 1 ? 's' : '' }}
                     </div>
@@ -73,7 +73,7 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-card class="d-flex align-center justify-center black pa-2 my-1" v-bind="attrs" v-on="on">
                     <img src="@/assets/exodus-logo-sm.png" width="20px" height="20px" class="mr-2" />
-                    {{ exodusLocations.length }} location{{ exodusLocations.length == 1 ? '' : 's' }}
+                    {{ exodusLocations.length }} {{ exodusLocations.length == 1 ? localeText('Location') : localeText('Locations') }}
                     <div class="text-subtitle-2 font-weight-medium text-left" v-if="scene?.location?.parcels?.length">
                       {{ `${scene?.location?.parcels?.length} Parcel` }}{{ scene?.parcels?.length > 1 ? 's' : '' }}
                     </div>
@@ -87,7 +87,7 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-card class="d-flex align-center justify-center black pa-2 my-1" v-bind="attrs" v-on="on">
                     <img src="@/assets/hyperfy-logo-sm.png" width="20px" height="20px" class="mr-2" />
-                    {{ hyperfyLocations.length }} location{{ hyperfyLocations.length == 1 ? '' : 's' }}
+                    {{ hyperfyLocations.length }} {{ hyperfyLocations.length == 1 ? localeText('Location') : localeText('Locations') }}
                     <div class="text-subtitle-2 font-weight-medium text-left" v-if="scene?.location?.parcels?.length">
                       {{ `${scene?.location?.parcels?.length} Parcel` }}{{ scene?.parcels?.length > 1 ? 's' : '' }}
                     </div>
@@ -97,7 +97,9 @@
                   <v-chip small class="text-caption ma-1"><v-icon x-small>mdi-web</v-icon>{{ location }}</v-chip>
                 </div>
               </v-tooltip>
-              <v-card v-if="!scene?.locations?.length" class="d-flex align-center justify-center black pa-2"> World Not Assigned </v-card>
+              <v-card v-if="!scene?.locations?.length" class="d-flex align-center justify-center black pa-2">
+                {{ localeText('World Not Assigned') }}
+              </v-card>
             </v-col>
           </v-row>
         </router-link>
@@ -123,6 +125,8 @@ export default {
   computed: {
     ...mapGetters({
       userInfo: 'user/userInfo',
+      localeText: 'i18n/scene',
+      localeAction: 'i18n/actions',
     }),
     isDemoScene() {
       return this.scene?.sk === 'demo' || this.scene?.sk === '00000000-0000-0000-0000-000000000000'

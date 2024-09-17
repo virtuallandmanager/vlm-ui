@@ -3,98 +3,267 @@
   "name": "Español (España)",
   "flag": "es",
   "translations": {
-    "appName": "Vos Lugares del Metaverso",
-    "welcome": "Bienvenido",
+    "Virtual Land Manager": "Administrador de Terrenos Virtuales",
     "login": {
-      "title": "Iniciar sesión",
-      "username": "Nombre de usuario",
-      "password": "Contraseña",
-      "submit": "Enviar",
-      "connectWallet": "Conectar monedero",
-      "passkey": "Clave de acceso",
-      "forgotPassword": "¿Olvidaste tu contraseña?",
-      "button": "Iniciar sesión"
+      "Username": "Nombre de usuario",
+      "Password": "Contraseña",
+      "Submit": "Enviar",
+      "Connect Wallet": "Conectar Monedero",
+      "Connecting": "Conectando",
+      "Please Sign": "Por favor, firme",
+      "Validating": "Validando",
+      "Passkey": "Clave de acceso",
+      "Forgot Password": "¿Olvidaste tu contraseña?"
+    },
+    "registration": {
+      "Display Name": "Nombre para mostrar",
+      "Primary Wallet Address": "Dirección principal del monedero",
+      "Email Address": "Dirección de correo electrónico",
+      "Phone Number": "Número de teléfono",
+      "Mobile Phone Number": "Número de teléfono móvil",
+      "User Roles": "Roles de usuario",
+      "Create Organization": "Crear organización",
+      "Create Organization Subtitle": "Establece un nombre para tu organización; podrás hacer más cambios más tarde.",
+      "Organization Display Name": "Nombre para mostrar de la organización",
+      "User Profile": "Perfil de usuario",
+      "RegistrationTagline": "Parece que es la primera vez que conectas este monedero. Vamos a configurar tu cuenta. (Podrás hacer cambios más tarde)."
     },
     "home": {
       "title": "Inicio",
       "tagline": "Construyendo visiones virtuales",
-      "description": "¡Bienvenido al Administrador de Tierras Virtuales!",
-      "logo": "VLM-Logo.svg",
+      "description": "¡Bienvenido al Administrador de Terrenos Virtuales!",
+      "CTA Text": "El metaverso te espera",
+      "CTA Button": "Comenzar",
+      "logo": "VLM-Logo-Color.svg",
       "tiles": [
         {
-          "title": "GESTIÓN DE ESCENAS MULTIMETAVERSO"
+          "title": "GESTIÓN DE ESCENAS MULTIMETAVERSO",
+          "subtitle1": "Administra tu escena a través de múltiples metaversos",
+          "subtitle2": "¡VLM planea integrar tantas de nuestras funciones en tantos metaversos como sea posible!",
+          "subtitle3": "¡PRÓXIMAMENTE!"
         },
-        { "title": "ANÁLISIS DE ESCENAS" },
         {
-          "title": "GESTIÓN DE ESCENAS EN TIEMPO REAL"
+          "title": "ANALÍTICAS DE ESCENA",
+          "subtitle1": "Visualiza y exporta datos sobre cómo las personas interactúan con tus experiencias.",
+          "subtitle2": "Añade eventos de seguimiento personalizados a tus experiencias virtuales utilizando una simple línea de código."
         },
-        { "title": "HERRAMIENTAS DE MODERACIÓN DE ESCENAS" },
-        { "title": "CONTROLES PERSONALIZADOS" },
-        { "title": "SORTEOS DE EVENTOS" }
+        {
+          "title": "GESTIÓN DE ESCENA EN TIEMPO REAL",
+          "subtitle1": "Administra pantallas de video, imágenes, modelos 3D, sonidos y más.",
+          "subtitle2": "Mueve, dimensiona, rota y habilita o deshabilita todos tus activos en tiempo real."
+        },
+        {
+          "title": "HERRAMIENTAS DE MODERACIÓN DE ESCENA",
+          "subtitle1": "Prohíbe ciertos nombres o wearables en tu escena.",
+          "subtitle2": "Restringe el acceso para permitir solo a ciertas personas o elementos.",
+          "subtitle3": "Bloquea a trolls y alborotadores tóxicos de interactuar con otros en tu terreno."
+        },
+        {
+          "title": "CONTROLES PERSONALIZADOS",
+          "subtitle1": "Crea tus propios interruptores, menús, campos de texto, deslizadores y botones para activar código personalizado dentro de tu escena."
+        },
+        {
+          "title": "SORTEOS DE EVENTOS",
+          "subtitle1": "Programa eventos en tu terreno y ofrece sorteos de wearables o emotes de Decentraland.",
+          "subtitle2": "Virtual Land Manager utiliza varios métodos de seguridad para asegurarse de que tu sorteo no sea abusado por coleccionistas."
+        }
       ]
     },
     "navigation": {
-      "admin": "Panel de administración",
-      "scenes": "Escenas",
-      "events": "Eventos",
-      "giveaways": "Sorteos",
-      "docs": "Documentos",
-      "mediaLibrary": "Biblioteca de medios",
-      "userProfile": "Perfil del usuario",
-      "logout": "Cerrar sesión"
+      "Admin Panel": "Panel de administración",
+      "Scenes": "Escenas",
+      "Events": "Eventos",
+      "Giveaways": "Sorteos",
+      "Docs": "Documentación",
+      "Media Library": "Biblioteca multimedia",
+      "User Profile": "Perfil de usuario",
+      "Privacy Policy": "Política de privacidad",
+      "Log Out": "Cerrar sesión"
     },
-    "scenes": {
-      "title": "Escenas",
-      "videos": "Videos",
-      "images": "Imágenes",
-      "models": "Modelos",
-      "sounds": "Sonidos",
-      "widgets": "Widgets",
-      "presets": "Preajustes",
-      "claimPoints": "Puntos de reclamación",
-      "settings": "Configuraciones",
-      "configurations": "Configuraciones",
-      "instances": "Instancias"
+    "scene": {
+      "Scene": "Escena",
+      "Scenes": "Escenas",
+      "Analytics": "Analíticas",
+      "Video Screens": "Pantallas de video",
+      "Art": "Arte",
+      "3D Models": "Modelos 3D",
+      "Sounds": "Sonidos",
+      "Widgets": "Widgets",
+      "Presets": "Ajustes preestablecidos",
+      "Giveaways": "Sorteos",
+      "Moderation": "Moderación",
+      "Settings": "Configuración",
+      "Configurations": "Configuraciones",
+      "Instances": "Instancias",
+      "Jump In": "Entrar",
+      "View Demo Scene": "Ver escena de demostración",
+      "Connected To Scene": "Conectado a la escena",
+      "Not Connected": "No conectado",
+      "Could Not Load Scene": "No se pudo cargar la escena",
+      "NoDataTagline": "Por favor, inténtalo de nuevo y contacta al soporte si el problema continúa."
+    },
+    "videoScreens": {
+      "Video Screen": "Pantalla de video",
+      "Video Screens": "Pantallas de video",
+      "Loading": "Cargando pantallas de video...",
+      "NoData": "No se han añadido pantallas de video a la escena.",
+      "CTA": "¿Te gustaría añadir una?",
+      "Instances": "Instancias",
+      "Video Config": "Configuración de video",
+      "Showing": "Mostrando",
+      "Stream Status": "Estado de la transmisión",
+      "No Live Content": "Sin contenido en vivo",
+      "Live Stream": "Transmisión en vivo",
+      "Off Air Content": "Contenido fuera del aire",
+      "Off Air Image": "Imagen fuera del aire",
+      "Off Air Playlist": "Lista de reproducción fuera del aire",
+      "On Air": "En el aire",
+      "Off Air": "Fuera del aire",
+      "None": "Ninguno",
+      "Image": "Imagen",
+      "Playlist": "Lista de reproducción",
+      "Community Channels": "Canales de la comunidad"
+    },
+    "art": {
+      "Image": "Imagen",
+      "Images": "Imágenes",
+      "NFT": "NFT",
+      "NFTs": "NFTs",
+      "Loading": "Cargando arte...",
+      "NoData": "No se ha añadido arte a la escena.",
+      "CTA": "¿Te gustaría añadir algo?",
+      "From My Computer": "Desde mi ordenador",
+      "From Media Library": "Desde la biblioteca multimedia",
+      "From URL": "Desde URL",
+      "Add New Image": "Añadir nueva imagen",
+      "Add Image From URL": "Añadir imagen desde URL"
+    },
+    "audio": {
+      "Sound": "Sonido",
+      "Sounds": "Sonidos"
+    },
+    "widgets": {
+      "Widget": "Widget",
+      "Widgets": "Widgets"
+    },
+    "presets": {
+      "Preset": "Ajuste preestablecido",
+      "Presets": "Ajustes preestablecidos"
+    },
+    "claimPoints": {
+      "Claim Point": "Punto de reclamo",
+      "Claim Points": "Puntos de reclamo"
+    },
+    "sceneSettings": {
+      "Setting": "Configuración",
+      "Settings": "Configuraciones",
+      "Admin Access": "Acceso de administrador VLM",
+      "Scene Admin Access": "Acceso de administrador de escena",
+      "Scene Admins": "Administradores de escena",
+      "Scene Admins Subtitle": "Añade o elimina administradores de escena que puedan gestionar esta escena.",
+      "Shared Access": "Acceso compartido",
+      "Send Invite": "Enviar invitación",
+      "Scene Setup": "Configuración de escena",
+      "Copy Scene ID": "Copiar ID de escena",
+      "Scene ID": "ID de escena"
     },
     "analytics": {
-      "title": "Analíticas"
+      "Analytics": "Analíticas",
+      "Loading": "Cargando analíticas...",
+      "Historical Graphs": "Gráficos históricos",
+      "Recent Metrics": "Métricas recientes",
+      "Live Status": "Estado en vivo",
+      "NoData": "No se han recopilado datos analíticos para este período de tiempo.",
+      "Interactions Chart": "Gráfico de interacciones",
+      "Total Interactions": "Total de interacciones",
+      "Total Interactions In Selected Time Period": "Total de interacciones en el período de tiempo seleccionado",
+      "Total Sessions": "Total de sesiones",
+      "Unique Visitors": "Visitantes únicos",
+      "Average Session Duration": "Duración media de la sesión",
+      "Last 24 Hours": "Últimas 24 horas",
+      "Last 7 Days": "Últimos 7 días",
+      "Based on IP": "Basado en IP",
+      "Guestlist Snapshot": "Instantánea de lista de invitados",
+      "Live Actions": "Acciones en vivo",
+      "Hide After": "Ocultar después de",
+      "Scene Visitors": "Visitantes de la escena",
+      "Scene Admins": "Administradores de la escena",
+      "Active Connections": "Conexiones activas",
+      "Display Name": "Nombre para mostrar",
+      "Wallet Address": "Dirección del monedero"
     },
     "events": {
-      "title": "Eventos"
+      "Event": "Evento",
+      "Events": "Eventos"
     },
     "giveaways": {
-      "title": "Sorteos",
-      "items": "Artículos de sorteo"
+      "Giveaway": "Sorteo",
+      "Giveaways": "Sorteos",
+      "Giveaway Items": "Artículos de sorteo"
     },
     "userProfile": {
-      "title": "Perfil del usuario",
-      "email": "Correo electrónico",
-      "phone": "Número de teléfono",
-      "smsPhoneNumber": "Número de teléfono SMS",
-      "address": "Dirección",
-      "city": "Ciudad",
-      "state": "Estado",
-      "zip": "Código postal",
-      "country": "País",
-      "save": "Guardar"
+      "User Profile": "Perfil de usuario",
+      "Admin Roles": "Roles de administrador",
+      "Avatar": "Avatar",
+      "Badges": "Insignias",
+      "Change Avatar": "Cambiar avatar",
+      "Demo Features": "Funciones de demostración",
+      "Early Access": "Acceso anticipado",
+      "earlyAccessDescription": "¡Gracias por ser un usuario de primera hora!",
+      "User Roles": "Roles de usuario",
+      "Advanced & Experimental Features": "Funciones avanzadas y experimentales",
+      "advancedFeaturesDescription": "Habilita roles de usuario adicionales y funciones experimentales.",
+      "Advanced User": "Usuario avanzado",
+      "advancedUserDescription": "Habilita el uso de funciones avanzadas para desarrolladores e implementación personalizada de SDK",
+      "Hide Demo Scene": "Ocultar escena de demostración",
+      "hideDemoSceneHint": "Elimina la escena de demostración pública de tu lista de escenas",
+      "Email Address": "Dirección de correo electrónico",
+      "emailAddressHint": "Opcional - Para futuras notificaciones y autenticación multifactor",
+      "Phone": "Número de teléfono",
+      "Member Since": "Miembro desde",
+      "Mobile Phone": "Teléfono móvil",
+      "mobilePhoneHint": "Opcional - Para futuras notificaciones y autenticación multifactor",
+      "Primary Wallet Address": "Dirección principal del monedero",
+      "SMS Phone Number": "Número de teléfono SMS",
+      "Address": "Dirección",
+      "City": "Ciudad",
+      "State": "Provincia",
+      "Zip": "Código postal",
+      "Country": "País",
+      "Save": "Guardar"
     },
     "docs": {
-      "title": "Documentación"
+      "Documentation": "Documentación"
     },
     "errors": {
-      "requiredField": "Este campo es obligatorio",
-      "invalidEmail": "Por favor, introduce una dirección de correo válida"
+      "required": "Este campo es obligatorio",
+      "invalidEmail": "Por favor, introduce una dirección de correo electrónico válida"
+    },
+    "tooltips": {
+      "Show All": "Mostrar todo",
+      "Hide All": "Ocultar todo",
+      "Show": "Mostrar",
+      "Hide": "Ocultar",
+      "Rename": "Renombrar",
+      "Remove": "Eliminar",
+      "Click Action": "Acción al hacer clic",
+      "Default Click Action": "Acción predeterminada al hacer clic"
     },
     "actions": {
       "save": "Guardar",
       "cancel": "Cancelar",
+      "leave": "Salir",
       "continue": "Continuar",
+      "saveAndContinue": "Guardar y continuar",
       "revert": "Revertir",
       "send": "Enviar",
       "add": "Añadir",
-      "deduct": "Deducir",
+      "deduct": "Restar",
       "remove": "Eliminar",
       "delete": "Borrar",
+      "refresh": "Actualizar",
+      "retry": "Reintentar",
+      "removeAll": "Eliminar todo",
       "edit": "Editar",
       "update": "Actualizar",
       "create": "Crear",
@@ -108,28 +277,37 @@
       "open": "Abrir",
       "upload": "Subir",
       "download": "Descargar",
-      "refresh": "Actualizar",
-      "retry": "Reintentar",
       "confirm": "Confirmar",
       "approve": "Aprobar",
       "decline": "Rechazar",
       "yes": "Sí",
       "no": "No",
-      "ok": "OK",
+      "ok": "Aceptar",
       "next": "Siguiente",
       "previous": "Anterior",
       "back": "Atrás",
       "home": "Inicio",
       "login": "Iniciar sesión",
       "logout": "Cerrar sesión",
-      "register": "Registrar",
+      "register": "Registrarse",
       "signUp": "Regístrate",
       "signIn": "Iniciar sesión",
       "explore": "Explorar",
       "details": "Detalles",
       "info": "Información",
       "help": "Ayuda",
-      "settings": "Configuraciones"
+      "settings": "Configuración"
+    },
+    "units": {
+      "meters": "metros",
+      "feet": "pies",
+      "seconds": "segundos",
+      "minutes": "minutos",
+      "hours": "horas",
+      "days": "días",
+      "weeks": "semanas",
+      "months": "meses",
+      "years": "años"
     }
   }
 }

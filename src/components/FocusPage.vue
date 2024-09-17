@@ -15,7 +15,7 @@
     <v-container fluid class="pa-4">
       <v-row class="text-center" v-if="contentLoading">
         <v-col>
-          <loader :message="loadingMessage || 'Loading...'" :loading="loading" :grid="true" />
+          <loader :message="loadingMessage || localeAction('loading')" :loading="loading" :grid="true" />
         </v-col>
       </v-row>
       <v-row class="text-center" v-if="noContentLoaded">
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import Loader from './Loader'
 
 export default {
@@ -52,6 +52,7 @@ export default {
     imageLink: String,
   },
   computed: {
+    ...mapGetters({ localeAction: 'i18n/actions' }),
     hasContent() {
       return !this.noContent && !this.loading
     },

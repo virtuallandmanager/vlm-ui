@@ -1,64 +1,138 @@
 {
-  "appName": "Administrador de Tierras Virtuales",
-  "welcome": "Bienvenido",
-  "login": {
-    "title": "Iniciar sesión",
-    "username": "Nombre de usuario",
-    "password": "Contraseña",
-    "submit": "Enviar",
-    "forgotPassword": "¿Olvidaste tu contraseña?",
-    "button": "Iniciar sesión"
-  },
-  "home": {
-    "title": "Inicio",
-    "description": "¡Bienvenido a Administrador de Tierras Virtuales!",
-    "tiles": {
-      "info1": "Texto informativo para el mosaico 1",
-      "info2": "Texto informativo para el mosaico 2",
-      "info3": "Texto informativo para el mosaico 3",
-      "info4": "Texto informativo para el mosaico 4"
+  "code": "es-AR",
+  "name": "Español (Argentina)",
+  "flag": "ar",
+  "translations": {
+    "Virtual Land Manager": "Gestor de Terrenos Virtuales",
+    "login": {
+      "Username": "Nombre de usuario",
+      "Password": "Contraseña",
+      "Submit": "Enviar",
+      "Connect Wallet": "Conectar Cartera",
+      "Connecting": "Conectando",
+      "Please Sign": "Por favor firma",
+      "Validating": "Validando",
+      "Passkey": "Clave",
+      "Forgot Password": "¿Olvidaste la contraseña?"
+    },
+    "home": {
+      "title": "Inicio",
+      "tagline": "Construyendo Visiones Virtuales",
+      "description": "¡Bienvenido a Gestor de Terrenos Virtuales!",
+      "logo": "VLM-Logo.svg",
+      "tiles": [
+        {
+          "title": "GESTIÓN DE ESCENAS MULTIMETAVERSO"
+        },
+        { "title": "ANALÍTICAS DE ESCENAS" },
+        {
+          "title": "GESTIÓN DE ESCENAS EN TIEMPO REAL"
+        },
+        { "title": "HERRAMIENTAS DE MODERACIÓN DE ESCENAS" },
+        { "title": "CONTROLES PERSONALIZADOS" },
+        { "title": "SORTEOS DE EVENTOS" }
+      ]
+    },
+    "navigation": {
+      "Admin Panel": "Panel de Administración",
+      "Scenes": "Escenas",
+      "Events": "Eventos",
+      "Giveaways": "Sorteos",
+      "Docs": "Documentación",
+      "Media Library": "Biblioteca de Medios",
+      "User Profile": "Perfil de Usuario",
+      "Log Out": "Cerrar sesión"
+    },
+    "scene": {
+      "Scene": "Escena",
+      "Scenes": "Escenas",
+      "Videos": "Videos",
+      "Images": "Imágenes",
+      "3D Models": "Modelos 3D",
+      "Sounds": "Sonidos",
+      "Widgets": "Widgets",
+      "Presets": "Preajustes",
+      "Claim Points": "Puntos de Reclamo",
+      "Settings": "Ajustes",
+      "Configurations": "Configuraciones",
+      "Instances": "Instancias"
+    },
+    "analytics": {
+      "Analytics": "Analíticas"
+    },
+    "events": {
+      "Event": "Evento",
+      "Events": "Eventos"
+    },
+    "giveaways": {
+      "Giveaway": "Sorteo",
+      "Giveaways": "Sorteos",
+      "Giveaway Items": "Ítems del Sorteo"
+    },
+    "userProfile": {
+      "User Profile": "Perfil de Usuario",
+      "Email": "Correo electrónico",
+      "Phone": "Número de teléfono",
+      "SMS Phone Number": "Número de SMS",
+      "Address": "Dirección",
+      "City": "Ciudad",
+      "State": "Provincia",
+      "Zip": "Código Postal",
+      "Country": "País",
+      "Save": "Guardar"
+    },
+    "docs": {
+      "Documentation": "Documentación"
+    },
+    "errors": {
+      "required": "Este campo es obligatorio",
+      "invalidEmail": "Por favor ingresa un correo electrónico válido"
+    },
+    "actions": {
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "continue": "Continuar",
+      "revert": "Revertir",
+      "send": "Enviar",
+      "add": "Añadir",
+      "deduct": "Restar",
+      "remove": "Eliminar",
+      "delete": "Borrar",
+      "edit": "Editar",
+      "update": "Actualizar",
+      "create": "Crear",
+      "view": "Ver",
+      "search": "Buscar",
+      "filter": "Filtrar",
+      "sort": "Ordenar",
+      "submit": "Enviar",
+      "reset": "Reiniciar",
+      "close": "Cerrar",
+      "open": "Abrir",
+      "upload": "Subir",
+      "download": "Descargar",
+      "refresh": "Actualizar",
+      "retry": "Reintentar",
+      "confirm": "Confirmar",
+      "approve": "Aprobar",
+      "decline": "Rechazar",
+      "yes": "Sí",
+      "no": "No",
+      "ok": "OK",
+      "next": "Siguiente",
+      "previous": "Anterior",
+      "back": "Atrás",
+      "home": "Inicio",
+      "login": "Iniciar sesión",
+      "logout": "Cerrar sesión",
+      "register": "Registrarse",
+      "signUp": "Regístrate",
+      "signIn": "Iniciar sesión",
+      "explore": "Explorar",
+      "details": "Detalles",
+      "info": "Información",
+      "help": "Ayuda",
+      "settings": "Ajustes"
     }
-  },
-  "navigation": {
-    "scenes": "Escenas",
-    "events": "Eventos",
-    "giveaways": "Sorteos",
-    "docs": "Documentos",
-    "mediaLibrary": "Biblioteca de Medios",
-    "userProfile": "Perfil de Usuario",
-    "logout": "Cerrar sesión"
-  },
-  "scenes": {
-    "title": "Escenas",
-    "videos": "Videos",
-    "images": "Imágenes",
-    "models3D": "Modelos 3D",
-    "sounds": "Sonidos",
-    "widgets": "Widgets",
-    "presets": "Preajustes",
-    "claimPoints": "Puntos de Reclamo",
-    "settings": "Configuraciones",
-    "configurations": "Configuraciones",
-    "instances": "Instancias"
-  },
-  "analytics": {
-    "title": "Analíticas"
-  },
-  "events": {
-    "title": "Eventos"
-  },
-  "giveaways": {
-    "title": "Sorteos",
-    "items": "Elementos de Sorteo"
-  },
-  "userProfile": {
-    "title": "Perfil de Usuario"
-  },
-  "docs": {
-    "title": "Documentación"
-  },
-  "errors": {
-    "requiredField": "Este campo es obligatorio",
-    "invalidEmail": "Por favor, introduce una dirección de correo electrónico válida"
   }
 }

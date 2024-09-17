@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title>Click Action</v-card-title>
+    <v-card-title>{{ localeAction('click action') }}</v-card-title>
     <v-card-subtitle>{{ elementData.name.capitalize() }}</v-card-subtitle>
     <v-divider></v-divider>
     <v-card-subtitle class="pa-6 d-flex flex-column">

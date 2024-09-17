@@ -147,11 +147,11 @@ export default {
     multiplierText() {
       switch (this.value) {
         case 'position':
-          return 'Move by:'
+          return `${this.localeAction('move by')}:`
         case 'scale':
-          return 'Scale by:'
+          return `${this.localeAction('scale by')}:`
         case 'rotation':
-          return 'Rotate by:'
+          return `${this.localeAction('rotate by')}:`
         default:
           return ''
       }

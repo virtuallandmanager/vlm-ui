@@ -4,7 +4,7 @@
     <template v-slot:no-content-header>No Scenes Found</template>
     <template v-slot:no-content-text> Would you like to create a new scene? </template>
     <template v-slot:no-content-cta>
-      <v-btn @click="createNewScene">Create New Scene</v-btn>
+      <v-btn @click="createNewScene"><v-icon class="mr-1">mdi-plus</v-icon> Scene</v-btn>
     </template>
     <v-tabs v-model="tab" centered dark icons-and-text>
       <v-tabs-slider></v-tabs-slider>

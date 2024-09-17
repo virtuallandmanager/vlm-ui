@@ -1,65 +1,138 @@
 {
-    "appName": "Gestionnaire de Terres Virtuelles",
-    "welcome": "Bienvenue",
+  "code": "fr-CA",
+  "name": "Français (Canada)",
+  "flag": "ca",
+  "translations": {
+    "Virtual Land Manager": "Gestionnaire de Terrains Virtuels",
     "login": {
-      "title": "Connexion",
-      "username": "Nom d'utilisateur",
-      "password": "Mot de passe",
-      "submit": "Soumettre",
-      "forgotPassword": "Mot de passe oublié?",
-      "button": "Connexion"
+      "Username": "Nom d'utilisateur",
+      "Password": "Mot de passe",
+      "Submit": "Soumettre",
+      "Connect Wallet": "Connecter le Portefeuille",
+      "Connecting": "Connexion en cours",
+      "Please Sign": "Veuillez signer",
+      "Validating": "Validation en cours",
+      "Passkey": "Clé",
+      "Forgot Password": "Mot de passe oublié?"
     },
     "home": {
       "title": "Accueil",
-      "description": "Bienvenue sur Gestionnaire de Terres Virtuelles!",
-      "tiles": {
-        "info1": "Texte informatif pour la tuile 1",
-        "info2": "Texte informatif pour la tuile 2",
-        "info3": "Texte informatif pour la tuile 3",
-        "info4": "Texte informatif pour la tuile 4"
-      }
+      "tagline": "Construire des visions virtuelles",
+      "description": "Bienvenue sur le Gestionnaire de Terrains Virtuels !",
+      "logo": "VLM-Logo.svg",
+      "tiles": [
+        {
+          "title": "GESTION MULTIMÉTAVERS DES SCÈNES"
+        },
+        { "title": "ANALYSES DES SCÈNES" },
+        {
+          "title": "GESTION DES SCÈNES EN TEMPS RÉEL"
+        },
+        { "title": "OUTILS DE MODÉRATION DES SCÈNES" },
+        { "title": "CONTRÔLES PERSONNALISÉS" },
+        { "title": "TIRAGES AU SORT D'ÉVÉNEMENTS" }
+      ]
     },
     "navigation": {
-      "scenes": "Scènes",
-      "events": "Événements",
-      "giveaways": "Cadeaux",
-      "docs": "Docs",
-      "mediaLibrary": "Bibliothèque de Médias",
-      "userProfile": "Profil d'utilisateur",
-      "logout": "Se déconnecter"
+      "Admin Panel": "Panneau d'administration",
+      "Scenes": "Scènes",
+      "Events": "Événements",
+      "Giveaways": "Tirages au sort",
+      "Docs": "Documentation",
+      "Media Library": "Bibliothèque de Médias",
+      "User Profile": "Profil Utilisateur",
+      "Log Out": "Se déconnecter"
     },
-    "scenes": {
-      "title": "Scènes",
-      "videos": "Vidéos",
-      "images": "Images",
-      "models3D": "Modèles 3D",
-      "sounds": "Sons",
-      "widgets": "Widgets",
-      "presets": "Préréglages",
-      "claimPoints": "Points de Réclamation",
-      "settings": "Paramètres",
-      "configurations": "Configurations",
-      "instances": "Instances"
+    "scene": {
+      "Scene": "Scène",
+      "Scenes": "Scènes",
+      "Videos": "Vidéos",
+      "Images": "Images",
+      "3D Models": "Modèles 3D",
+      "Sounds": "Sons",
+      "Widgets": "Widgets",
+      "Presets": "Préréglages",
+      "Claim Points": "Points de Réclamation",
+      "Settings": "Paramètres",
+      "Configurations": "Configurations",
+      "Instances": "Instances"
     },
     "analytics": {
-      "title": "Analyses"
+      "Analytics": "Analyses"
     },
     "events": {
-      "title": "Événements"
+      "Event": "Événement",
+      "Events": "Événements"
     },
     "giveaways": {
-      "title": "Cadeaux",
-      "items": "Articles de Cadeaux"
+      "Giveaway": "Tirage au sort",
+      "Giveaways": "Tirages au sort",
+      "Giveaway Items": "Articles du Tirage au sort"
     },
     "userProfile": {
-      "title": "Profil d'utilisateur"
+      "User Profile": "Profil Utilisateur",
+      "Email": "Courriel",
+      "Phone": "Numéro de téléphone",
+      "SMS Phone Number": "Numéro de téléphone SMS",
+      "Address": "Adresse",
+      "City": "Ville",
+      "State": "Province",
+      "Zip": "Code Postal",
+      "Country": "Pays",
+      "Save": "Enregistrer"
     },
     "docs": {
-      "title": "Documentation"
+      "Documentation": "Documentation"
     },
     "errors": {
-      "requiredField": "Ce champ est obligatoire",
-      "invalidEmail": "Veuillez entrer une adresse email valide"
+      "required": "Ce champ est requis",
+      "invalidEmail": "Veuillez entrer une adresse courriel valide"
+    },
+    "actions": {
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "continue": "Continuer",
+      "revert": "Rétablir",
+      "send": "Envoyer",
+      "add": "Ajouter",
+      "deduct": "Déduire",
+      "remove": "Retirer",
+      "delete": "Supprimer",
+      "edit": "Modifier",
+      "update": "Mettre à jour",
+      "create": "Créer",
+      "view": "Voir",
+      "search": "Rechercher",
+      "filter": "Filtrer",
+      "sort": "Trier",
+      "submit": "Soumettre",
+      "reset": "Réinitialiser",
+      "close": "Fermer",
+      "open": "Ouvrir",
+      "upload": "Téléverser",
+      "download": "Télécharger",
+      "refresh": "Actualiser",
+      "retry": "Réessayer",
+      "confirm": "Confirmer",
+      "approve": "Approuver",
+      "decline": "Refuser",
+      "yes": "Oui",
+      "no": "Non",
+      "ok": "OK",
+      "next": "Suivant",
+      "previous": "Précédent",
+      "back": "Retour",
+      "home": "Accueil",
+      "login": "Connexion",
+      "logout": "Se déconnecter",
+      "register": "S'inscrire",
+      "signUp": "S'inscrire",
+      "signIn": "Connexion",
+      "explore": "Explorer",
+      "details": "Détails",
+      "info": "Informations",
+      "help": "Aide",
+      "settings": "Paramètres"
     }
   }
-  
+}

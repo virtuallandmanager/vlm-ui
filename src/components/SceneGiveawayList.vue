@@ -2,20 +2,20 @@
   <div>
     <content-sub-panel :loading="loadingGiveaways" :hasContent="!!claimPoints?.length" loadingMessage="Loading giveaway claim points...">
       <template v-slot:header>
-        <div class="h4">Giveaway Claim Points</div>
+        <div class="h4">{{ localeText('Giveaway Claim Points') }}</div>
         <v-spacer />
         <v-btn @click="openGiveawaySelectDialog" v-if="claimPoints?.length">
           <v-icon class="mr-1">mdi-plus</v-icon>
-          Claim Point
+          {{ localeText('Claim Point') }}
         </v-btn>
       </template>
 
-      <template v-slot:no-content-header>No Claim Points Have Been Added</template>
-      <template v-slot:no-content-text>Would you like to add one?</template>
+      <template v-slot:no-content-header>{{ localeText('NoData') }}</template>
+      <template v-slot:no-content-text>{{ localeText('CTA') }}</template>
       <template v-slot:no-content-cta>
         <v-btn @click="openGiveawaySelectDialog">
           <v-icon class="mr-1">mdi-plus</v-icon>
-          Claim Point
+          {{ localeText('Claim Point') }}
         </v-btn>
       </template>
       <v-container fluid class="pa-0">
@@ -29,7 +29,7 @@
     <v-dialog v-model="newClaimPointDialog" max-width="390">
       <v-card>
         <v-card-title>
-          <span class="text-h6">Add Claim Point</span>
+          <span class="text-h6">{{ localeText('Add Claim Point') }}</span>
         </v-card-title>
         <v-card-text>
           <v-autocomplete
@@ -38,15 +38,15 @@
             :items="giveaways"
             item-text="name"
             item-value="sk"
-            label="Linked Giveaways"
+            :label="localeText('Linked Giveaways')"
             v-model="selectedGiveaway"
             hide-details
             dense
           ></v-autocomplete>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="primary" text @click="addClaimPoint"> Add </v-btn>
-          <v-btn color="grey" text @click="newClaimPointDialog = false"> Cancel </v-btn>
+          <v-btn color="primary" text @click="addClaimPoint"> {{ localeAction('add') }} </v-btn>
+          <v-btn color="grey" text @click="newClaimPointDialog = false"> {{ localeAction('cancel') }} </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -86,6 +86,8 @@ export default {
       loadingGiveaways: 'giveaway/loadingGiveaways',
       claimPoints: 'scene/sceneClaimPoints',
       linkedGiveaways: 'event/giveawaysForScene',
+      localeText: 'i18n/giveaways',
+      localeAction: 'i18n/actions',
     }),
     giveaways() {
       return this.linkedGiveaways(this.activeScene.sk)

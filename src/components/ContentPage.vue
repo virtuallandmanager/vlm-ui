@@ -20,7 +20,7 @@
       </template>
       <v-row class="text-center mb-12" v-if="contentLoading">
         <v-col>
-          <loader :message="loadingMessage || 'Loading...'" :loading="loading" :grid="true" />
+          <loader :message="loadingMessage || localeAction('loading')" :loading="loading" :grid="true" />
         </v-col>
       </v-row>
       <v-row class="text-center" v-if="noContentLoaded">
@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import Loader from './Loader'
 
 export default {
@@ -54,7 +54,9 @@ export default {
     noContent: Boolean,
     centerContent: Boolean,
   },
+  components: { Loader },
   computed: {
+    ...mapGetters({ localeAction: 'i18n/actions' }),
     hasContent() {
       return !this.noContent && !this.loading
     },
@@ -71,7 +73,6 @@ export default {
       return this.$store.state.app.navDrawerOpen
     },
   },
-  components: { Loader },
   methods: {
     ...mapActions({ toggleNavDrawer: 'app/toggleNavDrawer' }),
   },

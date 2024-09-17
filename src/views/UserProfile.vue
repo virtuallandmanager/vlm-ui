@@ -1,24 +1,24 @@
 <template>
   <content-page loadingMessage="Loading Profile..." :noContent="!userInfo">
     <v-card elevation="2" class="mx-auto pb-4" max-width="960">
-      <v-card-title> User Profile </v-card-title>
+      <v-card-title> {{ localeText('User Profile') }} </v-card-title>
       <v-card-text>
         <v-container>
           <v-row>
             <v-col cols="12" md="4" class="text-center">
               <div class="text-h6">{{ userInfo.displayName }}</div>
-              <div class="text-display">Member since {{ formattedRegisterDate }}</div>
+              <div class="text-display">{{ localeText('Member Since') }} {{ formattedRegisterDate }}</div>
               <v-avatar size="128px" class="ma-4" @click="onAvatarClick">
-                <img :src="userInfo?.avatar" alt="Avatar" />
+                <img :src="userAvatar" :alt="localeText('Avatar')" />
               </v-avatar>
-              <v-btn @click="onAvatarClick" class="mt-2">Change Avatar</v-btn>
+              <v-btn @click="onAvatarClick" class="mt-2">{{ localeText('Change Avatar') }}</v-btn>
               <input type="file" ref="fileInput" accept="image/*" style="display: none" @change="onFileSelected" />
-              <div class="text-h6 mt-4" v-if="specialUserRoles?.length">Badges</div>
+              <div class="text-h6 mt-4" v-if="specialUserRoles?.length">{{ localeText('Badges') }}</div>
               <div v-if="specialUserRoles?.length">
-                <Badge icon="mdi-weather-sunset" title="Early Access" description="Thanks for being an early adopter!" />
+                <Badge icon="mdi-weather-sunset" :title="localeText('Early Access')" :description="localeText('earlyAccessDescription')" />
               </div>
               <div v-if="allAdminRoles.length" class="d-flex flex-column align-center">
-                <div class="text-h6 mt-4">Admin Roles</div>
+                <div class="text-h6 mt-4">{{ localeText('Admin Roles') }}</div>
                 <v-chip-group v-for="role in allAdminRoles" :key="role" class="d-flex flex-space-around">
                   <v-chip>{{ role }}</v-chip>
                 </v-chip-group>
@@ -26,10 +26,10 @@
             </v-col>
             <v-col>
               <div class="d-flex flex-column justify-space-between">
-                <v-text-field label="Primary Wallet Address" v-model="userInfo.connectedWallet" disabled></v-text-field>
+                <v-text-field :label="localeText('Primary Wallet Address')" v-model="userInfo.connectedWallet" disabled></v-text-field>
                 <v-text-field
-                  label="Email Address"
-                  hint="Optional - For future notifications and multi-factor authentication"
+                  :label="localeText('Email Address')"
+                  :hint="localeText('emailAddressHint')"
                   persistent-hint
                   validate-on-blur
                   :rules="[validateEmailAddress]"
@@ -41,8 +41,8 @@
                   class="ml-2 flex-grow-1"
                   :preferred-countries="['us', 'ca', 'ar', 'gb', 'fr', 'de']"
                   v-model="phone"
-                  label="Mobile Phone"
-                  hint="Optional - For future notifications and multi-factor authentication"
+                  :label="localeText('Mobile Phone')"
+                  :hint="localeText('mobilePhoneHint')"
                   :rules="[validatePhoneNumber]"
                   disabledFetchingCountry
                   persistent-hint
@@ -51,24 +51,24 @@
                   @change="saveAndContinue"
                 />
               </div>
-              <div class="text-h6 mt-4">Advanced & Experimental</div>
-              <v-card-subtitle> Enable additional user roles and experimental features. </v-card-subtitle>
-              <div class="d-flex">
-                <v-switch
-                  label="Advanced User"
-                  hint="Enables use of advanced developer features and custom SDK implementation"
-                  persistent-hint
-                  v-model="userRoles[2]"
-                  @change="enableAdvancedUserRole"
-                ></v-switch>
-              </div>
-              <div class="text-h6">Demo Features</div>
+              <div class="text-h6 mt-4">{{ localeText('Advanced & Experimental Features') }}</div>
+              <v-card-subtitle class="pa-0"> {{ localeText('advancedFeaturesDescription') }} </v-card-subtitle>
               <v-switch
-                label="Hide Demo Scene"
+                :label="localeText('Advanced User')"
+                :hint="localeText('advancedUserDescription')"
+                persistent-hint
+                v-model="userRoles[2]"
+                @change="enableAdvancedUserRole"
+                class="mt-0"
+              ></v-switch>
+              <div class="text-h6 mt-2">{{ localeText('Demo Features') }}</div>
+              <v-switch
+                :label="localeText('Hide Demo Scene')"
                 v-model="userInfo.hideDemoScene"
                 @change="saveAndContinue"
                 persistent-hint
-                hint="Removes the Public Demo Scene from your list of scenes"
+                :hint="localeText('hideDemoSceneHint')"
+                class="mt-0"
               ></v-switch>
             </v-col>
           </v-row>
@@ -104,6 +104,7 @@ export default {
     ...mapGetters({
       user: 'user/userInfo',
       isAdvancedUser: 'user/isAdvancedUser',
+      localeText: 'i18n/userProfile',
     }),
     specialUserRoles() {
       if (!this.userInfo.roles) return []
@@ -137,6 +138,13 @@ export default {
     saving() {
       return this.$store.state.user.processing
     },
+    userAvatar() {
+      if (this.userInfo.avatar !== 'https://vlm.gg/media/avatar/default.png') {
+        return this.userInfo.avatar
+      } else {
+        return `https://api.vlm.gg/media/avatar/default.png`
+      }
+    },
   },
   methods: {
     async saveAndContinue() {
@@ -154,7 +162,7 @@ export default {
         }
 
         if (this.newUserRoles?.length) {
-          this.userInfo.roles = this.newUserRoles.map((role, i) => (role ? i : -1)).filter((x) => x > -1)
+          this.userInfo.roles = this.newUserRoles
         }
 
         await this.updateUserInfo({
@@ -167,8 +175,14 @@ export default {
       }
     },
     enableAdvancedUserRole() {
-      this.newUserRoles = this.userRoles.map((role, i) => (i == 2 ? !role : role))
-      this.saveAndContinue()
+      if (this.userRoles[2] && !this.userInfo.roles.includes(2)) {
+        this.newUserRoles = this.userInfo.roles.concat(2).sort()
+      } else if (!this.userRoles[2]) {
+        this.newUserRoles = this.userInfo.roles.filter((role) => role !== 2)
+      }
+      this.$nextTick(() => {
+        this.saveAndContinue()
+      })
     },
     validateDisplayName() {
       if (!this.userInfo?.displayName) {

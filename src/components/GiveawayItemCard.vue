@@ -2,13 +2,13 @@
   <div>
     <v-dialog v-model="mintingRightsDialog" max-width="390">
       <v-card>
-        <v-card-title>Grant Minting Rights</v-card-title>
+        <v-card-title>{{ localeText('Grant Minting Rights') }}</v-card-title>
         <v-card-text>
-          <div class="text-body-1">This giveaway item requires minting rights to be granted to the giveaway contract address.</div>
-          <div class="text-body-1">Please grant minting rights to the giveaway address and then refresh this page.</div>
+          <div class="text-body-1">{{ localeText('mintingRightsDescription1') }}</div>
+          <div class="text-body-1">{{ localeText('mintingRightsDescription2') }}</div>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="primary" text @click="mintingRightsDialog = false"> OK </v-btn>
+          <v-btn color="primary" text @click="mintingRightsDialog = false"> {{ localeAction('OK') }} </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -31,14 +31,14 @@
         <v-row>
           <v-col>
             <div class="d-flex flex-column align-center flex-grow-1">
-              <div class="text-display">{{ item.claimCount }} of {{ claimLimits?.total || totalSupply }} claimed</div>
-              <div class="text-display">{{ itemData.available }} left to mint</div>
-              <v-btn x-small class="mt-2" @click="removeGiveawayItem">Remove Item</v-btn>
+              <div class="text-display">{{ item.claimCount }} / {{ claimLimits?.total || totalSupply }} {{ localeText('claimed') }}</div>
+              <div class="text-display">{{ itemData.available }} {{ localeText('left to mint') }}</div>
+              <v-btn x-small class="mt-2" @click="removeGiveawayItem">{{ localeText('Remove Item') }}</v-btn>
             </div>
           </v-col>
           <v-col class="d-flex justify-center align-end flex-grow-1">
-            <v-btn v-if="hasMinterRights" x-small class="mt-2" color="green">Minting Rights Granted</v-btn>
-            <v-btn v-else x-small class="mt-2" @click="showMintingRightsDialog">Grant Minting Rights</v-btn>
+            <v-btn v-if="hasMinterRights" x-small class="mt-2" color="green">{{ localeText('Minting Rights Granted') }}</v-btn>
+            <v-btn v-else x-small class="mt-2" @click="showMintingRightsDialog">{{ localeText('Grant Minting Rights') }}</v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -68,6 +68,8 @@ export default {
     ...mapGetters({
       activeGiveaway: 'giveaway/activeGiveaway',
       grantedMinterRights: 'giveaway/grantedMinterRights',
+      localeText: 'i18n/giveaways',
+      localeAction: 'i18n/actions',
     }),
     hasMinterRights() {
       return this.grantedMinterRights.includes(`${this.item.contractAddress}:${this.item.itemId}`)

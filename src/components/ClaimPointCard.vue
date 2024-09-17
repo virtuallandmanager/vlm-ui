@@ -11,7 +11,7 @@
               <v-icon small>mdi-rename</v-icon>
             </v-btn>
           </template>
-          <span>Rename</span>
+          <span>{{ localeAction('rename') }}</span>
         </v-tooltip>
 
         <div class="text-h5 flex-grow-1" v-if="editingName">
@@ -19,7 +19,7 @@
             autofocus
             outlined
             color="white"
-            label="Claim Point Name"
+            :label="localeText('Claim Point Name')"
             v-model="claimPoint.name"
             hide-details="auto"
             append-outer-icon="mdi-content-save"
@@ -39,7 +39,7 @@
                   {{ claimPoint.enabled || claimPoint.customRendering ? 'mdi-eye' : 'mdi-eye-off' }}
                 </v-icon>
               </template>
-              <span>Show/Hide</span>
+              <span>{{ localeAction('show/hide') }}</span>
             </v-tooltip>
           </v-btn></span
         >
@@ -59,7 +59,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon v-bind="attrs" v-on="on"> mdi-axis-arrow </v-icon>
               </template>
-              <span>Transform</span>
+              <span>{{ localeAction('transform') }}</span>
             </v-tooltip>
           </v-btn>
           <v-btn
@@ -76,7 +76,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
               </template>
-              <span>Properties</span>
+              <span>{{ localeAction('properties') }}</span>
             </v-tooltip>
           </v-btn>
         </span>
@@ -86,7 +86,7 @@
             icon
             @click.stop="
               showDeleteDialog({
-                title: 'giveaway claim point',
+                title: localeText('giveaway claim point'),
                 element: 'claimpoint',
                 elementData: claimPoint,
               })
@@ -96,21 +96,31 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
               </template>
-              <span>Remove</span>
+              <span>{{ localeAction('remove') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
       </div>
       <div class="d-flex flex-column px-4 align-center">
-        <v-switch v-model="properties.enableKiosk" label="Show Kiosk" class="ml-4 flex-grow-1" @change="updateClaimPointProperties"></v-switch>
-        <v-switch v-model="properties.showHoverText" label="Show Hover Text" class="ml-4 flex-grow-1" @change="updateClaimPointProperties"></v-switch>
-        <v-btn v-if="properties.enableKiosk" outlined color="secondary" @click="showColorPickerDialog">Edit Kiosk Design</v-btn>
+        <v-switch
+          v-model="properties.enableKiosk"
+          :label="localeText('Show Kiosk')"
+          class="ml-4 flex-grow-1"
+          @change="updateClaimPointProperties"
+        ></v-switch>
+        <v-switch
+          v-model="properties.showHoverText"
+          :label="localeText('Show Hover Text')"
+          class="ml-4 flex-grow-1"
+          @change="updateClaimPointProperties"
+        ></v-switch>
+        <v-btn v-if="properties.enableKiosk" outlined color="secondary" @click="showColorPickerDialog">{{ localeText('Edit Kiosk Design') }}</v-btn>
       </div>
       <div class="d-flex px-4">
         <v-select
           v-model="properties.type"
           :items="claimPointTypes"
-          label="Claim Point Type"
+          :label="localeText('Claim Point Type')"
           outlined
           hide-details
           class="mt-4"
@@ -121,7 +131,7 @@
         <v-text-field
           v-if="properties.type == 1"
           v-model="properties.imgSrc"
-          label="Image URL"
+          :label="localeText('Image URL')"
           outlined
           hide-details
           class="mt-4"
@@ -130,7 +140,7 @@
         <v-text-field
           v-if="properties.type == 2"
           v-model="properties.modelSrc"
-          label="Model File Path"
+          :label="localeText('Model File Path')"
           outlined
           hide-details
           class="mt-4"
@@ -140,7 +150,7 @@
           v-if="properties.type == 3"
           :items="mannequinTypes"
           v-model="properties.mannequinType"
-          label="Mannequin Body Type"
+          :label="localeText('Mannequin Body Type')"
           outlined
           hide-details
           class="mt-4"
@@ -149,7 +159,7 @@
         <v-text-field
           v-if="properties.showHoverText"
           v-model="properties.hoverText"
-          label="Hover Text"
+          :label="localeText('Hover Text')"
           outlined
           hide-details
           class="mt-4"
@@ -171,17 +181,17 @@
     <v-dialog v-model="colorPickerDialog" fullscreen>
       <v-card>
         <v-card-title>
-          <span class="text-h6">Kiosk Design</span>
+          <span class="text-h6">{{ localeText('Kiosk Design') }}</span>
         </v-card-title>
         <v-card-text scrollable>
           <v-container>
             <v-row>
               <v-col sm="12">
-                <div class="text-h6">Customizations</div>
+                <div class="text-h6">{{ localeText('Customizations') }}</div>
                 <v-text-field
                   v-model="properties.kioskImgSrc"
-                  label="Kiosk Image"
-                  placeholder="Image Path/URL"
+                  :label="localeText('Kiosk Image')"
+                  :placeholder="localeText('Image Path/URL')"
                   persistent-placeholder
                   outlined
                   hide-details
@@ -189,7 +199,7 @@
                 ></v-text-field>
                 <v-slider
                   v-model="properties.itemYOffset"
-                  label="Item Height Offset"
+                  :label="localeText('Item Height Offset')"
                   min="-3"
                   max="3"
                   step="0.01"
@@ -199,7 +209,7 @@
                 ></v-slider>
                 <v-slider
                   v-model="properties.itemScale"
-                  label="Item Scale"
+                  :label="localeText('Item Scale')"
                   min="0"
                   max="5"
                   step="0.1"
@@ -208,33 +218,38 @@
                   @change="updateClaimPointProperties"
                 ></v-slider>
                 <div class="d-flex justify-start">
-                  <v-switch v-model="properties.enableButton" label="Has A Button" @change="updateClaimPointProperties" class="pr-4"></v-switch>
-                  <v-switch v-model="properties.enableSpin" label="Spin Item" @change="updateClaimPointProperties"></v-switch>
+                  <v-switch
+                    v-model="properties.enableButton"
+                    :label="localeText('Has A Button')"
+                    @change="updateClaimPointProperties"
+                    class="pr-4"
+                  ></v-switch>
+                  <v-switch v-model="properties.enableSpin" :label="localeText('Spin Item')" @change="updateClaimPointProperties"></v-switch>
                 </div>
               </v-col>
             </v-row>
             <v-row>
               <v-col sm="6" class="d-flex justify-space-around">
                 <div>
-                  <div class="text-h6">Base Color</div>
+                  <div class="text-h6">{{ localeText('Base Color') }}</div>
                   <v-color-picker v-model="properties.color1" dot-size="25" hide-mode-switch mode="rgba"></v-color-picker>
                 </div>
               </v-col>
               <v-col class="d-flex justify-space-around">
                 <div>
-                  <div class="text-h6">Trim Color</div>
+                  <div class="text-h6">{{ localeText('Trim Color') }}</div>
                   <v-color-picker v-model="properties.color2" dot-size="25" hide-mode-switch mode="rgba"></v-color-picker>
                 </div>
               </v-col>
               <v-col sm="6" class="d-flex justify-space-around">
                 <div>
-                  <div class="text-h6">Glass Color</div>
+                  <div class="text-h6">{{ localeText('Glass Color') }}</div>
                   <v-color-picker v-model="properties.color3" dot-size="25" hide-mode-switch mode="rgba"></v-color-picker>
                 </div>
               </v-col>
               <v-col sm="6" class="d-flex justify-space-around" v-if="properties.enableButton">
                 <div>
-                  <div class="text-h6">Button Color</div>
+                  <div class="text-h6">{{ localeText('Button Color') }}</div>
                   <v-color-picker v-model="properties.color4" dot-size="25" hide-mode-switch mode="rgba"></v-color-picker>
                 </div>
               </v-col>
@@ -242,8 +257,8 @@
           </v-container>
         </v-card-text>
         <v-card-actions class="d-flex justify-end">
-          <v-btn color="primary" text @click="saveKiosk"> Save </v-btn>
-          <v-btn color="grey" text @click="colorPickerDialog = false"> Cancel </v-btn>
+          <v-btn color="primary" text @click="saveKiosk"> {{ localeAction('save') }} </v-btn>
+          <v-btn color="grey" text @click="colorPickerDialog = false"> {{ localeAction('cancel') }} </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -282,6 +297,8 @@ export default {
       activeScene: 'scene/activeScene',
       giveaways: 'giveaway/giveawayList',
       claimPoints: 'scene/sceneClaimPoints',
+      localeText: 'i18n/claimPoints',
+      localeAction: 'i18n/actions',
     }),
     giveaway() {
       return this.giveaways.find((g) => g.sk === this.claimPoint.giveawayId)

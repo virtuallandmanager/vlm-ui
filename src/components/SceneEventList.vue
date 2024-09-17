@@ -1,12 +1,12 @@
 <template>
   <div>
     <div class="d-flex mx-auto align-baseline justify-start">
-      <div class="text-h5 flex-grow-1">Events</div>
+      <div class="text-h5 flex-grow-1">{{ localeText('Events') }}</div>
     </div>
 
     <input style="display: none" ref="fileInput" type="file" accept=".png,.jpg,.jpeg" @change="linkEvent" />
     <div v-if="linkedEvents.length < 1" class="mt-6">
-      <div class="text-body-1 text-center">There are no events linked to this this scene</div>
+      <div class="text-body-1 text-center">{{ localeText('noLinkedEvents') }}</div>
     </div>
     <div v-if="linkedEvents.length > 0">
       <v-container>
@@ -44,6 +44,7 @@ export default {
     ...mapGetters({
       activeScene: 'scene/activeScene',
       eventsForScene: 'event/eventsForScene',
+      localeText: 'i18n/events',
     }),
     linkedEvents() {
       return this.eventsForScene(this.activeScene?.sk)

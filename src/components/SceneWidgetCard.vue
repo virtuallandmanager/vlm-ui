@@ -11,7 +11,7 @@
             outlined
             autofocus
             color="white"
-            label="Widget Name"
+            :label="localeText('Widget Name')"
             v-model="widget.name"
             hide-details="auto"
             append-outer-icon="mdi-content-save"
@@ -27,7 +27,7 @@
               <v-icon small>mdi-rename</v-icon>
             </v-btn>
           </template>
-          <span>Rename</span>
+          <span>{{ localeAction('rename') }}</span>
         </v-tooltip>
       </div>
     </div>
@@ -40,9 +40,15 @@
             <v-icon>mdi-information</v-icon>
           </v-btn>
         </template>
-        <div class="text-center"><strong>Type:</strong> {{ showTypeAsText() }}</div>
-        <div class="text-center"><strong>ID:</strong> {{ widget.id }}</div>
-        <div class="text-center"><strong>Click to copy ID</strong></div>
+        <div class="text-center">
+          <strong>{{ localeText('Type') }}:</strong> {{ showTypeAsText() }}
+        </div>
+        <div class="text-center">
+          <strong>{{ localeText('ID') }}:</strong> {{ widget.id }}
+        </div>
+        <div class="text-center">
+          <strong>{{ localeText('Click to copy ID') }}</strong>
+        </div>
       </v-tooltip>
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
@@ -50,7 +56,7 @@
             <v-icon>{{ !reconfiguring ? 'mdi-wrench' : 'mdi-content-save' }}</v-icon>
           </v-btn>
         </template>
-        <span>{{ !reconfiguring ? 'Configure' : 'Save' }}</span>
+        <span>{{ !reconfiguring ? localeText('Configure') : localeText('Save') }}</span>
       </v-tooltip>
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
@@ -68,25 +74,26 @@
             <v-icon>mdi-trash-can</v-icon>
           </v-btn>
         </template>
-        <span>Remove Widget</span>
+        <span>{{ localeText('Delete Widget') }}</span>
       </v-tooltip>
     </div>
     <div class="pa-4">
       <div v-if="widget.type == 0">
         <v-row class="text-center d-flex justify-space-around">
           <v-col>
-            <v-btn outlined @click="reconfigure"><v-icon class="mr-2">mdi-wrench</v-icon> Configure Widget</v-btn>
+            <v-btn outlined @click="reconfigure"><v-icon class="mr-2">mdi-wrench</v-icon> {{ localeText('Configure Widget') }}</v-btn>
           </v-col>
           <v-col>
-            <v-btn outlined @click="removeWidget"><v-icon class="mr-2">mdi-trash-can</v-icon> Delete Widget</v-btn>
+            <v-btn outlined @click="removeWidget"><v-icon class="mr-2">mdi-trash-can</v-icon> {{ localeText('Delete Widget') }}</v-btn>
           </v-col>
         </v-row>
       </div>
       <v-switch v-if="widget.type == 1" v-model="widget.value" hide-details class="mt-0" @change="editWidget"
         ><template v-slot:label>
           <div class="text-body">
-            {{ widget.name }} is
-            <strong :class="widget.value ? 'green--text' : 'red--text'">{{ widget.value ? 'Enabled' : 'Disabled' }}</strong>
+            {{ widget.name }}
+            (<strong :class="widget.value ? 'green--text' : 'red--text'">{{ widget.value ? localeText('Enabled') : localeText('Disabled') }}</strong
+            >)
           </div>
         </template></v-switch
       >
@@ -97,7 +104,7 @@
           outlined
           :items="widgetSelections"
           v-model="widget.value"
-          :label="`${widget.name} State`"
+          :label="`${widget.name} ${localeText('State')}`"
           hide-details="auto"
           @change="editWidget()"
         ></v-select>
@@ -105,21 +112,21 @@
       <div class="d-flex align-center justify-space-around" v-if="widget.type == 4">
         <v-menu v-model="editingDate" :close-on-content-click="false" max-width="290">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn outlined color="primary" v-bind="attrs" v-on="on"><v-icon class="mr-2">mdi-calendar</v-icon>Set Date</v-btn>
+            <v-btn outlined color="primary" v-bind="attrs" v-on="on"><v-icon class="mr-2">mdi-calendar</v-icon>{{ localeText('Set Date') }}</v-btn>
           </template>
           <v-date-picker color="primary" v-model="date" @change="setDateTime"></v-date-picker>
         </v-menu>
         <v-menu v-model="editingTime" :close-on-content-click="false" max-width="290">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn outlined color="primary" v-bind="attrs" v-on="on"><v-icon class="mr-2">mdi-clock</v-icon>Set Time</v-btn>
+            <v-btn outlined color="primary" v-bind="attrs" v-on="on"><v-icon class="mr-2">mdi-clock</v-icon>{{ localeText('Set Time') }}</v-btn>
           </template>
           <v-time-picker v-if="editingTime" color="primary" v-model="time" @change="setDateTime"></v-time-picker>
         </v-menu>
       </div>
       <div v-if="widget.type === 4" class="text-button my-2 text-center">
-        <div>Format</div>
+        <div>{{ localeText('Format') }}</div>
         <v-btn-toggle v-if="widget.type === 4" v-model="dateTimeFormat" @change="setDateTime"
-          ><v-btn>ISO 8601</v-btn><v-btn>Timestamp</v-btn></v-btn-toggle
+          ><v-btn>ISO 8601</v-btn><v-btn>{{ localeText('Timestamp') }}</v-btn></v-btn-toggle
         >
       </div>
       <!-- <v-autocomplete v-if="widget.type === 4" outlined :items="timeZones" label="Select a time zone" v-model="selectedTimeZone" item-text="text" item-value="value" @change="setDateTime" class="mt-2"></v-autocomplete> -->
@@ -142,20 +149,49 @@
     </div>
     <div v-if="reconfiguring" class="pa-6">
       <div class="d-flex align-center">
-        <v-select outlined label="Widget Type" :items="widgetTypes" hide-details="auto" v-model="widget.type" @change="changeWidgetType"> </v-select>
-        <v-btn outlined v-if="widget.type == 3" class="ml-4" @click.stop="openEditSelectDialog"> Edit Selections </v-btn>
+        <v-select
+          outlined
+          :label="localeText('Widget Type')"
+          :items="widgetTypes"
+          hide-details="auto"
+          v-model="widget.type"
+          @change="changeWidgetType"
+        >
+        </v-select>
+        <v-btn outlined v-if="widget.type == 3" class="ml-4" @click.stop="openEditSelectDialog"> {{ localeText('Edit Selections') }} </v-btn>
       </div>
       <div class="d-flex" v-if="widget.type === 6">
-        <v-text-field outlined v-model="widget.range[0]" label="Slider Start" hide-details="auto" @blur="editWidget()" class="mt-4"></v-text-field>
-        <v-text-field outlined v-model="widget.range[1]" label="Slider End" hide-details="auto" @blur="editWidget()" class="mt-4"></v-text-field>
+        <v-text-field
+          outlined
+          v-model="widget.range[0]"
+          :label="localeText('Slider Start')"
+          hide-details="auto"
+          @blur="editWidget()"
+          class="mt-4"
+        ></v-text-field>
+        <v-text-field
+          outlined
+          v-model="widget.range[1]"
+          :label="localeText('Slider End')"
+          hide-details="auto"
+          @blur="editWidget()"
+          class="mt-4"
+        ></v-text-field>
       </div>
-      <v-text-field outlined label="Widget Id" v-model="widget.id" hide-details="auto" @blur="editWidget()" class="mt-4"></v-text-field>
+      <v-text-field
+        outlined
+        :label="localeText('Widget ID')"
+        v-model="widget.id"
+        hide-details="auto"
+        @blur="editWidget()"
+        class="mt-4"
+      ></v-text-field>
     </div>
   </v-card>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { SceneWidget } from '../models/SceneWidget'
 import EditSelectDialog from '../components/dialogs/EditSelectDialog'
 import { DateTime } from 'luxon'
@@ -168,15 +204,6 @@ export default {
   data: () => ({
     editingName: false,
     editingSelections: false,
-    widgetTypes: [
-      { text: 'None', value: 0, disabled: true },
-      { text: 'Toggle', value: 1 },
-      { text: 'Text', value: 2 },
-      { text: 'Selector', value: 3 },
-      { text: 'Date & Time', value: 4 },
-      { text: 'Trigger', value: 5 },
-      { text: 'Slider', value: 6 },
-    ],
     reconfiguring: false,
     editingDate: false,
     editingTime: false,
@@ -218,6 +245,21 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      localeText: 'i18n/widgets',
+      localeAction: 'i18n/actions',
+    }),
+    widgetTypes() {
+      return [
+        { text: this.localeText('None') || 'None', value: 0, disabled: true },
+        { text: this.localeText('Toggle') || 'Toggle', value: 1 },
+        { text: this.localeText('Text') || 'Text', value: 2 },
+        { text: this.localeText('Selector') || 'Selector', value: 3 },
+        { text: this.localeText('Date & Time') || 'Date & Time', value: 4 },
+        { text: this.localeText('Trigger') || 'Trigger', value: 5 },
+        { text: this.localeText('Slider') || 'Slider', value: 6 },
+      ]
+    },
     widgetSelections() {
       if (this.widget.selections) {
         return this.widget.selections.map((option) => ({
@@ -225,7 +267,7 @@ export default {
           value: option.value,
         }))
       } else {
-        return [{ text: 'Option 1', value: 'option-1' }]
+        return [{ text: `${this.localeText('Option')} 1`, value: `${this.localeText('option')}-1` }]
       }
     },
     needsSetup() {
@@ -283,11 +325,11 @@ export default {
       navigator.clipboard.writeText(this.widget.id).then(
         () => {
           // clipboard successfully set
-          this.showSuccess({ message: `Widget ID "${this.widget.id}" Copied to clipboard.` })
+          this.showSuccess({ message: `${this.localeText('Widget ID')} "${this.widget.id}" ${this.localeText('Copied to clipboard')}` })
         },
         () => {
           // clipboard write failed
-          this.showError({ message: 'Could not copy ID to clipboard.' })
+          this.showError({ message: this.localeText('Could not copy ID to clipboard') })
         }
       )
     },
@@ -313,19 +355,19 @@ export default {
     showTypeAsText() {
       switch (this.widget.type) {
         case 1:
-          return 'Toggle'
+          return this.localeText('Toggle')
         case 2:
-          return 'Text'
+          return this.localeText('Text')
         case 3:
-          return 'Selector'
+          return this.localeText('Selector')
         case 4:
-          return 'Date & Time'
+          return this.localeText('Date & Time')
         case 5:
-          return 'Trigger'
+          return this.localeText('Trigger')
         case 6:
-          return 'Slider'
+          return this.localeText('Slider')
         default:
-          return 'Not Configured'
+          return this.localeText('Not Configured')
       }
     },
     splitIsoString(isoString) {

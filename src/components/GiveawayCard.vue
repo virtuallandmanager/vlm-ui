@@ -2,12 +2,12 @@
   <v-card class="grey darken-3" elevation="2">
     <v-img :src="giveaway?.imageSrc || giveawayImgPlaceholder" lazy-src="@/assets/placeholder.png" max-height="250" class="text-right">
       <div class="d-flex">
-        <v-chip class="orange ma-4 black--text" v-if="paused"
-          ><span><v-icon class="black--text">mdi-pause</v-icon> Paused</span></v-chip
-        >
+        <v-chip class="orange ma-4 black--text" v-if="paused">
+          <span><v-icon class="black--text">mdi-pause</v-icon> {{ localeText('Paused') }}</span>
+        </v-chip>
         <v-spacer></v-spacer>
         <v-chip v-if="giveaway?.allocatedCredits" class="grey ma-4 black--text"
-          ><span>{{ giveaway?.allocatedCredits }} Credits</span></v-chip
+          ><span>{{ giveaway?.allocatedCredits }} {{ localeText('Credits') }}</span></v-chip
         >
       </div>
       <template v-slot:placeholder>
@@ -21,12 +21,15 @@
         <v-row>
           <v-col>
             <div class="text-h5 text-left text-truncate">
-              {{ giveaway?.name || 'Loading...' }}
+              {{ giveaway?.name || localeAction('loading') }}
             </div>
             <div class="text-subtitle-2 font-weight-medium text-right mb-2"></div>
             <div class="text-subtitle-2 font-weight-light text-left">
-              <span v-if="giveaway?.items?.length">Sends {{ giveaway.items.length }} Item{{ giveaway.items.length !== 1 ? 's' : '' }}</span>
-              <span v-else>No Giveaway Items Configured</span>
+              <span v-if="giveaway?.items?.length"
+                >{{ localeText('Sends') }} {{ giveaway.items.length }}
+                {{ giveaway.items.length !== 1 ? localeText('Items') : localeText('Item') }}</span
+              >
+              <span v-else>{{ localeText('NoItems') }}</span>
             </div>
           </v-col>
         </v-row>
@@ -37,6 +40,7 @@
 
 <script>
 import imgPlaceholder from '@/assets/placeholder.png'
+import { mapGetters } from 'vuex'
 import { DateTime } from 'luxon'
 
 export default {
@@ -47,6 +51,7 @@ export default {
     giveaway: Object,
   },
   computed: {
+    ...mapGetters({ localeText: 'i18n/giveaways', localeAction: 'i18n/actions' }),
     giveawayImgPlaceholder() {
       return imgPlaceholder
     },

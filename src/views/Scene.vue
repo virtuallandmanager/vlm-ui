@@ -12,56 +12,57 @@
     <template v-slot:header>{{ scene?.name }}</template>
     <template v-slot:header-actions>
       <div class="d-flex align-center" style="position: absolute">
-        <v-btn v-if="isDemoScene" color="primary" @click="viewDemoScene" class="mr-2">VIEW DEMO SCENE</v-btn>
+        <v-btn v-if="isDemoScene" color="primary" @click="viewDemoScene" class="mr-2">{{ localeText('View Demo Scene') }}</v-btn>
+        <v-btn v-else color="primary" @click="jumpIn(x, y)" class="mr-2">{{ localeText('Jump In') }}</v-btn>
         <v-spacer></v-spacer>
         <v-fade-transition>
-          <v-chip v-if="connected" :color="connectedColor" :border-color="connectedColor">Connected To Scene </v-chip>
+          <v-chip v-if="connected" :color="connectedColor" :border-color="connectedColor">{{ localeText('Connected To Scene') }} </v-chip>
         </v-fade-transition>
       </div>
     </template>
-    <template v-slot:no-content-header>Could Not Load Scene</template>
-    <template v-slot:no-content-text> Please try again and contact support if the problem continues. </template>
+    <template v-slot:no-content-header>{{ localeText('Could Not Load Scene') }} </template>
+    <template v-slot:no-content-text> {{ localeText('NoDataTagline') }} </template>
     <v-card class="cyberpunk-border py-4">
       <v-tabs v-model="tab" centered icons-and-text center-active grow color="nav" :show-arrows="true">
         <v-tabs-slider />
         <v-tab href="#tab-1" class="text-overline">
-          Analytics
+          {{ localeText('Analytics') }}
           <v-icon small>mdi-chart-timeline-variant</v-icon>
         </v-tab>
         <v-tab href="#tab-2" class="text-overline">
-          Video Screens
+          {{ localeText('Video Screens') }}
           <v-icon small>mdi-television</v-icon>
         </v-tab>
         <v-tab href="#tab-3" class="text-overline">
-          Art
+          {{ localeText('Art') }}
           <v-icon small>mdi-image-frame</v-icon>
         </v-tab>
         <v-tab href="#tab-4" class="text-overline">
-          3D Models
+          {{ localeText('3D Models') }}
           <v-icon small>mdi-cube-outline</v-icon>
         </v-tab>
         <v-tab href="#tab-5" class="text-overline">
-          Sounds
+          {{ localeText('Sounds') }}
           <v-icon small>mdi-speaker</v-icon>
         </v-tab>
         <v-tab href="#tab-6" class="text-overline">
-          Giveaways
+          {{ localeText('Giveaways') }}
           <v-icon small>mdi-gift</v-icon>
         </v-tab>
         <v-tab href="#tab-7" v-if="isAdvancedUser" class="text-overline">
-          Widgets
+          {{ localeText('Widgets') }}
           <v-icon small>mdi-palette</v-icon>
         </v-tab>
         <v-tab href="#tab-8" class="text-overline">
-          Moderation
+          {{ localeText('Moderation') }}
           <v-icon small>mdi-gavel</v-icon>
         </v-tab>
         <v-tab href="#tab-9" class="text-overline">
-          Presets
+          {{ localeText('Presets') }}
           <v-icon small>mdi-folder</v-icon>
         </v-tab>
         <v-tab href="#tab-10" class="text-overline">
-          Settings
+          {{ localeText('Settings') }}
           <v-icon small>mdi-cog</v-icon>
         </v-tab>
       </v-tabs>
@@ -223,6 +224,14 @@ export default {
       }
       return worldNames.join(', ') || 'None'
     },
+    x() {
+      const location = this.scene.locations.find((loc) => loc.world == 'decentraland')
+      return location.coordinates[0]
+    },
+    y() {
+      const location = this.scene.locations.find((loc) => loc.world == 'decentraland')
+      return location.coordinates[1]
+    },
     ...mapGetters({
       scene: 'scene/activeScene',
       user: 'user/userInfo',
@@ -236,6 +245,7 @@ export default {
       loadingPresetList: 'scene/loadingPresetList',
       loadingScene: 'scene/loadingScene',
       giveawaysForScene: 'event/giveawaysForScene',
+      localeText: 'i18n/scene',
     }),
   },
   methods: {
@@ -255,7 +265,10 @@ export default {
       return DateTime.fromMillis(timestamp).toRelative()
     },
     viewDemoScene() {
-      return window.open('https://play.decentraland.org/?position=104%2C60')
+      return window.open('https://decentraland.org/play?position=104%2C60')
+    },
+    jumpIn(x, y) {
+      window.open(`https://decentraland.org/play?position=${x}%2C${y}`, '_blank')
     },
   },
 }

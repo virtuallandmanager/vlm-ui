@@ -4,7 +4,7 @@
       <div class="text-h5 flex-grow-1">Video Libary</div>
       <v-btn small @click="$refs.fileInput.click()">
         <v-icon small class="mr-1">mdi-plus</v-icon>
-        Add Video
+        Video
       </v-btn>
     </div>
     <input style="display: none" ref="fileInput" type="file" accept=".png,.jpg,.jpeg" @change="addImage" />

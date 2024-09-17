@@ -10,7 +10,7 @@
     </v-row>
     <v-row class="text-center mb-12" v-if="contentLoading">
       <v-col>
-        <loader :message="loadingMessage || 'Loading...'" :loading="loading" :grid="true" />
+        <loader :message="loadingMessage || localeAction('loading')" :loading="loading" :grid="true" />
       </v-col>
     </v-row>
     <v-row class="text-center" v-if="noContentLoaded">
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import Loader from './Loader'
 
 export default {
@@ -41,6 +41,7 @@ export default {
     hasContent: Boolean,
   },
   computed: {
+    ...mapGetters({ localeAction: 'i18n/actions' }),
     contentLoading() {
       return this.loading
     },

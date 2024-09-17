@@ -6,6 +6,7 @@ import Scenes from '../views/Scenes.vue'
 import Scene from '../views/Scene.vue'
 
 Vue.use(Router)
+
 const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
@@ -36,7 +37,7 @@ const router = new Router({
     },
     {
       path: '/privacy',
-      name: 'PrivacySettings',
+      name: 'Privacy Settings',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -55,11 +56,33 @@ const router = new Router({
     // },
     {
       path: '/media',
-      name: 'MediaLibrary',
+      name: 'Media Library',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ '../views/MediaLibrary.vue'),
+      component: () => import(/* webpackChunkName: "media" */ '../views/MediaLibrary.vue'),
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/streams',
+      name: 'Video Streams',
+      // route level code-splitting
+      // this generates a separate chunk (about.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import(/* webpackChunkName: "streams" */ '../views/VideoStreams.vue'),
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/rent-stream',
+      name: 'Video Stream Rental',
+      // route level code-splitting
+      // this generates a separate chunk (about.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import(/* webpackChunkName: "rent-stream" */ '../views/VideoStreamPurchase.vue'),
       meta: {
         requiresAuth: true,
       },
@@ -99,10 +122,10 @@ const router = new Router({
     {
       path: '/admin',
       name: 'AdminPanel',
-      component: () => import(/* webpackChunkName: "events" */ '../views/AdminPanel.vue'),
+      component: () => import(/* webpackChunkName: "admin" */ '../views/AdminPanel.vue'),
       meta: {
-        // requiresAuth: true,
-        // requiresAdmin: true,
+        requiresAuth: true,
+        requiresAdmin: true,
       },
     },
     {
@@ -116,7 +139,7 @@ const router = new Router({
     {
       path: '/status',
       name: 'Status',
-      component: () => import(/* webpackChunkName: "scenes" */ '../views/Status.vue'),
+      component: () => import(/* webpackChunkName: "status" */ '../views/Status.vue'),
     },
     {
       path: '/scene/:sceneId',
@@ -136,7 +159,7 @@ const router = new Router({
     },
     {
       path: '/docs',
-      name: 'DocsHome',
+      name: 'Docs',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -144,7 +167,7 @@ const router = new Router({
     },
     {
       path: '/docs/getting-started',
-      name: 'DocsGettingStarted',
+      name: 'Getting Started',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -153,7 +176,7 @@ const router = new Router({
     },
     {
       path: '/profile',
-      name: 'UserProfile',
+      name: 'User Profile',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -167,6 +190,10 @@ const router = new Router({
 
 router.beforeEach(async (to, from, next) => {
   try {
+    if (to.path !== '/' && to.path === from.path) {
+      console.log('Navigating to the same route: ', to.path)
+      return
+    }
     const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
     const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin)
     const isAuthenticated = () => {

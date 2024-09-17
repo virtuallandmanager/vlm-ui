@@ -4,26 +4,26 @@
       <v-tabs v-model="tab" centered dark grow icons-and-text>
         <v-tabs-slider></v-tabs-slider>
         <v-tab href="#tab-1">
-          Live Status
+          {{ localeText('Live Status') }}
           <v-icon>mdi-sync</v-icon>
         </v-tab>
-        <!-- <v-tab href="#tab-2" @click="getRecentSceneMetrics">
-          Recent Metrics
+        <v-tab href="#tab-2" @click="getRecentSceneMetrics">
+          {{ localeText('Recent Metrics') }}
           <v-icon>mdi-history</v-icon>
         </v-tab>
-        <v-tab href="#tab-3" @click="loadHistoricalData">
-          Historical Graphs
+        <v-tab href="#tab-3">
+          {{ localeText('Historical Graphs') }}
           <v-icon>mdi-chart-line</v-icon>
-        </v-tab> -->
+        </v-tab>
       </v-tabs>
     </template>
     <v-tabs-items v-model="tab">
       <v-tab-item value="tab-1">
         <v-container>
           <v-card>
-            <v-card-title>Active Connections</v-card-title>
+            <v-card-title>{{ localeText('Active Connections') }}</v-card-title>
             <v-card-text>
-              <div class="h4">Scene Admins</div>
+              <div class="h4">{{ localeText('Scene Admins') }}</div>
               <v-data-table :headers="userHeaders" :items="activeSceneHosts" :items-per-page="10" class="elevation-1">
                 <template v-slot:item.country="{ item }">
                   <v-flag :country="item.country" />
@@ -31,7 +31,7 @@
               </v-data-table>
             </v-card-text>
             <v-card-text>
-              <div class="h4">Scene Visitors</div>
+              <div class="h4">{{ localeText('Scene Visitors') }}</div>
               <v-data-table :headers="userHeaders" :items="activeSceneVisitors" :items-per-page="10" class="elevation-1">
                 <template v-slot:item.country="{ item }">
                   <v-flag :country="item.country" />
@@ -40,15 +40,15 @@
             </v-card-text>
             <v-card-actions class="justify-space-between">
               <v-spacer />
-              <v-btn color="primary" @click="downloadSnapshotCSV">Guestlist Snapshot</v-btn>
+              <v-btn color="primary" @click="downloadSnapshotCSV">{{ localeText('Guestlist Snapshot') }}</v-btn>
             </v-card-actions>
           </v-card>
           <v-card>
             <v-card-title
-              >Live Actions <v-spacer />
+              >{{ localeText('Live Actions') }} <v-spacer />
               <v-layout align-center>
                 <v-flex xs12 sm6 offset-sm3>
-                  <v-select v-model="duration" :items="durations" label="Hide After" single-line bottom></v-select>
+                  <v-select v-model="duration" :items="durations" :label="localeText('Hide After')" single-line bottom></v-select>
                 </v-flex>
               </v-layout>
             </v-card-title>
@@ -82,48 +82,107 @@
       </v-tab-item>
 
       <v-tab-item value="tab-2">
-        <v-container>
-          <v-card>
-            <v-card-title>Currently In Scene</v-card-title>
-            <v-card-text>
-              <v-card tile color="black" class="pa-2" min-height="420"> </v-card>
-            </v-card-text>
+        <div v-if="loadingRecentMetrics">
+          <loader :message="localeText('Loading Recent Metrics...')" :loading="loadingRecentMetrics" :grid="true" />
+        </div>
+        <div v-else>
+          <v-card class="pa-6 d-flex justify-center align-center flex-column">
+            <v-card-title class="text-h4" v-if="recentMetrics?.last24h">{{ localeText('Last 24 Hours') }}</v-card-title>
+            <v-container>
+              <v-row>
+                <v-col>
+                  <v-card class="black d-flex justify-center align-center flex-column" v-if="recentMetrics?.last24h">
+                    <v-card-title class="text-h2">{{ recentMetrics.last24h.totalSessions }}</v-card-title>
+                    <v-card-text class="text-h6 text-center"> {{ localeText('Total Sessions') }} </v-card-text>
+                    <v-card-text class="text-caption text-center pt-0"></v-card-text>
+                  </v-card>
+                </v-col>
+                <v-col>
+                  <v-card class="black d-flex justify-center align-center flex-column" v-if="recentMetrics?.last24h">
+                    <v-card-title class="text-h2"> {{ recentMetrics.last24h.totalUniqueUsers }}</v-card-title>
+                    <v-card-text class="text-h6 text-center pb-0"> {{ localeText('Unique Visitors') }} </v-card-text>
+                    <v-card-text class="text-caption text-center pt-0"> {{ localeText('Based on IP') }} </v-card-text>
+                  </v-card>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-card class="black d-flex justify-center align-center flex-column" v-if="recentMetrics?.last24h">
+                    <v-card-title class="text-h4">{{ averageSessionLength24h }}</v-card-title>
+                    <v-card-text class="text-h6 text-center"> {{ localeText('Average Session Duration') }} </v-card-text>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </v-container>
           </v-card>
-          <v-card>
-            <v-card-title>Live Actions</v-card-title>
-            <v-card-text>
-              <v-card tile color="black" class="pa-2" min-height="420">Stuff</v-card>
-            </v-card-text>
+          <v-card class="pa-6 d-flex justify-center align-center flex-column">
+            <v-card-title class="text-h4" v-if="recentMetrics?.lastWeek">{{ localeText('Last 7 Days') }}</v-card-title>
+            <v-container>
+              <v-row>
+                <v-col>
+                  <v-card class="black d-flex justify-center align-center flex-column" v-if="recentMetrics?.lastWeek">
+                    <v-card-title class="text-h2">{{ recentMetrics.lastWeek.totalSessions }}</v-card-title>
+                    <v-card-text class="text-h6 text-center"> {{ localeText('Total Sessions') }} </v-card-text>
+                    <v-card-text class="text-caption text-center pt-0"></v-card-text>
+                  </v-card>
+                </v-col>
+                <v-col>
+                  <v-card class="black d-flex justify-center align-center flex-column" v-if="recentMetrics?.lastWeek">
+                    <v-card-title class="text-h2"> {{ recentMetrics.lastWeek.totalUniqueUsers }}</v-card-title>
+                    <v-card-text class="text-h6 text-center pb-0"> {{ localeText('Unique Visitors') }} </v-card-text>
+                    <v-card-text class="text-caption text-center pt-0"> {{ localeText('Based on IP') }} </v-card-text>
+                  </v-card>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-card class="black d-flex justify-center align-center flex-column" v-if="recentMetrics?.lastWeek">
+                    <v-card-title class="text-h4">{{ averageSessionLength7Days }}</v-card-title>
+                    <v-card-text class="text-h6 text-center"> {{ localeText('Average Session Duration') }} </v-card-text>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </v-container>
           </v-card>
-        </v-container>
+        </div>
       </v-tab-item>
       <v-tab-item value="tab-3">
-        <date-range-bar />
-        <v-container>
+        <date-range-bar @onChange="onDateRangeChange" />
+        <div v-if="loadingHistoricalData">
+          <loader :message="localeText('Loading Historical Data...')" :loading="loadingHistoricalData" :grid="true" />
+        </div>
+        <v-container v-else>
           <v-card>
-            <v-card-title>Interactions Chart</v-card-title>
-            <v-card-text>
-              <v-card tile class="pa-2" min-height="420">
+            <v-card-title>{{ localeText('Interactions Chart') }}</v-card-title>
+            <v-card-text v-if="series.length">
+              <v-card tile class="pa-2" min-height="450">
                 <div id="wrapper">
                   <div id="chart-line2">
-                    <apexchart type="line" height="230" :options="chartOptions" :series="series"></apexchart>
-                  </div>
-                  <div id="chart-line">
-                    <apexchart type="area" height="130" :options="chartOptionsLine" :series="seriesLine"></apexchart>
+                    <apexchart type="line" height="auto" :options="chartOptions" :series="series"></apexchart>
                   </div>
                 </div>
               </v-card>
             </v-card-text>
-          </v-card>
-          <v-card>
-            <v-card-title>Interactions Breakdown</v-card-title>
-            <v-card-text>
-              <v-card tile color="black" class="pa-2" min-height="420">Graph</v-card>
+            <v-card-text v-else>
+              <div class="text-center">{{ localeText('NoData') }}</div>
             </v-card-text>
           </v-card>
-          <v-card-actions class="justify-space-between">
-            <v-btn color="primary">Send Message</v-btn>
-          </v-card-actions>
+          <v-card>
+            <v-card-title>{{ localeText('Total Interactions') }}</v-card-title>
+            <v-card-subtitle>{{ localeText('Total Interactions In Selected Time Period') }}</v-card-subtitle>
+            <v-card-text v-if="donutSeries.length">
+              <v-card tile class="pa-2" min-height="450">
+                <div id="wrapper">
+                  <div id="chart-line2">
+                    <apexchart type="donut" height="auto" :options="donutChartOptions" :series="donutSeries"></apexchart>
+                  </div>
+                </div>
+              </v-card>
+            </v-card-text>
+            <v-card-text v-else>
+              <div class="text-center">{{ localeText('NoData') }}</div>
+            </v-card-text>
+          </v-card>
         </v-container>
       </v-tab-item>
     </v-tabs-items>
@@ -132,21 +191,26 @@
 
 <script>
 import Vue from 'vue'
-import { DateTime, Interval } from 'luxon'
+import { DateTime, Interval, Duration } from 'luxon'
 import timezones from 'timezones-list'
 import ContentSubPanel from './ContentSubPanel'
 import DateRangeBar from './DateRangeBar'
+import Loader from './Loader'
 import { mapActions, mapGetters } from 'vuex'
 import VueApexCharts from 'vue-apexcharts'
 import _ from 'lodash'
 
 export default {
   name: 'SceneAnalytics',
-  components: { ContentSubPanel, DateRangeBar, apexchart: VueApexCharts },
+  components: {
+    ContentSubPanel,
+    DateRangeBar,
+    Loader,
+    apexchart: VueApexCharts,
+  },
   data: () => ({
     tab: 'tab-1',
     loadingAnalytics: false,
-    loadingConnections: false,
     exportingQuery: false,
     dateRangeMenu: false,
     selectDataError: '',
@@ -159,19 +223,13 @@ export default {
     startTime: '00:00:00',
     endDate: DateTime.now().toISODate(),
     endTime: '23:59:59',
-    dateRange: [DateTime.now().toFormat('yyyy-MM-dd'), DateTime.now().endOf('day').toFormat('yyyy-MM-dd')],
     dataMetrics: [
       { value: 'uniqueVisitors', text: 'All Unique Visitors' },
       { value: 'uniqueWeb3', text: 'Visitors With Wallet' },
       { value: 'uniqueGuests', text: 'Guest Visitors' },
       { value: 'uniqueIps', text: 'Unique IP Addresses' },
     ],
-    durations: [
-      { value: 5, text: '5 seconds' },
-      { value: 10, text: '10 seconds' },
-      { value: 15, text: '15 seconds' },
-      { value: 30, text: '30 seconds' },
-    ],
+    durations: [],
     selectedMetric: 'uniqueVisitors',
     activeCountryHeaders: [
       {
@@ -217,79 +275,6 @@ export default {
     },
     removeDuplicateWallets: false,
     removeDuplicateIps: false,
-    series: [
-      {
-        data: [],
-      },
-    ],
-    chartOptions: {
-      chart: {
-        id: 'chart2',
-        type: 'line',
-        height: 230,
-        toolbar: {
-          autoSelected: 'pan',
-          show: false,
-        },
-      },
-      colors: ['#546E7A'],
-      stroke: {
-        width: 3,
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      fill: {
-        opacity: 1,
-      },
-      markers: {
-        size: 0,
-      },
-      xaxis: {
-        type: 'datetime',
-      },
-    },
-
-    seriesLine: [
-      {
-        data: [],
-      },
-    ],
-    chartOptionsLine: {
-      chart: {
-        id: 'chart1',
-        height: 130,
-        type: 'area',
-        brush: {
-          target: 'chart2',
-          enabled: true,
-        },
-        selection: {
-          enabled: true,
-          xaxis: {
-            min: new Date('19 Jun 2017').getTime(),
-            max: new Date('14 Aug 2017').getTime(),
-          },
-        },
-      },
-      colors: ['#008FFB'],
-      fill: {
-        type: 'gradient',
-        gradient: {
-          opacityFrom: 0.91,
-          opacityTo: 0.1,
-        },
-      },
-      xaxis: {
-        type: 'datetime',
-        tooltip: {
-          enabled: false,
-        },
-      },
-      yaxis: {
-        tickAmount: 2,
-      },
-    },
     timezoneList: [
       { text: 'UTC', value: 'UTC' },
       ...timezones.map((tz) => ({
@@ -306,6 +291,14 @@ export default {
     newEndTime: '',
     timescaleEnum: 1,
   }),
+  mounted() {
+    this.durations = [
+      { value: 5, text: `5 ${this.localeUnit('seconds')}` },
+      { value: 10, text: `10 ${this.localeUnit('seconds')}` },
+      { value: 15, text: `15 ${this.localeUnit('seconds')}` },
+      { value: 30, text: `30 ${this.localeUnit('seconds')}` },
+    ]
+  },
   computed: {
     ...mapGetters({
       activeScene: 'scene/activeScene',
@@ -313,7 +306,93 @@ export default {
       activeSceneVisitors: 'scene/activeSceneVisitors',
       sessionActions: 'scene/sessionActions',
       sessionActionDuration: 'scene/sessionActionDuration',
+      recentSceneMetrics: 'analytics/recentSceneMetrics',
+      historicalData: 'analytics/historicalData',
+      totalInteractions: 'analytics/totalInteractions',
+      loadingRecentMetrics: 'analytics/loadingRecentMetrics',
+      loadingHistoricalData: 'analytics/loadingHistoricalData',
+      localeText: 'i18n/analytics',
+      localeUnit: 'i18n/units',
+      selectedLocale: 'i18n/localeCode',
     }),
+    historicalDataSeries() {
+      const historicalDataSeries = this.historicalData(this.activeScene.sk)
+      return historicalDataSeries
+    },
+    chartOptions() {
+      const categories = this.extractDateTimes(this.historicalDataSeries)
+      console.log('categories', categories)
+      return {
+        theme: {
+          mode: 'dark', // Switches the theme to dark
+        },
+        chart: {
+          id: `interactions-graph-${DateTime.now().toISO()}`,
+        },
+        xaxis: {
+          categories,
+        },
+        yaxis: {
+          title: {
+            text: 'Interactions',
+          },
+        },
+      }
+    },
+    donutChartOptions() {
+      const totalInteractions = this.totalInteractions(this.activeScene.sk)
+
+      return {
+        theme: {
+          mode: 'dark', // Switches the theme to dark
+        },
+        chart: {
+          id: 'interaction-totals',
+        },
+        dataLabels: {
+          enabled: true,
+          formatter: function (val) {
+            return Math.round(val) + '%'
+          },
+        },
+        plotOptions: {
+          pie: {
+            donut: {
+              labels: {
+                show: true,
+              },
+            },
+          },
+        },
+        labels: Object.keys(totalInteractions),
+      }
+    },
+    series() {
+      const historicalDataSeries = this.historicalData(this.activeScene.sk)
+      return Object.entries(historicalDataSeries).map(([name, data]) => ({
+        name,
+        data: Object.values(data).map((count) => {
+          return count
+        }),
+      }))
+    },
+    donutSeries() {
+      const totalInteractions = this.totalInteractions(this.activeScene.sk)
+      return Object.values(totalInteractions)
+    },
+    recentMetrics() {
+      return this.recentSceneMetrics(this.activeScene.sk) || {}
+    },
+    averageSessionLength24h() {
+      if (!this.recentMetrics?.last24h?.averageSessionLength) return '0 seconds'
+      console.log('averageSessionLength', this.recentMetrics.last24h.averageSessionLength)
+      return this.durationToWords(this.recentMetrics.last24h.averageSessionLength)
+    },
+    averageSessionLength7Days() {
+      if (!this.recentMetrics?.lastWeek?.averageSessionLength) return '0 seconds'
+      console.log('averageSessionLength', this.recentMetrics.lastWeek.averageSessionLength)
+      return this.durationToWords(this.recentMetrics.lastWeek.averageSessionLength)
+    },
     duration: {
       get() {
         return this.sessionActionDuration
@@ -326,31 +405,27 @@ export default {
       get() {
         return DateTime.fromFormat(this.startDate + this.startTime, 'yyyy-MM-ddt')
       },
-      set() {
-        return DateTime.fromFormat(this.startDate + this.startTime, 'yyyy-MM-ddt')
+      set(val) {
+        this.startDate = DateTime.fromISO(val).toISODate()
+        this.startTime = DateTime.fromISO(val).toISOTime()
+        return DateTime.fromISO(val)
       },
     },
     endDateTime: {
       get() {
         return DateTime.fromFormat(this.endDate + this.endTime, 'yyyy-MM-ddt')
       },
-      set() {
-        return DateTime.fromFormat(this.endDate + this.endTime, 'yyyy-MM-ddt')
-      },
-    },
-    errorMessage: {
-      get() {
-        return this.$store.getters['land/errorMessage']
-      },
-      set(value) {
-        this.setErrorMessage(value)
+      set(val) {
+        this.endDate = DateTime.fromISO(val).toISODate()
+        this.endTime = DateTime.fromISO(val).toISOTime()
+        return DateTime.fromISO(val)
       },
     },
     startDateTimeText() {
-      return `${this.startDate} at ${this.startTime}`
+      return this.startDateTime.toLocaleString(DateTime.DATETIME_SHORT)
     },
     endDateTimeText() {
-      return `${this.endDate} at ${this.endTime}`
+      return this.endDateTime.toLocaleString(DateTime.DATETIME_SHORT)
     },
     selectedTimezone() {
       return timezones.find((tz) => tz.tzCode == this.tzCode)
@@ -364,7 +439,7 @@ export default {
       return dateRangeDays
     },
     defaultDate() {
-      const today = new Date().toISOString()
+      const today = new Date().minus({ days: 1 }).toISOString()
       return this.formatDate(today)
     },
     isDev() {
@@ -398,7 +473,6 @@ export default {
   },
   methods: {
     ...mapActions({
-      setErrorMessage: 'land/setErrorMessage',
       setSessionActionDuration: 'scene/setSessionActionDuration',
       recentMetricsPromise: 'analytics/getRecentSceneMetrics',
       getHistoricalData: 'analytics/getHistoricalData',
@@ -407,11 +481,78 @@ export default {
       await this.recentMetricsPromise(this.activeScene.sk)
     },
     async loadHistoricalData() {
-      await this.getHistoricalData(this.activeScene.sk, this.dateRange)
+      await this.getHistoricalData({ sceneId: this.activeScene.sk, scale: this.timescale })
+    },
+    extractDateTimes(data) {
+      const dateTimes = new Set()
+
+      // Iterate through the top-level keys
+      for (const key in data) {
+        console.log('key', key)
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+          // Iterate through the keys in the nested dictionary
+          for (const datetimeKey in data[key]) {
+            if (Object.prototype.hasOwnProperty.call(data[key], datetimeKey)) {
+              dateTimes.add(datetimeKey)
+            }
+          }
+        }
+      }
+
+      // Convert to an array and sort it
+      let sortedDateTimes = Array.from(dateTimes).sort()
+
+      // Create a new set to hold all DateTimes including missing hours
+      const filledDateTimes = new Set()
+
+      // Iterate through sorted DateTimes and fill missing hours
+      sortedDateTimes.forEach((datetime) => {
+        const datePart = datetime.split('T')[0] // Get the date part (e.g., "2024-08-05")
+        for (let hour = 0; hour < 24; hour++) {
+          const hourString = hour.toString().padStart(2, '0')
+          const fullDateTime = `${datePart}T${hourString}:00:00.000`
+          filledDateTimes.add(fullDateTime)
+        }
+      })
+
+      return Array.from(filledDateTimes).map((dt) => DateTime.fromISO(dt).toLocaleString(DateTime.DATETIME_SHORT))
+    },
+    durationToWords(milliseconds) {
+      const locale = this.selectedLocale
+      console.log('durationToWords', milliseconds, locale)
+      let duration = Duration.fromMillis(milliseconds).shiftTo('days', 'hours', 'minutes', 'seconds')
+
+      // Round seconds to the nearest integer
+      duration = duration.set({ seconds: Math.round(duration.seconds) })
+      duration = duration.reconfigure({ locale })
+
+      // Get the duration as an object
+      const durationObj = duration.toObject()
+
+      // Define the units you want to consider
+      const units = ['days', 'hours', 'minutes', 'seconds']
+
+      // Filter out units that are zero
+      const nonZeroUnits = units.filter((unit) => durationObj[unit])
+
+      // Shift the duration to only include non-zero units
+      duration = duration.shiftTo(...nonZeroUnits)
+
+      // Output in human-readable form
+      console.log(duration.toHuman({ unitDisplay: 'short', locale }))
+      return duration.toHuman({ unitDisplay: 'short', locale })
+    },
+    onDateRangeChange({ start, end, timescale, tz }) {
+      console.log('onDateRangeChange', start, end, timescale, tz)
+      this.startDateTime = start
+      this.endDateTime = end
+      this.timescaleEnum = timescale
+      this.tzCode = tz
+      this.loadHistoricalData()
     },
     downloadSnapshotCSV() {
       const rows = [
-        ['Display Name', 'Wallet Address'], // This is your header row
+        [this.localeText('Display Name'), this.localeText('Wallet Address')], // This is your header row
         ...this.activeSceneVisitors.map((item) => [encodeURIComponent(item.displayName), encodeURIComponent(item.connectedWallet)]),
       ]
 

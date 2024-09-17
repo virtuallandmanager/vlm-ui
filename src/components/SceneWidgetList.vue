@@ -1,15 +1,17 @@
 <template>
   <content-sub-panel :loading="processing" :hasContent="!!widgets?.length" loadingMessage="Loading video screens...">
     <template v-slot:header>
-      <div>Widgets</div>
+      <div>{{ localeText('Widgets') }}</div>
       <v-spacer></v-spacer>
-      <v-btn @click="macroDialog = true" v-if="filteredWidgets?.length > 0" class="mr-2"><v-icon class="mr-2">mdi-spotlight</v-icon>Macro Mode</v-btn>
-      <v-btn @click="addWidget()" v-if="widgets.length"><v-icon class="mr-1">mdi-plus</v-icon> Widget</v-btn>
+      <v-btn @click="macroDialog = true" v-if="filteredWidgets?.length > 0" class="mr-2"
+        ><v-icon class="mr-2">mdi-spotlight</v-icon>{{ localeText('Macro Mode') }}</v-btn
+      >
+      <v-btn @click="addWidget()" v-if="widgets.length"><v-icon class="mr-1">mdi-plus</v-icon> {{ localeText('Widget') }}</v-btn>
     </template>
-    <template v-slot:no-content-header>No Widgets Have Been Added</template>
-    <template v-slot:no-content-text>Would you like to add one?</template>
+    <template v-slot:no-content-header>{{ localeText('NoData') }}</template>
+    <template v-slot:no-content-text>{{ localeText('CTA') }}</template>
     <template v-slot:no-content-cta>
-      <v-btn @click="addWidget()"><v-icon class="mr-1">mdi-plus</v-icon> Widget</v-btn>
+      <v-btn @click="addWidget()"><v-icon class="mr-1">mdi-plus</v-icon> {{ localeText('Widget') }}</v-btn>
     </template>
     <v-container fluid class="ma-0 pa-0">
       <v-row>
@@ -21,8 +23,8 @@
     <!-- Dialog to display the widgets -->
     <v-dialog v-model="macroDialog" fullscreen autofocus @keydown="toggleOrTrigger">
       <v-card>
-        <v-card-title>Macro Mode</v-card-title>
-        <v-card-subtitle>Use your number keys to control up to 10 different toggles and triggers</v-card-subtitle>
+        <v-card-title>{{ localeText('Macro Mode') }}</v-card-title>
+        <v-card-subtitle>{{ localeText('macroModeSubtitle') }}</v-card-subtitle>
         <v-card-text>
           <v-container>
             <v-row>
@@ -53,7 +55,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn @click="closeMacroDialog">Close</v-btn>
+          <v-btn @click="closeMacroDialog">{{ localeAction('close') }}</v-btn>
           <v-spacer />
         </v-card-actions>
       </v-card>
@@ -96,6 +98,8 @@ export default {
     ...mapGetters({
       widgets: 'scene/sceneWidgets',
       processing: 'scene/processing',
+      localeText: 'i18n/widgets',
+      localeAction: 'i18n/actions',
     }),
     smSizing() {
       if (this.widgets.length < 2) {

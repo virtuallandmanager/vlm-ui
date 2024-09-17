@@ -58,6 +58,12 @@
         </v-list-item-icon>
         <v-list-item-title>Media Library</v-list-item-title>
       </v-list-item> -->
+      <v-list-item link to="/streams">
+        <v-list-item-icon>
+          <v-icon>mdi-video</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title>Video Streams</v-list-item-title>
+      </v-list-item>
       <v-list-item link :href="docsUrl">
         <v-list-item-icon>
           <v-icon>mdi-book</v-icon>
@@ -74,7 +80,7 @@
         <v-list-item-icon>
           <v-icon>mdi-shield-account</v-icon>
         </v-list-item-icon>
-        <v-list-item-title>{{ navText('Admin') }}</v-list-item-title>
+        <v-list-item-title>{{ navText('Admin Panel') }}</v-list-item-title>
       </v-list-item>
     </v-list>
     <template v-slot:append>
@@ -84,10 +90,10 @@
         <v-btn text block><v-icon class="pr-2">mdi-wallet</v-icon> {{ walletAddress(8, 4) }}</v-btn>
       </div>
       <div class="pa-2">
-        <v-btn block @click="loadUserProfile">User Profile</v-btn>
+        <v-btn block @click="loadUserProfile">{{ navText('User Profile') }}</v-btn>
       </div>
       <div class="pa-2">
-        <v-btn block @click="logout">Logout</v-btn>
+        <v-btn block @click="logout">{{ navText('Log Out') }}</v-btn>
       </div>
     </template>
   </v-navigation-drawer>

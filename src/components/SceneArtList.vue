@@ -3,31 +3,31 @@
     <input type="file" ref="fileInput" accept="image/*" style="display: none" @change="onFileSelected" />
     <v-dialog v-model="newImageDialog" width="500">
       <v-card>
-        <v-card-title class="text-h5"> Add New Image </v-card-title>
+        <v-card-title class="text-h5"> {{ localeText('Add New Image') }} </v-card-title>
 
         <v-card-text class="d-flex justify-space-between lighten-1">
           <v-card class="flex-grow-1 text-center pa-4 mr-2" @click.stop="selectImage">
             <v-icon>mdi-file-image</v-icon>
-            <div class="text-button">From My Computer</div>
+            <div class="text-button">{{ localeText('From My Computer') }}</div>
           </v-card>
           <v-card class="flex-grow-1 text-center pa-4 ml-2" @click.stop="showExternalUrlDialog">
             <v-icon>mdi-link-variant</v-icon>
-            <div class="text-button">External URL</div>
+            <div class="text-button">{{ localeText('From URL') }}</div>
           </v-card>
         </v-card-text>
       </v-card>
     </v-dialog>
     <v-dialog v-model="externalImageDialog" width="500">
       <v-card>
-        <v-card-title class="text-h5"> External Image URL </v-card-title>
+        <v-card-title class="text-h5"> {{ localeText('Add Image From URL') }} </v-card-title>
 
         <v-card-text class="d-flex justify-space-between lighten-1">
           <v-text-field v-model="newImageSrc" label="Image URL" prepend-icon="mdi-file-image"> </v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="resetDialogs">Cancel</v-btn>
-          <v-btn color="primary" text @click="createExternalImage">Create</v-btn>
+          <v-btn color="primary" text @click="resetDialogs">{{ actionText('Cancel') }}</v-btn>
+          <v-btn color="primary" text @click="createExternalImage">{{ actionText('Create') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -44,20 +44,20 @@
           NFT
         </v-btn>
       </template>
-      <template v-slot:no-content-header> No Art Has Been Added </template>
+      <template v-slot:no-content-header> {{ localeText('NoData') }} </template>
       <template v-slot:no-content-text>
         <div v-if="sometimesLlama">{{ sometimesLlama }}</div>
         <div class="d-flex justify-center pa-4"><v-img position="center center" max-width="250px" :src="luckyLlama" v-if="sometimesLlama" /></div>
-        Would you like to add something{{ sometimesLlama ? ' else' : '' }}?
+        {{ localeText('CTA') }}
       </template>
       <template v-slot:no-content-cta>
         <v-btn @click.stop="showNewImageDialog" class="mr-4">
           <v-icon class="mr-2">mdi-plus</v-icon>
-          Image
+          {{ localeText('Image') }}
         </v-btn>
         <v-btn @click.stop="showNewNFTDialog" disabled>
           <v-icon class="mr-2">mdi-plus</v-icon>
-          NFT
+          {{ localeText('NFT') }}
         </v-btn>
       </template>
 
@@ -117,7 +117,13 @@ export default {
     ],
   }),
   computed: {
-    ...mapGetters({ activePreset: 'scene/activePreset', sceneImages: 'scene/sceneImages', sceneNfts: 'scene/sceneNfts' }),
+    ...mapGetters({
+      activePreset: 'scene/activePreset',
+      sceneImages: 'scene/sceneImages',
+      sceneNfts: 'scene/sceneNfts',
+      localeText: 'i18n/art',
+      actionText: 'i18n/actions',
+    }),
     sometimesLlama() {
       const randomNumber = Math.floor(Math.random() * 100)
       if (randomNumber < 10) {

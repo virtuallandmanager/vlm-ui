@@ -11,7 +11,7 @@
               <v-icon small>mdi-rename</v-icon>
             </v-btn>
           </template>
-          <span>Rename</span>
+          <span>{{ localeAction('rename') }}</span>
         </v-tooltip>
 
         <div class="text-h5 flex-grow-1" v-if="editingName">
@@ -38,7 +38,7 @@
                 {{ model.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
               </v-icon>
             </template>
-            <span>Show/Hide All</span>
+            <span>{{ localeAction('show/hide all') }}</span>
           </v-tooltip>
         </v-btn>
         <v-btn
@@ -55,7 +55,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-icon v-bind="attrs" v-on="on"> mdi-mouse </v-icon>
             </template>
-            <span>Default Click Action</span>
+            <span>{{ localeAction('default click action') }}</span>
           </v-tooltip>
         </v-btn>
         <v-btn
@@ -129,7 +129,7 @@
 
 <script>
 import Vue from 'vue'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import ModelInstanceCard from './ModelInstanceCard'
 import { SceneModel } from '../models/SceneModel'
 import { SceneModelInstance } from '../models/SceneModelInstance'
@@ -170,6 +170,9 @@ export default {
     this.selectedModel = this.model
   },
   computed: {
+    ...mapGetters({
+      localeAction: 'i18n/actions',
+    }),
     modelSrc() {
       return this.model.thumbnailSrc ? this.model.thumbnailSrc : this.model.modelSrc
     },

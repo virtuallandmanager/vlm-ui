@@ -1,0 +1,138 @@
+{
+  "code": "zh-CN",
+  "name": "简体中文 (中国)",
+  "flag": "cn",
+  "translations": {
+    "Virtual Land Manager": "虚拟土地管理器",
+    "login": {
+      "Username": "用户名",
+      "Password": "密码",
+      "Submit": "提交",
+      "Connect Wallet": "连接钱包",
+      "Connecting": "连接中",
+      "Please Sign": "请签署",
+      "Validating": "验证中",
+      "Passkey": "密钥",
+      "Forgot Password": "忘记密码？"
+    },
+    "home": {
+      "title": "首页",
+      "tagline": "构建虚拟愿景",
+      "description": "欢迎来到虚拟土地管理器！",
+      "logo": "VLM-Logo.svg",
+      "tiles": [
+        {
+          "title": "跨元宇宙场景管理"
+        },
+        { "title": "场景分析" },
+        {
+          "title": "实时场景管理"
+        },
+        { "title": "场景管理工具" },
+        { "title": "自定义控制" },
+        { "title": "活动抽奖" }
+      ]
+    },
+    "navigation": {
+      "Admin Panel": "管理面板",
+      "Scenes": "场景",
+      "Events": "活动",
+      "Giveaways": "抽奖",
+      "Docs": "文档",
+      "Media Library": "媒体库",
+      "User Profile": "用户资料",
+      "Log Out": "退出登录"
+    },
+    "scene": {
+      "Scene": "场景",
+      "Scenes": "场景",
+      "Videos": "视频",
+      "Images": "图片",
+      "3D Models": "3D模型",
+      "Sounds": "声音",
+      "Widgets": "小工具",
+      "Presets": "预设",
+      "Claim Points": "申领奖励点",
+      "Settings": "设置",
+      "Configurations": "配置",
+      "Instances": "实例"
+    },
+    "analytics": {
+      "Analytics": "分析"
+    },
+    "events": {
+      "Event": "活动",
+      "Events": "活动"
+    },
+    "giveaways": {
+      "Giveaway": "抽奖",
+      "Giveaways": "抽奖",
+      "Giveaway Items": "抽奖物品"
+    },
+    "userProfile": {
+      "User Profile": "用户资料",
+      "Email": "邮箱",
+      "Phone": "电话号码",
+      "SMS Phone Number": "短信电话号码",
+      "Address": "地址",
+      "City": "城市",
+      "State": "省/州",
+      "Zip": "邮政编码",
+      "Country": "国家",
+      "Save": "保存"
+    },
+    "docs": {
+      "Documentation": "文档"
+    },
+    "errors": {
+      "required": "此字段为必填项",
+      "invalidEmail": "请输入有效的电子邮件地址"
+    },
+    "actions": {
+      "save": "保存",
+      "cancel": "取消",
+      "continue": "继续",
+      "revert": "恢复",
+      "send": "发送",
+      "add": "添加",
+      "deduct": "扣除",
+      "remove": "移除",
+      "delete": "删除",
+      "edit": "编辑",
+      "update": "更新",
+      "create": "创建",
+      "view": "查看",
+      "search": "搜索",
+      "filter": "筛选",
+      "sort": "排序",
+      "submit": "提交",
+      "reset": "重置",
+      "close": "关闭",
+      "open": "打开",
+      "upload": "上传",
+      "download": "下载",
+      "refresh": "刷新",
+      "retry": "重试",
+      "confirm": "确认",
+      "approve": "批准",
+      "decline": "拒绝",
+      "yes": "是",
+      "no": "否",
+      "ok": "确定",
+      "next": "下一步",
+      "previous": "上一步",
+      "back": "返回",
+      "home": "首页",
+      "login": "登录",
+      "logout": "退出登录",
+      "register": "注册",
+      "signUp": "注册",
+      "signIn": "登录",
+      "explore": "探索",
+      "details": "详情",
+      "info": "信息",
+      "help": "帮助",
+      "settings": "设置"
+    }
+  }
+}

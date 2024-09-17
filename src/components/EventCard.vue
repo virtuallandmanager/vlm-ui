@@ -1,12 +1,14 @@
 <template>
   <v-card class="grey darken-3" elevation="2">
     <v-img :src="event?.imageLink || eventImgPlaceholder" lazy-src="@/assets/placeholder.png" max-height="250" class="text-right">
-      <v-chip v-if="ongoing" class="green ma-4"><span>Ongoing</span></v-chip>
+      <v-chip v-if="ongoing" class="green ma-4"
+        ><span>{{ localeText('Ongoing') }}</span></v-chip
+      >
       <v-chip v-else-if="future" class="orange ma-4"
-        ><span>Starts {{ startTimeString }}</span></v-chip
+        ><span>{{ localeText('Starts') }} {{ startTimeString }}</span></v-chip
       >
       <v-chip v-else class="grey ma-4"
-        ><span>Ended {{ endTimeString }}</span></v-chip
+        ><span>{{ localeText('Ended') }} {{ endTimeString }}</span></v-chip
       >
 
       <template v-slot:placeholder>
@@ -20,13 +22,13 @@
         <v-row>
           <v-col>
             <div class="text-h5 text-left text-truncate">
-              {{ event.name || 'New Event' }}
+              {{ event.name || localeText('New Event') }}
             </div>
             <div class="text-subtitle-2 font-weight-medium text-right mb-2"></div>
             <div class="text-subtitle-2 font-weight-light text-left">
-              <span v-if="startTime && !endTime">Started {{ startTime }}</span>
-              <span v-if="startTime && endTime">From {{ startTime }}</span>
-              <span v-if="endTime"> to {{ endTime }}</span>
+              <span v-if="startTime && !endTime">{{ localeText('Started') }} {{ startTime }}</span>
+              <span v-if="startTime && endTime">{{ localeText('From') }} {{ startTime }}</span>
+              <span v-if="endTime"> {{ localeText('to') }} {{ endTime }}</span>
             </div>
           </v-col>
         </v-row>
@@ -37,6 +39,7 @@
 
 <script>
 import imgPlaceholder from '@/assets/placeholder.png'
+import { mapGetters } from 'vuex'
 import { DateTime } from 'luxon'
 
 export default {
@@ -47,6 +50,7 @@ export default {
     event: Object,
   },
   computed: {
+    ...mapGetters({ localeText: 'i18n/events' }),
     eventImgPlaceholder() {
       return imgPlaceholder
     },

@@ -10,7 +10,7 @@
                 {{ nft.enabled && instance.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
               </v-icon>
             </template>
-            <span>Show/Hide</span>
+            <span>{{ localeAction('show/hide') }}</span>
           </v-tooltip>
         </v-btn></span
       >
@@ -21,7 +21,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-icon small v-bind="attrs" v-on="on"> mdi-content-save </v-icon>
             </template>
-            <span>Save</span>
+            <span>{{ localeAction('save') }}</span>
           </v-tooltip>
         </v-btn>
         <v-btn small icon @click="cancelEditInstanceName()">
@@ -29,7 +29,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-icon small v-bind="attrs" v-on="on"> mdi-close </v-icon>
             </template>
-            <span>Cancel</span>
+            <span>{{ localeAction('cancel') }}</span>
           </v-tooltip>
         </v-btn>
       </div>
@@ -41,7 +41,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-rename </v-icon>
               </template>
-              <span>Rename</span>
+              <span>{{ localeAction('rename') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
@@ -51,7 +51,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-content-duplicate </v-icon>
               </template>
-              <span>Duplicate</span>
+              <span>{{ localeAction('duplicate') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
@@ -61,7 +61,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
               </template>
-              <span>Remove</span>
+              <span>{{ localeAction('remove') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
@@ -74,7 +74,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-axis-arrow </v-icon>
           </template>
-          <span>Transform</span>
+          <span>{{ localeAction('transform') }}</span>
         </v-tooltip>
       </v-btn>
       <v-btn icon @click.stop="() => {}">
@@ -82,7 +82,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-mouse </v-icon>
           </template>
-          <span>Click Action</span>
+          <span>{{ localeAction('click action') }}</span>
         </v-tooltip>
       </v-btn>
       <v-btn icon @click.stop="() => {}">
@@ -90,7 +90,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
           </template>
-          <span>Instance Properties</span>
+          <span>{{ localeText('Instance Properties') }}</span>
         </v-tooltip>
       </v-btn>
     </div>
@@ -103,6 +103,7 @@ import { EDialogType } from '../models/Dialog'
 import { SceneNft } from '../models/SceneNft'
 import { SceneNftInstance } from '../models/SceneNftInstance'
 import QuickView from './QuickView.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   components: { QuickView },
@@ -128,6 +129,10 @@ export default {
     editingName: false,
   }),
   computed: {
+    ...mapGetters({
+      localeAction: 'i18n/actions',
+      localeText: 'i18n/art',
+    }),
     truncatedName() {
       const nftNameArr = this.nft && this.nft.name.split('')
       let noSpacesLength = 0

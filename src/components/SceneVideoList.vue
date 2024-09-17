@@ -1,20 +1,20 @@
 <template>
-  <content-sub-panel :loading="processing" :hasContent="!!videos?.length" loadingMessage="Loading video screens...">
+  <content-sub-panel :loading="processing" :hasContent="!!videos?.length" :loadingMessage="localeText('Loading')">
     <template v-slot:header>
-      <div>Video Screens</div>
+      <div>{{ localeText('Video Screens') }}</div>
       <v-spacer />
       <v-btn @click="addVideoScreen()" v-if="videos?.length">
         <v-icon class="mr-2">mdi-plus</v-icon>
-        Video Screen
+        {{ localeText('Video Screen') }}
       </v-btn>
     </template>
 
-    <template v-slot:no-content-header>No Video Screens Have Been Added</template>
-    <template v-slot:no-content-text>Would you like to add one?</template>
+    <template v-slot:no-content-header> {{ localeText('NoData') }} </template>
+    <template v-slot:no-content-text> {{ localeText('CTA') }} </template>
     <template v-slot:no-content-cta>
       <v-btn @click="addVideoScreen()">
         <v-icon class="mr-2">mdi-plus</v-icon>
-        Video Screen
+        {{ localeText('Video Screen') }}
       </v-btn>
     </template>
 
@@ -44,6 +44,7 @@ export default {
     ...mapGetters({
       videos: 'scene/sceneVideos',
       processing: 'scene/processing',
+      localeText: 'i18n/videoScreens',
     }),
   },
   methods: {

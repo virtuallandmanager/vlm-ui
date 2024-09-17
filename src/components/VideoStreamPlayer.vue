@@ -4,30 +4,34 @@
       <video ref="videoPlayer" class="video-js"></video>
     </div>
     <div class="d-flex justify-space-between">
-      <v-chip label small>Stream Status:</v-chip>
+      <v-chip label small>{{ localeText('Stream Status') }}:</v-chip>
       <div v-if="src && isValidUrl">
         <v-chip small label color="success" v-if="isLiveStream && isValidUrl && isStreaming && enabled"
-          ><v-icon x-small class="mr-1">mdi-check-circle</v-icon>LIVE</v-chip
+          ><v-icon x-small class="mr-1">mdi-check-circle</v-icon>{{ localeText('Live').toUpperCase() }}</v-chip
         >
         <v-chip small label color="success" v-if="isLiveStream && isValidUrl && isStreaming && !enabled"
-          ><v-icon x-small class="mr-1">mdi-check-circle</v-icon>LIVE</v-chip
+          ><v-icon x-small class="mr-1">mdi-check-circle</v-icon>{{ localeText('Live').toUpperCase() }}</v-chip
         >
         <v-chip small label color="info" v-if="!isLiveStream && isValidUrl && isStreaming"
-          ><v-icon x-small class="mr-1">mdi-help-circle</v-icon>STATIC CONTENT</v-chip
+          ><v-icon x-small class="mr-1">mdi-help-circle</v-icon>{{ localeText('Static Content').toUpperCase() }}</v-chip
         >
         <v-chip small label color="error" v-if="(!isLiveStream && !isValidUrl) || !isStreaming"
-          ><v-icon x-small class="mr-1">mdi-minus-circle</v-icon>INACTIVE / INVALID</v-chip
+          ><v-icon x-small class="mr-1">mdi-minus-circle</v-icon>{{ localeText('Inactive').toUpperCase() }} /
+          {{ localeText('Invalid').toUpperCase() }}</v-chip
         >
       </div>
       <v-chip small label color="info" v-else-if="src && !isStreaming" class="text-center">
-        <v-icon x-small class="mr-1">mdi-server-off</v-icon>NO LIVE CONTENT
+        <v-icon x-small class="mr-1">mdi-server-off</v-icon>{{ localeText('No Live Content').toUpperCase() }}
       </v-chip>
-      <v-chip small label color="error" v-else class="text-center"><v-icon class="mr-1" x-small>mdi-minus-circle</v-icon>NO STREAM URL</v-chip>
+      <v-chip small label color="error" v-else class="text-center"
+        ><v-icon class="mr-1" x-small>mdi-minus-circle</v-icon>{{ localeText('No Stream URL').toUpperCase() }}</v-chip
+      >
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
 
@@ -50,6 +54,11 @@ export default {
       isLiveStream: false,
       isValidUrl: true,
     }
+  },
+  computed: {
+    ...mapGetters({
+      localeText: 'i18n/videoScreens',
+    }),
   },
   mounted() {
     try {

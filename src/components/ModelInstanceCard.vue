@@ -1,7 +1,6 @@
 <template>
   <div>
     <div class="d-flex ma-0 pa-3 align-center grey" :class="i % 2 ? 'darken-3' : 'darken-4'">
-      <!-- <span class="grey--text flex-shrink-1 flex-grow-0 pr-1">{{ i + 1 }}</span> -->
       <span class="grey--text flex-shrink-1 flex-grow-0 pr-1">
         <v-btn icon @click.stop="toggleVisibility()" :disabled="model.customRendering || instance.customRendering">
           <v-tooltip bottom>
@@ -10,7 +9,7 @@
                 {{ model.enabled && instance.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
               </v-icon>
             </template>
-            <span>Show/Hide</span>
+            <span>{{ localeAction('show/hide') }}</span>
           </v-tooltip>
         </v-btn></span
       >
@@ -41,7 +40,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-rename </v-icon>
               </template>
-              <span>Rename</span>
+              <span>{{ localeAction('rename') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
@@ -52,7 +51,7 @@
                 <v-icon small v-bind="attrs" v-on="on"> mdi-content-duplicate </v-icon>
               </template>
 
-              <span>Duplicate</span>
+              <span>{{ localeAction('duplicate') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
@@ -62,7 +61,7 @@
             icon
             @click.stop="
               showDeleteDialog({
-                title: 'Model Instance',
+                title: localeText('Model Instance'),
                 element: 'model',
                 elementData: model,
                 instance: true,
@@ -74,7 +73,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
               </template>
-              <span>Remove</span>
+              <span>{{ localeAction('remove') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
@@ -97,14 +96,14 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-axis-arrow </v-icon>
           </template>
-          <span>Transform</span>
+          <span> {{ localeAction('transform') }}</span>
         </v-tooltip>
       </v-btn>
       <v-btn
         icon
         @click="
           showClickEventDialog({
-            title: 'Model Instance',
+            title: localeText('Model Instance'),
             element: 'model',
             elementData: model,
             instance: true,
@@ -116,14 +115,14 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-mouse </v-icon>
           </template>
-          <span>Click Action</span>
+          <span>{{ localeAction('click action') }}</span>
         </v-tooltip>
       </v-btn>
       <v-btn
         icon
         @click.stop="
           showPropertiesDialog({
-            title: 'Model Instance',
+            title: localeText('Model Instance'),
             element: 'model',
             elementData: model,
             instance: true,
@@ -135,7 +134,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
           </template>
-          <span>Instance Properties</span>
+          <span>{{ localeText('Instance Properties') }}</span>
         </v-tooltip>
       </v-btn>
     </div>
@@ -146,7 +145,7 @@
 import Vue from 'vue'
 import { SceneModelInstance } from '../models/SceneModelInstance'
 import QuickView from './QuickView.vue'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { SceneModel } from '../models/SceneModel'
 
 export default {
@@ -171,6 +170,10 @@ export default {
     editingName: false,
   }),
   computed: {
+    ...mapGetters({
+      localeAction: 'i18n/actions',
+      localeText: 'i18n/models',
+    }),
     truncatedName() {
       const modelNameArr = this.model && this.model.name.split('')
       let noSpacesLength = 0

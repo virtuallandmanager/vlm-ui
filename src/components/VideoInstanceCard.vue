@@ -9,18 +9,18 @@
                 {{ video.enabled && instance.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
               </v-icon>
             </template>
-            <span>Show/Hide</span>
+            <span>{{ video.enabled && instance.enabled ? localeTooltip('Hide') : localeTooltip('Show') }}</span>
           </v-tooltip>
         </v-btn></span
       >
       <div class="d-inline-flex align-center pa-0 ma-0" v-if="editingName">
-        <v-text-field hide-details v-model="instance.name" label="Rename Instance"></v-text-field>
+        <v-text-field hide-details v-model="instance.name" :label="localeTooltip('Rename Instance')"></v-text-field>
         <v-btn small icon @click="editInstanceName()">
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-icon small v-bind="attrs" v-on="on"> mdi-content-save </v-icon>
             </template>
-            <span>Save</span>
+            <span>{{ localeAction('save') }}</span>
           </v-tooltip>
         </v-btn>
         <v-btn small icon @click="cancelEditInstanceName()">
@@ -28,7 +28,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-icon small v-bind="attrs" v-on="on"> mdi-close </v-icon>
             </template>
-            <span>Cancel</span>
+            <span>{{ localeAction('cancel') }}</span>
           </v-tooltip>
         </v-btn>
       </div>
@@ -40,7 +40,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-rename </v-icon>
               </template>
-              <span>Rename</span>
+              <span>{{ localeTooltip('Rename') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
@@ -50,7 +50,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-content-duplicate </v-icon>
               </template>
-              <span>Duplicate</span>
+              <span>{{ localeTooltip('Duplicate') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
@@ -72,7 +72,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
               </template>
-              <span>Remove</span>
+              <span>{{ localeTooltip('Remove') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
@@ -84,7 +84,7 @@
         icon
         @click.stop="
           showTransformDialog({
-            title: 'Video Instance',
+            title: localeText('Video Instance'),
             element: 'video',
             elementData: video,
             instanceData: instance,
@@ -95,14 +95,14 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-axis-arrow </v-icon>
           </template>
-          <span>Transform</span>
+          <span> {{ localeTooltip('Transform') }}</span>
         </v-tooltip>
       </v-btn>
       <v-btn
         icon
         @click.stop="
           showClickEventDialog({
-            title: 'Video Instance',
+            title: localeText('Video Instance'),
             instance: true,
             element: 'video',
             elementData: video,
@@ -114,14 +114,14 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-mouse </v-icon>
           </template>
-          <span>Click Action</span>
+          <span>{{ localeTooltip('Click Action') }}</span>
         </v-tooltip>
       </v-btn>
       <v-btn
         icon
         @click.stop="
           showPropertiesDialog({
-            title: 'Video Instance',
+            title: localeText('Video Instance'),
             instance: true,
             element: 'video',
             elementData: video,
@@ -133,7 +133,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
           </template>
-          <span>Instance Properties</span>
+          <span>{{ localeTooltip('Instance Properties') }}</span>
         </v-tooltip>
       </v-btn>
     </div>
@@ -146,7 +146,7 @@ import { EDialogType } from '../models/Dialog'
 import { SceneVideo } from '../models/SceneVideo'
 import { SceneVideoInstance } from '../models/SceneVideoInstance'
 import QuickView from './QuickView.vue'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: { QuickView },
@@ -172,6 +172,11 @@ export default {
     editingName: false,
   }),
   computed: {
+    ...mapGetters({
+      localeText: 'i18n/videoScreens',
+      localeAction: 'i18n/actions',
+      localeTooltip: 'i18n/tooltips',
+    }),
     truncatedName() {
       const videoNameArr = this.video && this.video.name.split('')
       let noSpacesLength = 0

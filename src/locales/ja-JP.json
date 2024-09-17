@@ -1,0 +1,138 @@
+{
+  "code": "ja-JP",
+  "name": "日本語 (日本)",
+  "flag": "jp",
+  "translations": {
+    "Virtual Land Manager": "バーチャルランドマネージャー",
+    "login": {
+      "Username": "ユーザー名",
+      "Password": "パスワード",
+      "Submit": "送信",
+      "Connect Wallet": "ウォレットを接続",
+      "Connecting": "接続中",
+      "Please Sign": "サインしてください",
+      "Validating": "検証中",
+      "Passkey": "パスキー",
+      "Forgot Password": "パスワードをお忘れですか？"
+    },
+    "home": {
+      "title": "ホーム",
+      "tagline": "バーチャルなビジョンを構築",
+      "description": "バーチャルランドマネージャーへようこそ！",
+      "logo": "VLM-Logo.svg",
+      "tiles": [
+        {
+          "title": "メタバース間のシーン管理"
+        },
+        { "title": "シーン分析" },
+        {
+          "title": "リアルタイムシーン管理"
+        },
+        { "title": "シーンモデレーションツール" },
+        { "title": "カスタマイズされたコントロール" },
+        { "title": "イベントの景品" }
+      ]
+    },
+    "navigation": {
+      "Admin Panel": "管理パネル",
+      "Scenes": "シーン",
+      "Events": "イベント",
+      "Giveaways": "景品",
+      "Docs": "ドキュメント",
+      "Media Library": "メディアライブラリ",
+      "User Profile": "ユーザープロフィール",
+      "Log Out": "ログアウト"
+    },
+    "scene": {
+      "Scene": "シーン",
+      "Scenes": "シーン",
+      "Videos": "ビデオ",
+      "Images": "画像",
+      "3D Models": "3Dモデル",
+      "Sounds": "サウンド",
+      "Widgets": "ウィジェット",
+      "Presets": "プリセット",
+      "Claim Points": "クレームポイント",
+      "Settings": "設定",
+      "Configurations": "構成",
+      "Instances": "インスタンス"
+    },
+    "analytics": {
+      "Analytics": "アナリティクス"
+    },
+    "events": {
+      "Event": "イベント",
+      "Events": "イベント"
+    },
+    "giveaways": {
+      "Giveaway": "景品",
+      "Giveaways": "景品",
+      "Giveaway Items": "景品アイテム"
+    },
+    "userProfile": {
+      "User Profile": "ユーザープロフィール",
+      "Email": "メールアドレス",
+      "Phone": "電話番号",
+      "SMS Phone Number": "SMS電話番号",
+      "Address": "住所",
+      "City": "市町村",
+      "State": "都道府県",
+      "Zip": "郵便番号",
+      "Country": "国",
+      "Save": "保存"
+    },
+    "docs": {
+      "Documentation": "ドキュメント"
+    },
+    "errors": {
+      "required": "このフィールドは必須です",
+      "invalidEmail": "有効なメールアドレスを入力してください"
+    },
+    "actions": {
+      "save": "保存",
+      "cancel": "キャンセル",
+      "continue": "続行",
+      "revert": "元に戻す",
+      "send": "送信",
+      "add": "追加",
+      "deduct": "控除",
+      "remove": "削除",
+      "delete": "削除",
+      "edit": "編集",
+      "update": "更新",
+      "create": "作成",
+      "view": "表示",
+      "search": "検索",
+      "filter": "フィルタ",
+      "sort": "並べ替え",
+      "submit": "送信",
+      "reset": "リセット",
+      "close": "閉じる",
+      "open": "開く",
+      "upload": "アップロード",
+      "download": "ダウンロード",
+      "refresh": "更新",
+      "retry": "再試行",
+      "confirm": "確認",
+      "approve": "承認",
+      "decline": "拒否",
+      "yes": "はい",
+      "no": "いいえ",
+      "ok": "OK",
+      "next": "次へ",
+      "previous": "前へ",
+      "back": "戻る",
+      "home": "ホーム",
+      "login": "ログイン",
+      "logout": "ログアウト",
+      "register": "登録",
+      "signUp": "サインアップ",
+      "signIn": "サインイン",
+      "explore": "探索",
+      "details": "詳細",
+      "info": "情報",
+      "help": "ヘルプ",
+      "settings": "設定"
+    }
+  }
+}
