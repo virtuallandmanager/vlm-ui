@@ -37,13 +37,17 @@
       </v-row>
       <v-row>
         <v-col>
-          <v-switch v-model="moderationSettings.banCertainWearables" @change="updateModerationSettings" label="Ban Certain Wearables"></v-switch>
+          <v-switch
+            v-model="moderationSettings.banCertainWearables"
+            @change="updateModerationSettings"
+            :label="localeText('Ban Certain Wearables')"
+          ></v-switch>
         </v-col>
         <v-col>
           <v-switch
             v-model="moderationSettings.allowCertainWearables"
             @change="updateModerationSettings"
-            label="Only Allow Certain Wearables"
+            :label="localeText('Only Allow Certain Wearables')"
           ></v-switch>
         </v-col>
       </v-row>
@@ -237,16 +241,16 @@ export default {
 
   data: () => ({
     fontColors: [
-      { text: 'Black', value: 'black' },
-      { text: 'Blue', value: 'blue' },
-      { text: 'Gray', value: 'gray' },
-      { text: 'Green', value: 'green' },
-      { text: 'Magenta', value: 'magenta' },
-      { text: 'Purple', value: 'purple' },
-      { text: 'Red', value: 'red' },
-      { text: 'Teal', value: 'teal' },
-      { text: 'Yellow', value: 'yellow' },
-      { text: 'White', value: 'white', default: true },
+      { text: 'Black', nativeText: 'Black', value: 'black' },
+      { text: 'Blue', nativeText: 'Blue', value: 'blue' },
+      { text: 'Gray', nativeText: 'Gray', value: 'gray' },
+      { text: 'Green', nativeText: 'Green', value: 'green' },
+      { text: 'Magenta', nativeText: 'Magenta', value: 'magenta' },
+      { text: 'Purple', nativeText: 'Purple', value: 'purple' },
+      { text: 'Red', nativeText: 'Red', value: 'red' },
+      { text: 'Teal', nativeText: 'Teal', value: 'teal' },
+      { text: 'Yellow', nativeText: 'Yellow', value: 'yellow' },
+      { text: 'White', nativeText: 'White', value: 'white', default: true },
     ],
     fontSizes: [8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 55, 60],
     messageText: '',
@@ -283,6 +287,27 @@ export default {
   }),
   mounted() {
     this.moderationSettings = this.sceneModerationSettings
+
+    if (this.user.locale !== 'en-US') {
+      this.fontColors.forEach((color) => {
+        color.text = this.localeColor(color.nativeText)
+      })
+    }
+  },
+  watch: {
+    localeCode: {
+      handler() {
+        console.log('Locale code changed:', this.localeCode)
+        this.fontColors = this.fontColors.map((color) => {
+          return {
+            ...color,
+            text: this.localeColor(color.nativeText),
+          }
+        })
+      },
+      deep: true, // Use this if you need to watch nested properties
+      immediate: true, // Use this if you want to run the handler immediately upon component creation
+    },
   },
   computed: {
     ...mapGetters({
@@ -290,6 +315,9 @@ export default {
       isDemoScene: 'scene/isDemoScene',
       sceneModerationSettings: 'scene/sceneModerationSettings',
       localeText: 'i18n/moderation',
+      localeColor: 'i18n/colors',
+      localeCode: 'i18n/localeCode',
+      user: 'user/userInfo',
     }),
   },
   methods: {

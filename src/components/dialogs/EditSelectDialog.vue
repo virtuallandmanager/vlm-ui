@@ -7,14 +7,14 @@
 
       <v-card-text class="pa-4">
         <div v-for="(selection, i) in selections" :key="i" class="d-flex">
-          <v-text-field v-model="selection.text" label="Selection Name" class="mr-2" @change="this.$emit('onChange')"></v-text-field>
-          <v-text-field v-model="selection.value" label="Selection ID" class="ml-2" @change="this.$emit('onChange')"></v-text-field>
+          <v-text-field v-model="selection.text" :label="localeText('Selection Name')" class="mr-2" @change="this.$emit('onChange')"></v-text-field>
+          <v-text-field v-model="selection.value" :label="localeText('Selection ID')" class="ml-2" @change="this.$emit('onChange')"></v-text-field>
           <v-btn icon @click="removeSelection(i)"><v-icon>mdi-trash-can</v-icon></v-btn>
         </div>
         <div class="text-right">
           <v-btn @click="addSelection()">
             <v-icon>mdi-plus</v-icon>
-            Add Option
+            {{ localeText('Add Option') }}
           </v-btn>
         </div>
       </v-card-text>
@@ -23,14 +23,15 @@
 
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="accenttext" text @click.stop="save"> Save </v-btn>
-        <v-btn color="grey darken-1" text @click.stop="revert"> Cancel </v-btn>
+        <v-btn color="accenttext" text @click.stop="save"> {{ localeAction('save') }} </v-btn>
+        <v-btn color="grey darken-1" text @click.stop="revert"> {{ localeAction('Cancel') }} </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: 'EditSelectDialog',
   data: () => ({
@@ -45,6 +46,10 @@ export default {
     this.originalSelections = this.selections
   },
   computed: {
+    ...mapGetters({
+      localeText: 'i18n/editSelectDialog',
+      localeAction: 'i18n/actions',
+    }),
     show: {
       get() {
         return this.value

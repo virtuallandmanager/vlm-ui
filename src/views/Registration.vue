@@ -16,7 +16,7 @@
           <div class="d-flex justify-space-between">
             <v-text-field
               :label="localeText('Email Address')"
-              :hint="localeText('Optional Hint')"
+              :hint="localeText('OptionalHint')"
               persistent-hint
               validate-on-blur
               :rules="[validateEmailAddress]"
@@ -27,8 +27,8 @@
               class="ml-2 flex-grow-1"
               :preferred-countries="['us', 'ca', 'ar', 'gb', 'fr', 'de', 'cn', 'jp']"
               v-model="phone"
-              :label="localeText('Mobile Phone')"
-              hint="Optional - For future notifications and multi-factor authentication"
+              :label="localeText('Mobile Phone Number')"
+              :hint="localeText('OptionalHint')"
               :rules="[validatePhoneNumber]"
               disabledFetchingCountry
               persistent-hint
@@ -44,17 +44,12 @@
         <v-card-subtitle> {{ localeText("Select additional features you'd like to use.") }} </v-card-subtitle>
         <v-card-text>
           <div class="d-flex">
-            <v-switch
-              label="Advanced User"
-              hint="Enables use of advanced developer features and custom SDK implementation"
-              persistent-hint
-              v-model="newUserRoles[2]"
-            ></v-switch>
+            <v-switch label="Advanced User" :hint="localeText('AdvancedUserDescription')" persistent-hint v-model="newUserRoles[2]"></v-switch>
           </div>
           <div class="d-flex">
             <v-switch
               :label="localeText('Organization Admin')"
-              hint="Enables team administration features"
+              :hint="localeText('OrganizationAdminDescription')"
               persistent-hint
               v-model="newUserRoles[4]"
             ></v-switch>
@@ -121,13 +116,13 @@ export default {
       try {
         if (this.orgAdmin && !this.newOrg.displayName) {
           this.showError({
-            message: 'Please enter a name for your organization.',
+            message: this.localeText('MissingOrgError'),
             timeout: 4000,
           })
           return
         }
         if (this.newUserInfo?.phone?.number && !this.newUserInfo?.phone?.valid) {
-          this.showError({ message: 'Invalid phone number.', timeout: 4000 })
+          this.showError({ message: this.localeText('InvalidPhoneNumberError'), timeout: 4000 })
           return
         }
 
@@ -145,14 +140,14 @@ export default {
     },
     validateDisplayName() {
       if (!this.newUserInfo?.displayName) {
-        return 'Wait, what should we call you? You can use a pseudonym if you want.'
+        return this.localeText('DisplayNameValidation')
       } else {
         return true
       }
     },
     validateOrgDisplayName() {
       if (!this.newUserInfo?.displayName) {
-        return "Meh, technically we don't REALLY need this, but it'll make it easier to know who's who."
+        return this.localeText('OrgDisplayNameValidation')
       } else {
         return true
       }
@@ -163,12 +158,12 @@ export default {
       } else if (this.newUserInfo?.smsPhoneNumber?.number && this.newUserInfo?.smsPhoneNumber?.valid) {
         return true
       } else {
-        return 'Please enter a valid phone number or leave this field blank'
+        return this.localeText('PhoneNumberValidation')
       }
     },
     validateEmailAddress() {
       if (this.newUserInfo.emailAddress && !this.newUserInfo.emailAddress.includes('@')) {
-        return 'Please enter a valid email address or leave this field blank.'
+        return this.localeText('EmailAddressValidation')
       } else {
         return true
       }

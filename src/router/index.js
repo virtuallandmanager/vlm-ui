@@ -4,29 +4,22 @@ import store from '@/store' // Make sure this import path is correct
 import Home from '../views/Home.vue'
 import Scenes from '../views/Scenes.vue'
 import Scene from '../views/Scene.vue'
+import { getRefreshToken } from '@/utils/authUtils'
 
 Vue.use(Router)
-
+const localeText = (text) => store.getters['i18n/navigation'](text)
 const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
     {
       path: '',
-      name: 'Home',
+      name: localeText('Home'),
       component: Home,
     },
     {
-      path: '/about',
-      name: 'About',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
-    },
-    {
       path: '/join',
-      name: 'Registration',
+      name: localeText('Registration'),
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -37,7 +30,7 @@ const router = new Router({
     },
     {
       path: '/privacy',
-      name: 'Privacy Settings',
+      name: localeText('Privacy Settings'),
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -46,17 +39,9 @@ const router = new Router({
         requiresAuth: true,
       },
     },
-    // {
-    //   path: "/events",
-    //   name: "Events",
-    //   // route level code-splitting
-    //   // this generates a separate chunk (about.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import(/* webpackChunkName: "events" */ "../views/Events.vue"),
-    // },
     {
       path: '/media',
-      name: 'Media Library',
+      name: localeText('Media Library'),
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -67,7 +52,7 @@ const router = new Router({
     },
     {
       path: '/streams',
-      name: 'Video Streams',
+      name: localeText('Video Streams'),
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -78,7 +63,7 @@ const router = new Router({
     },
     {
       path: '/rent-stream',
-      name: 'Video Stream Rental',
+      name: localeText('Video Stream Rental'),
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -89,7 +74,7 @@ const router = new Router({
     },
     {
       path: '/event/:eventId',
-      name: 'Event',
+      name: localeText('Event'),
       component: () => import(/* webpackChunkName: "event" */ '../views/Event.vue'),
       meta: {
         requiresAuth: true,
@@ -97,7 +82,7 @@ const router = new Router({
     },
     {
       path: '/events',
-      name: 'Events',
+      name: localeText('Events'),
       component: () => import(/* webpackChunkName: "events" */ '../views/Events.vue'),
       meta: {
         requiresAuth: true,
@@ -105,7 +90,7 @@ const router = new Router({
     },
     {
       path: '/giveaway/:giveawayId',
-      name: 'Giveaway',
+      name: localeText('Giveaway'),
       component: () => import(/* webpackChunkName: "giveaway" */ '../views/Giveaway.vue'),
       meta: {
         requiresAuth: true,
@@ -113,7 +98,7 @@ const router = new Router({
     },
     {
       path: '/giveaways',
-      name: 'Giveaways',
+      name: localeText('Giveaways'),
       component: () => import(/* webpackChunkName: "giveaways" */ '../views/Giveaways.vue'),
       meta: {
         requiresAuth: true,
@@ -121,7 +106,7 @@ const router = new Router({
     },
     {
       path: '/admin',
-      name: 'AdminPanel',
+      name: localeText('Admin Panel'),
       component: () => import(/* webpackChunkName: "admin" */ '../views/AdminPanel.vue'),
       meta: {
         requiresAuth: true,
@@ -130,7 +115,7 @@ const router = new Router({
     },
     {
       path: '/scenes',
-      name: 'Scenes',
+      name: localeText('Scenes'),
       component: Scenes,
       meta: {
         requiresAuth: true,
@@ -138,28 +123,20 @@ const router = new Router({
     },
     {
       path: '/status',
-      name: 'Status',
+      name: localeText('Status'),
       component: () => import(/* webpackChunkName: "status" */ '../views/Status.vue'),
     },
     {
       path: '/scene/:sceneId',
-      name: 'Scene',
+      name: localeText('Scene'),
       component: Scene,
       meta: {
         requiresAuth: true,
       },
     },
     {
-      path: '/scene/demo',
-      name: 'Demo Scene',
-      component: () => import(/* webpackChunkName: "demo" */ '../views/Demo.vue'),
-      meta: {
-        requiresAuth: true,
-      },
-    },
-    {
       path: '/docs',
-      name: 'Docs',
+      name: localeText('Docs'),
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -167,7 +144,7 @@ const router = new Router({
     },
     {
       path: '/docs/getting-started',
-      name: 'Getting Started',
+      name: localeText('Getting Started'),
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -175,12 +152,23 @@ const router = new Router({
       props: (route) => ({ sceneId: route.query.sceneId, world: route.query.world }),
     },
     {
-      path: '/profile',
-      name: 'User Profile',
+      path: '/organization',
+      name: localeText('Organization'),
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "docshome" */ '../views/UserProfile.vue'),
+      component: () => import(/* webpackChunkName: "organization" */ '../views/Organization.vue'),
+      meta: {
+        requiresOrgAdmin: true,
+      },
+    },
+    {
+      path: '/profile',
+      name: localeText('User Profile'),
+      // route level code-splitting
+      // this generates a separate chunk (about.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import(/* webpackChunkName: "userprofile" */ '../views/UserProfile.vue'),
       meta: {
         requiresAuth: true,
       },
@@ -190,49 +178,59 @@ const router = new Router({
 
 router.beforeEach(async (to, from, next) => {
   try {
-    if (to.path !== '/' && to.path === from.path) {
-      console.log('Navigating to the same route: ', to.path)
-      return
-    }
     const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
     const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin)
-    const isAuthenticated = () => {
-      return store.getters['auth/authenticated']
-    }
-    const unregistered = () => {
-      return store.getters['user/unregistered']
-    }
-    const isAdmin = store.getters['user/isVLMAdmin']
+    const requiresOrgAdmin = to.matched.some((record) => record.meta.requiresOrgAdmin)
+    const isAuthenticated = store.getters['auth/authenticated']
 
-    if (requiresAuth && !isAuthenticated()) {
-      await store.dispatch('auth/refreshSession')
+    if (requiresAuth && !isAuthenticated) {
+      const refreshToken = getRefreshToken() // Check if we have a refresh token in localStorage
+
+      // If there is a token, attempt to refresh the session
+      if (refreshToken) {
+        const refreshed = await store.dispatch('auth/refreshSession')
+        if (refreshed) {
+          // If session refreshed, allow the user to continue
+          return next()
+        } else {
+          // If session could not be refreshed, redirect to login
+          return next('/')
+        }
+      } else {
+        // If no token at all, redirect to login
+        return next('/')
+      }
+    } else if (to.path === '/' && isAuthenticated) {
+      // If the user is authenticated and trying to access the home page, redirect them to the scenes page
+      return next('/scenes')
+    } else if (to.path === '/' && !isAuthenticated) {
+      const refreshed = await store.dispatch('auth/refreshSession')
+      // If the user is not authenticated and trying to access the home page, allow them to continue
+      return refreshed ? next('/scenes') : next()
     }
 
-    if (isAuthenticated() && unregistered() && to.path !== '/join') {
-      next('/join')
-      return
-    } else if (isAuthenticated() && !unregistered() && to.path === '/join') {
-      next('/scenes')
-      return
-    } else if (!isAuthenticated() && to.path === '/join') {
-      next('/')
-      return
-    } else if (isAuthenticated() && to.path === '/') {
-      next('/scenes')
-      return
+    // Prevent redirect loops: if the user is authenticated and trying to access '/', send them to '/scenes'
+    if (isAuthenticated && to.path === '/') {
+      return next('/scenes')
+    } else if (!isAuthenticated && to.path === '/') {
+      return next()
+    } else if (requiresAdmin) {
+      const isAdmin = store.getters['user/isVLMAdmin']
+      if (!isAdmin) {
+        return next('/')
+      }
+    } else if (requiresOrgAdmin) {
+      const isOrgAdmin = store.getters['user/isOrgAdmin']
+      if (!isOrgAdmin) {
+        return next('/')
+      }
     }
 
-    if (requiresAuth && !isAuthenticated()) {
-      next('/') // Redirect to the login page if the route requires authentication and the user is not authenticated
-      return
-    } else if (requiresAdmin && !isAdmin) {
-      next('/') // Redirect to the login page if the route requires admin authentication and the user is not an admin
-      return
-    } else {
-      next() // Continue to the next route
-    }
+    // If all checks pass, allow navigation
+    next()
   } catch (error) {
-    console.log(error)
+    console.error('Navigation Error:', error)
+    next('/') // Redirect to safe route in case of error
   }
 })
 

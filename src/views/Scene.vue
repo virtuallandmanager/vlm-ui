@@ -1,6 +1,6 @@
 <template>
   <focus-page
-    :loadingMessage="`Connecting To ${scene?.name || 'Scene'}...`"
+    :loadingMessage="`${localeText('Connecting To')} ${scene?.name || localeText('Scene')}...`"
     :loading="loadingScene"
     :noContent="!scene"
     :imageLink="scene?.imageLink || placeholder"
@@ -159,15 +159,28 @@ export default {
     tab: 'tab-2',
   }),
   beforeRouteEnter(to, from, next) {
+    console.log('Before route enter')
     const isAuthenticated = store.getters['auth/authenticated']
-    const hasSceneCache = store.getters['scene/sceneList'].length
+
+    console.log('Is authenticated', isAuthenticated)
 
     if (!isAuthenticated) {
+      console.log('Not authenticated! This is the scene page')
+      store.dispatch('auth/refreshSession')
+    }
+
+    if (!isAuthenticated) {
+      console.log('Not authenticated! This is the second spot')
+
       next('/') // Redirect to the login page if the user is not authenticated
-    } else if (!hasSceneCache) {
-      next('/scenes') // Redirect to the scenes page if the user has no scenes
     } else {
       next() // Continue rendering the component
+    }
+  },
+  created() {
+    console.log('Created')
+    if (!store.getters['auth/authenticated']) {
+      this.$store.dispatch('auth/refreshSession')
     }
   },
   async mounted() {

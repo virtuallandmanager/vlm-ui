@@ -11,7 +11,7 @@
               <v-icon small>mdi-rename</v-icon>
             </v-btn>
           </template>
-          <span>{{ localeAction('rename') }}</span>
+          <span>{{ localeTooltip('Rename') }}</span>
         </v-tooltip>
 
         <div class="text-h5 flex-grow-1" v-if="editingName">
@@ -36,10 +36,10 @@
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-icon v-bind="attrs" v-on="on" :class="claimPoint.enabled ? '' : 'red--text'">
-                  {{ claimPoint.enabled || claimPoint.customRendering ? 'mdi-eye' : 'mdi-eye-off' }}
+                  {{ claimPoint.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
                 </v-icon>
               </template>
-              <span>{{ localeAction('show/hide') }}</span>
+              <span>{{ claimPoint.enabled ? localeTooltip('Hide') : localeTooltip('Show') }}</span>
             </v-tooltip>
           </v-btn></span
         >
@@ -59,7 +59,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon v-bind="attrs" v-on="on"> mdi-axis-arrow </v-icon>
               </template>
-              <span>{{ localeAction('transform') }}</span>
+              <span>{{ localeTooltip('Transform') }}</span>
             </v-tooltip>
           </v-btn>
           <v-btn
@@ -76,7 +76,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
               </template>
-              <span>{{ localeAction('properties') }}</span>
+              <span>{{ localeTooltip('Claim Point Properties') }}</span>
             </v-tooltip>
           </v-btn>
         </span>
@@ -86,7 +86,7 @@
             icon
             @click.stop="
               showDeleteDialog({
-                title: localeText('giveaway claim point'),
+                title: localeText('Giveaway Claim Point'),
                 element: 'claimpoint',
                 elementData: claimPoint,
               })
@@ -299,6 +299,7 @@ export default {
       claimPoints: 'scene/sceneClaimPoints',
       localeText: 'i18n/claimPoints',
       localeAction: 'i18n/actions',
+      localeTooltip: 'i18n/tooltips',
     }),
     giveaway() {
       return this.giveaways.find((g) => g.sk === this.claimPoint.giveawayId)

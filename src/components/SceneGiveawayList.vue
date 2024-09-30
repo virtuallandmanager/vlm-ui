@@ -86,7 +86,7 @@ export default {
       loadingGiveaways: 'giveaway/loadingGiveaways',
       claimPoints: 'scene/sceneClaimPoints',
       linkedGiveaways: 'event/giveawaysForScene',
-      localeText: 'i18n/giveaways',
+      localeText: 'i18n/claimPoints',
       localeAction: 'i18n/actions',
     }),
     giveaways() {

@@ -1,32 +1,39 @@
 <template>
   <v-dialog v-model="show" max-width="350" persistent>
     <v-card>
-      <v-card-title class="text-h5">{{ element.capitalize() }}{{ instance && ' Instance' }} Properties </v-card-title>
+      <v-card-title class="text-h5"
+        >{{ localeText(element.capitalize()) }}{{ instance && ` ${localeText('Instance')}` }} {{ localeText('Properties') }}
+      </v-card-title>
       <v-card-text>
-        <div v-if="element == 'image' && !instance" class="text-body-1 font-weight-bold">Appearance</div>
+        <div v-if="element == 'image' && !instance" class="text-body-1 font-weight-bold">{{ localeText('Appearance') }}</div>
         <v-switch
           v-if="element == 'image'"
           v-model="elementData.isTransparent"
-          label="Enable Transparency"
+          :label="localeText('Enable Transparency')"
           :disabled="instance"
           @change="changeTransparency"
         ></v-switch>
-        <div v-if="instance" class="text-body-1 font-weight-bold">Interactions</div>
+        <div v-if="instance" class="text-body-1 font-weight-bold">{{ localeText('Interactions') }}</div>
         <v-switch v-if="instance" v-model="refObj.withCollisions" label="Enable Collider" @change="changeCollisions"></v-switch>
         <div v-if="isAdvancedUser">
-          <div class="text-body-1 font-weight-bold">Advanced Features</div>
-          <v-text-field v-model="refObj.customId" label="Custom ID" @change="changeId" placeholder="Custom ID"></v-text-field>
+          <div class="text-body-1 font-weight-bold">{{ localeText('Advanced Features') }}</div>
+          <v-text-field
+            v-model="refObj.customId"
+            :label="localeText('Custom ID')"
+            @change="changeId"
+            :placeholder="localeText('Custom ID')"
+          ></v-text-field>
           <v-text-field
             v-model="refObj.parent"
-            label="Parent Entity"
+            :label="localeText('Parent Entity')"
             dense
             @change="changeParent"
             hide-details="true"
-            placeholder="Parent Entity"
+            :placeholder="localeText('Parent Entity')"
           ></v-text-field>
           <v-switch
             v-model="refObj.customRendering"
-            label="Custom Rendering"
+            :label="localeText('Custom Rendering')"
             :disabled="instance && elementData.customRendering"
             :messages="customRenderingMessage()"
             hide-details="auto"
@@ -37,8 +44,8 @@
       <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" text @click="save"> Save </v-btn>
-        <v-btn :color="dirty ? 'error' : 'grey darken-1'" text @click="revert"> {{ dirty ? 'Revert' : 'Cancel' }} </v-btn>
+        <v-btn color="primary" text @click="save"> {{ localeAction('save') }} </v-btn>
+        <v-btn :color="dirty ? 'error' : 'grey darken-1'" text @click="revert"> {{ dirty ? localeAction('revert') : localeAction('cancel') }} </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -60,7 +67,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ show: 'dialog/propertiesDialogOpen', dialogProps: 'dialog/propertiesDialogProps', isAdvancedUser: 'user/isAdvancedUser' }),
+    ...mapGetters({
+      show: 'dialog/propertiesDialogOpen',
+      dialogProps: 'dialog/propertiesDialogProps',
+      isAdvancedUser: 'user/isAdvancedUser',
+      localeText: 'i18n/propertiesDialog',
+      localeAction: 'i18n/actions',
+    }),
     instance() {
       return this.dialogProps?.instance
     },

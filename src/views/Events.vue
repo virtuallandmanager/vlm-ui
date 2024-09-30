@@ -1,9 +1,9 @@
 <template>
   <div>
     <content-page loadingMessage="Loading your events..." :loading="loadingEvents" :noContent="filteredEvents?.length == 0">
-      <template v-slot:header>Events</template>
+      <template v-slot:header> {{ localeText('Events') }}</template>
       <template v-slot:header-actions>
-        <v-btn @click="openNewEventDialog"><v-icon small class="mr-1">mdi-plus</v-icon> Event</v-btn>
+        <v-btn @click="openNewEventDialog"><v-icon small class="mr-1">mdi-plus</v-icon> {{ localeText('Event') }}</v-btn>
         <v-menu offset-y :close-on-content-click="true">
           <template v-slot:activator="{ on, attrs }">
             <v-btn color="primary" dark v-bind="attrs" v-on="on" class="mx-4">
@@ -21,10 +21,10 @@
           </v-list>
         </v-menu>
       </template>
-      <template v-slot:no-content-header>No Events Found</template>
-      <template v-slot:no-content-text> Would you like to create a new event? </template>
+      <template v-slot:no-content-header>{{ localeText('NoData') }}</template>
+      <template v-slot:no-content-text> {{ localeText('CTA') }} </template>
       <template v-slot:no-content-cta>
-        <v-btn @click="openNewEventDialog"><v-icon class="mr-1">mdi-plus</v-icon> Event</v-btn>
+        <v-btn @click="openNewEventDialog"><v-icon class="mr-1">mdi-plus</v-icon> {{ localeText('Event') }} </v-btn>
       </template>
       <v-container fluid>
         <v-row class="text-center" v-if="!loadingEvents">
@@ -38,18 +38,18 @@
     </content-page>
     <v-dialog v-model="newEventDialog" width="380">
       <v-card>
-        <v-card-title class="text-h5"><v-icon class="mr-1">mdi-plus</v-icon> Event </v-card-title>
+        <v-card-title class="text-h5"><v-icon class="mr-1">mdi-plus</v-icon> {{ localeText('Event') }} </v-card-title>
 
         <v-card-text>
-          <v-text-field label="Event Name" outlined v-model="newEventName"></v-text-field>
-          <v-autocomplete :items="timezoneList" v-model="newTzCode" placeholder="Timezone" outlined> </v-autocomplete>
+          <v-text-field :label="localeText('Event Name')" outlined v-model="newEventName"></v-text-field>
+          <v-autocomplete :items="timezoneList" v-model="newTzCode" :placeholder="localeText('Timezone')" outlined> </v-autocomplete>
           <div class="d-flex">
             <v-menu v-model="showStartDatePicker" :close-on-content-click="false" transition="expand-transition" offset-y max-width="380">
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
                   :value="formattedStartDate"
                   clearable
-                  label="Start Date"
+                  :label="localeText('Start Date')"
                   readonly
                   outlined
                   v-bind="attrs"
@@ -75,7 +75,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
                   v-model="newEventStartTime"
-                  label="Start Time"
+                  :label="localeText('Start Time')"
                   outlined
                   :append-icon="clockIcon(newEventStartTime)"
                   readonly
@@ -96,7 +96,7 @@
                 <v-text-field
                   :value="formattedEndDate"
                   clearable
-                  label="End Date"
+                  :label="localeText('End Date')"
                   readonly
                   outlined
                   v-bind="attrs"
@@ -122,7 +122,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
                   v-model="newEventEndTime"
-                  label="End Time"
+                  :label="localeText('End Time')"
                   outlined
                   :append-icon="clockIcon(newEventEndTime)"
                   readonly
@@ -133,17 +133,17 @@
               <v-time-picker v-model="newEventEndTime" @click:minute="$refs.endTimeMenu.save(newEventEndTime)"></v-time-picker>
             </v-menu>
           </div>
-          <v-select label="Worlds" multiple outlined :items="metaverseWorlds" v-model="newEventWorlds"></v-select>
-          <v-text-field label="Location Name/Coordinates" outlined v-model="newEventLocation"></v-text-field>
-          <v-text-field label="Location URL" outlined v-model="newEventLocationUrl"></v-text-field>
+          <v-select :label="localeText('Worlds')" multiple outlined :items="metaverseWorlds" v-model="newEventWorlds"></v-select>
+          <v-text-field :label="localeText('Location Name/Coordinates')" outlined v-model="newEventLocation"></v-text-field>
+          <v-text-field :label="localeText('Location URL')" outlined v-model="newEventLocationUrl"></v-text-field>
         </v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
 
-          <v-btn color="grey darken-1" text @click="newEventDialog = false"> Cancel </v-btn>
+          <v-btn color="grey darken-1" text @click="newEventDialog = false"> {{ localeAction('cancel') }} </v-btn>
 
-          <v-btn color="primary darken-1" text @click="createNewEvent"> Create </v-btn>
+          <v-btn color="primary darken-1" text @click="createNewEvent"> {{ localeAction('create') }} </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -204,6 +204,11 @@ export default {
       })),
     ],
   }),
+  created() {
+    if (!this.$store.getters['auth/authenticated']) {
+      this.$store.dispatch('auth/refreshSession')
+    }
+  },
   async mounted() {
     this.getEvents()
   },
@@ -211,6 +216,8 @@ export default {
     ...mapGetters({
       events: 'event/eventList',
       loadingEvents: 'event/loadingEvents',
+      localeText: 'i18n/events',
+      localeAction: 'i18n/actions',
     }),
     mdAndDown() {
       return this.$vuetify.breakpoint.mdAndUp

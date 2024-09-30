@@ -6,6 +6,7 @@ import analytics from './modules/analytics'
 import auth from './modules/auth'
 import balances from './modules/balances'
 import banner from './modules/banner'
+import channels from './modules/channels'
 import collectables from './modules/collectables'
 import dialog from './modules/dialog'
 import event from './modules/event'
@@ -31,6 +32,7 @@ export default new Vuex.Store({
     auth,
     balances,
     banner,
+    channels,
     collectables,
     dialog,
     event,

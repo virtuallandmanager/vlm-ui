@@ -14,6 +14,7 @@ export default {
     isEarlyAccess: (state) => state.userInfo?.roles?.includes(1),
     isAdvancedUser: (state) => state.userInfo?.roles?.includes(2),
     isVLMAdmin: (state) => !!state.userInfo?.roles?.filter((role) => role >= 7).length,
+    isOrgAdmin: (state) => state.userInfo?.roles?.includes(4),
     walletAddress: (state) => (before, after) => {
       const full = state.userInfo.connectedWallet
       if (!full) {

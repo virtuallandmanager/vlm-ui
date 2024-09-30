@@ -3,30 +3,30 @@
     <input type="file" ref="fileInput" accept="image/*" style="display: none" @change="onFileSelected" />
     <v-dialog v-if="replaceImageDialog" v-model="replaceImageDialog" width="500">
       <v-card>
-        <v-card-title class="text-h5"> Replace Image </v-card-title>
+        <v-card-title class="text-h5"> {{ tooltipText('Replace Image') }} </v-card-title>
         <v-card-text class="d-flex justify-space-between lighten-1">
           <v-card class="flex-grow-1 text-center pa-4 mr-2" @click.stop="selectImage">
             <v-icon>mdi-file-image</v-icon>
-            <div class="text-button">From My Computer</div>
+            <div class="text-button">{{ localeText('From My Computer') }}</div>
           </v-card>
           <v-card class="flex-grow-1 text-center pa-4 ml-2" @click.stop="showExternalUrlDialog">
             <v-icon>mdi-link-variant</v-icon>
-            <div class="text-button">External URL</div>
+            <div class="text-button">{{ localeText('External URL') }}</div>
           </v-card>
         </v-card-text>
       </v-card>
     </v-dialog>
     <v-dialog v-if="externalUrlDialog" v-model="externalUrlDialog" width="500">
       <v-card>
-        <v-card-title class="text-h5"> External Image URL </v-card-title>
+        <v-card-title class="text-h5"> {{ localeText('External Image URL') }} </v-card-title>
 
         <v-card-text class="d-flex justify-space-between lighten-1">
           <v-text-field v-model="newImageSrc" label="Image URL" prepend-icon="mdi-file-image"> </v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="resetDialogs">Cancel</v-btn>
-          <v-btn color="primary" text @click="setExternalImage">Save</v-btn>
+          <v-btn color="primary" text @click="resetDialogs">{{ localeAction('cancel') }}</v-btn>
+          <v-btn color="primary" text @click="setExternalImage">{{ localeAction('save') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -41,7 +41,7 @@
               <v-icon small>mdi-rename</v-icon>
             </v-btn>
           </template>
-          <span>{{ localeAction('rename') }}</span>
+          <span>{{ tooltipText('Rename') }}</span>
         </v-tooltip>
 
         <div class="text-h5 flex-grow-1" v-if="editingName">
@@ -68,7 +68,7 @@
                 {{ image.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
               </v-icon>
             </template>
-            <span>{{ localeAction('show/hide all') }}</span>
+            <span>{{ image.enabled ? tooltipText('Hide All') : tooltipText('Show All') }}</span>
           </v-tooltip>
         </v-btn>
         <input style="display: none" ref="replaceFileInput" type="file" accept=".png,.jpg,.jpeg" @change="updateImage(image, i)" />
@@ -86,7 +86,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-icon v-bind="attrs" v-on="on"> mdi-mouse </v-icon>
             </template>
-            <span>{{ localeAction('default click action') }}</span>
+            <span>{{ tooltipText('Default Click Action') }}</span>
           </v-tooltip>
         </v-btn>
         <v-btn
@@ -103,7 +103,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
             </template>
-            <span>Image Properties</span>
+            <span>{{ localeText('Image Properties') }}</span>
           </v-tooltip>
         </v-btn>
         <v-btn icon dark @click="showReplaceImageDialog()">
@@ -111,7 +111,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-icon v-bind="attrs" v-on="on"> mdi-image-sync </v-icon>
             </template>
-            <span>Replace Image</span>
+            <span>{{ tooltipText('Replace Image') }}</span>
           </v-tooltip>
         </v-btn>
         <v-btn
@@ -129,7 +129,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-icon v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
             </template>
-            <span>Remove Image</span>
+            <span>{{ tooltipText('Remove') }}</span>
           </v-tooltip>
         </v-btn>
       </div>
@@ -138,14 +138,14 @@
       </div>
       <div>
         <div class="d-flex justify-start align-center grey darken-2 pa-4">
-          <h1 class="text-body-1 font-weight-bold flex-grow-1" dark>Instances</h1>
-          <v-btn small @click="addInstance()" class="flex-shrink-1"><v-icon small class="mr-1">mdi-plus</v-icon> Instance</v-btn>
+          <h1 class="text-body-1 font-weight-bold flex-grow-1" dark>{{ localeText('Instances') }}</h1>
+          <v-btn small @click="addInstance()" class="flex-shrink-1"><v-icon small class="mr-1">mdi-plus</v-icon> {{ localeText('Instance') }}</v-btn>
         </div>
         <div class="d-flex justify-end align-center px-3" v-if="image.instances.length">
-          <v-switch v-model="image.showDetails" class="flex-shrink-1 pa-0" label="Detailed"> Detailed View </v-switch>
+          <v-switch v-model="image.showDetails" class="flex-shrink-1 pa-0" label="Detailed"> {{ localeText('Detailed View') }} </v-switch>
         </div>
         <div class="d-flex flex-column pa-4" v-if="!image.instances.length">
-          <div class="text-body-1 text-center">Add an instance for this image to see it in the scene.</div>
+          <div class="text-body-1 text-center">{{ localeText('NoInstances') }}</div>
         </div>
         <div class="d-flex flex-column my-0" v-if="image.instances.length">
           <div v-for="(instance, ii) in image.instances" :key="ii">
@@ -159,7 +159,7 @@
 
 <script>
 import Vue from 'vue'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import ImageInstanceCard from './ImageInstanceCard'
 import { SceneImage } from '../models/SceneImage'
 import { SceneImageInstance } from '../models/SceneImageInstance'
@@ -200,6 +200,11 @@ export default {
     this.selectedImage = this.image
   },
   computed: {
+    ...mapGetters({
+      localeText: 'i18n/art',
+      localeAction: 'i18n/actions',
+      tooltipText: 'i18n/tooltips',
+    }),
     imageSrc() {
       return this.image.thumbnailSrc ? this.image.thumbnailSrc : this.image.imageSrc
     },

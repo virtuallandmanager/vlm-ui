@@ -22,12 +22,12 @@
         <v-card-title class="text-h5"> {{ localeText('Add Image From URL') }} </v-card-title>
 
         <v-card-text class="d-flex justify-space-between lighten-1">
-          <v-text-field v-model="newImageSrc" label="Image URL" prepend-icon="mdi-file-image"> </v-text-field>
+          <v-text-field v-model="newImageSrc" :label="localeText('Image URL')" prepend-icon="mdi-file-image"> </v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="resetDialogs">{{ actionText('Cancel') }}</v-btn>
-          <v-btn color="primary" text @click="createExternalImage">{{ actionText('Create') }}</v-btn>
+          <v-btn color="primary" text @click="resetDialogs">{{ localeAction('cancel') }}</v-btn>
+          <v-btn color="primary" text @click="createExternalImage">{{ localeAction('create') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -37,11 +37,11 @@
         <v-spacer></v-spacer>
         <v-btn @click="showNewImageDialog()" class="mr-4" v-if="art?.length">
           <v-icon class="mr-2">mdi-plus</v-icon>
-          Image
+          {{ localeText('Image') }}
         </v-btn>
         <v-btn @click="showNewNFTDialog()" disabled v-if="art?.length">
           <v-icon class="mr-2">mdi-plus</v-icon>
-          NFT
+          {{ localeText('NFT') }}
         </v-btn>
       </template>
       <template v-slot:no-content-header> {{ localeText('NoData') }} </template>
@@ -122,7 +122,7 @@ export default {
       sceneImages: 'scene/sceneImages',
       sceneNfts: 'scene/sceneNfts',
       localeText: 'i18n/art',
-      actionText: 'i18n/actions',
+      localeAction: 'i18n/actions',
     }),
     sometimesLlama() {
       const randomNumber = Math.floor(Math.random() * 100)

@@ -2,45 +2,33 @@
   <v-dialog v-model="show" max-width="900">
     <v-card>
       <v-card-title class="d-flex justify-center my-0 pb-0"><v-icon>mdi-bug</v-icon></v-card-title>
-      <v-card-title class="d-flex justify-center my-0 pt-0">Bug Report</v-card-title>
+      <v-card-title class="d-flex justify-center my-0 pt-0">{{ localeText('Bug Report') }}</v-card-title>
       <v-card-text>
         <v-textarea
           v-model="message"
-          label="What happened?"
-          hint="Please describe what happened, along with what you thought would happen, or what you expected to happen."
+          :label="localeText('actualResult')"
+          :hint="localeText('actualResultHint')"
           rows="5"
           auto-grow
           outlined
           dense
         ></v-textarea>
-        <v-textarea
-          v-model="reproduction"
-          label="What were you doing when you found the bug?"
-          outlined
-          dense
-          hint="Your most recent steps are the most helpful."
-        ></v-textarea>
-        <v-switch v-model="contactUser" label="Would you like VLM Support to contact you for help with this?" dense></v-switch>
-        <v-text-field
-          v-if="contactUser"
-          v-model="userContactInfo"
-          label="If so, please provide your preferred contact info."
-          outlined
-          dense
-        ></v-text-field>
+        <v-textarea v-model="reproduction" :label="localeText('reproSteps')" outlined dense :hint="localeText('reproStepsHint')"></v-textarea>
+        <v-switch v-model="contactUser" :label="localeText('contactUserLabel')" dense></v-switch>
+        <v-text-field v-if="contactUser" v-model="userContactInfo" :label="localeText('contactInfoLabel')" outlined dense></v-text-field>
       </v-card-text>
       <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="accenttext" text @click="submit"> Submit </v-btn>
-        <v-btn color="grey" text @click="closeWindow"> Cancel </v-btn>
+        <v-btn color="accenttext" text @click="submit"> {{ localeAction('Submit') }} </v-btn>
+        <v-btn color="grey" text @click="closeWindow"> {{ localeAction('Cancel') }} </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'BugReportDialog',
   data: () => ({
@@ -54,6 +42,10 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      localeText: 'i18n/bugReport',
+      localeAction: 'i18n/actions',
+    }),
     show: {
       get() {
         return this.value

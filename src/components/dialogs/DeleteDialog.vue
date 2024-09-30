@@ -1,11 +1,9 @@
 <template>
   <v-dialog v-model="show" max-width="350">
     <v-card>
-      <v-card-title class="text-h5"> Remove {{ title || instanceData?.name || elementData.name || 'Element' }} </v-card-title>
+      <v-card-title class="text-h5"> {{ localeAction('remove') }} {{ title || instanceData?.name || elementData.name || 'Element' }} </v-card-title>
       <v-card-text v-if="!text" class="pt-4">
-        Are you sure you want to remove
-        {{ removeAll ? 'all instances of' : '' }}
-        {{ instanceData?.name || elementData.name || `this ${element}` }} from the scene?
+        {{ message }}
       </v-card-text>
       <v-card-text v-else class="pt-4">
         {{ text }}
@@ -14,9 +12,9 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="red darken-1" text @click="remove">
-          {{ buttonText }}
+          {{ localeAction(buttonText.toLowerCase()) || localeAction('confirm') }}
         </v-btn>
-        <v-btn color="grey darken-1" text @click="cancel"> Cancel </v-btn>
+        <v-btn color="grey darken-1" text @click="cancel"> {{ localeAction('Cancel') }} </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -32,7 +30,12 @@ export default {
     value: Boolean,
   },
   computed: {
-    ...mapGetters({ show: 'dialog/deleteDialogOpen', dialogProps: 'dialog/deleteDialogProps' }),
+    ...mapGetters({
+      show: 'dialog/deleteDialogOpen',
+      dialogProps: 'dialog/deleteDialogProps',
+      localeAction: 'i18n/actions',
+      localeText: 'i18n/deleteDialog',
+    }),
     element() {
       return this.dialogProps.element
     },
@@ -53,6 +56,21 @@ export default {
     },
     title() {
       return this.dialogProps.title
+    },
+    message() {
+      let baseText = this.removeAll ? this.localeText('elementMessage') : this.localeText('instanceMessage')
+      let replacementText = ''
+
+      if (this.instanceData?.name || this.elementData?.name) {
+        replacementText += this.instanceData?.name || this.elementData?.name
+      }
+
+      if (!replacementText) {
+        replacementText = this.localeText('thisElement')
+      }
+
+      let newSentence = baseText.replace('{{ element }}', replacementText)
+      return newSentence
     },
   },
   methods: {

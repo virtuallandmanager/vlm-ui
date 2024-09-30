@@ -15,7 +15,7 @@
           <div class="mt-2">How-Tos</div>
           <div class="d-flex flex-column align-center">
             <v-btn class="mt-4" color="primary" large outlined to="/docs/getting-started?world=decentraland" width="250">Decentraland SDK 6</v-btn>
-            <v-btn class="mt-4" color="primary" large outlined to="/docs/getting-started" disabled width="250">Decentraland SDK 7</v-btn>
+            <v-btn class="mt-4" color="primary" large outlined to="/docs/getting-started" width="250">Decentraland SDK 7</v-btn>
             <v-btn class="mt-4" color="primary" large outlined to="/docs/getting-started" disabled width="250">Hyperfy App</v-btn>
           </div>
         </div>
@@ -24,9 +24,7 @@
           <p class="lead mt-4">Full API reference for use of more advanced developer features</p>
           <div class="d-flex flex-column align-center">
             <v-btn class="mt-4" color="primary" large outlined :href="`${docsUrl}/#/decentraland/sdk6`" width="250">Decentraland SDK 6</v-btn>
-            <v-btn class="mt-4" color="primary" large outlined :href="`${docsUrl}/#/decentraland/sdk7`" disabled width="250"
-              >Decentraland SDK 7</v-btn
-            >
+            <v-btn class="mt-4" color="primary" large outlined :href="`${docsUrl}/#/decentraland/sdk7`" width="250">Decentraland SDK 7</v-btn>
             <v-btn class="mt-4" color="primary" large outlined :href="`${docsUrl}/#/hyperfy`" disabled width="250">Hyperfy SDK 3</v-btn>
           </div>
         </div>

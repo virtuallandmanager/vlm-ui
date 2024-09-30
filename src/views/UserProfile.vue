@@ -1,5 +1,5 @@
 <template>
-  <content-page loadingMessage="Loading Profile..." :noContent="!userInfo">
+  <content-page :loadingMessage="localeText('LoadingMessage')" :noContent="!userInfo">
     <v-card elevation="2" class="mx-auto pb-4" max-width="960">
       <v-card-title> {{ localeText('User Profile') }} </v-card-title>
       <v-card-text>
@@ -29,7 +29,7 @@
                 <v-text-field :label="localeText('Primary Wallet Address')" v-model="userInfo.connectedWallet" disabled></v-text-field>
                 <v-text-field
                   :label="localeText('Email Address')"
-                  :hint="localeText('emailAddressHint')"
+                  :hint="localeText('OptionalHint')"
                   persistent-hint
                   validate-on-blur
                   :rules="[validateEmailAddress]"
@@ -42,7 +42,7 @@
                   :preferred-countries="['us', 'ca', 'ar', 'gb', 'fr', 'de']"
                   v-model="phone"
                   :label="localeText('Mobile Phone')"
-                  :hint="localeText('mobilePhoneHint')"
+                  :hint="localeText('OptionalHint')"
                   :rules="[validatePhoneNumber]"
                   disabledFetchingCountry
                   persistent-hint
@@ -51,14 +51,27 @@
                   @change="saveAndContinue"
                 />
               </div>
+              <div class="text-h6 mt-4">{{ localeText('Preferred Language') }}</div>
+              <div class="text-h6 mt-4">
+                <locale-selector :showName="true" location="bottom" />
+              </div>
               <div class="text-h6 mt-4">{{ localeText('Advanced & Experimental Features') }}</div>
-              <v-card-subtitle class="pa-0"> {{ localeText('advancedFeaturesDescription') }} </v-card-subtitle>
+              <v-card-subtitle class="pa-0"> {{ localeText('AdvancedFeaturesDescription') }} </v-card-subtitle>
               <v-switch
                 :label="localeText('Advanced User')"
-                :hint="localeText('advancedUserDescription')"
+                :hint="localeText('AdvancedUserDescription')"
                 persistent-hint
                 v-model="userRoles[2]"
                 @change="enableAdvancedUserRole"
+                class="mt-0"
+              ></v-switch>
+              <div class="text-h6 mt-4">{{ localeText('Team Collaboration Features') }}</div>
+              <v-switch
+                :label="localeText('Organization Admin')"
+                :hint="localeText('OrganizationAdminDescription')"
+                persistent-hint
+                v-model="userRoles[4]"
+                @change="enableOrgAdminRole"
                 class="mt-0"
               ></v-switch>
               <div class="text-h6 mt-2">{{ localeText('Demo Features') }}</div>
@@ -67,7 +80,7 @@
                 v-model="userInfo.hideDemoScene"
                 @change="saveAndContinue"
                 persistent-hint
-                :hint="localeText('hideDemoSceneHint')"
+                :hint="localeText('HideDemoSceneHint')"
                 class="mt-0"
               ></v-switch>
             </v-col>
@@ -83,9 +96,10 @@ import { mapActions, mapGetters } from 'vuex'
 import ContentPage from '../components/ContentPage'
 import { DateTime } from 'luxon'
 import Badge from '../components/Badge'
+import LocaleSelector from '../components/LocaleSelector'
 
 export default {
-  components: { ContentPage, Badge },
+  components: { ContentPage, Badge, LocaleSelector },
   name: 'UserProfile',
   data: () => ({
     userInfo: {},
@@ -139,7 +153,10 @@ export default {
       return this.$store.state.user.processing
     },
     userAvatar() {
-      if (this.userInfo.avatar !== 'https://vlm.gg/media/avatar/default.png') {
+      if (
+        this.userInfo.avatar !== 'https://vlm.gg/media/avatar/default.png' &&
+        this.userInfo.avatar !== 'https://api.vlm.gg/media/avatar/default.png'
+      ) {
         return this.userInfo.avatar
       } else {
         return `https://api.vlm.gg/media/avatar/default.png`
@@ -149,15 +166,8 @@ export default {
   methods: {
     async saveAndContinue() {
       try {
-        // if (this.orgAdmin) {
-        //   this.showError({
-        //     message: 'Please enter a name for your organization.',
-        //     timeout: 4000,
-        //   })
-        //   return
-        // }
         if (this.userInfo?.phone?.number && !this.userInfo?.phone?.valid) {
-          this.showError({ message: 'Invalid phone number.', timeout: 4000 })
+          this.showError({ message: this.localeText('InvalidPhoneNumberError'), timeout: 4000 })
           return
         }
 
@@ -167,7 +177,6 @@ export default {
 
         await this.updateUserInfo({
           userInfo: this.userInfo,
-          userOrgInfo: this.orgAdmin ? this.newOrg : null,
         })
       } catch (error) {
         console.log(error)
@@ -179,6 +188,16 @@ export default {
         this.newUserRoles = this.userInfo.roles.concat(2).sort()
       } else if (!this.userRoles[2]) {
         this.newUserRoles = this.userInfo.roles.filter((role) => role !== 2)
+      }
+      this.$nextTick(() => {
+        this.saveAndContinue()
+      })
+    },
+    enableOrgAdminRole() {
+      if (this.userRoles[4] && !this.userInfo.roles.includes(4)) {
+        this.newUserRoles = this.userInfo.roles.concat(4).sort()
+      } else if (!this.userRoles[4]) {
+        this.newUserRoles = this.userInfo.roles.filter((role) => role !== 4)
       }
       this.$nextTick(() => {
         this.saveAndContinue()
@@ -200,7 +219,7 @@ export default {
 
     validateOrgDisplayName() {
       if (!this.userInfo?.displayName) {
-        return "Meh, technically we don't REALLY need this, but it'll make it easier to know who's who."
+        return this.localeText('OrgDisplayNameValidation')
       } else {
         return true
       }
@@ -211,12 +230,12 @@ export default {
       } else if (this.userInfo?.smsPhoneNumber?.number && this.userInfo?.smsPhoneNumber?.valid) {
         return true
       } else {
-        return 'Please enter a valid phone number or leave this field blank'
+        return this.localeText('InvalidPhoneNumberError')
       }
     },
     validateEmailAddress() {
       if (this.userInfo.emailAddress && !this.userInfo.emailAddress.includes('@')) {
-        return 'Please enter a valid email address or leave this field blank.'
+        return this.localeText('InvalidEmailError')
       } else {
         return true
       }
@@ -239,29 +258,29 @@ export default {
     getUserRole(role) {
       switch (role) {
         case 0:
-          return 'Basic User'
+          return this.localeText('Basic User')
         case 1:
-          return 'Early Access'
+          return this.localeText('Early Access')
         case 2:
-          return 'Advanced User'
+          return this.localeText('Advanced User')
         case 3:
-          return 'Land Admin'
+          return this.localeText('Land Admin')
         case 4:
-          return 'Organization Admin'
+          return this.localeText('Organization Admin')
         case 5:
-          return 'VLM Contractor'
+          return this.localeText('VLM Contractor')
         case 6:
-          return 'VLM Employee'
+          return this.localeText('VLM Employee')
         case 7:
-          return 'VLM Admin'
+          return this.localeText('VLM Admin')
         case 8:
-          return 'Placeholder Role'
+          return this.localeText('Placeholder Role')
         case 9:
-          return 'Placeholder Role'
+          return this.localeText('Placeholder Role')
         case 10:
-          return 'God Mode'
+          return this.localeText('God Mode')
         default:
-          return 'Unknown'
+          return this.localeText('Unknown')
       }
     },
     togglePrivacyPolicy() {

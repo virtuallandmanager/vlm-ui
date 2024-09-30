@@ -20,7 +20,7 @@
 
     <v-container fluid class="pa-0">
       <v-row>
-        <v-col md="4" sm="6" xs="12" v-for="(video, i) in videos" :key="video.id">
+        <v-col md="6" sm="6" xs="12" v-for="(video, i) in videos" :key="video.id">
           <scene-video-card :video="video" :i="i" />
         </v-col>
       </v-row>
@@ -54,7 +54,7 @@ export default {
       deleteSceneElement: 'scene/deleteSceneElement',
     }),
     addVideoScreen() {
-      const elementData = new SceneVideo({ name: `Video Source ${this.videos.length + 1}` })
+      const elementData = new SceneVideo({ name: `${this.localeText('Video Source')} ${this.videos.length + 1}` })
       this.createSceneElement({ element: 'video', elementData })
     },
   },

@@ -6,7 +6,7 @@
           <v-container>
             <v-row>
               <v-col cols="12" sm="4" md="4" order="1" class="text-center">
-                <div class="text-h6">Timezone</div>
+                <div class="text-h6">{{ localeText('dateRangeBar') }}</div>
                 <v-menu
                   ref="timeZoneMenu"
                   v-model="timeZoneMenu"
@@ -44,14 +44,14 @@
                     </v-autocomplete
                     ><v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn text color="primary" @click="saveTz()"> Save </v-btn>
-                      <v-btn text color="primary" @click="cancel('newTzCode', 'timeZoneMenu')"> Cancel </v-btn>
+                      <v-btn text color="primary" @click="saveTz()"> {{ localeAction('save') }} </v-btn>
+                      <v-btn text color="primary" @click="cancel('newTzCode', 'timeZoneMenu')"> {{ localeAction('cancel') }} </v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-menu>
               </v-col>
               <v-col cols="12" sm="4" md="4" order="2" class="text-center">
-                <div class="text-h6">Start</div>
+                <div class="text-h6">{{ localeText('Start') }}</div>
                 <div class="display-flex flex-row justify-space-between">
                   <v-menu
                     ref="startDateMenu"
@@ -79,8 +79,10 @@
                     </template>
                     <v-date-picker v-model="newStartDate" no-title>
                       <v-spacer></v-spacer>
-                      <v-btn text color="primary" @click="save('startDate', 'newStartDate', 'newStartDate', 'startDateMenu')"> Save </v-btn>
-                      <v-btn text color="primary" @click="cancel('newStartDate', 'startDateMenu')"> Cancel </v-btn>
+                      <v-btn text color="primary" @click="save('startDate', 'newStartDate', 'newStartDate', 'startDateMenu')">
+                        {{ localeAction('save') }}
+                      </v-btn>
+                      <v-btn text color="primary" @click="cancel('newStartDate', 'startDateMenu')"> {{ localeAction('cancel') }} </v-btn>
                     </v-date-picker>
                   </v-menu>
                   <v-menu
@@ -111,17 +113,19 @@
                       >
                     </template>
                     <v-time-picker v-model="newStartTime" no-title use-seconds>
-                      <v-btn text color="accent" @click="newStartTime = '00:00:00'"> Start Of Day </v-btn>
-                      <v-btn text color="accent" @click="newStartTime = '23:59:59'"> End Of Day </v-btn>
+                      <v-btn text color="accent" @click="newStartTime = '00:00:00'"> {{ localeText('Start Of Day') }} </v-btn>
+                      <v-btn text color="accent" @click="newStartTime = '23:59:59'"> {{ localeText('End Of Day') }}</v-btn>
                       <v-spacer></v-spacer>
-                      <v-btn text color="primary" @click="save('startTime', 'newStartTime', 'newStartTime', 'startTimeMenu')"> Save </v-btn>
-                      <v-btn text color="primary" @click="cancel('newStartTime', 'startTimeMenu')"> Cancel </v-btn>
+                      <v-btn text color="primary" @click="save('startTime', 'newStartTime', 'newStartTime', 'startTimeMenu')">
+                        {{ localeAction('save') }}
+                      </v-btn>
+                      <v-btn text color="primary" @click="cancel('newStartTime', 'startTimeMenu')"> {{ localeAction('cancel') }} </v-btn>
                     </v-time-picker>
                   </v-menu>
                 </div>
               </v-col>
               <v-col cols="12" sm="4" md="4" order="3" class="text-center">
-                <div class="text-h6">End</div>
+                <div class="text-h6">{{ localeText('End') }}</div>
                 <v-menu
                   ref="endDateMenu"
                   v-model="endDateMenu"
@@ -147,8 +151,10 @@
                   </template>
                   <v-date-picker v-model="newEndDate" no-title v-if="!endTimeMenu">
                     <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="save('endDate', 'newEndDate', 'newEndDate', 'endDateMenu')"> Save </v-btn>
-                    <v-btn text color="primary" @click="cancel('newEndDate', 'endDateMenu')"> Cancel </v-btn>
+                    <v-btn text color="primary" @click="save('endDate', 'newEndDate', 'newEndDate', 'endDateMenu')">
+                      {{ localeAction('save') }}
+                    </v-btn>
+                    <v-btn text color="primary" @click="cancel('newEndDate', 'endDateMenu')"> {{ localeAction('cancel') }} </v-btn>
                   </v-date-picker>
                 </v-menu>
                 <v-menu
@@ -179,11 +185,13 @@
                     >
                   </template>
                   <v-time-picker v-model="newEndTime" no-title>
-                    <v-btn text color="accent" @click="newEndTime = '00:00'"> Start Of Day </v-btn>
-                    <v-btn text color="accent" @click="newEndTime = '23:59'"> End Of Day </v-btn>
+                    <v-btn text color="accent" @click="newEndTime = '00:00'"> {{ localeText('Start Of Day') }} </v-btn>
+                    <v-btn text color="accent" @click="newEndTime = '23:59'"> {{ localeText('End Of Day') }} </v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="save('endTime', 'newEndTime', 'newEndTime', 'endTimeMenu')"> Save </v-btn>
-                    <v-btn text color="primary" @click="cancel('newEndTime', 'endTimeMenu')"> Cancel </v-btn>
+                    <v-btn text color="primary" @click="save('endTime', 'newEndTime', 'newEndTime', 'endTimeMenu')">
+                      {{ localeAction('save') }}
+                    </v-btn>
+                    <v-btn text color="primary" @click="cancel('newEndTime', 'endTimeMenu')"> {{ localeAction('cancel') }} </v-btn>
                   </v-time-picker>
                 </v-menu>
               </v-col>
@@ -261,6 +269,9 @@ export default {
       removeDuplicateWallets: 'analytics/removeDuplicateWallets',
       removeDuplicateIps: 'analytics/removeDuplicateIps',
       exportOptions: 'analytics/exportOptions',
+      localeText: 'i18n/analytics',
+      localeTooltip: 'i18n/tooltips',
+      localeAction: 'i18n/actions',
     }),
     startDateTime: {
       get() {

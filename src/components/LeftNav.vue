@@ -3,7 +3,7 @@
     <v-list dense>
       <v-list-item>
         <v-list-item-content>
-          <v-img src="@/assets/VLM-Logo-Color.svg" align="center" max-height="70" contain></v-img>
+          <v-img :src="logo" max-height="70" contain></v-img>
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -58,13 +58,19 @@
         </v-list-item-icon>
         <v-list-item-title>Media Library</v-list-item-title>
       </v-list-item> -->
-      <v-list-item link to="/streams">
+      <v-list-item link to="/streams" v-if="streamsEnabled">
         <v-list-item-icon>
           <v-icon>mdi-video</v-icon>
         </v-list-item-icon>
-        <v-list-item-title>Video Streams</v-list-item-title>
+        <v-list-item-title>{{ navText('Video Streams') }}</v-list-item-title>
       </v-list-item>
-      <v-list-item link :href="docsUrl">
+      <v-list-item link to="/organization" v-if="orgsEnabled && isOrgAdmin">
+        <v-list-item-icon>
+          <v-icon>mdi-account-group</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title>{{ navText('Organization') }}</v-list-item-title>
+      </v-list-item>
+      <v-list-item link :href="docsUrl" target="_blank">
         <v-list-item-icon>
           <v-icon>mdi-book</v-icon>
         </v-list-item-icon>
@@ -137,11 +143,24 @@ export default {
     },
     ...mapGetters({
       navText: 'i18n/navigation',
+      localeLogo: 'i18n/localeLogo',
       demoMode: 'app/demoMode',
       user: 'user/userInfo',
       demoScene: 'scene/demoScene',
       walletAddress: 'user/walletAddress',
+      isOrgAdmin: 'user/isOrgAdmin',
+      orgsEnabled: 'feature/orgsEnabled',
+      streamsEnabled: 'feature/videoStreamsEnabled',
     }),
+    logo() {
+      const logoFileName = this.localeLogo
+      // Resolve the logo file path dynamically using require
+      if (logoFileName) {
+        return require(`@/assets/${logoFileName}`)
+      } else {
+        return require('@/assets/VLM-Logo-Color.svg')
+      }
+    },
     navDrawerOpen: {
       get() {
         return this.$store.state.app.navDrawerOpen

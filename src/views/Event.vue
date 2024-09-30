@@ -294,7 +294,11 @@ export default {
     userSceneSelection: [],
     userGiveawaySelection: [],
   }),
-
+  created() {
+    if (!this.$store.getters['auth/authenticated']) {
+      this.$store.dispatch('auth/refreshSession')
+    }
+  },
   async mounted() {
     this.setActiveEvent(this.$route.params.eventId)
     await this.getEvent(this.$route.params.eventId)

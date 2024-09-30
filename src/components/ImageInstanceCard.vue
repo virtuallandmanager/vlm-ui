@@ -10,7 +10,7 @@
                 {{ image.enabled && instance.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
               </v-icon>
             </template>
-            <span>{{ localeAction('show/hide') }}</span>
+            <span>{{ image.enabled && instance.enabled ? localeTooltip('Hide') : localeTooltip('Show') }}</span>
           </v-tooltip>
         </v-btn></span
       >
@@ -21,7 +21,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-icon small v-bind="attrs" v-on="on"> mdi-content-save </v-icon>
             </template>
-            <span>Save</span>
+            <span>{{ localeAction('save') }}</span>
           </v-tooltip>
         </v-btn>
         <v-btn small icon @click="cancelEditInstanceName()">
@@ -29,7 +29,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-icon small v-bind="attrs" v-on="on"> mdi-close </v-icon>
             </template>
-            <span>Cancel</span>
+            <span>{{ localeAction('cancel') }}</span>
           </v-tooltip>
         </v-btn>
       </div>
@@ -52,7 +52,7 @@
                 <v-icon small v-bind="attrs" v-on="on"> mdi-content-duplicate </v-icon>
               </template>
 
-              <span>Duplicate</span>
+              <span>{{ localeTooltip('Duplicate') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
@@ -62,7 +62,7 @@
             icon
             @click.stop="
               showDeleteDialog({
-                title: 'Image Instance',
+                title: localeText('Image Instance'),
                 element: 'image',
                 elementData: image,
                 instance: true,
@@ -74,7 +74,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-trash-can </v-icon>
               </template>
-              <span>Remove</span>
+              <span>{{ localeTooltip('Remove') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
@@ -97,14 +97,14 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-axis-arrow </v-icon>
           </template>
-          <span> {{ localeAction('transform') }}</span>
+          <span>{{ localeTooltip('Transform') }}</span>
         </v-tooltip>
       </v-btn>
       <v-btn
         icon
         @click="
           showClickEventDialog({
-            title: 'Image Instance',
+            title: localeText('Image Instance'),
             element: 'image',
             elementData: image,
             instance: true,
@@ -135,7 +135,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"> mdi-tune </v-icon>
           </template>
-          <span>Instance Properties</span>
+          <span>{{ localeTooltip('Instance Properties') }}</span>
         </v-tooltip>
       </v-btn>
     </div>
@@ -173,6 +173,7 @@ export default {
   computed: {
     ...mapGetters({
       localeAction: 'i18n/actions',
+      localeTooltip: 'i18n/tooltips',
     }),
     truncatedName() {
       const imageNameArr = this.image && this.image.name.split('')

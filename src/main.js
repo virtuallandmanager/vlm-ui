@@ -5,7 +5,7 @@ import vuetify from './plugins/vuetify'
 import store from './store'
 import processString from './helpers/processString'
 import VueTelInputVuetify from 'vue-tel-input-vuetify/lib'
-import 'flag-icon-css/css/flag-icons.min.css';
+import 'flag-icon-css/css/flag-icons.min.css'
 
 Vue.config.productionTip = false
 

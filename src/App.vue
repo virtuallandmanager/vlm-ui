@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar app clipped-left color="production" class="d-flex align-center" v-if="$vuetify.breakpoint.mdAndDown && $route.path !== '/'">
       <v-app-bar-nav-icon @click.stop="toggleNavDrawer" v-if="$vuetify.breakpoint.mdAndDown && !unregistered"></v-app-bar-nav-icon>
-      <v-img src="@/assets/VLM-Logo.svg" max-width="80" class="ml-2"></v-img>
+      <v-img :src="logo" max-width="80" class="ml-2"></v-img>
       <v-btn v-if="!connected && !signing" color="primary" @click.stop="connectButton()" :loading="loadingAuth" :disabled="loadingAuth" fixed right>
         <v-icon class="mr-2">mdi-wallet</v-icon>
         {{ localeText('Connect Wallet') }}
@@ -71,7 +71,7 @@
           <v-icon v-else size="24px">{{ icon.icon }}</v-icon>
         </v-btn>
       </div>
-      <locale-selector />
+      <locale-selector location="top" />
       <bug-report-dialog v-if="showBugReport" v-model="showBugReport" />
     </v-footer>
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000" bottom center>
@@ -124,6 +124,18 @@ export default {
     this.setLocale(locale)
   },
   computed: {
+    ...mapGetters({
+      localeLogo: 'i18n/localeLogo',
+    }),
+    logo() {
+      const logoFileName = this.localeLogo
+      // Resolve the logo file path dynamically using require
+      if (logoFileName) {
+        return require(`@/assets/${logoFileName}`)
+      } else {
+        return require('@/assets/VLM-Logo-Color.svg')
+      }
+    },
     snackbar() {
       return this.$store.state.banner
     },

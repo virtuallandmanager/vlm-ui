@@ -1,5 +1,4 @@
-import store from '../../store'
-// import router from "../../router";
+import store from '@/store'
 /*/
 These data access methods are used by the Vuex Auth Module to make HTTP requests to the server. There are two classes defined in store/dal/auth.js: AuthenticatedFetch and UnauthenticatedFetch.
 

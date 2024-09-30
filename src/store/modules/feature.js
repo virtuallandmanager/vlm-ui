@@ -1,12 +1,16 @@
 export default {
   namespaced: true,
   state: () => ({
+    videoStreamsEnabled: false,
+    orgsEnabled: false,
     versionRestricted: {
       eventsAndGiveaways: '0.1.0',
     },
     userRestricted: {},
   }),
   getters: {
+    orgsEnabled: (state) => state.orgsEnabled,
+    videoStreamsEnabled: (state) => state.videoStreamsEnabled,
     highestIntegrationVersion: (state, getters, rootState, rootGetters) => {
       const scene = rootGetters['scene/activeScene']
       const sceneIntegrationData = scene?.locations?.map((location) => location.integrationData)

@@ -1,9 +1,17 @@
 <template>
-  <v-menu top offset-y>
+  <v-menu
+    :offset-x="location == 'left' || location == 'right'"
+    :offset-y="location == 'top' || location == 'bottom'"
+    :bottom="location == 'bottom'"
+    :right="location == 'right'"
+    :top="location == 'top'"
+    :left="location == 'left'"
+  >
     <template v-slot:activator="{ on, attrs }">
-      <v-btn class="mx-4" dark icon small v-bind="attrs" v-on="on">
-        <v-icon small :class="`flag-icon-circle flag-icon-${localeFlag}`"></v-icon
-      ></v-btn>
+      <v-btn :large="showName" dark :icon="!showName" small v-bind="attrs" v-on="on">
+        <v-icon small :class="`flag-icon-circle flag-icon-${localeFlag}`"></v-icon>
+        <span v-if="showName" class="ml-2">{{ selectedLocale?.name }}</span>
+      </v-btn>
     </template>
     <v-list>
       <v-list-item v-for="locale in locales" :key="locale.code" @click="setLocale(locale)">
@@ -26,6 +34,10 @@ export default {
       locales: [],
       selectedLocale: {}, // to store the currently selected locale
     }
+  },
+  props: {
+    showName: Boolean,
+    location: String,
   },
   created() {
     this.fetchLocales()

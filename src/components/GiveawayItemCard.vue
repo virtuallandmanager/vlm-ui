@@ -8,7 +8,7 @@
           <div class="text-body-1">{{ localeText('mintingRightsDescription2') }}</div>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="primary" text @click="mintingRightsDialog = false"> {{ localeAction('OK') }} </v-btn>
+          <v-btn color="primary" text @click="mintingRightsDialog = false"> {{ localeAction('ok') }} </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

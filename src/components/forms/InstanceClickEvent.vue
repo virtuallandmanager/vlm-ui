@@ -4,32 +4,36 @@
     <v-card-subtitle>{{ elementData.name.capitalize() }}</v-card-subtitle>
     <v-divider></v-divider>
     <v-card-subtitle class="pa-6 d-flex flex-column">
-      <v-switch v-model="synced" dense :true-value="false" :false-value="true" :label="`Override Default Click Action`" @change="toggleSync">
+      <v-switch
+        v-model="synced"
+        dense
+        :true-value="false"
+        :false-value="true"
+        :label="localeText('Override Default Click Action')"
+        @change="toggleSync"
+      >
       </v-switch>
       <div v-if="synced" class="text-caption">
         <v-icon small>mdi-information-outline</v-icon>
-        This instance uses the default click behavior set for the
-        {{ elementData.name }} {{ element }}.
+        {{ instanceUsesDefaultText }}
       </div>
       <div v-if="!synced && !formState.matchesDefault" class="text-caption">
         <v-icon small>mdi-information-outline</v-icon>
-        This instance has a unique click behavior.
+        {{ localeText('InstanceIsUniqueText') }}
       </div>
       <div v-if="!synced && formState.matchesDefault" class="text-caption">
         <v-icon small>mdi-information-outline</v-icon>
-        This instance's click behavior currently matches the default behavior for the
-        {{ elementData.name }} {{ element }}. The two are unlinked and will not stay in sync if the default settings are changed. To keep this
-        instance in sync, disable 'synced {{ element.capitalize() }} Defaults'.
+        {{ instanceMatchesDefaultText }}
       </div>
       <v-btn v-if="!synced && !formState.matchesDefault" small class="mt-4 align-self-center" @click="restoreDefaults">
-        <v-icon small class="mr-1">mdi-restore</v-icon> Restore {{ element.capitalize() }} Defaults
+        <v-icon small class="mr-1">mdi-restore</v-icon> {{ restoreDefaultsText }}
       </v-btn>
     </v-card-subtitle>
     <v-divider></v-divider>
     <v-card-text>
       <v-select
         v-model="displayedClickEvent.type"
-        label="Click Behavior"
+        :label="localeText('Click Behavior')"
         :items="clickEvents"
         class="mt-4"
         @change="changeType"
@@ -38,7 +42,7 @@
       <v-text-field
         v-if="displayedClickEvent && displayedClickEvent.type == this.EClickEventType.EXTERNAL"
         v-model="displayedClickEvent.externalLink"
-        label="External Link"
+        :label="localeText('External Link')"
         :rules="[validateExternalLink]"
         dense
         @change="changeValue"
@@ -47,13 +51,13 @@
       <v-text-field
         v-if="displayedClickEvent && displayedClickEvent.type == this.EClickEventType.SOUND"
         v-model="displayedClickEvent.sound"
-        label="Audio File"
+        :label="localeText('Audio File')"
         dense
         @change="changeValue"
         :disabled="synced"
       ></v-text-field>
       <div v-if="displayedClickEvent && displayedClickEvent.type == this.EClickEventType.MOVE">
-        <div class="display-caption">Position</div>
+        <div class="display-caption">{{ localeText('Position') }}</div>
         <div class="d-inline-flex align-content-space-between coords">
           <v-text-field
             v-model="displayedClickEvent.moveTo.position.x"
@@ -80,12 +84,12 @@
         <v-switch
           v-if="displayedClickEvent && displayedClickEvent.type !== EClickEventType.NONE"
           v-model="displayedClickEvent.moveTo.setCameraTarget"
-          label="Set New Camera Target"
+          :label="localeText('Set New Camera Target')"
           @change="toggleSetCameraTarget"
           :disabled="synced"
         ></v-switch>
         <div v-if="displayedClickEvent && displayedClickEvent.moveTo && displayedClickEvent.moveTo.setCameraTarget">
-          <div class="display-caption">Camera Target</div>
+          <div class="display-caption">{{ localeText('Camera Target') }}</div>
           <div class="d-inline-flex align-content-space-between coords">
             <v-text-field
               v-model="displayedClickEvent.moveTo.cameraTarget.x"
@@ -114,7 +118,7 @@
       <v-text-field
         v-if="displayedClickEvent && displayedClickEvent.type == this.EClickEventType.TELEPORT"
         v-model="displayedClickEvent.teleportTo"
-        label="Destination Coordinates"
+        :label="localeText('Destination Coordinates')"
         dense
         placeholder="0,0"
         @change="changeValue"
@@ -123,14 +127,14 @@
       <v-switch
         v-if="displayedClickEvent && displayedClickEvent.type > EClickEventType.NONE"
         v-model="displayedClickEvent.showFeedback"
-        label="Show Hover Text"
+        :label="localeText('Show Hover Text')"
         @change="toggleHoverText"
         :disabled="synced"
       ></v-switch>
       <v-text-field
         v-if="displayedClickEvent && displayedClickEvent.type > EClickEventType.NONE && displayedClickEvent.showFeedback"
         v-model="displayedClickEvent.hoverText"
-        label="Hover Text"
+        :label="localeText('Hover Text')"
         dense
         @change="changeValue"
         :rules="[validateHoverText]"
@@ -139,14 +143,14 @@
       <v-switch
         v-if="displayedClickEvent && displayedClickEvent.type !== EClickEventType.NONE"
         v-model="displayedClickEvent.hasTracking"
-        label="Track Click Event"
+        :label="localeText('Track Click Event')"
         @change="toggleTracking"
         :disabled="synced"
       ></v-switch>
       <v-text-field
         v-if="displayedClickEvent && displayedClickEvent.type !== EClickEventType.NONE && displayedClickEvent.hasTracking"
         v-model="displayedClickEvent.trackingId"
-        label="Tracking ID"
+        :label="localeText('Tracking ID')"
         dense
         @change="changeValue"
         :rules="[validateTrackingId]"
@@ -156,8 +160,8 @@
     <v-divider></v-divider>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="accenttext" text @click="save"> Save </v-btn>
-      <v-btn color="grey darken-1" text @click="revert"> Cancel </v-btn>
+      <v-btn color="accenttext" text @click="save"> {{ localeAction('save') }} </v-btn>
+      <v-btn color="grey darken-1" text @click="revert"> {{ localeAction('cancel') }} </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -165,6 +169,7 @@
 <script>
 import Vue from 'vue'
 import { ClickEvent } from '../../models/ClickEvent'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'InstanceClickEvent',
@@ -195,7 +200,7 @@ export default {
     ],
   }),
   props: {
-    title: { type: String, default: 'Default Click Event' },
+    title: { type: String, default: 'Click Event' },
     instanceData: {
       type: [Object, null],
       default: () => null,
@@ -215,19 +220,52 @@ export default {
     this.originalClickEvent = { ...this.clickEvent }
     this.synced = this.clickEvent.synced
     this.displayedClickEvent = !this.synced ? { ...this.clickEvent, synced: false } : { ...this.defaultClickEvent, synced: true }
+    this.clickEvents = this.clickEvents.map((event) => {
+      event.text = this.localeText(event.text)
+      return event
+    })
   },
   computed: {
+    ...mapGetters({
+      localeText: 'i18n/clickActionDialog',
+      localeAction: 'i18n/actions',
+    }),
+    restoreDefaultsText() {
+      let localeText = this.localeText('RestoreDefaultsText')
+      localeText = localeText.replace('{{ element }}', this.element.capitalize())
+      return localeText
+    },
+    instanceUsesDefaultText() {
+      let localeText = this.localeText('InstanceUsesDefaultText')
+      localeText = localeText.replace('{{ element }}', this.element.capitalize())
+      localeText = localeText.replace('{{ elementData.name }}', this.elementData.name)
+      return localeText
+    },
+    instanceMatchesDefaultText() {
+      let localeText = this.localeText('InstanceMatchesDefaultText')
+      localeText = localeText.replace('{{ element }}', this.element.capitalize())
+      localeText = localeText.replace('{{ elementData.name }}', this.elementData.name)
+      return localeText
+    },
     formState() {
       const displayedClickEvent = { ...this.displayedClickEvent },
         originalClickEvent = { ...this.originalClickEvent },
-        defaultClickEvent = { ...this.elementData.clickEvent }
+        defaultClickEvent = { ...this.elementData.clickEvent },
+        matchesDefault = JSON.stringify(displayedClickEvent) === JSON.stringify(defaultClickEvent),
+        matchesOriginal = JSON.stringify(displayedClickEvent) === JSON.stringify(originalClickEvent)
+
+      console.log('displayedClickEvent', displayedClickEvent)
+      console.log('defaultClickEvent', defaultClickEvent)
+      console.log('originalClickEvent', originalClickEvent)
+      console.log('matchesDefault', matchesDefault)
+      console.log('matchesOriginal', matchesOriginal)
 
       delete displayedClickEvent.synced
       delete defaultClickEvent.synced
       delete originalClickEvent.synced
       return {
-        matchesDefault: JSON.stringify(displayedClickEvent) === JSON.stringify(defaultClickEvent),
-        matchesOriginal: JSON.stringify(displayedClickEvent) === JSON.stringify(originalClickEvent),
+        matchesDefault,
+        matchesOriginal,
       }
     },
   },

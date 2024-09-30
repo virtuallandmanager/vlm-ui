@@ -64,7 +64,7 @@ export default {
     ...mapGetters({
       scene: 'scene/activeScene',
       loadingPresetList: 'scene/loadingPresetList',
-      localeText: 'i18n/scenePreset',
+      localeText: 'i18n/scenePresets',
       localeAction: 'i18n/actions',
     }),
     presets() {

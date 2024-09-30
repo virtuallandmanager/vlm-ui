@@ -9,18 +9,18 @@
                 {{ model.enabled && instance.enabled ? 'mdi-eye' : 'mdi-eye-off' }}
               </v-icon>
             </template>
-            <span>{{ localeAction('show/hide') }}</span>
+            <span>{{ model.enabled && instance.enabled ? localeTooltip('Hide') : localeTooltip('Show') }}</span>
           </v-tooltip>
         </v-btn></span
       >
       <div class="d-inline-flex align-center pa-0 ma-0" v-if="editingName">
-        <v-text-field hide-details v-model="instance.name" label="Rename Instance"></v-text-field>
+        <v-text-field hide-details v-model="instance.name" :label="localeTooltip('Rename Instance')"></v-text-field>
         <v-btn small icon @click="editInstanceName()">
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-icon small v-bind="attrs" v-on="on"> mdi-content-save </v-icon>
             </template>
-            <span>Save</span>
+            <span>{{ localeText('Save') }}</span>
           </v-tooltip>
         </v-btn>
         <v-btn small icon @click="cancelEditInstanceName()">
@@ -28,7 +28,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-icon small v-bind="attrs" v-on="on"> mdi-close </v-icon>
             </template>
-            <span>Cancel</span>
+            <span>{{ localeText('Cancel') }}</span>
           </v-tooltip>
         </v-btn>
       </div>
@@ -40,7 +40,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-icon small v-bind="attrs" v-on="on"> mdi-rename </v-icon>
               </template>
-              <span>{{ localeAction('rename') }}</span>
+              <span>{{ localeTooltip('Rename') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
@@ -51,7 +51,7 @@
                 <v-icon small v-bind="attrs" v-on="on"> mdi-content-duplicate </v-icon>
               </template>
 
-              <span>{{ localeAction('duplicate') }}</span>
+              <span>{{ localeTooltip('Duplicate') }}</span>
             </v-tooltip>
           </v-btn>
         </div>
@@ -173,6 +173,7 @@ export default {
     ...mapGetters({
       localeAction: 'i18n/actions',
       localeText: 'i18n/models',
+      localeTooltip: 'i18n/tooltips',
     }),
     truncatedName() {
       const modelNameArr = this.model && this.model.name.split('')

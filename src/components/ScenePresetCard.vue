@@ -2,7 +2,7 @@
   <div>
     <div class="d-flex pa-4 justify-space-between">
       <div class="info-section d-flex flex-column justify-start align-start">
-        <div class="text-h5 white--text">{{ preset?.name }}</div>
+        <div class="text-h5 white--text">{{ presetNameLocale() }}</div>
         <div v-if="preset?.createdAt">{{ localeText('Created') }} {{ createdDate(preset.createdAt) }}</div>
         <div class="scene-element-tiles">
           <v-btn text class="d-inline" v-if="preset.videos"> <v-icon class="mr-2">mdi-television</v-icon> {{ preset.videos.length }} </v-btn>
@@ -71,7 +71,7 @@ export default {
     dialogCallback: () => {},
   }),
   computed: {
-    ...mapGetters({ scene: 'scene/activeScene', localeText: 'i18n/scenePreset' }),
+    ...mapGetters({ scene: 'scene/activeScene', localeText: 'i18n/scenePresets' }),
   },
   methods: {
     ...mapActions({
@@ -80,6 +80,15 @@ export default {
       updatePresetProperty: 'scene/updatePresetProperty',
       deletePreset: 'scene/deletePreset',
     }),
+    presetNameLocale() {
+      if (this.preset.name == 'Signature Arrangement') {
+        return this.localeText('Signature Arrangement')
+      } else if (this.preset.name == 'New Preset') {
+        return this.localeText('New Preset')
+      } else {
+        return this.preset.name
+      }
+    },
     createdDate(ts) {
       if (ts) {
         return DateTime.fromMillis(Number(ts)).toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY)

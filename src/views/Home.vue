@@ -2,7 +2,7 @@
   <v-container class="content pb-0">
     <v-row>
       <v-col>
-        <v-img :src="localeLogo" max-width="25vw" class="mx-auto logo" />
+        <v-img :src="logo" max-width="25vw" class="mx-auto logo" />
         <div class="font-weight-black text-h4 text-center">{{ localeText('tagline') }}</div>
       </v-col>
     </v-row>
@@ -132,9 +132,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ localeText: 'i18n/home' }),
-    localeLogo() {
-      const logoFileName = this.localeText('logo')
+    ...mapGetters({ localeText: 'i18n/home', localeLogo: 'i18n/localeLogo' }),
+    logo() {
+      const logoFileName = this.localeLogo
       // Resolve the logo file path dynamically using require
       if (logoFileName) {
         return require(`@/assets/${logoFileName}`)

@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title> Default Click Action </v-card-title>
+    <v-card-title> {{ localeAction('default click action') }} </v-card-title>
     <v-card-subtitle>
       {{ element.capitalize() }}
     </v-card-subtitle>
@@ -8,18 +8,24 @@
     <v-card-subtitle class="pa-6 d-flex flex-column">
       <div>
         <v-icon small>mdi-information-outline</v-icon>
-        This will be the default click behavior used by new instances. You can make individual instances do something different if needed.
+        {{ localeText('DefaultClickActionDescription') }}
       </div>
     </v-card-subtitle>
     <v-divider></v-divider>
     <v-card-text>
       <!-- <div class="d-flex align-center justify-start"> -->
       <!-- </div> -->
-      <v-select v-model="displayedClickEvent.type" label="Click Behavior" :items="clickEvents" class="mt-4" @change="changeType"></v-select>
+      <v-select
+        v-model="displayedClickEvent.type"
+        :label="localeText('Click Behavior')"
+        :items="clickEvents"
+        class="mt-4"
+        @change="changeType"
+      ></v-select>
       <v-text-field
         v-if="displayedClickEvent && displayedClickEvent.type == this.EClickEventType.EXTERNAL"
         v-model="displayedClickEvent.externalLink"
-        label="External Link"
+        :label="localeText('External Link')"
         :rules="[validateExternalLink]"
         dense
         @change="changeValue"
@@ -27,12 +33,12 @@
       <v-text-field
         v-if="displayedClickEvent && displayedClickEvent.type == this.EClickEventType.SOUND"
         v-model="displayedClickEvent.sound"
-        label="Audio File"
+        :label="localeText('Audio File')"
         dense
         @change="changeValue"
       ></v-text-field>
       <div v-if="displayedClickEvent && displayedClickEvent.type == this.EClickEventType.MOVE">
-        <div class="display-caption">Position</div>
+        <div class="display-caption">{{ localeText('Position') }}</div>
         <div class="d-inline-flex align-content-space-between coords">
           <v-text-field v-model="displayedClickEvent.moveTo.position.x" label="X" @change="changeMoveTo" type="number"></v-text-field>
           <v-text-field v-model="displayedClickEvent.moveTo.position.y" label="Y" @change="changeMoveTo" type="number"></v-text-field>
@@ -41,11 +47,11 @@
         <v-switch
           v-if="displayedClickEvent && displayedClickEvent.type !== EClickEventType.NONE"
           v-model="displayedClickEvent.moveTo.setCameraTarget"
-          label="Set New Camera Target"
+          :label="localeText('Set New Camera Target')"
           @change="toggleSetCameraTarget"
         ></v-switch>
         <div v-if="displayedClickEvent && displayedClickEvent.moveTo && displayedClickEvent.moveTo.setCameraTarget">
-          <div class="display-caption">Camera Target</div>
+          <div class="display-caption">{{ localeText('Camera Target') }}</div>
           <div class="d-inline-flex align-content-space-between coords">
             <v-text-field v-model="displayedClickEvent.moveTo.cameraTarget.x" label="X" @change="changeMoveTo" type="number"></v-text-field>
             <v-text-field v-model="displayedClickEvent.moveTo.cameraTarget.y" label="Y" @change="changeMoveTo" type="number"></v-text-field>
@@ -56,7 +62,7 @@
       <v-text-field
         v-if="displayedClickEvent && displayedClickEvent.type == this.EClickEventType.TELEPORT"
         v-model="displayedClickEvent.teleportTo"
-        label="Destination Coordinates"
+        :label="localeText('Destination Coordinates')"
         dense
         placeholder="0,0"
         @change="changeValue"
@@ -64,13 +70,13 @@
       <v-switch
         v-if="displayedClickEvent && displayedClickEvent.type > EClickEventType.NONE"
         v-model="displayedClickEvent.showFeedback"
-        label="Show Hover Text"
+        :label="localeText('Show Hover Text')"
         @change="toggleHoverText"
       ></v-switch>
       <v-text-field
         v-if="displayedClickEvent && displayedClickEvent.type > EClickEventType.NONE && displayedClickEvent.showFeedback"
         v-model="displayedClickEvent.hoverText"
-        label="Hover Text"
+        :label="localeText('Hover Text')"
         dense
         @change="changeValue"
         :rules="[validateHoverText]"
@@ -78,13 +84,13 @@
       <v-switch
         v-if="displayedClickEvent && displayedClickEvent.type !== EClickEventType.NONE"
         v-model="displayedClickEvent.hasTracking"
-        label="Track Click Event"
+        :label="localeText('Track Click Event')"
         @change="toggleTracking"
       ></v-switch>
       <v-text-field
         v-if="displayedClickEvent && displayedClickEvent.type !== EClickEventType.NONE && displayedClickEvent.hasTracking"
         v-model="displayedClickEvent.trackingId"
-        label="Tracking ID"
+        :label="localeText('Tracking ID')"
         dense
         @change="changeValue"
         :rules="[validateTrackingId]"
@@ -93,8 +99,8 @@
     <v-divider></v-divider>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="accenttext" text @click="save"> Save </v-btn>
-      <v-btn color="grey darken-1" text @click="revert"> Cancel </v-btn>
+      <v-btn color="accenttext" text @click="save"> {{ localeAction('save') }} </v-btn>
+      <v-btn color="grey darken-1" text @click="revert"> {{ localeAction('cancel') }} </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -102,6 +108,7 @@
 <script>
 import Vue from 'vue'
 import { ClickEvent } from '../../models/ClickEvent'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'DefaultClickEvent',
@@ -141,8 +148,16 @@ export default {
   mounted() {
     this.displayedClickEvent = this.elementData?.clickEvent || new ClickEvent()
     this.originalClickEvent = { ...this.displayedClickEvent }
+    this.clickEvents = this.clickEvents.map((event) => {
+      event.text = this.localeText(event.text)
+      return event
+    })
   },
   computed: {
+    ...mapGetters({
+      localeText: 'i18n/clickActionDialog',
+      localeAction: 'i18n/actions',
+    }),
     formState() {
       const displayedClickEvent = { ...this.displayedClickEvent },
         originalClickEvent = { ...this.originalClickEvent }
